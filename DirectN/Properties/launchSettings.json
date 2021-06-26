@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DirectN": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
