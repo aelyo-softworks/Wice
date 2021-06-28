@@ -32,7 +32,6 @@ namespace Wice.Tests
                 useWindowsAcrylic: true
                 );
 
-
             //SizeToContent = DimensionOptions.WidthAndHeight;
             //AddCounter(1);
             //AddDrawTextCounter(10);

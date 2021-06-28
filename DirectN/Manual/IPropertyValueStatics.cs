@@ -5,7 +5,7 @@ using Windows.Foundation;
 namespace DirectN
 {
     // note: we can't use IInspectable or IPropertyValue for return values here, as the CLR plays too many tricks with these
-    [Guid("629BDBC8-D932-4FF4-96B9-8D96C5C1E858"), InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
+    [ComImport, Guid("629BDBC8-D932-4FF4-96B9-8D96C5C1E858"), InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
     public interface IPropertyValueStatics
     {
         [PreserveSig]

@@ -1,10 +1,10 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d3d11.h(5184,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d3d11.h(5170,5)
 using System;
 using System.Runtime.InteropServices;
 
 namespace DirectN
 {
-    [Guid("f582c508-0f36-490c-9977-31eece268cfa"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("f582c508-0f36-490c-9977-31eece268cfa"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID3D11DomainShader : ID3D11DeviceChild
     {
         // ID3D11DeviceChild

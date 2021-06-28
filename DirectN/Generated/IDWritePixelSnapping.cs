@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dwrite.h(3582,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dwrite.h(3582,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// The IDWritePixelSnapping interface defines the pixel snapping properties of a text renderer.
     /// </summary>
-    [Guid("eaf3a2da-ecf4-4d24-b644-b34f6842024b"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("eaf3a2da-ecf4-4d24-b644-b34f6842024b"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDWritePixelSnapping
     {
         [PreserveSig]

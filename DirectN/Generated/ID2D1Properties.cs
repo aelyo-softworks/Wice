@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1_1.h(1024,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1_1.h(1024,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// Represents a set of run-time bindable and discoverable properties that allow a data-driven application to modify the state of a Direct2D effect.
     /// </summary>
-    [Guid("483473d7-cd46-4f9d-9d3a-3112aa80159d"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("483473d7-cd46-4f9d-9d3a-3112aa80159d"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1Properties
     {
         [PreserveSig]

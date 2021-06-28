@@ -1,11 +1,11 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\wincodec.h(5598,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\wincodec.h(5598,5)
 using System;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 
 namespace DirectN
 {
-    [Guid("d8cd007f-d08f-4191-9bfc-236ea7f0e4b5"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("d8cd007f-d08f-4191-9bfc-236ea7f0e4b5"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IWICBitmapDecoderInfo : IWICBitmapCodecInfo
     {
         // IWICComponentInfo

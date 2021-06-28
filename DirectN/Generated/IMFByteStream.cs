@@ -1,10 +1,10 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\mfobjects.h(4394,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\mfobjects.h(4401,5)
 using System;
 using System.Runtime.InteropServices;
 
 namespace DirectN
 {
-    [Guid("ad4c1b00-4bf7-422f-9175-756693d9130d"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("ad4c1b00-4bf7-422f-9175-756693d9130d"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IMFByteStream
     {
         [PreserveSig]

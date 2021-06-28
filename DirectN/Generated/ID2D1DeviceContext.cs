@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1_1.h(1522,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1_1.h(1522,1)
 using System;
 using System.Runtime.InteropServices;
 using D2D1_TAG = System.UInt64;
@@ -8,7 +8,7 @@ namespace DirectN
     /// <summary>
     /// The device context represents a set of state and a command buffer that is used to render to a target bitmap.
     /// </summary>
-    [Guid("e8f7fe7a-191c-466d-ad95-975678bda998"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("e8f7fe7a-191c-466d-ad95-975678bda998"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1DeviceContext : ID2D1RenderTarget
     {
         // ID2D1Resource

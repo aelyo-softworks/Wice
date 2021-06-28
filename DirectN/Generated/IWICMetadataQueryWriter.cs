@@ -1,11 +1,11 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\wincodec.h(3161,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\wincodec.h(3161,5)
 using System;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 
 namespace DirectN
 {
-    [Guid("a721791a-0def-4d06-bd91-2118bf1db10b"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("a721791a-0def-4d06-bd91-2118bf1db10b"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IWICMetadataQueryWriter : IWICMetadataQueryReader
     {
         // IWICMetadataQueryReader

@@ -1,10 +1,10 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dwrite_3.h(791,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dwrite_3.h(791,1)
 using System;
 using System.Runtime.InteropServices;
 
 namespace DirectN
 {
-    [Guid("53585141-d9f8-4095-8321-d73cf6bd116c"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("53585141-d9f8-4095-8321-d73cf6bd116c"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDWriteFontCollection1 : IDWriteFontCollection
     {
         // IDWriteFontCollection

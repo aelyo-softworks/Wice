@@ -1,10 +1,10 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\mfobjects.h(5260,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\mfobjects.h(5267,5)
 using System;
 using System.Runtime.InteropServices;
 
 namespace DirectN
 {
-    [Guid("7fee9e9a-4a89-47a6-899c-b6a53a70fb67"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("7fee9e9a-4a89-47a6-899c-b6a53a70fb67"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IMFActivate : IMFAttributes
     {
         // IMFAttributes

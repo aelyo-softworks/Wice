@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1effectauthor.h(897,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1effectauthor.h(897,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// The internal context handed to effect authors to create transforms from effects and any other operation tied to context which is not useful to the application facing API.
     /// </summary>
-    [Guid("3d9f916b-27dc-4ad7-b4f1-64945340f563"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("3d9f916b-27dc-4ad7-b4f1-64945340f563"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1EffectContext
     {
         [PreserveSig]

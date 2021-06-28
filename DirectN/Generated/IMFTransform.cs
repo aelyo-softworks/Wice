@@ -1,10 +1,10 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\mftransform.h(241,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\mftransform.h(241,5)
 using System;
 using System.Runtime.InteropServices;
 
 namespace DirectN
 {
-    [Guid("bf94c121-5b05-4e6f-8000-ba598961414d"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("bf94c121-5b05-4e6f-8000-ba598961414d"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IMFTransform
     {
         [PreserveSig]

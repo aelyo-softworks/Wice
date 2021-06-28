@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dwrite.h(4642,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dwrite.h(4642,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// Interface that encapsulates information used to render a glyph run.
     /// </summary>
-    [Guid("7d97dbf7-e085-42d4-81e3-6a883bded118"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("7d97dbf7-e085-42d4-81e3-6a883bded118"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDWriteGlyphRunAnalysis
     {
         [PreserveSig]

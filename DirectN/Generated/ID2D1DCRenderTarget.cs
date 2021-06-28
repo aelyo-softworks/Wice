@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1.h(3328,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1.h(3328,1)
 using System;
 using System.Runtime.InteropServices;
 using D2D1_TAG = System.UInt64;
@@ -8,7 +8,7 @@ namespace DirectN
     /// <summary>
     /// Issues drawing commands to a GDI device context.
     /// </summary>
-    [Guid("1c51bc64-de61-46fd-9899-63a5d8f03950"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("1c51bc64-de61-46fd-9899-63a5d8f03950"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1DCRenderTarget : ID2D1RenderTarget
     {
         // ID2D1Resource

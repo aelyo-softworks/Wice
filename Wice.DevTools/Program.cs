@@ -50,6 +50,17 @@ namespace Wice.DevTools
 
             switch (type)
             {
+                case CommandType.UpdateDirectN:
+                    var directNPath = CommandLine.GetNullifiedArgument(1);
+                    if (directNPath == null)
+                    {
+                        Help();
+                        return;
+                    }
+
+                    UpdateDirectN(directNPath);
+                    break;
+
                 case CommandType.UpdateDirectNCore:
                     UpdateDirectNCore();
                     break;
@@ -58,8 +69,27 @@ namespace Wice.DevTools
                     UpdateWiceCore();
                     break;
 
+                case CommandType.UpdateWiceCoreTests:
+                    UpdateWiceCoreTests();
+                    break;
+
                 default:
                     throw new NotSupportedException();
+            }
+        }
+
+        static void UpdateDirectN(string directNPath)
+        {
+            var target = new CSharpProject(@"..\..\..\DirectN\DirectN.csproj");
+            foreach (var file in target.ImplicitIncludedFilePaths)
+            {
+                if (!file.StartsWith(@"Generated\", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var sourcePath = System.IO.Path.Combine(directNPath, file);
+                var destinationPath = System.IO.Path.Combine(target.ProjectDirectoryPath, file);
+                IOUtilities.FileOverwrite(sourcePath, destinationPath);
+                Console.WriteLine("Copied " + sourcePath + " => " + destinationPath);
             }
         }
 
@@ -77,10 +107,17 @@ namespace Wice.DevTools
             UpdateCoreProject(source, target, @"..\DirectN\");
         }
 
+        static void UpdateWiceCoreTests()
+        {
+            var source = new CSharpProject(@"..\..\..\Wice.Tests\Wice.Tests.csproj");
+            var target = new CSharpProject(@"..\..\..\WiceCore.Tests\WiceCore.Tests.csproj");
+            UpdateCoreProject(source, target, @"..\Wice.Tests\");
+        }
+
         static bool AddFile(string path)
         {
             var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
-            return ext == ".cs" || ext == ".resx" || ext == ".png";
+            return ext == ".cs" || ext == ".resx" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".manifest";
         }
 
         static string GetAction(string path)
@@ -93,10 +130,15 @@ namespace Wice.DevTools
 
                 case ".resx":
                 case ".png":
+                case ".jpg":
+                case ".jpeg":
                     return "EmbeddedResource";
 
-                default:
+                case ".manifest":
                     return "None";
+
+                default:
+                    throw new NotSupportedException();
             }
         }
 
@@ -167,8 +209,10 @@ namespace Wice.DevTools
             Console.WriteLine("    This tool is used to run a specific Wice Development command.");
             Console.WriteLine();
             Console.WriteLine("Commands:");
-            Console.WriteLine("    UpdateDirectNCore    Update the DirectNCore project from the DirectN project.");
-            Console.WriteLine("    UpdateWiceCore    Update the WiceCore project from the Wice project.");
+            Console.WriteLine("    UpdateDirectN <path>     Update the Wice DirectN project from the public github DirectN project.");
+            Console.WriteLine("    UpdateDirectNCore        Update the DirectNCore project from the DirectN project.");
+            Console.WriteLine("    UpdateWiceCore           Update the WiceCore project from the Wice project.");
+            Console.WriteLine("    UpdateWiceCoreTests      Update the WiceCore.Tests project from the Wice.Tests project.");
             Console.WriteLine();
         }
     }

@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1_1.h(1443,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1_1.h(1443,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// Represents an collection of gradient stops that can then be the source resource for either a linear or radial gradient brush.
     /// </summary>
-    [Guid("ae1572f4-5dd0-4777-998b-9279472ae63b"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("ae1572f4-5dd0-4777-998b-9279472ae63b"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1GradientStopCollection1 : ID2D1GradientStopCollection
     {
         // ID2D1Resource

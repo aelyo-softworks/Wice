@@ -1,10 +1,10 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dxgidebug.h(876,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dxgidebug.h(876,5)
 using System;
 using System.Runtime.InteropServices;
 
 namespace DirectN
 {
-    [Guid("c5a05f0c-16f2-4adf-9f4d-a8c4d58ac550"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("c5a05f0c-16f2-4adf-9f4d-a8c4d58ac550"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDXGIDebug1 : IDXGIDebug
     {
         // IDXGIDebug

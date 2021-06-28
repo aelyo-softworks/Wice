@@ -1,11 +1,11 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\wincodec.h(2709,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\wincodec.h(2709,5)
 using System;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 
 namespace DirectN
 {
-    [Guid("135ff860-22b7-4ddf-b0f6-218f4f299a43"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("135ff860-22b7-4ddf-b0f6-218f4f299a43"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IWICStream : IStream
     {
         // IStream

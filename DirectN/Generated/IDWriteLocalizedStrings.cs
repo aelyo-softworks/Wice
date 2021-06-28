@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dwrite.h(1367,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dwrite.h(1367,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// Represents a collection of strings indexed by locale name.
     /// </summary>
-    [Guid("08256209-099a-4b34-b86d-c22b110e7771"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("08256209-099a-4b34-b86d-c22b110e7771"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDWriteLocalizedStrings
     {
         [PreserveSig]

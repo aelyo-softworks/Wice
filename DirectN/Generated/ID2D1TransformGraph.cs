@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1effectauthor.h(598,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1effectauthor.h(598,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// The implementation of the actual graph.
     /// </summary>
-    [Guid("13d29038-c3e6-4034-9081-13b53a417992"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("13d29038-c3e6-4034-9081-13b53a417992"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1TransformGraph
     {
         [PreserveSig]

@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1_2.h(98,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1_2.h(98,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// Represents a resource domain whose objects and device contexts can be used together.
     /// </summary>
-    [Guid("d21768e1-23a4-4823-a14b-7c3eba85d658"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("d21768e1-23a4-4823-a14b-7c3eba85d658"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1Device1 : ID2D1Device
     {
         // ID2D1Resource

@@ -1,10 +1,10 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\shared\dxgi.h(1710,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\shared\dxgi.h(1710,5)
 using System;
 using System.Runtime.InteropServices;
 
 namespace DirectN
 {
-    [Guid("310d36a0-d2e7-4c0a-aa04-6a9d23b8886a"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("310d36a0-d2e7-4c0a-aa04-6a9d23b8886a"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDXGISwapChain : IDXGIDeviceSubObject
     {
         // IDXGIObject

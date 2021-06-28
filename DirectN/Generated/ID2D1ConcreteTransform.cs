@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1effectauthor.h(768,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1effectauthor.h(768,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// Base interface for built-in transforms on which precision and caching may be controlled.
     /// </summary>
-    [Guid("1a799d8a-69f7-4e4c-9fed-437ccc6684cc"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("1a799d8a-69f7-4e4c-9fed-437ccc6684cc"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1ConcreteTransform : ID2D1TransformNode
     {
         // ID2D1TransformNode

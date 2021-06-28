@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dwrite.h(1043,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dwrite.h(1043,1)
 using System;
 using System.Runtime.InteropServices;
 using IDWriteGeometrySink = DirectN.ID2D1SimplifiedGeometrySink;
@@ -8,7 +8,7 @@ namespace DirectN
     /// <summary>
     /// This interface exposes various font data such as metrics, names, and glyph outlines. It contains font face type, appropriate file references and face identification data.
     /// </summary>
-    [Guid("5f49804d-7024-4d43-bfa9-d25984f53849"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("5f49804d-7024-4d43-bfa9-d25984f53849"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDWriteFontFace
     {
         [PreserveSig]

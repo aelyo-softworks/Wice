@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1.h(2213,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1.h(2213,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// Describes a geometric path that can contain lines, arcs, cubic Bezier curves, and quadratic Bezier curves.
     /// </summary>
-    [Guid("2cd9069f-12e2-11dc-9fed-001143a055f9"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("2cd9069f-12e2-11dc-9fed-001143a055f9"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1GeometrySink : ID2D1SimplifiedGeometrySink
     {
         // ID2D1SimplifiedGeometrySink

@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dwrite_3.h(2202,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dwrite_3.h(2202,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// The IDWriteRemoteFontFileLoader interface represents a font file loader that can access remote (i.e., downloadable) fonts. The IDWriteFactory5::CreateHttpFontFileLoader method returns an instance of this interface, or a client can create its own implementation.  <remarks> Calls to a remote file loader or stream should never block waiting for network operations. Any call that cannot succeeded immediately using local (e.g., cached) must should return DWRITE_E_REMOTEFONT. This error signifies to DWrite that it should add requests to the font download queue. </remarks>
     /// </summary>
-    [Guid("68648c83-6ede-46c0-ab46-20083a887fde"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("68648c83-6ede-46c0-ab46-20083a887fde"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDWriteRemoteFontFileLoader : IDWriteFontFileLoader
     {
         // IDWriteFontFileLoader

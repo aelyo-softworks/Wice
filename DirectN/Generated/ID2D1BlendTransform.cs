@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1effectauthor.h(791,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1effectauthor.h(791,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// An effect uses this interface to configure a blending operation.
     /// </summary>
-    [Guid("63ac0b32-ba44-450f-8806-7f4ca1ff2f1b"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("63ac0b32-ba44-450f-8806-7f4ca1ff2f1b"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1BlendTransform : ID2D1ConcreteTransform
     {
         // ID2D1TransformNode

@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dwrite_3.h(721,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dwrite_3.h(721,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// Builder interface to add font face references and create a font set.
     /// </summary>
-    [Guid("2f642afe-9c68-4f40-b8be-457401afcb3d"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("2f642afe-9c68-4f40-b8be-457401afcb3d"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDWriteFontSetBuilder
     {
         [PreserveSig]

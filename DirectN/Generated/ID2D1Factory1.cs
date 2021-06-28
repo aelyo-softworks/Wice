@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1_1.h(2223,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1_1.h(2223,1)
 using System;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -9,7 +9,7 @@ namespace DirectN
     /// <summary>
     /// Creates Direct2D resources.
     /// </summary>
-    [Guid("bb12d362-daee-4b9a-aa1d-14ba401cfa1f"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("bb12d362-daee-4b9a-aa1d-14ba401cfa1f"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1Factory1 : ID2D1Factory
     {
         // ID2D1Factory

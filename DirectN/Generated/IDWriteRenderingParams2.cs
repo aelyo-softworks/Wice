@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dwrite_2.h(841,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dwrite_2.h(841,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// The interface that represents text rendering settings for glyph rasterization and filtering.
     /// </summary>
-    [Guid("f9d711c3-9777-40ae-87e8-3e5af9bf0948"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("f9d711c3-9777-40ae-87e8-3e5af9bf0948"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDWriteRenderingParams2 : IDWriteRenderingParams1
     {
         // IDWriteRenderingParams

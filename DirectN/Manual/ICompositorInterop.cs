@@ -4,7 +4,7 @@ using Windows.UI.Composition;
 
 namespace DirectN
 {
-    [Guid("25297D5C-3AD4-4C9C-B5CF-E36A38512330"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("25297D5C-3AD4-4C9C-B5CF-E36A38512330"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface ICompositorInterop
     {
         [PreserveSig]

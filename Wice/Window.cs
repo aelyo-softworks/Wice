@@ -17,6 +17,9 @@ using Windows.Graphics.DirectX;
 using Windows.UI.Composition;
 using Windows.UI.Composition.Core;
 using Windows.UI.Composition.Diagnostics;
+#if NET
+using WinRT;
+#endif
 
 namespace Wice
 {
@@ -1010,7 +1013,13 @@ namespace Wice
             var controller = new CompositorController();
             controller.CommitNeeded += OnCompositorControllerCommitNeeded;
 
+#if NET
+            //var interop = ((object)controller.Compositor).As<ICompositorDesktopInterop>();
+            var interop = controller.Compositor.As<ICompositorDesktopInterop>();
+#else
             var interop = (ICompositorDesktopInterop)(object)controller.Compositor;
+#endif
+
             interop.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
             _compositionTarget = new ComObject<ICompositionTarget>((ICompositionTarget)target);
             CompositionVisual = CreateWindowVisual(controller.Compositor);

@@ -1,11 +1,11 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\shared\dxgi1_2.h(1585,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\shared\dxgi1_2.h(1585,5)
 using System;
 using System.Runtime.InteropServices;
 using LUID = DirectN._LUID;
 
 namespace DirectN
 {
-    [Guid("50c83a1c-e072-4c48-87b0-3630fa36a6d0"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("50c83a1c-e072-4c48-87b0-3630fa36a6d0"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDXGIFactory2 : IDXGIFactory1
     {
         // IDXGIObject

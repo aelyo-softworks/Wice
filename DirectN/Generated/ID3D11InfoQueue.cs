@@ -1,10 +1,10 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d3d11sdklayers.h(2151,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d3d11sdklayers.h(2151,5)
 using System;
 using System.Runtime.InteropServices;
 
 namespace DirectN
 {
-    [Guid("6543dbb6-1b48-42f5-ab82-e97ec74326f6"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("6543dbb6-1b48-42f5-ab82-e97ec74326f6"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID3D11InfoQueue
     {
         [PreserveSig]

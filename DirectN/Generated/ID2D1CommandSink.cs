@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1_1.h(713,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1_1.h(713,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// Caller-supplied implementation of an interface to receive the recorded command list.
     /// </summary>
-    [Guid("54d7898a-a061-40a7-bec7-e465bcba2c4f"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("54d7898a-a061-40a7-bec7-e465bcba2c4f"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1CommandSink
     {
         [PreserveSig]

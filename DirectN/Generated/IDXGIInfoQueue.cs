@@ -1,11 +1,11 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dxgidebug.h(172,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dxgidebug.h(172,5)
 using System;
 using System.Runtime.InteropServices;
 using DXGI_DEBUG_ID = System.Guid;
 
 namespace DirectN
 {
-    [Guid("d67441c7-672a-476f-9e82-cd55b44949ce"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("d67441c7-672a-476f-9e82-cd55b44949ce"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDXGIInfoQueue
     {
         [PreserveSig]

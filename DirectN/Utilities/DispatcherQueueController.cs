@@ -4,7 +4,7 @@ namespace DirectN
 {
     public static class DispatcherQueueController
     {
-        public static Windows.System.DispatcherQueueController Create(bool throwOnError = true)
+        public static IDispatcherQueueController Create(bool throwOnError = true)
         {
             var options = new DispatcherQueueOptions
             {
@@ -47,6 +47,6 @@ namespace DirectN
         }
 
         [DllImport("coremessaging", CharSet = CharSet.Unicode)]
-        private static extern int CreateDispatcherQueueController(DispatcherQueueOptions options, out Windows.System.DispatcherQueueController dispatcherQueueController);
+        private static extern int CreateDispatcherQueueController(DispatcherQueueOptions options, out IDispatcherQueueController dispatcherQueueController);
     }
 }

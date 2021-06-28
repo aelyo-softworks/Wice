@@ -4,7 +4,7 @@ using Windows.Graphics.Effects;
 
 namespace DirectN
 {
-    [Guid("2FC57384-A068-44D7-A331-30982FCF7177"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("2FC57384-A068-44D7-A331-30982FCF7177"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IGraphicsEffectD2D1Interop
     {
         [PreserveSig]

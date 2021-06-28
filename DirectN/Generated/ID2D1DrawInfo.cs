@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\d2d1effectauthor.h(500,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\d2d1effectauthor.h(500,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// A transform uses this interface to specify how to render a particular pass using pixel and vertex shaders.
     /// </summary>
-    [Guid("693ce632-7f2f-45de-93fe-18d88b37aa21"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("693ce632-7f2f-45de-93fe-18d88b37aa21"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface ID2D1DrawInfo : ID2D1RenderInfo
     {
         // ID2D1RenderInfo

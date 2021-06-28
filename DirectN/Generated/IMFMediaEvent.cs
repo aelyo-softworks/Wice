@@ -1,11 +1,11 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\mfobjects.h(3768,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\mfobjects.h(3775,5)
 using System;
 using System.Runtime.InteropServices;
 using MediaEventType = System.UInt32;
 
 namespace DirectN
 {
-    [Guid("df598932-f10c-4e39-bba2-c308f101daa3"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("df598932-f10c-4e39-bba2-c308f101daa3"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IMFMediaEvent : IMFAttributes
     {
         // IMFAttributes

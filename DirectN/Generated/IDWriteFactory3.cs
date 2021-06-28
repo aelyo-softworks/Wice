@@ -1,4 +1,4 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dwrite_3.h(357,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dwrite_3.h(357,1)
 using System;
 using System.Runtime.InteropServices;
 
@@ -7,7 +7,7 @@ namespace DirectN
     /// <summary>
     /// The root factory interface for all DWrite objects.
     /// </summary>
-    [Guid("9a1b41c3-d3bb-466a-87fc-fe67556a3b65"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("9a1b41c3-d3bb-466a-87fc-fe67556a3b65"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDWriteFactory3 : IDWriteFactory2
     {
         // IDWriteFactory

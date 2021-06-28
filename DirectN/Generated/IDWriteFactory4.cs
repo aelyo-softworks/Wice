@@ -1,10 +1,10 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\dwrite_3.h(1962,1)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\dwrite_3.h(1962,1)
 using System;
 using System.Runtime.InteropServices;
 
 namespace DirectN
 {
-    [Guid("4b0b5bd3-0797-4549-8ac5-fe915cc53856"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("4b0b5bd3-0797-4549-8ac5-fe915cc53856"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IDWriteFactory4 : IDWriteFactory3
     {
         // IDWriteFactory

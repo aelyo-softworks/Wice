@@ -1,11 +1,11 @@
-﻿// c:\program files (x86)\windows kits\10\include\10.0.18362.0\um\mfidl.h(5204,5)
+﻿// c:\program files (x86)\windows kits\10\include\10.0.19041.0\um\mfidl.h(5345,5)
 using System;
 using System.Runtime.InteropServices;
 using MFTIME = System.Int64;
 
 namespace DirectN
 {
-    [Guid("868ce85c-8ea9-4f55-ab82-b009a910a805"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("868ce85c-8ea9-4f55-ab82-b009a910a805"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public partial interface IMFPresentationClock : IMFClock
     {
         // IMFClock
