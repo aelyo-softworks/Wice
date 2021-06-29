@@ -874,5 +874,8 @@
     <Compile Include="..\DirectN\Utilities\WinRTUtilities.cs" Link="Utilities\WinRTUtilities.cs" />
     <Compile Include="..\DirectN\Utilities\IDispatcherQueue.cs" Link="Utilities\IDispatcherQueue.cs" />
     <Compile Include="..\DirectN\Utilities\IDispatcherQueueController.cs" Link="Utilities\IDispatcherQueueController.cs" />
+    <Compile Include="..\DirectN\Manual\IGraphicsEffectSourceWinRT.cs" Link="Manual\IGraphicsEffectSourceWinRT.cs" />
+    <Compile Include="..\DirectN\Manual\IGraphicsEffectWinRT.cs" Link="Manual\IGraphicsEffectWinRT.cs" />
+    <Compile Include="..\DirectN\Manual\IGeometrySource2DWinRT.cs" Link="Manual\IGeometrySource2DWinRT.cs" />
   </ItemGroup>
 </Project>

@@ -209,7 +209,8 @@ namespace Wice.Utilities
             if (surface == null)
                 return;
 
-            using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>((ICompositionDrawingSurfaceInterop)surface))
+            var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
+            using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop))
             {
                 using (var dc = surfaceInterop.BeginDraw())
                 {

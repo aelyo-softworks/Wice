@@ -24,9 +24,11 @@ namespace Wice
             {
                 StrokeThickness = Application.CurrentTheme.BorderSize / 2,
             };
+            
             border.Arranged += (s, e) =>
             {
-                path.GeometrySource2D = Application.Current.ResourceManager.GetCheckButtonGeometrySource(border.ArrangedRect.Width, border.ArrangedRect.Height);
+                var geoSource = Application.Current.ResourceManager.GetCheckButtonGeometrySource(border.ArrangedRect.Width, border.ArrangedRect.Height);
+                path.GeometrySource2D = geoSource.GetIGeometrySource2();
             };
 
             border.AttachedToComposition += (s, e) =>

@@ -40,7 +40,8 @@ namespace Wice
 
             var open = IsArrowOpen;
             var type = Dock.GetDockType(this);
-            Child.GeometrySource2D = Application.Current.ResourceManager.GetScrollBarButtonGeometrySource(type, size.width, ArrowRatio, open);
+            var geoSource = Application.Current.ResourceManager.GetScrollBarButtonGeometrySource(type, size.width, ArrowRatio, open);
+            Child.GeometrySource2D = geoSource.GetIGeometrySource2();
         }
 
         protected override void OnAttachedToComposition(object sender, EventArgs e)

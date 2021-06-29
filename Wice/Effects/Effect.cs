@@ -6,14 +6,20 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using DirectN;
 using Windows.Foundation;
-using Windows.Graphics.Effects;
+#if NET
+using IGraphicsEffectSource = DirectN.IGraphicsEffectSourceWinRT;
+using IGraphicsEffect = DirectN.IGraphicsEffectWinRT;
+#else
+using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
+using IGraphicsEffect = Windows.Graphics.Effects.IGraphicsEffect;
+#endif
 
 namespace Wice.Effects
 {
     public abstract class Effect : BaseObject, IGraphicsEffectSource, IGraphicsEffect, IGraphicsEffectD2D1Interop
     {
         private static readonly ConcurrentDictionary<Type, List<PropDef>> _properties = new ConcurrentDictionary<Type, List<PropDef>>();
-        private readonly List<IGraphicsEffectSource> _sources;
+        private readonly List<Windows.Graphics.Effects.IGraphicsEffectSource> _sources;
         private readonly Lazy<IPropertyValueStatics> _statics;
         private string _name;
 
@@ -23,7 +29,7 @@ namespace Wice.Effects
                 throw new ArgumentOutOfRangeException(nameof(sourcesCount));
 
             MaximumSourcesCount = sourcesCount;
-            _sources = new List<IGraphicsEffectSource>();
+            _sources = new List<Windows.Graphics.Effects.IGraphicsEffectSource>();
             _statics = new Lazy<IPropertyValueStatics>(() => WinRTUtilities.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue"));
         }
 
@@ -31,7 +37,67 @@ namespace Wice.Effects
         public override string Name { get => _name ?? string.Empty; set => _name = value; } // *must* not be null for IGraphicsEffectD2D1Interop
         public virtual bool Cached { get; set; }
         public virtual D2D1_BUFFER_PRECISION Precision { get; set; }
-        public IList<IGraphicsEffectSource> Sources => _sources;
+        public IList<Windows.Graphics.Effects.IGraphicsEffectSource> Sources => _sources;
+
+#if NET
+        HRESULT IInspectable.GetIids(out int iidCount, out IntPtr iids)
+        {
+            System.Diagnostics.Debug.Assert(false);
+            iidCount = 0;
+            iids = IntPtr.Zero;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IInspectable.GetRuntimeClassName([MarshalAs(UnmanagedType.HString)] out string className)
+        {
+            System.Diagnostics.Debug.Assert(false);
+            className = null;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IInspectable.GetTrustLevel(out TrustLevel trustLevel)
+        {
+            System.Diagnostics.Debug.Assert(false);
+            trustLevel = TrustLevel.FullTrust;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IGraphicsEffect.GetIids(out int iidCount, out IntPtr iids)
+        {
+            System.Diagnostics.Debug.Assert(false);
+            iidCount = 0;
+            iids = IntPtr.Zero;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IGraphicsEffect.GetRuntimeClassName([MarshalAs(UnmanagedType.HString)] out string className)
+        {
+            System.Diagnostics.Debug.Assert(false);
+            className = null;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IGraphicsEffect.GetTrustLevel(out TrustLevel trustLevel)
+        {
+            System.Diagnostics.Debug.Assert(false);
+            trustLevel = TrustLevel.FullTrust;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IGraphicsEffect.get_Name([MarshalAs(UnmanagedType.HString)] out string name)
+        {
+            name = Name;
+            return HRESULTS.S_OK;
+        }
+
+        [PreserveSig]
+        HRESULT IGraphicsEffect.put_Name([MarshalAs(UnmanagedType.HString)] string name)
+        {
+            Name = name;
+            return HRESULTS.S_OK;
+        }
+
+#endif
 
         public Guid Clsid
         {
@@ -45,7 +111,29 @@ namespace Wice.Effects
             }
         }
 
-        protected virtual IGraphicsEffectSource GetSource(int index)
+        public Windows.Graphics.Effects.IGraphicsEffectSource GetIGraphicsEffectSource()
+        {
+#if NET
+            var unk = Marshal.GetIUnknownForObject(this);
+            return WinRT.MarshalInspectable<Windows.Graphics.Effects.IGraphicsEffectSource>.FromAbi(unk);
+
+#else
+            return this;
+#endif
+        }
+
+        public Windows.Graphics.Effects.IGraphicsEffect GetIGraphicsEffect()
+        {
+#if NET
+            var unk = Marshal.GetIUnknownForObject(this);
+            return WinRT.MarshalInspectable<Windows.Graphics.Effects.IGraphicsEffect>.FromAbi(unk);
+
+#else
+            return this;
+#endif
+        }
+
+        protected virtual Windows.Graphics.Effects.IGraphicsEffectSource GetSource(int index)
         {
             if (index >= MaximumSourcesCount)
                 throw new ArgumentOutOfRangeException(nameof(index));
@@ -56,7 +144,7 @@ namespace Wice.Effects
             return _sources[index];
         }
 
-        protected virtual void SetSource(int index, IGraphicsEffectSource effect)
+        protected virtual void SetSource(int index, Windows.Graphics.Effects.IGraphicsEffectSource effect)
         {
             // effect can be null
             if (index >= MaximumSourcesCount)
@@ -265,11 +353,11 @@ namespace Wice.Effects
             }
         }
 
-        private delegate HRESULT GetIidsFn(IntPtr pThis, out int iidCount, out IntPtr iids);
-        private delegate HRESULT GetRuntimeClassNameFn(IntPtr pThis, [MarshalAs(UnmanagedType.HString)] out string className);
-        private delegate HRESULT GetSingleArrayFn(IntPtr pThis, out int __valueSize, out IntPtr value);
-
+#if NET
         HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource source)
+#else
+        HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource source)
+#endif
         {
             //Application.Trace(this + " index:" + index);
             if (index >= MaximumSourcesCount)
@@ -284,7 +372,12 @@ namespace Wice.Effects
             }
             else
             {
+#if NET
+                source = (IGraphicsEffectSource)_sources[(int)index];
+#else
                 source = _sources[(int)index];
+#endif
+
             }
             return HRESULTS.S_OK;
         }

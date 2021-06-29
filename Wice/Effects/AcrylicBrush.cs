@@ -28,15 +28,15 @@ namespace Wice.Effects
 
             var blendEffectInner = new BlendEffect();
             blendEffectInner.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_EXCLUSION;
-            blendEffectInner.Foreground = exclusionColorEffect;
-            blendEffectInner.Background = saturationEffect;
+            blendEffectInner.Foreground = exclusionColorEffect.GetIGraphicsEffectSource();
+            blendEffectInner.Background = saturationEffect.GetIGraphicsEffectSource();
 
             var compositeEffect = new CompositeStepEffect();
             compositeEffect.Mode = D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER;
-            compositeEffect.Destination = blendEffectInner;
+            compositeEffect.Destination = blendEffectInner.GetIGraphicsEffectSource();
             compositeEffect.Source = tintColorEffect;
 
-            return compositeEffect;
+            return compositeEffect.GetIGraphicsEffect();
         }
 
         private static IGraphicsEffect CombineNoiseWithTintEffectLuminosity(
@@ -59,15 +59,15 @@ namespace Wice.Effects
             //luminosityBlendEffect.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_LUMINOSITY;
             luminosityBlendEffect.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_COLOR;
             luminosityBlendEffect.Background = blurredSource;
-            luminosityBlendEffect.Foreground = luminosityColorEffect;
+            luminosityBlendEffect.Foreground = luminosityColorEffect.GetIGraphicsEffectSource();
 
             var colorBlendEffect = new BlendEffect();
             colorBlendEffect.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_LUMINOSITY;
             //colorBlendEffect.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_COLOR;
-            colorBlendEffect.Background = luminosityBlendEffect;
+            colorBlendEffect.Background = luminosityBlendEffect.GetIGraphicsEffectSource();
             colorBlendEffect.Foreground = tintColorEffect;
 
-            return colorBlendEffect;
+            return colorBlendEffect.GetIGraphicsEffect();
         }
 
         private static float GetTintOpacityModifier(_D3DCOLORVALUE tintColor)
@@ -293,7 +293,7 @@ namespace Wice.Effects
                 gaussianBlurEffect.BorderMode = D2D1_BORDER_MODE.D2D1_BORDER_MODE_HARD;
                 gaussianBlurEffect.StandardDeviation = _blurRadius;
                 gaussianBlurEffect.Source = backdropEffectSourceParameter;
-                blurredSource = gaussianBlurEffect;
+                blurredSource = gaussianBlurEffect.GetIGraphicsEffectSource();
             }
 
             if (!WinRTUtilities.Is19H1OrHigher)
@@ -302,8 +302,8 @@ namespace Wice.Effects
             }
 
             var tintOutput = useLegacyEffect ?
-                CombineNoiseWithTintEffectLegacy(blurredSource, tintColorEffect) :
-                CombineNoiseWithTintEffectLuminosity(blurredSource, tintColorEffect, initialLuminosityColor, animatedProperties);
+                CombineNoiseWithTintEffectLegacy(blurredSource, tintColorEffect.GetIGraphicsEffectSource()) :
+                CombineNoiseWithTintEffectLuminosity(blurredSource, tintColorEffect.GetIGraphicsEffectSource(), initialLuminosityColor, animatedProperties);
 
             // this is to make sure noise covers all surface
             var noiseBorderEffect = new BorderEffect();
@@ -314,14 +314,14 @@ namespace Wice.Effects
             var noiseOpacityEffect = new OpacityEffect();
             noiseOpacityEffect.Name = "NoiseOpacity";
             noiseOpacityEffect.Opacity = _noiseOpacity;
-            noiseOpacityEffect.Source = noiseBorderEffect;
+            noiseOpacityEffect.Source = noiseBorderEffect.GetIGraphicsEffectSource();
 
             var blendEffectOuter = new CompositeStepEffect();
             blendEffectOuter.Mode = D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER;
             blendEffectOuter.Destination = tintOutput;
-            blendEffectOuter.Source = noiseOpacityEffect;
+            blendEffectOuter.Source = noiseOpacityEffect.GetIGraphicsEffectSource();
 
-            return compositor.CreateEffectFactory(blendEffectOuter, animatedProperties);
+            return compositor.CreateEffectFactory(blendEffectOuter.GetIGraphicsEffect(), animatedProperties);
         }
     }
 }

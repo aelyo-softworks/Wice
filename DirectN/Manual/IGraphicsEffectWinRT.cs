@@ -4,9 +4,10 @@ using System.Runtime.InteropServices;
 namespace DirectN
 {
 #if NET
-    [ComImport, Guid("6329D6CA-3366-490E-9DB3-25312929AC51"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IDesktopWindowTarget : IInspectable
+    [ComImport, Guid("cb51c0ce-8fe6-4636-b202-861faa07d8f3"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface IGraphicsEffectWinRT : IInspectable
     {
+        // IInspectable
         [PreserveSig]
         new HRESULT GetIids(out int iidCount, out IntPtr iids);
 
@@ -15,12 +16,13 @@ namespace DirectN
 
         [PreserveSig]
         new HRESULT GetTrustLevel(out TrustLevel trustLevel);
-#else
-    [ComImport, Guid("6329D6CA-3366-490E-9DB3-25312929AC51"), InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
-    public interface IDesktopWindowTarget
-    {
-#endif
+
+        // IGraphicsEffect
         [PreserveSig]
-        HRESULT get_IsTopmost(out bool value);
+        HRESULT get_Name([MarshalAs(UnmanagedType.HString)] out string name);
+
+        [PreserveSig]
+        HRESULT put_Name([MarshalAs(UnmanagedType.HString)] string name);
     }
+#endif
 }

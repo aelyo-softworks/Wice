@@ -2,6 +2,9 @@
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using Windows.Foundation.Metadata;
+#if NET
+using WinRT;
+#endif
 
 namespace DirectN
 {
@@ -35,6 +38,30 @@ namespace DirectN
             available = ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", version);
             _apiContractAvailable[version] = available;
             return available;
+        }
+
+        public static T WinRTCast<T>(this object obj)
+        {
+            if (obj == null)
+                return default;
+#if NET
+
+            var unk = Marshal.GetIUnknownForObject(obj);
+            return MarshalInterface<T>.FromAbi(unk);
+#else
+            return (T)obj;
+#endif
+        }
+
+        public static T ComCast<T>(this object obj)
+        {
+            if (obj == null)
+                return default;
+#if NET
+            return obj.As<T>();
+#else
+            return (T)obj;
+#endif
         }
     }
 }

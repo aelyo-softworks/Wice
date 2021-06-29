@@ -4,10 +4,25 @@ using Windows.Foundation;
 
 namespace DirectN
 {
+#if NET
+    [ComImport, Guid("629BDBC8-D932-4FF4-96B9-8D96C5C1E858"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface IPropertyValueStatics : IInspectable
+    {
+        [PreserveSig]
+        new HRESULT GetIids(out int iidCount, out IntPtr iids);
+
+        [PreserveSig]
+        new HRESULT GetRuntimeClassName([MarshalAs(UnmanagedType.HString)] out string className);
+
+        [PreserveSig]
+        new HRESULT GetTrustLevel(out TrustLevel trustLevel);
+
+#else
     // note: we can't use IInspectable or IPropertyValue for return values here, as the CLR plays too many tricks with these
     [ComImport, Guid("629BDBC8-D932-4FF4-96B9-8D96C5C1E858"), InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
     public interface IPropertyValueStatics
     {
+#endif
         [PreserveSig]
         HRESULT CreateEmpty(out IntPtr propertyValue);
 

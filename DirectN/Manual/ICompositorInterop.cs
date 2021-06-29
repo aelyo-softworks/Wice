@@ -11,9 +11,14 @@ namespace DirectN
         HRESULT CreateCompositionSurfaceForHandle(IntPtr swapChain, out ICompositionSurface result);
 
         [PreserveSig]
-        HRESULT CreateCompositionSurfaceForSwapChain([MarshalAs(UnmanagedType.IUnknown)]object swapChain, out ICompositionSurface result);
+        HRESULT CreateCompositionSurfaceForSwapChain([MarshalAs(UnmanagedType.IUnknown)] object swapChain, out ICompositionSurface result);
 
+#if NET
+        [PreserveSig]
+        HRESULT CreateGraphicsDevice([MarshalAs(UnmanagedType.IUnknown)] object renderingDevice, [MarshalAs(UnmanagedType.IUnknown)] out object result);
+#else
         [PreserveSig]
         HRESULT CreateGraphicsDevice([MarshalAs(UnmanagedType.IUnknown)] object renderingDevice, out CompositionGraphicsDevice result);
+#endif
     }
 }

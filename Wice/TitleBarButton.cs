@@ -48,7 +48,8 @@ namespace Wice
             base.OnArranged(sender, e);
             var size = (Path.ArrangedRect - Path.Margin).Size;
             var geoSize = size.height;
-            Path.GeometrySource2D = Application.Current.ResourceManager.GetTitleBarButtonGeometrySource(ButtonType, geoSize);
+            var geoSource = Application.Current.ResourceManager.GetTitleBarButtonGeometrySource(ButtonType, geoSize);
+            Path.GeometrySource2D = geoSource.GetIGeometrySource2();
         }
 
         protected override void OnAttachedToComposition(object sender, EventArgs e)

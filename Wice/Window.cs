@@ -811,7 +811,8 @@ namespace Wice
                     }
 
                     var key = "ClipFrame" + rc.ToString() + "\0" + buttonsWidth + "\0" + buttonsHeight;
-                    var geo = Compositor.CreatePathGeometry(new CompositionPath(new GeometrySource2D(key) { Geometry = path.Object }));
+                    var geoSource = new GeometrySource2D(key) { Geometry = path.Object };
+                    var geo = Compositor.CreatePathGeometry(new CompositionPath(geoSource.GetIGeometrySource2()));
                     CompositionVisual.Clip = Compositor.CreateGeometricClip(geo);
                 }
             }
@@ -926,7 +927,8 @@ namespace Wice
             }
 
             var surface = window.CompositionDevice.CreateDrawingSurface(new Size(1, 1), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
-            using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>((ICompositionDrawingSurfaceInterop)surface))
+            var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
+            using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop))
             {
                 using (var dc = surfaceInterop.BeginDraw())
                 {
@@ -987,9 +989,10 @@ namespace Wice
 
         protected virtual CompositionGraphicsDevice CreateCompositionDevice()
         {
-            var interop = (ICompositorInterop)(object)CompositorController.Compositor;
+            var interop = CompositorController.Compositor.ComCast<ICompositorInterop>();
             var d2d1 = _d2D1Device.Value;
-            var hr = interop.CreateGraphicsDevice(d2d1.Object, out var dev);
+            var hr = interop.CreateGraphicsDevice(d2d1.Object, out var obj);
+            var dev = obj.WinRTCast<CompositionGraphicsDevice>();
             if (hr.Value < 0)
             {
                 try
@@ -1013,13 +1016,7 @@ namespace Wice
             var controller = new CompositorController();
             controller.CommitNeeded += OnCompositorControllerCommitNeeded;
 
-#if NET
-            //var interop = ((object)controller.Compositor).As<ICompositorDesktopInterop>();
-            var interop = controller.Compositor.As<ICompositorDesktopInterop>();
-#else
-            var interop = (ICompositorDesktopInterop)(object)controller.Compositor;
-#endif
-
+            var interop = controller.Compositor.ComCast<ICompositorDesktopInterop>();
             interop.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
             _compositionTarget = new ComObject<ICompositionTarget>((ICompositionTarget)target);
             CompositionVisual = CreateWindowVisual(controller.Compositor);
