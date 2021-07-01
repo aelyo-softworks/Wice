@@ -1,6 +1,6 @@
 # Wice
 
-![Wice](assets\wice_color.svg)
+![Wice](Assets/wice_color.svg)
 
 Windows Interface Composition Engine ("Wice") is a .NET UI engine for creating Windows application.
 
