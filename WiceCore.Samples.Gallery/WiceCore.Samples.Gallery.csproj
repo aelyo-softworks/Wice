@@ -8,6 +8,9 @@
     <ApplicationIcon>..\Assets\wice_color.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="README.md" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\Wice.Samples.Gallery\app.manifest" Link="app.manifest" />
     <Compile Include="..\Wice.Samples.Gallery\GalleryWindow.cs" Link="GalleryWindow.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Program.cs" Link="Program.cs" />

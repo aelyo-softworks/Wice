@@ -7,6 +7,9 @@
     <ApplicationManifest>..\Wice.Tests\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="README.md" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />
     <ProjectReference Include="..\WiceCore\WiceCore.csproj" />
   </ItemGroup>

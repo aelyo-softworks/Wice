@@ -52,7 +52,7 @@ namespace Wice.Samples.Gallery
                 using (var dw = new Application())
                 {
                     var win = new GalleryWindow();
-                    win.ResizeClient(400, 900);
+                    //win.ResizeClient(400, 900);
                     win.Center();
                     win.Show();
                     dw.Run();

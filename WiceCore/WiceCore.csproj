@@ -5,6 +5,9 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="README.md" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\Wice\AccessKey.cs" Link="AccessKey.cs" />
     <Compile Include="..\Wice\Alignment.cs" Link="Alignment.cs" />
     <Compile Include="..\Wice\Application.cs" Link="Application.cs" />

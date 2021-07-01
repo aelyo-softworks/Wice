@@ -1075,7 +1075,8 @@ namespace Wice
 
             var fs = FrameSize;
             var surface = CompositionDevice.CreateDrawingSurface(cs.ToSize(), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
-            using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>((ICompositionDrawingSurfaceInterop)surface))
+            var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
+            using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop))
             {
                 using (var dc = surfaceInterop.BeginDraw())
                 {
