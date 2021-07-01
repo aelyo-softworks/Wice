@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 namespace DirectN
 {
 #if NET
-    [ComImport, Guid("CAFF7902-670C-4181-A624-DA977203B845"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IGeometrySource2DWinRT : IInspectable
+    [ComImport, Guid("2d8f9ddc-4339-4eb9-9216-f9deb75658a2"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    public interface ICompositionEffectSourceParameterWinRT : IInspectable
     {
         // IInspectable
         [PreserveSig]
@@ -16,6 +16,10 @@ namespace DirectN
 
         [PreserveSig]
         new HRESULT GetTrustLevel(out TrustLevel trustLevel);
+
+        // ICompositionEffectSourceParameter
+        [PreserveSig]
+        HRESULT get_Name([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] out string name);
     }
 #endif
 }

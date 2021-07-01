@@ -23,24 +23,40 @@ namespace Wice.Utilities
         public ID2D1Geometry Geometry { get; set; }
 
 #if NET
-        HRESULT IInspectable.GetIids(out int iidCount, out IntPtr iids)
+        HRESULT IGeometrySource2D.GetIids(out int iidCount, out IntPtr iids)
         {
-            System.Diagnostics.Debug.Assert(false);
             iidCount = 0;
             iids = IntPtr.Zero;
             return HRESULTS.S_OK;
         }
 
-        HRESULT IInspectable.GetRuntimeClassName([MarshalAs(UnmanagedType.HString)] out string className)
+        HRESULT IGeometrySource2D.GetRuntimeClassName(out string className)
         {
-            System.Diagnostics.Debug.Assert(false);
+            className = null;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IGeometrySource2D.GetTrustLevel(out TrustLevel trustLevel)
+        {
+            trustLevel = TrustLevel.FullTrust;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IInspectable.GetIids(out int iidCount, out IntPtr iids)
+        {
+            iidCount = 0;
+            iids = IntPtr.Zero;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IInspectable.GetRuntimeClassName(out string className)
+        {
             className = null;
             return HRESULTS.S_OK;
         }
 
         HRESULT IInspectable.GetTrustLevel(out TrustLevel trustLevel)
         {
-            System.Diagnostics.Debug.Assert(false);
             trustLevel = TrustLevel.FullTrust;
             return HRESULTS.S_OK;
         }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WiceCore.Tests": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

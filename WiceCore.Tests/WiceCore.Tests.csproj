@@ -4,7 +4,7 @@
     <TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <ApplicationManifest>D:\Aelyo\Github\Wice\Wice.Tests\app.manifest</ApplicationManifest>
+    <ApplicationManifest>..\Wice.Tests\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

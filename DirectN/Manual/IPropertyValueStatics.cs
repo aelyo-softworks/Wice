@@ -8,17 +8,18 @@ namespace DirectN
     [ComImport, Guid("629BDBC8-D932-4FF4-96B9-8D96C5C1E858"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IPropertyValueStatics : IInspectable
     {
+        // IInspectable
         [PreserveSig]
         new HRESULT GetIids(out int iidCount, out IntPtr iids);
 
         [PreserveSig]
-        new HRESULT GetRuntimeClassName([MarshalAs(UnmanagedType.HString)] out string className);
+        new HRESULT GetRuntimeClassName([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] out string className);
 
         [PreserveSig]
         new HRESULT GetTrustLevel(out TrustLevel trustLevel);
 
 #else
-    // note: we can't use IInspectable or IPropertyValue for return values here, as the CLR plays too many tricks with these
+    // note: we can't use IInspectable or IPropertyValue for return values here, as the .NET Framework plays too many tricks with these
     [ComImport, Guid("629BDBC8-D932-4FF4-96B9-8D96C5C1E858"), InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
     public interface IPropertyValueStatics
     {
@@ -60,10 +61,10 @@ namespace DirectN
         HRESULT CreateBoolean(bool value, out IntPtr propertyValue);
 
         [PreserveSig]
-        HRESULT CreateString([MarshalAs(UnmanagedType.HString)] string value, out IntPtr propertyValue);
+        HRESULT CreateString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] string value, out IntPtr propertyValue);
 
         [PreserveSig]
-        HRESULT CreateInspectable([MarshalAs(UnmanagedType.IInspectable)] object value, out IntPtr propertyValue);
+        HRESULT CreateInspectable([MarshalAs(UnmanagedType.IUnknown)] object value, out IntPtr propertyValue);
 
         [PreserveSig]
         HRESULT CreateGuid(Guid value, out IntPtr propertyValue);
@@ -84,7 +85,7 @@ namespace DirectN
         HRESULT CreateRect(Rect value, out IntPtr propertyValue);
 
         [PreserveSig]
-        HRESULT CreateUInt8Array(int valueSize, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)]byte[] value, out IntPtr propertyValue);
+        HRESULT CreateUInt8Array(int valueSize, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] byte[] value, out IntPtr propertyValue);
 
         [PreserveSig]
         HRESULT CreateInt16Array(int valueSize, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] short[] value, out IntPtr propertyValue);
@@ -117,10 +118,12 @@ namespace DirectN
         HRESULT CreateBooleanArray(int valueSize, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] bool[] value, out IntPtr propertyValue);
 
         [PreserveSig]
-        HRESULT CreateStringArray(int valueSize, [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.HString, SizeParamIndex = 0)] string[] value, out IntPtr propertyValue);
+        // .NET Framework is ok with this, but .NET 5+ isn't
+        // but we currently don't need it so we just let value as an IntPtr
+        HRESULT CreateStringArray(int valueSize, IntPtr value, /* [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.HString, SizeParamIndex = 0)] string[] value,*/ out IntPtr propertyValue);
 
         [PreserveSig]
-        HRESULT CreateInspectableArray(int valueSize, [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.IInspectable, SizeParamIndex = 0)] object[] value, out IntPtr propertyValue);
+        HRESULT CreateInspectableArray(int valueSize, [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.IUnknown, SizeParamIndex = 0)] object[] value, out IntPtr propertyValue);
 
         [PreserveSig]
         HRESULT CreateGuidArray(int valueSize, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] Guid[] value, out IntPtr propertyValue);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using DirectN;
 
@@ -13,7 +14,23 @@ namespace Wice.Resources
 
             assembly = assembly ?? Assembly.GetCallingAssembly();
             var stream = assembly.GetManifestResourceStream(name);
+            if (stream == null)
+                return null;
+
             return WICFunctions.LoadBitmapSource(stream, metadataOptions);
+        }
+
+        public static ComObject<IWICBitmapSource> GetWicBitmapSource(Assembly assembly, Func<string, bool> predicate, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
+        {
+            if (predicate == null)
+                throw new ArgumentNullException(nameof(predicate));
+
+            assembly = assembly ?? Assembly.GetCallingAssembly();
+            var name = assembly.GetManifestResourceNames().FirstOrDefault(predicate);
+            if (name == null)
+                return null;
+
+            return GetWicBitmapSource(assembly, name, metadataOptions);
         }
     }
 }

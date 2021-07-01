@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using DirectN;
-using Windows.Graphics.Effects;
+#if NET
+using IGraphicsEffectSource = DirectN.IGraphicsEffectSourceWinRT;
+#else
+using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
+#endif
 
 namespace Wice.Effects
 {

@@ -1,5 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+#if NET
+using IGraphicsEffectSource = DirectN.IGraphicsEffectSourceWinRT;
+#else
+using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
+#endif
 
 namespace DirectN
 {
@@ -20,11 +25,7 @@ namespace DirectN
         HRESULT GetProperty(uint index, out IntPtr value);
 
         [PreserveSig]
-#if NET
-        HRESULT GetSource(uint index, out IGraphicsEffectSourceWinRT source);
-#else
-        HRESULT GetSource(uint index, out Windows.Graphics.Effects.IGraphicsEffectSource source);
-#endif
+        HRESULT GetSource(uint index, out IGraphicsEffectSource source);
 
         [PreserveSig]
         HRESULT GetSourceCount(out uint count);

@@ -10,7 +10,7 @@ namespace DirectN
         HRESULT GetIids(out int iidCount, out IntPtr iids);
 
         [PreserveSig]
-        HRESULT GetRuntimeClassName([MarshalAs(UnmanagedType.HString)] out string className);
+        HRESULT GetRuntimeClassName([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] out string className);
 
         [PreserveSig]
         HRESULT GetTrustLevel(out TrustLevel trustLevel);

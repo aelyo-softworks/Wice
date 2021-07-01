@@ -12,17 +12,17 @@ namespace DirectN
         new HRESULT GetIids(out int iidCount, out IntPtr iids);
 
         [PreserveSig]
-        new HRESULT GetRuntimeClassName([MarshalAs(UnmanagedType.HString)] out string className);
+        new HRESULT GetRuntimeClassName([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] out string className);
 
         [PreserveSig]
         new HRESULT GetTrustLevel(out TrustLevel trustLevel);
 
         // IGraphicsEffect
         [PreserveSig]
-        HRESULT get_Name([MarshalAs(UnmanagedType.HString)] out string name);
+        HRESULT get_Name([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] out string name);
 
         [PreserveSig]
-        HRESULT put_Name([MarshalAs(UnmanagedType.HString)] string name);
+        HRESULT put_Name([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] string name);
     }
 #endif
 }

@@ -877,5 +877,7 @@
     <Compile Include="..\DirectN\Manual\IGraphicsEffectSourceWinRT.cs" Link="Manual\IGraphicsEffectSourceWinRT.cs" />
     <Compile Include="..\DirectN\Manual\IGraphicsEffectWinRT.cs" Link="Manual\IGraphicsEffectWinRT.cs" />
     <Compile Include="..\DirectN\Manual\IGeometrySource2DWinRT.cs" Link="Manual\IGeometrySource2DWinRT.cs" />
+    <Compile Include="..\DirectN\Manual\ICompositionEffectSourceParameter.cs" Link="Manual\ICompositionEffectSourceParameter.cs" />
+    <Compile Include="..\DirectN\Utilities\HStringMarshaler.cs" Link="Utilities\HStringMarshaler.cs" />
   </ItemGroup>
 </Project>

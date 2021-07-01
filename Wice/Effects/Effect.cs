@@ -16,10 +16,14 @@ using IGraphicsEffect = Windows.Graphics.Effects.IGraphicsEffect;
 
 namespace Wice.Effects
 {
-    public abstract class Effect : BaseObject, IGraphicsEffectSource, IGraphicsEffect, IGraphicsEffectD2D1Interop
+    // if you find this code is an absolute mess (because of combined .NET Framework & .NET 5+ support), you're 100% right and you should talk to Microsoft because they broke everything
+    // https://github.com/microsoft/CsWinRT/issues/302
+    // https://github.com/microsoft/CsWinRT/issues/799
+    // etc.
+    public abstract class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1Interop, IGraphicsEffectSource
     {
         private static readonly ConcurrentDictionary<Type, List<PropDef>> _properties = new ConcurrentDictionary<Type, List<PropDef>>();
-        private readonly List<Windows.Graphics.Effects.IGraphicsEffectSource> _sources;
+        private readonly List<IGraphicsEffectSource> _sources;
         private readonly Lazy<IPropertyValueStatics> _statics;
         private string _name;
 
@@ -29,7 +33,7 @@ namespace Wice.Effects
                 throw new ArgumentOutOfRangeException(nameof(sourcesCount));
 
             MaximumSourcesCount = sourcesCount;
-            _sources = new List<Windows.Graphics.Effects.IGraphicsEffectSource>();
+            _sources = new List<IGraphicsEffectSource>();
             _statics = new Lazy<IPropertyValueStatics>(() => WinRTUtilities.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue"));
         }
 
@@ -37,61 +41,73 @@ namespace Wice.Effects
         public override string Name { get => _name ?? string.Empty; set => _name = value; } // *must* not be null for IGraphicsEffectD2D1Interop
         public virtual bool Cached { get; set; }
         public virtual D2D1_BUFFER_PRECISION Precision { get; set; }
-        public IList<Windows.Graphics.Effects.IGraphicsEffectSource> Sources => _sources;
+        public IList<IGraphicsEffectSource> Sources => _sources;
 
 #if NET
         HRESULT IInspectable.GetIids(out int iidCount, out IntPtr iids)
         {
-            System.Diagnostics.Debug.Assert(false);
             iidCount = 0;
             iids = IntPtr.Zero;
             return HRESULTS.S_OK;
         }
 
-        HRESULT IInspectable.GetRuntimeClassName([MarshalAs(UnmanagedType.HString)] out string className)
+        HRESULT IInspectable.GetRuntimeClassName(out string className)
         {
-            System.Diagnostics.Debug.Assert(false);
             className = null;
             return HRESULTS.S_OK;
         }
 
         HRESULT IInspectable.GetTrustLevel(out TrustLevel trustLevel)
         {
-            System.Diagnostics.Debug.Assert(false);
+            trustLevel = TrustLevel.FullTrust;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IGraphicsEffectSource.GetIids(out int iidCount, out IntPtr iids)
+        {
+            iidCount = 0;
+            iids = IntPtr.Zero;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IGraphicsEffectSource.GetRuntimeClassName(out string className)
+        {
+            className = null;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IGraphicsEffectSource.GetTrustLevel(out TrustLevel trustLevel)
+        {
             trustLevel = TrustLevel.FullTrust;
             return HRESULTS.S_OK;
         }
 
         HRESULT IGraphicsEffect.GetIids(out int iidCount, out IntPtr iids)
         {
-            System.Diagnostics.Debug.Assert(false);
             iidCount = 0;
             iids = IntPtr.Zero;
             return HRESULTS.S_OK;
         }
 
-        HRESULT IGraphicsEffect.GetRuntimeClassName([MarshalAs(UnmanagedType.HString)] out string className)
+        HRESULT IGraphicsEffect.GetRuntimeClassName(out string className)
         {
-            System.Diagnostics.Debug.Assert(false);
             className = null;
             return HRESULTS.S_OK;
         }
 
         HRESULT IGraphicsEffect.GetTrustLevel(out TrustLevel trustLevel)
         {
-            System.Diagnostics.Debug.Assert(false);
             trustLevel = TrustLevel.FullTrust;
             return HRESULTS.S_OK;
         }
 
-        HRESULT IGraphicsEffect.get_Name([MarshalAs(UnmanagedType.HString)] out string name)
+        HRESULT IGraphicsEffect.get_Name(out string name)
         {
             name = Name;
             return HRESULTS.S_OK;
         }
 
-        [PreserveSig]
-        HRESULT IGraphicsEffect.put_Name([MarshalAs(UnmanagedType.HString)] string name)
+        HRESULT IGraphicsEffect.put_Name(string name)
         {
             Name = name;
             return HRESULTS.S_OK;
@@ -111,17 +127,6 @@ namespace Wice.Effects
             }
         }
 
-        public Windows.Graphics.Effects.IGraphicsEffectSource GetIGraphicsEffectSource()
-        {
-#if NET
-            var unk = Marshal.GetIUnknownForObject(this);
-            return WinRT.MarshalInspectable<Windows.Graphics.Effects.IGraphicsEffectSource>.FromAbi(unk);
-
-#else
-            return this;
-#endif
-        }
-
         public Windows.Graphics.Effects.IGraphicsEffect GetIGraphicsEffect()
         {
 #if NET
@@ -133,7 +138,7 @@ namespace Wice.Effects
 #endif
         }
 
-        protected virtual Windows.Graphics.Effects.IGraphicsEffectSource GetSource(int index)
+        protected virtual IGraphicsEffectSource GetSource(int index)
         {
             if (index >= MaximumSourcesCount)
                 throw new ArgumentOutOfRangeException(nameof(index));
@@ -144,7 +149,7 @@ namespace Wice.Effects
             return _sources[index];
         }
 
-        protected virtual void SetSource(int index, Windows.Graphics.Effects.IGraphicsEffectSource effect)
+        protected virtual void SetSource(int index, IGraphicsEffectSource effect)
         {
             // effect can be null
             if (index >= MaximumSourcesCount)
@@ -353,32 +358,16 @@ namespace Wice.Effects
             }
         }
 
-#if NET
         HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource source)
-#else
-        HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource source)
-#endif
         {
             //Application.Trace(this + " index:" + index);
-            if (index >= MaximumSourcesCount)
+            if (index >= MaximumSourcesCount || index >= _sources.Count)
             {
                 source = null;
                 return HRESULTS.E_BOUNDS;
             }
 
-            if (index >= _sources.Count)
-            {
-                source = null;
-            }
-            else
-            {
-#if NET
-                source = (IGraphicsEffectSource)_sources[(int)index];
-#else
-                source = _sources[(int)index];
-#endif
-
-            }
+            source = _sources[(int)index];
             return HRESULTS.S_OK;
         }
 
