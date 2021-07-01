@@ -7,15 +7,6 @@ namespace DirectN
     [ComImport, Guid("CAFF7902-670C-4181-A624-DA977203B845"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IGeometrySource2DWinRT : IInspectable
     {
-        // IInspectable
-        [PreserveSig]
-        new HRESULT GetIids(out int iidCount, out IntPtr iids);
-
-        [PreserveSig]
-        new HRESULT GetRuntimeClassName([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] out string className);
-
-        [PreserveSig]
-        new HRESULT GetTrustLevel(out TrustLevel trustLevel);
     }
 #endif
 }

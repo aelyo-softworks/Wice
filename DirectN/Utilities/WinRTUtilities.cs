@@ -14,11 +14,7 @@ namespace DirectN
 
         [DllImport("combase")]
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
-#if NET
         private static extern HRESULT RoGetActivationFactory([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] string activatableClassId, [MarshalAs(UnmanagedType.LPStruct)] Guid iid, [MarshalAs(UnmanagedType.IUnknown)] out object factory);
-#else
-        private static extern HRESULT RoGetActivationFactory([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] string activatableClassId, [MarshalAs(UnmanagedType.LPStruct)] Guid iid, [MarshalAs(UnmanagedType.IUnknown)] out object factory);
-#endif
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
 
         public static T GetActivationFactory<T>(string activatableClassId, bool throwOnError = true) => (T)GetActivationFactory(activatableClassId, typeof(T).GUID, throwOnError);

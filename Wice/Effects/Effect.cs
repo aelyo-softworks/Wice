@@ -63,25 +63,6 @@ namespace Wice.Effects
             return HRESULTS.S_OK;
         }
 
-        HRESULT IGraphicsEffectSource.GetIids(out int iidCount, out IntPtr iids)
-        {
-            iidCount = 0;
-            iids = IntPtr.Zero;
-            return HRESULTS.S_OK;
-        }
-
-        HRESULT IGraphicsEffectSource.GetRuntimeClassName(out string className)
-        {
-            className = null;
-            return HRESULTS.S_OK;
-        }
-
-        HRESULT IGraphicsEffectSource.GetTrustLevel(out TrustLevel trustLevel)
-        {
-            trustLevel = TrustLevel.FullTrust;
-            return HRESULTS.S_OK;
-        }
-
         HRESULT IGraphicsEffect.GetIids(out int iidCount, out IntPtr iids)
         {
             iidCount = 0;

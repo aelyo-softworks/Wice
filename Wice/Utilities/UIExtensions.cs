@@ -268,14 +268,13 @@ namespace Wice.Utilities
 #if NET
                 if (OperatingSystem.IsWindows() && OperatingSystem.IsWindowsVersionAtLeast(10, 0, 18362))
 #else
-                if (Windows.Foundation.Metadata.ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+                if (WinRTUtilities.IsApiContractAvailable(8))
 #endif
                 {
                     brush.SnapToPixels = options.SnapToPixels;
                 }
 
-
-                    visual.Brush = brush;
+                visual.Brush = brush;
             }
             else
             {
