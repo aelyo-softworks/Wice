@@ -1,8 +1,8 @@
-Windows Interface Composition Engine ("Wice") is dual-licensed under commercial and open source licenses.
+The Windows Interface Composition Engine ("Wice" or "WiceCore") project (under the Wice and WiceCore directories) is dual-licensed under commercial and open source license.
 
-The commercial Wice gives you the full rights to create and distribute software on your own terms without any open source license obligations.
+The commercial Wice license gives you the full rights to create and distribute software on your own terms without any open source license obligations.
 With the commercial license you also have access to the official Wice Support and close strategic relationship with Aelyo Softworks to make sure your development goals are met.
 Contact us for  commercial license details and quotes.
 
-Wice is also available under LGPLv3 open source license
+The Wice project is also available under LGPLv3 open source license
 The Wice open source licensing is ideal for use cases such as open source projects with open source distribution, student/academic purposes, hobby projects, internal research projects without external distribution, or other projects where all LGPL obligations can be met.

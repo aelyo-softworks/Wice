@@ -6,7 +6,7 @@ using DirectN;
 
 namespace Wice.DevTools
 {
-    // trying to use MsBuild programmatically is now total hell
+    // trying to use MsBuild programmatically is now like hell on earth
     // so we do this ourselves (we don't need super powerful stuff anyway)
     public class MsBuildProject
     {
@@ -49,6 +49,8 @@ namespace Wice.DevTools
         public XmlDocument Document { get; }
         public MsBuildProjectType ProjectType { get; }
         public XmlElement Project { get; }
+
+        public override string ToString() => ProjectFilePath;
 
         public void RemoveInclude(string filePath)
         {

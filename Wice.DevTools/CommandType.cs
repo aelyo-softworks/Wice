@@ -7,5 +7,6 @@
         UpdateDirectNCore,
         UpdateWiceCore,
         UpdateWiceCoreTests,
+        UpdateWiceCoreSamplesGallery,
     }
 }

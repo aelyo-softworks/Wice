@@ -73,6 +73,10 @@ namespace Wice.DevTools
                     UpdateWiceCoreTests();
                     break;
 
+                case CommandType.UpdateWiceCoreSamplesGallery:
+                    UpdateWiceCoreSamplesGallery();
+                    break;
+
                 default:
                     throw new NotSupportedException();
             }
@@ -97,27 +101,34 @@ namespace Wice.DevTools
         {
             var source = new CSharpProject(@"..\..\..\Wice\Wice.csproj");
             var target = new CSharpProject(@"..\..\..\WiceCore\WiceCore.csproj");
-            UpdateCoreProject(source, target, @"..\Wice\");
+            UpdateCoreProject(source, target, @"..\Wice\", false);
         }
 
         static void UpdateDirectNCore()
         {
             var source = new CSharpProject(@"..\..\..\DirectN\DirectN.csproj");
             var target = new CSharpProject(@"..\..\..\DirectNCore\DirectNCore.csproj");
-            UpdateCoreProject(source, target, @"..\DirectN\");
+            UpdateCoreProject(source, target, @"..\DirectN\", true); // netstandard => implicit
         }
 
         static void UpdateWiceCoreTests()
         {
             var source = new CSharpProject(@"..\..\..\Wice.Tests\Wice.Tests.csproj");
             var target = new CSharpProject(@"..\..\..\WiceCore.Tests\WiceCore.Tests.csproj");
-            UpdateCoreProject(source, target, @"..\Wice.Tests\");
+            UpdateCoreProject(source, target, @"..\Wice.Tests\", false);
+        }
+
+        static void UpdateWiceCoreSamplesGallery()
+        {
+            var source = new CSharpProject(@"..\..\..\Wice.Samples.Gallery\Wice.Samples.Gallery.csproj");
+            var target = new CSharpProject(@"..\..\..\WiceCore.Samples.Gallery\WiceCore.Samples.Gallery.csproj");
+            UpdateCoreProject(source, target, @"..\Wice.Samples.Gallery\", false);
         }
 
         static bool AddFile(string path)
         {
             var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
-            return ext == ".cs" || ext == ".resx" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".manifest";
+            return ext == ".cs" || ext == ".resx" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".ico" || ext == ".manifest";
         }
 
         static string GetAction(string path)
@@ -134,6 +145,9 @@ namespace Wice.DevTools
                 case ".jpeg":
                     return "EmbeddedResource";
 
+                case ".ico":
+                    return "Content";
+
                 case ".manifest":
                     return "None";
 
@@ -142,11 +156,11 @@ namespace Wice.DevTools
             }
         }
 
-        static void UpdateCoreProject(CSharpProject source, CSharpProject target, string relativePath)
+        static void UpdateCoreProject(CSharpProject source, CSharpProject target, string relativePath, bool useImplicits)
         {
             var implicits = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var file in source.ImplicitIncludedFilePaths)
+            foreach (var file in useImplicits ? source.ImplicitIncludedFilePaths : source.IncludedFilePaths)
             {
                 if (AddFile(file))
                 {
@@ -186,7 +200,14 @@ namespace Wice.DevTools
                 compileItemGroup.AppendChild(element);
 
                 element.SetAttribute("Include", imp);
-                element.SetAttribute("Link", imp.Substring(relativePath.Length));
+
+                var link = imp.Substring(relativePath.Length);
+                while (link.StartsWith(@"..\"))
+                {
+                    link = string.Join(@"\", link.Split('\\').Skip(2));
+                }
+
+                element.SetAttribute("Link", link);
                 existings.Remove(imp);
                 Console.WriteLine("Adding node: " + element.OuterXml);
             }
@@ -209,10 +230,11 @@ namespace Wice.DevTools
             Console.WriteLine("    This tool is used to run a specific Wice Development command.");
             Console.WriteLine();
             Console.WriteLine("Commands:");
-            Console.WriteLine("    UpdateDirectN <path>     Update the Wice DirectN project from the public github DirectN project.");
-            Console.WriteLine("    UpdateDirectNCore        Update the DirectNCore project from the DirectN project.");
-            Console.WriteLine("    UpdateWiceCore           Update the WiceCore project from the Wice project.");
-            Console.WriteLine("    UpdateWiceCoreTests      Update the WiceCore.Tests project from the Wice.Tests project.");
+            Console.WriteLine("    UpdateDirectN <path>       Update the Wice DirectN project from the public github DirectN project.");
+            Console.WriteLine("    UpdateDirectNCore          Update the DirectNCore project from the DirectN project.");
+            Console.WriteLine("    UpdateWiceCore             Update the WiceCore project from the Wice project.");
+            Console.WriteLine("    UpdateWiceCoreTests        Update the WiceCore.Tests project from the Wice.Tests project.");
+            Console.WriteLine("    UpdateWiceSamplesGallery   Update the WiceCore.Samples.Gallery project from the Wice.Samples.Gallery project.");
             Console.WriteLine();
         }
     }

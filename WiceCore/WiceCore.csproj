@@ -307,6 +307,7 @@
     <Compile Include="..\Wice\Utilities\ZeroDepJson.cs" Link="Utilities\ZeroDepJson.cs" />
     <EmbeddedResource Include="..\Wice\Utilities\VisualsTree.resx" Link="Utilities\VisualsTree.resx" />
     <EmbeddedResource Include="..\Wice\Resources\NoiseAsset_256X256.png" Link="Resources\NoiseAsset_256X256.png" />
+    <Compile Include="..\Wice\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

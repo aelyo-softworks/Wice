@@ -4,15 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{03E6C1C8-3567-41F1-9208-C6D5EFA61B5C}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>Wice.DevTools</RootNamespace>
-    <AssemblyName>Wice.DevTools</AssemblyName>
+    <ProjectGuid>{40474E94-07D8-42C1-8BAD-2366A0B635D1}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Wice.Samples.Gallery</RootNamespace>
+    <AssemblyName>Wice.Samples.Gallery</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,17 +34,22 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>..\Assets\wice_color.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandType.cs" />
-    <Compile Include="CSharpProject.cs" />
-    <Compile Include="MsBuildProject.cs" />
-    <Compile Include="MsBuildProjectType.cs" />
+    <Compile Include="..\Wice\Properties\AssemblyVersionInfo.cs">
+      <Link>Properties\AssemblyVersionInfo.cs</Link>
+    </Compile>
+    <Compile Include="GalleryWindow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -58,6 +62,19 @@
       <Project>{ef67ab82-0abc-4054-aada-293600d276d6}</Project>
       <Name>Wice</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts">
+      <Version>10.0.19041.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Assets\wice_color.ico">
+      <Link>wice_color.ico</Link>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.manifest" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

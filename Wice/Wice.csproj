@@ -95,6 +95,7 @@
     <Compile Include="IDataSourceVisual.cs" />
     <Compile Include="InvalidateReason.cs" />
     <Compile Include="CollectionChangedInvalidateReason.cs" />
+    <Compile Include="Properties\AssemblyVersionInfo.cs" />
     <Compile Include="PropertyGrid\DefaultEditorCreator.cs" />
     <Compile Include="PropertyGrid\BooleanEditorCreator.cs" />
     <Compile Include="PropertyGrid\EnumEditorCreator.cs" />

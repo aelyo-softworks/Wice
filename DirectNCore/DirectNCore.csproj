@@ -5,8 +5,10 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\DirectN\ILogger.cs" Link="ILogger.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="..\DirectN\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
+    <Compile Include="..\DirectN\ILogger.cs" Link="ILogger.cs" />
     <Compile Include="..\DirectN\Generated\Constants.cs" Link="Generated\Constants.cs" />
     <Compile Include="..\DirectN\Generated\D2D1_2DAFFINETRANSFORM_INTERPOLATION_MODE.cs" Link="Generated\D2D1_2DAFFINETRANSFORM_INTERPOLATION_MODE.cs" />
     <Compile Include="..\DirectN\Generated\D2D1_3DPERSPECTIVETRANSFORM_INTERPOLATION_MODE.cs" Link="Generated\D2D1_3DPERSPECTIVETRANSFORM_INTERPOLATION_MODE.cs" />
@@ -698,6 +700,7 @@
     <Compile Include="..\DirectN\Manual\IClassFactory.cs" Link="Manual\IClassFactory.cs" />
     <Compile Include="..\DirectN\Manual\ICompositionCapabilitiesInteropFactory.cs" Link="Manual\ICompositionCapabilitiesInteropFactory.cs" />
     <Compile Include="..\DirectN\Manual\ICompositionDrawingSurfaceInterop.cs" Link="Manual\ICompositionDrawingSurfaceInterop.cs" />
+    <Compile Include="..\DirectN\Manual\ICompositionEffectSourceParameter.cs" Link="Manual\ICompositionEffectSourceParameter.cs" />
     <Compile Include="..\DirectN\Manual\ICompositionGraphicsDeviceInterop.cs" Link="Manual\ICompositionGraphicsDeviceInterop.cs" />
     <Compile Include="..\DirectN\Manual\ICompositionTarget.cs" Link="Manual\ICompositionTarget.cs" />
     <Compile Include="..\DirectN\Manual\ICompositorDesktopInterop.cs" Link="Manual\ICompositorDesktopInterop.cs" />
@@ -708,7 +711,10 @@
     <Compile Include="..\DirectN\Manual\IEnumUnknown.cs" Link="Manual\IEnumUnknown.cs" />
     <Compile Include="..\DirectN\Manual\IErrorLog.cs" Link="Manual\IErrorLog.cs" />
     <Compile Include="..\DirectN\Manual\IGeometrySource2DInterop.cs" Link="Manual\IGeometrySource2DInterop.cs" />
+    <Compile Include="..\DirectN\Manual\IGeometrySource2DWinRT.cs" Link="Manual\IGeometrySource2DWinRT.cs" />
     <Compile Include="..\DirectN\Manual\IGraphicsEffectD2D1Interop.cs" Link="Manual\IGraphicsEffectD2D1Interop.cs" />
+    <Compile Include="..\DirectN\Manual\IGraphicsEffectSourceWinRT.cs" Link="Manual\IGraphicsEffectSourceWinRT.cs" />
+    <Compile Include="..\DirectN\Manual\IGraphicsEffectWinRT.cs" Link="Manual\IGraphicsEffectWinRT.cs" />
     <Compile Include="..\DirectN\Manual\IInspectable.cs" Link="Manual\IInspectable.cs" />
     <Compile Include="..\DirectN\Manual\IMFGetService.cs" Link="Manual\IMFGetService.cs" />
     <Compile Include="..\DirectN\Manual\IMFObjectInformation.cs" Link="Manual\IMFObjectInformation.cs" />
@@ -805,6 +811,7 @@
     <Compile Include="..\DirectN\Utilities\HRESULT.cs" Link="Utilities\HRESULT.cs" />
     <Compile Include="..\DirectN\Utilities\HRESULTS.cs" Link="Utilities\HRESULTS.cs" />
     <Compile Include="..\DirectN\Utilities\Hsl.cs" Link="Utilities\Hsl.cs" />
+    <Compile Include="..\DirectN\Utilities\HStringMarshaler.cs" Link="Utilities\HStringMarshaler.cs" />
     <Compile Include="..\DirectN\Utilities\Hsv.cs" Link="Utilities\Hsv.cs" />
     <Compile Include="..\DirectN\Utilities\ICompositionDrawingSurfaceInteropExtensions.cs" Link="Utilities\ICompositionDrawingSurfaceInteropExtensions.cs" />
     <Compile Include="..\DirectN\Utilities\ID2D1BitmapExtensions.cs" Link="Utilities\ID2D1BitmapExtensions.cs" />
@@ -820,6 +827,8 @@
     <Compile Include="..\DirectN\Utilities\ID3D11DeviceChildExtensions.cs" Link="Utilities\ID3D11DeviceChildExtensions.cs" />
     <Compile Include="..\DirectN\Utilities\ID3D11DeviceContextExtensions.cs" Link="Utilities\ID3D11DeviceContextExtensions.cs" />
     <Compile Include="..\DirectN\Utilities\ID3D11DeviceExtensions.cs" Link="Utilities\ID3D11DeviceExtensions.cs" />
+    <Compile Include="..\DirectN\Utilities\IDispatcherQueue.cs" Link="Utilities\IDispatcherQueue.cs" />
+    <Compile Include="..\DirectN\Utilities\IDispatcherQueueController.cs" Link="Utilities\IDispatcherQueueController.cs" />
     <Compile Include="..\DirectN\Utilities\IDWriteFactoryExtensions.cs" Link="Utilities\IDWriteFactoryExtensions.cs" />
     <Compile Include="..\DirectN\Utilities\IDWriteFontCollectionExtensions.cs" Link="Utilities\IDWriteFontCollectionExtensions.cs" />
     <Compile Include="..\DirectN\Utilities\IDWriteFontFamilyExtensions.cs" Link="Utilities\IDWriteFontFamilyExtensions.cs" />
@@ -872,12 +881,5 @@
     <Compile Include="..\DirectN\Utilities\WindowsFunctions.cs" Link="Utilities\WindowsFunctions.cs" />
     <Compile Include="..\DirectN\Utilities\WindowsVersionUtilities.cs" Link="Utilities\WindowsVersionUtilities.cs" />
     <Compile Include="..\DirectN\Utilities\WinRTUtilities.cs" Link="Utilities\WinRTUtilities.cs" />
-    <Compile Include="..\DirectN\Utilities\IDispatcherQueue.cs" Link="Utilities\IDispatcherQueue.cs" />
-    <Compile Include="..\DirectN\Utilities\IDispatcherQueueController.cs" Link="Utilities\IDispatcherQueueController.cs" />
-    <Compile Include="..\DirectN\Manual\IGraphicsEffectSourceWinRT.cs" Link="Manual\IGraphicsEffectSourceWinRT.cs" />
-    <Compile Include="..\DirectN\Manual\IGraphicsEffectWinRT.cs" Link="Manual\IGraphicsEffectWinRT.cs" />
-    <Compile Include="..\DirectN\Manual\IGeometrySource2DWinRT.cs" Link="Manual\IGeometrySource2DWinRT.cs" />
-    <Compile Include="..\DirectN\Manual\ICompositionEffectSourceParameter.cs" Link="Manual\ICompositionEffectSourceParameter.cs" />
-    <Compile Include="..\DirectN\Utilities\HStringMarshaler.cs" Link="Utilities\HStringMarshaler.cs" />
   </ItemGroup>
 </Project>

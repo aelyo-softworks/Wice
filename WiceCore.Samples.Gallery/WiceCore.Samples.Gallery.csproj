@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ApplicationManifest>..\Wice.Samples.Gallery\app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\Assets\wice_color.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\Wice.Samples.Gallery\app.manifest" Link="app.manifest" />
+    <Compile Include="..\Wice.Samples.Gallery\GalleryWindow.cs" Link="GalleryWindow.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Program.cs" Link="Program.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\..\Wice\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+    <Content Include="..\Wice.Samples.Gallery\..\Assets\wice_color.ico" Link="wice_color.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />
+    <ProjectReference Include="..\WiceCore\WiceCore.csproj" />
+  </ItemGroup>
+</Project>
