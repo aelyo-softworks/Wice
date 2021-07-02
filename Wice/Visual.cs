@@ -1428,7 +1428,7 @@ namespace Wice
         private void AddToComposition()
         {
             if (Window != null)
-                throw new UIException("0009: Visual '" + Name + "' of type '" + GetType().Name + "' already has a parent Window ('" + Window.Native + "' of type '" + Window.GetType().Name + "').");
+                throw new WiceException("0009: Visual '" + Name + "' of type '" + GetType().Name + "' already has a parent Window ('" + Window.Native + "' of type '" + Window.GetType().Name + "').");
 
             Window = _parent.Window;
             var attached = false;
@@ -1436,7 +1436,7 @@ namespace Wice
             {
                 CompositionVisual = CreateCompositionVisual();
                 if (CompositionVisual == null)
-                    throw new UIException("0003: Visual '" + Name + "' of type '" + GetType().Name + "' must create a valid Visual.");
+                    throw new WiceException("0003: Visual '" + Name + "' of type '" + GetType().Name + "' must create a valid Visual.");
 
 #if DEBUG
                 CompositionVisual.Comment = Name;
@@ -1849,10 +1849,10 @@ namespace Wice
                         continue;
 
                     if (item.Parent != null)
-                        throw new UIException("0010: Item '" + item.Name + "' of type " + item.GetType().Name + " is already a children of parent '" + item.Parent.Name + "' of type " + item.Parent.GetType().Name + ".");
+                        throw new WiceException("0010: Item '" + item.Name + "' of type " + item.GetType().Name + " is already a children of parent '" + item.Parent.Name + "' of type " + item.Parent.GetType().Name + ".");
 
                     if (AllParents.Contains(item))
-                        throw new UIException("0022: Cannot add item '" + item.Name + "' of type " + item.GetType().Name + " to parent '" + Name + "' of type '" + GetType().Name + "' as it would create a parenting cycle.");
+                        throw new WiceException("0022: Cannot add item '" + item.Name + "' of type " + item.GetType().Name + " to parent '" + Name + "' of type '" + GetType().Name + "' as it would create a parenting cycle.");
 
                     item.Parent = this;
                     item.Level = Level + 1;
@@ -2050,7 +2050,7 @@ namespace Wice
         public void Arrange(D2D_RECT_F finalRect) // includes margin
         {
             if (DesiredSize.IsInvalid)
-                throw new UIException("0019: Visual '" + Name + "' of type '" + GetType().FullName + "' cannot be arranged as it was not measured.");
+                throw new WiceException("0019: Visual '" + Name + "' of type '" + GetType().FullName + "' cannot be arranged as it was not measured.");
 
             _lastArrangeRect = finalRect;
             if (finalRect.IsNotSet)
@@ -2124,7 +2124,7 @@ namespace Wice
 
             var size = MeasureCore(childConstraint);
             if (size.IsNotSet || size.width < 0 || size.height < 0)
-                throw new UIException("0007: Element named '" + Name + "' of type '" + GetType().Name + "' desired size is invalid: " + size + ".");
+                throw new WiceException("0007: Element named '" + Name + "' of type '" + GetType().Name + "' desired size is invalid: " + size + ".");
 
             value = Width;
             if (value.IsSet())
@@ -2427,7 +2427,7 @@ namespace Wice
                     layer.Shadow = shadow;
                 }
                 else if (shadow != null)
-                    throw new UIException("0011: Composition Visual of type '" + cv.GetType().Name + "' doesn't support a Shadow.");
+                    throw new WiceException("0011: Composition Visual of type '" + cv.GetType().Name + "' doesn't support a Shadow.");
             }
 
             if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Brushes))
@@ -2491,11 +2491,11 @@ namespace Wice
                 if (brush == null)
                     return;
 
-                throw new UIException("0015: A brush of type '" + brush.GetType().Name + "' cannot be set to a visual of type '" + GetType().Name + "' with a composition visual of type '" + cv.GetType().Name + "'.");
+                throw new WiceException("0015: A brush of type '" + brush.GetType().Name + "' cannot be set to a visual of type '" + GetType().Name + "' with a composition visual of type '" + cv.GetType().Name + "'.");
             }
             catch (UnauthorizedAccessException ex)
             {
-                throw new UIException("0018: The compositor used is not associated with this window.", ex);
+                throw new WiceException("0018: The compositor used is not associated with this window.", ex);
             }
         }
 

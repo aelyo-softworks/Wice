@@ -51,7 +51,7 @@ namespace Wice
         protected virtual void ProtectedAdd(T item, bool checkMaxChildrenCount)
         {
             if (checkMaxChildrenCount && Count == MaxChildrenCount)
-                throw new UIException("0002: Collection has a maximum of " + MaxChildrenCount + " children.");
+                throw new WiceException("0002: Collection has a maximum of " + MaxChildrenCount + " children.");
 
             OnItemsChanged(() =>
             {
@@ -145,10 +145,10 @@ namespace Wice
                 throw new ArgumentOutOfRangeException(nameof(index));
 
             if (Count == MaxChildrenCount)
-                throw new UIException("0004: Collection has a maximum of " + MaxChildrenCount + " children.");
+                throw new WiceException("0004: Collection has a maximum of " + MaxChildrenCount + " children.");
 
             if (_list.Contains(item))
-                throw new UIException("0005: Element named '" + item.Name + "' of type '" + item.GetType().Name + "' has already been added as a children.");
+                throw new WiceException("0005: Element named '" + item.Name + "' of type '" + item.GetType().Name + "' has already been added as a children.");
 
             OnItemsChanged(() =>
             {

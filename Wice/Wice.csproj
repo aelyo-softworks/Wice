@@ -323,7 +323,7 @@
     <Compile Include="BaseObjectCollection.cs" />
     <Compile Include="BaseObjectProperty.cs" />
     <Compile Include="ResourceManager.cs" />
-    <Compile Include="UIException.cs" />
+    <Compile Include="WiceException.cs" />
     <Compile Include="MouseVirtualKeys.cs" />
     <Compile Include="MouseEventArgs.cs" />
     <Compile Include="Utilities\Audit.cs" />

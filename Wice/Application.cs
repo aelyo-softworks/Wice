@@ -53,7 +53,7 @@ namespace Wice
         public Application()
         {
             if (Interlocked.CompareExchange(ref _current, this, null) != null)
-                throw new UIException("0006: There can be only one Application instance.");
+                throw new WiceException("0006: There can be only one Application instance.");
 
             MainThreadId = Thread.CurrentThread.ManagedThreadId;
             // no, we can't use Windows.System.DispatcherQueueController.CreateOnDedicatedThread();
@@ -170,7 +170,7 @@ namespace Wice
 
         public static int MainThreadId { get; private set; }
         public static bool IsRunningAsMainThread => MainThreadId == Thread.CurrentThread.ManagedThreadId;
-        public static void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new UIException("0008: This method must be called on the render thread."); }
+        public static void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0008: This method must be called on the render thread."); }
         
         public static void Exit()
         {

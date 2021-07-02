@@ -217,7 +217,7 @@ namespace Wice
 
             var stream = assembly.GetManifestResourceStream(name);
             if (stream == null)
-                throw new UIException("0016: cannot find stream '" + name + "' from assembly '" + assembly.FullName + "'.");
+                throw new WiceException("0016: cannot find stream '" + name + "' from assembly '" + assembly.FullName + "'.");
 
             var key = assembly.FullName + "\0" + name;
             return GetWicBitmapSource(stream, key, options);

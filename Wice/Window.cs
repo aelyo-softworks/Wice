@@ -645,7 +645,7 @@ namespace Wice
         private void CheckNativeCreated()
         {
             if (_native?.IsValueCreated == true)
-                throw new UIException("0014: Native window has already been created.");
+                throw new WiceException("0014: Native window has already been created.");
         }
 
         public IEnumerable<Visual> GetIntersectingVisuals(D2D_POINT_2F point) => GetIntersectingVisuals(D2D_RECT_F.Sized(point.x, point.y, 1, 1));
@@ -965,7 +965,6 @@ namespace Wice
 
                     var flags = D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_BGRA_SUPPORT; // for D2D cooperation
                                                                                            //flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
-
                     if (Application.UseDebugLayer)
                     {
                         flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_DEBUG;
@@ -1169,7 +1168,7 @@ namespace Wice
                 if (firstCount == lastCount && first != null && last != null)
                 {
                     if (firstCount == 0)
-                        throw new UIException("0020: Invalidate loop has been detected.");
+                        throw new WiceException("0020: Invalidate loop has been detected.");
 
                     var same = true;
                     for (var i = 0; i < lastCount; i++)
@@ -1182,7 +1181,7 @@ namespace Wice
                     }
 
                     if (same)
-                        throw new UIException("0021: Invalidate loop has been detected.");
+                        throw new WiceException("0021: Invalidate loop has been detected.");
                 }
                 new Change(visual.GetType(), visual.Id, Change.InvalidateMarker, modes);
             }
@@ -1724,6 +1723,11 @@ namespace Wice
                 _d2D1Device.Value.Dispose();
             }
 
+            if (_d3D11Device.IsValueCreated)
+            {
+                _d3D11Device.Value.Dispose();
+            }
+
             _tooltipTimer?.Dispose();
         }
 
@@ -1932,12 +1936,12 @@ namespace Wice
             {
                 var cmp = DoCompare(x, y);
 #if DEBUG
-                Application.Trace("x ► " + x.FullName + " y ► " + y.FullName + " => " + cmp);
+                //Application.Trace("x ► " + x.FullName + " y ► " + y.FullName + " => " + cmp);
 #endif
                 return cmp;
             }
 
-            private int DoCompare(Visual x, Visual y)
+            private static int DoCompare(Visual x, Visual y)
             {
                 if (x == null)
                     throw new ArgumentNullException(nameof(x));
@@ -1963,7 +1967,7 @@ namespace Wice
                 //if (px == null || py == null)
                 //    return 0;
 
-                if (px.Equals(py))
+                if (Equals(px, py))
                 {
                     var zix = x.ZIndexOrDefault;
                     var ziy = y.ZIndexOrDefault;
@@ -2013,9 +2017,11 @@ namespace Wice
                 var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
 #if DEBUG
                 var stack = qt.GetIntersectingNodes(rc).OrderByDescending(n => n, new VisualDepthComparer()).ToArray();
+                var i = 0;
                 foreach (var st in stack)
                 {
-                    Application.Trace("stack:" + st.FullName);
+                    Application.Trace("stack[" + i + "]: " + st.FullName);
+                    i++;
                 }
 #endif
                 foreach (var visual in qt.GetIntersectingNodes(rc).OrderByDescending(n => n, new VisualDepthComparer()))
@@ -2030,7 +2036,7 @@ namespace Wice
                     if (visual == this)
                         continue;
 
-                    Application.Trace("msg:" + msg + " visual: " + visual.FullName);
+                    //Application.Trace("msg:" + msg + " visual: " + visual.FullName);
                     visual.OnMouseButtonEvent(msg, e);
                     if (e.Handled)
                         break;
@@ -2387,6 +2393,14 @@ namespace Wice
                 return;
             }
 
+            if (e.Key == VirtualKeys.F8)
+            {
+                if (e.IsDown)
+                {
+                    DXGIFunctions.DXGIReportLiveObjects();
+                }
+            }
+
             if (e.Key == VirtualKeys.F9)
             {
                 if (e.IsDown)
@@ -2452,6 +2466,10 @@ namespace Wice
 
         internal void AddVisual(Visual visual, ref D2D_RECT_F renderBounds)
         {
+            var win = visual as Window;
+            if (win != null && win != this)
+                throw new WiceException("0026: Cannot add a child window to this window.");
+
             if (!visual.DisableMouseEvents)
             {
                 var va = visual.IsActuallyVisible;

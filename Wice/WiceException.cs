@@ -5,31 +5,31 @@ using System.Runtime.Serialization;
 namespace Wice
 {
     [Serializable]
-    public class UIException : Exception
+    public class WiceException : Exception
     {
-        public const string Prefix = "UIX";
+        public const string Prefix = "WICE";
 
-        public UIException()
+        public WiceException()
             : base(Prefix + "0001: UI exception.")
         {
         }
 
-        public UIException(string message)
+        public WiceException(string message)
             : base(Prefix + message)
         {
         }
 
-        public UIException(string message, Exception innerException)
+        public WiceException(string message, Exception innerException)
             : base(Prefix + message, innerException)
         {
         }
 
-        public UIException(Exception innerException)
+        public WiceException(Exception innerException)
             : base(null, innerException)
         {
         }
 
-        protected UIException(SerializationInfo info, StreamingContext context)
+        protected WiceException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

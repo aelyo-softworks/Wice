@@ -737,7 +737,8 @@ namespace Wice.Tests
             var pg = new PropertyGrid.PropertyGrid();
             pg.CellMargin = 5;
             pg.LiveSync = true;
-            TextBox.FontSizeProperty.SetValue(pg, 12f);
+            //TextBox.FontSizeProperty.SetValue(pg, 12f);
+            
             //pg.Padding = D2D_RECT_F.Thickness(5);
             //TextBox.AntiAliasingModeProperty.SetValue(pg, D2D1_TEXT_ANTIALIAS_MODE.D2D1_TEXT_ANTIALIAS_MODE_ALIASED);
             //TextBox.FontFamilyNameProperty.SetValue(pg, "ProggyCleanTTF");

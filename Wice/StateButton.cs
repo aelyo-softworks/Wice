@@ -56,7 +56,7 @@ namespace Wice
                 throw new ArgumentNullException(nameof(state));
 
             if (Parent != null)
-                throw new UIException("0017: Cannot add a state once attached to the UI tree.");
+                throw new WiceException("0017: Cannot add a state once attached to the UI tree.");
 
             _states.Add(state);
         }

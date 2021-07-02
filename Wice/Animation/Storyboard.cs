@@ -82,7 +82,7 @@ namespace Wice.Animation
                         continue;
 
                     if (item.Parent != null)
-                        throw new UIException("0012: Item '" + item.Name + "' of type " + item.GetType().Name + " is already a children of parent '" + item.Parent.Name + "' of type " + item.Parent.GetType().Name + ".");
+                        throw new WiceException("0012: Item '" + item.Name + "' of type " + item.GetType().Name + " is already a children of parent '" + item.Parent.Name + "' of type " + item.Parent.GetType().Name + ".");
 
                     item.Parent = this;
                     item.OnAttachedToParent(this, EventArgs.Empty);

@@ -101,7 +101,7 @@ namespace Wice.Utilities
             using (var stream = assembly.GetManifestResourceStream(name))
             {
                 if (stream == null)
-                    throw new UIException("0001: Cannot find stream '" + name + "' in assembly '" + assembly.FullName + "'.");
+                    throw new WiceException("0001: Cannot find stream '" + name + "' in assembly '" + assembly.FullName + "'.");
 
                 WrapSharingViolations(() =>
                 {

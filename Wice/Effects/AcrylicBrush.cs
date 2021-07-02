@@ -172,7 +172,7 @@ namespace Wice.Effects
             using (var im = ResourcesUtilities.GetWicBitmapSource(Assembly.GetExecutingAssembly(), n => n.EndsWith(name)))
             {
                 if (im == null)
-                    throw new UIException("0025: Cannot find embedded noise resource '" + name + "'.");
+                    throw new WiceException("0025: Cannot find embedded noise resource '" + name + "'.");
 
                 var noiseDrawingSurface = device.CreateDrawingSurface(im.GetSizeF(), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
                 using (var dc = noiseDrawingSurface.BeginDraw())

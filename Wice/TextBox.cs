@@ -2329,7 +2329,7 @@ namespace Wice
         private void CheckLayout()
         {
             if (_layout == null)
-                throw new UIException("0023: Operation on '" + Name + "' of type '" + GetType().FullName + "' is invalid as it was not measured.");
+                throw new WiceException("0023: Operation on '" + Name + "' of type '" + GetType().FullName + "' is invalid as it was not measured.");
         }
 
         private DWRITE_LINE_METRICS[] GetLineMetrics()

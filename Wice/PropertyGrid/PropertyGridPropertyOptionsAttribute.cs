@@ -28,7 +28,7 @@ namespace Wice.PropertyGrid
                     var editorCreator = Activator.CreateInstance(EditorType);
                     creator = editorCreator as IEditorCreator;
                     if (creator == null)
-                        throw new UIException("0024: type '" + EditorType.FullName + "' doesn't implement the " + nameof(IEditorCreator) + " interface.");
+                        throw new WiceException("0024: type '" + EditorType.FullName + "' doesn't implement the " + nameof(IEditorCreator) + " interface.");
                 }
             }
 
