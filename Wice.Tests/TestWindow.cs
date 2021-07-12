@@ -32,6 +32,8 @@ namespace Wice.Tests
                 useWindowsAcrylic: true
                 );
 
+            //AddBordersForVisualOrderCheck1();
+
             //SizeToContent = DimensionOptions.WidthAndHeight;
             //AddCounter(1);
             //AddDrawTextCounter(10);
@@ -738,7 +740,7 @@ namespace Wice.Tests
             pg.CellMargin = 5;
             pg.LiveSync = true;
             //TextBox.FontSizeProperty.SetValue(pg, 12f);
-            
+
             //pg.Padding = D2D_RECT_F.Thickness(5);
             //TextBox.AntiAliasingModeProperty.SetValue(pg, D2D1_TEXT_ANTIALIAS_MODE.D2D1_TEXT_ANTIALIAS_MODE_ALIASED);
             //TextBox.FontFamilyNameProperty.SetValue(pg, "ProggyCleanTTF");
@@ -899,6 +901,51 @@ namespace Wice.Tests
             KeyDown += (s, e) =>
             {
                 b0.IsVisible = !b0.IsVisible;
+            };
+        }
+
+        public void AddBordersForVisualOrderCheck1()
+        {
+            var b1 = new Border();
+            b1.Name = nameof(b1);
+            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            Children.Add(b1);
+
+            var b2 = new Border();
+            b2.Name = nameof(b2);
+            b2.Width = 100;
+            b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            Children.Add(b2);
+
+            var b3 = new Border();
+            b3.Name = nameof(b3);
+            b3.Height = 60;
+            b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+            b2.Children.Add(b3);
+
+            KeyDown += (s, e) =>
+            {
+                if (e.Key == VirtualKeys.A)
+                {
+                    var b4 = new Border();
+                    b4.Name = nameof(b4);
+                    b4.Height = 40;
+                    b4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+
+                    var b5 = new Border();
+                    b5.Name = nameof(b5);
+                    b5.Height = 30;
+                    b5.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black);
+                    b4.Children.Add(b5);
+
+                    var b6 = new Border();
+                    b6.Name = nameof(b6);
+                    b6.Height = 25;
+                    b6.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightCoral);
+                    b5.Children.Add(b6);
+
+                    b1.Children.Add(b4);
+                }
             };
         }
 

@@ -97,6 +97,18 @@ namespace Wice
             }
         }
 
+        protected override void OnMouseButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseButtonDown(sender, e);
+            e.Handled = true; // we capture mouse. should this go into Popup instead?
+        }
+
+        protected override void OnMouseButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseButtonUp(sender, e);
+            e.Handled = true; // we capture mouse. should this go into Popup instead?
+        }
+
         protected virtual bool TryClose()
         {
             var e = new CancelEventArgs();

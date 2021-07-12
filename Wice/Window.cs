@@ -648,16 +648,27 @@ namespace Wice
                 throw new WiceException("0014: Native window has already been created.");
         }
 
-        public IEnumerable<Visual> GetIntersectingVisuals(D2D_POINT_2F point) => GetIntersectingVisuals(D2D_RECT_F.Sized(point.x, point.y, 1, 1));
-        public IEnumerable<Visual> GetIntersectingVisuals(D2D_RECT_F bounds)
+        public IReadOnlyList<Visual> GetIntersectingVisuals(D2D_POINT_2F point) => GetIntersectingVisuals(D2D_RECT_F.Sized(point.x, point.y, 1, 1));
+        public IReadOnlyList<Visual> GetIntersectingVisuals(D2D_RECT_F bounds)
         {
             var qt = _visualsTree;
-            if (qt != null)
+            if (qt == null)
+                return Array.Empty<Visual>();
+
+            var list = qt.GetIntersectingNodes(bounds).ToList();
+            list.Sort(new VisualDepthComparer());
+            return list.AsReadOnly();
+        }
+
+        private class VisualDepthComparer : IComparer<Visual>
+        {
+            public int Compare(Visual x, Visual y)
             {
-                foreach (var visual in qt.GetIntersectingNodes(bounds).OrderByDescending(n => n, new VisualDepthComparer()))
-                {
-                    yield return visual;
-                }
+                var cmp = -x.ViewOrder.CompareTo(y.ViewOrder);
+#if DEBUG
+                //Application.Trace("x ► " + x.FullName + " y ► " + y.FullName + " => " + cmp);
+#endif
+                return cmp;
             }
         }
 
@@ -1911,82 +1922,18 @@ namespace Wice
 #if DEBUG
             CheckVisualsTree();
 #endif
-            var qt = _visualsTree;
-            if (qt != null)
+            var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
+            foreach (var visual in GetIntersectingVisuals(rc))
             {
-                var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
-                foreach (var visual in qt.GetIntersectingNodes(rc).OrderByDescending(n => n, new VisualDepthComparer()))
-                {
-                    if (visual == this)
-                        continue;
+                if (visual == this)
+                    continue;
 
-                    if (visual.DisableMouseEvents)
-                        continue;
+                if (visual.DisableMouseEvents)
+                    continue;
 
-                    visual.OnMouseWheelEvent(e);
-                    if (e.Handled)
-                        break;
-                }
-            }
-        }
-
-        private class VisualDepthComparer : IComparer<Visual>
-        {
-            public int Compare(Visual x, Visual y)
-            {
-                var cmp = DoCompare(x, y);
-#if DEBUG
-                //Application.Trace("x ► " + x.FullName + " y ► " + y.FullName + " => " + cmp);
-#endif
-                return cmp;
-            }
-
-            private static int DoCompare(Visual x, Visual y)
-            {
-                if (x == null)
-                    throw new ArgumentNullException(nameof(x));
-
-                if (y == null)
-                    throw new ArgumentNullException(nameof(y));
-
-                if (x.Equals(y))
-                    return 0;
-
-                if (x is Window)
-                {
-                    if (y is Window)
-                        throw new InvalidOperationException();
-
-                    return -1;
-                }
-                else if (y is Window)
-                    return 1;
-
-                var px = x.Parent;
-                var py = y.Parent;
-                //if (px == null || py == null)
-                //    return 0;
-
-                if (Equals(px, py))
-                {
-                    var zix = x.ZIndexOrDefault;
-                    var ziy = y.ZIndexOrDefault;
-
-                    if (zix.HasValue)
-                    {
-                        if (ziy.HasValue)
-                            return zix.Value.CompareTo(ziy.Value);
-
-                        return -1;
-                    }
-
-                    if (ziy.HasValue)
-                        return 1;
-
-                    return 0;
-                }
-
-                return DoCompare(px, py);
+                visual.OnMouseWheelEvent(e);
+                if (e.Handled)
+                    break;
             }
         }
 
@@ -2011,36 +1958,32 @@ namespace Wice
 #if DEBUG
             CheckVisualsTree();
 #endif
-            var qt = _visualsTree;
-            if (qt != null)
-            {
-                var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
+            var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
 #if DEBUG
-                var stack = qt.GetIntersectingNodes(rc).OrderByDescending(n => n, new VisualDepthComparer()).ToArray();
-                var i = 0;
-                foreach (var st in stack)
-                {
-                    Application.Trace("stack[" + i + "]: " + st.FullName);
-                    i++;
-                }
+            var stack = GetIntersectingVisuals(rc);
+            var i = 0;
+            foreach (var st in stack)
+            {
+                Application.Trace("stack[" + i + "]: " + st.Level + "/" + st.ZIndexOrDefault + " " + st.FullName);
+                i++;
+            }
 #endif
-                foreach (var visual in qt.GetIntersectingNodes(rc).OrderByDescending(n => n, new VisualDepthComparer()))
-                {
-                    if (visual.DisableMouseEvents)
-                        continue;
+            foreach (var visual in GetIntersectingVisuals(rc))
+            {
+                if (visual.DisableMouseEvents)
+                    continue;
 
-                    if (!CanReceiveInput(visual))
-                        continue;
+                if (!CanReceiveInput(visual))
+                    continue;
 
-                    e._visualsStack.Add(visual);
-                    if (visual == this)
-                        continue;
+                e._visualsStack.Add(visual);
+                if (visual == this)
+                    continue;
 
-                    //Application.Trace("msg:" + msg + " visual: " + visual.FullName);
-                    visual.OnMouseButtonEvent(msg, e);
-                    if (e.Handled)
-                        break;
-                }
+                //Application.Trace("msg:" + msg + " visual: " + visual.FullName);
+                visual.OnMouseButtonEvent(msg, e);
+                if (e.Handled)
+                    break;
             }
         }
 
@@ -2080,70 +2023,66 @@ namespace Wice
                 CheckVisualsTree();
 #endif
                 var cursorSet = false;
-                var qt = _visualsTree;
-                if (qt != null)
+                var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
+                foreach (var visual in GetIntersectingVisuals(rc))
                 {
-                    var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
-                    foreach (var visual in qt.GetIntersectingNodes(rc).OrderByDescending(n => n, new VisualDepthComparer()))
+                    if (visual.DisableMouseEvents)
+                        continue;
+
+                    e._visualsStack.Add(visual);
+                    if (!_mousedEnteredVisuals.Remove(visual))
                     {
-                        if (visual.DisableMouseEvents)
-                            continue;
-
-                        e._visualsStack.Add(visual);
-                        if (!_mousedEnteredVisuals.Remove(visual))
-                        {
-                            visual.OnMouseEvent(WM_MOUSEENTER, e);
-                        }
-
-                        if (CanReceiveInput(visual) && visual.Cursor != null)
-                        {
-                            Cursor.Set(visual.Cursor);
-                            cursorSet = true;
-                        }
-
-                        visual.OnMouseEvent(msg, e);
+                        visual.OnMouseEvent(WM_MOUSEENTER, e);
                     }
 
-                    foreach (var visual in _mousedEnteredVisuals)
+                    if (CanReceiveInput(visual) && visual.Cursor != null)
                     {
-                        // always send mouse leave event with DisableMouseEvents=true
-                        visual.OnMouseEvent(MessageDecoder.WM_MOUSELEAVE, e);
-                        if (visual == CurrentToolTip?.PlacementTarget)
-                        {
-                            RemoveToolTip(e);
-                        }
+                        Cursor.Set(visual.Cursor);
+                        cursorSet = true;
                     }
 
-                    _mousedEnteredVisuals.Clear();
-                    _mousedEnteredVisuals = e._visualsStack.ToList();
+                    visual.OnMouseEvent(msg, e);
+                }
 
-                    // tooltip handling
-                    if (msg == MessageDecoder.WM_MOUSEHOVER)
+                foreach (var visual in _mousedEnteredVisuals)
+                {
+                    // always send mouse leave event with DisableMouseEvents=true
+                    visual.OnMouseEvent(MessageDecoder.WM_MOUSELEAVE, e);
+                    if (visual == CurrentToolTip?.PlacementTarget)
                     {
-                        var ttVisual = getFirstTooltipCreatorVisual();
-                        if (ttVisual != null)
+                        RemoveToolTip(e);
+                    }
+                }
+
+                _mousedEnteredVisuals.Clear();
+                _mousedEnteredVisuals = e._visualsStack.ToList();
+
+                // tooltip handling
+                if (msg == MessageDecoder.WM_MOUSEHOVER)
+                {
+                    var ttVisual = getFirstTooltipCreatorVisual();
+                    if (ttVisual != null)
+                    {
+                        //Application.Trace("ttVisual:" + ttVisual);
+                        var ttc = ttVisual.ToolTipContentCreator;
+                        var visibleTime = Application.CurrentTheme.ToolTipVisibleTime;
+                        if (visibleTime > 0) // disable tooltips
                         {
-                            //Application.Trace("ttVisual:" + ttVisual);
-                            var ttc = ttVisual.ToolTipContentCreator;
-                            var visibleTime = Application.CurrentTheme.ToolTipVisibleTime;
-                            if (visibleTime > 0) // disable tooltips
+                            if (ttVisual != CurrentToolTip?.PlacementTarget)
                             {
-                                if (ttVisual != CurrentToolTip?.PlacementTarget)
-                                {
-                                    RemoveToolTip(e);
-                                    AddToolTip(ttVisual, ttc, e);
-                                }
+                                RemoveToolTip(e);
+                                AddToolTip(ttVisual, ttc, e);
+                            }
 
-                                if (CurrentToolTip != null)
+                            if (CurrentToolTip != null)
+                            {
+                                if (_tooltipTimer == null)
                                 {
-                                    if (_tooltipTimer == null)
-                                    {
-                                        _tooltipTimer = new Timer((state) => RunTaskOnMainThread(() => RemoveToolTip(e)), null, visibleTime, Timeout.Infinite);
-                                    }
-                                    else
-                                    {
-                                        _tooltipTimer.Change(visibleTime, Timeout.Infinite);
-                                    }
+                                    _tooltipTimer = new Timer((state) => RunTaskOnMainThread(() => RemoveToolTip(e)), null, visibleTime, Timeout.Infinite);
+                                }
+                                else
+                                {
+                                    _tooltipTimer.Change(visibleTime, Timeout.Infinite);
                                 }
                             }
                         }

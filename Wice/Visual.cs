@@ -183,6 +183,7 @@ namespace Wice
         private int? _lastZIndex;
         private Visual _parent;
         private int _level;
+        private int _viewOrder;
         private D2D_SIZE_F _desiredSize;
         private D2D_RECT_F _arrangedRect;
         private D2D_RECT_F _relativeRenderRect;
@@ -196,6 +197,7 @@ namespace Wice
             Children = CreateChildren();
             Children.CollectionChanged += (s, e) => OnChildrenCollectionChanged(e);
             Level = this is Window ? 0 : 1;
+            _viewOrder = this is Window ? 0 : -1;
         }
 
         private void ResetState(InvalidateMode? step = null)
@@ -318,6 +320,40 @@ namespace Wice
             }
         }
 
+        private void ResetViewOrders()
+        {
+            var w = Window;
+            if (w == null)
+                return;
+
+            // we need view order for global hit/mouse/key testing
+            // note we recompute the whole thing from the top here while this could maybe be optimized
+            w.ResetViewOrders(0);
+        }
+
+        private int ResetViewOrders(int viewOrder)
+        {
+            _viewOrder = viewOrder;
+            foreach (var child in Children.OrderBy(c => c.ZIndexOrDefault))
+            {
+                viewOrder++;
+                viewOrder = child.ResetViewOrders(viewOrder);
+            }
+            return viewOrder;
+        }
+
+        private void ClearViewOrders()
+        {
+            _viewOrder = -1;
+            foreach (var child in Children) // no need to order by zindex
+            {
+                child.ClearViewOrders();
+            }
+        }
+
+        [Category(CategoryLayout)]
+        public int ViewOrder => _viewOrder;
+
         [Category(CategoryLayout)]
         public int Level
         {
@@ -332,7 +368,7 @@ namespace Wice
                 {
                     child.Level = _level + 1;
                 }
-                OnPropertyChanged();
+                //OnPropertyChanged();
             }
         }
 
@@ -1809,7 +1845,7 @@ namespace Wice
         protected virtual void OnChildAdded(object sender, ValueEventArgs<Visual> e) => ChildAdded?.Invoke(sender, e);
         protected virtual void OnChildRemoved(object sender, ValueEventArgs<Visual> e) => ChildRemoved?.Invoke(sender, e);
 
-        protected virtual void OnChildrenCollectionChanged(NotifyCollectionChangedEventArgs e)
+        private void OnChildrenCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
             Application.CheckRunningAsMainThread();
 
@@ -1825,6 +1861,8 @@ namespace Wice
                         item.OnDetachingFromParent(this, EventArgs.Empty);
                         item.Parent = null;
                         item.Level = this is Window ? 0 : 1;
+                        //item.ComputeViewOrder(false);
+                        item.ClearViewOrders();
                         OnChildRemoved(this, new ValueEventArgs<Visual>(item));
                         item.Invalidate(VisualPropertyInvalidateModes.ParentMeasure, new CollectionChangedInvalidateReason(GetType(), item.GetType(), e.Action));
                         item.OnDetachedFromParent(this, EventArgs.Empty);
@@ -1856,6 +1894,8 @@ namespace Wice
 
                     item.Parent = this;
                     item.Level = Level + 1;
+                    //item.ComputeViewOrder(true);
+                    item.ResetViewOrders();
                     item.OnAttachedToParent(this, EventArgs.Empty);
                     OnChildAdded(this, new ValueEventArgs<Visual>(item));
                     item.Invalidate(VisualPropertyInvalidateModes.ParentMeasure, new CollectionChangedInvalidateReason(GetType(), item.GetType(), e.Action));
