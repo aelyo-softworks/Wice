@@ -12,13 +12,14 @@ namespace Wice.Samples.Gallery
     {
         public GalleryWindow()
         {
-            // we draw our own titlebar using Wice
+            // we draw our own titlebar using Wice itself
             WindowsFrameMode = WindowsFrameMode.None;
 
+            // resize to 66% of the screen
             var monitor = Monitor.Primary.Bounds;
             ResizeClient(monitor.Width * 2 / 3, monitor.Height * 2 / 3);
 
-            // add a Wice titlebar (looks like UWP)
+            // add a Wice titlebar (looks similar to UWP)
             Children.Add(new TitleBar { IsMain = true });
 
             // the EnableBlurBehind call is necessary when using the Windows' acrylic
