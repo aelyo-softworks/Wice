@@ -23,6 +23,7 @@ But... why Wice?
 * It compiles much faster than UWP or WinUI projects because the tooling is the standard .NET tooling.
 * It has no external dependencies, so it's free from deployment pain (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" <rant> why should I need to "deploy" my apps? </rant>). Using .NET 5, you can even publish your app as a single zero-dependency .exe.
 * It has the real Windows Acrylic (no hack!) brush w/o the need for UWP.
+* It ships with an integrated in-process (Snoop-like for people familiar with WPF) visual Spy utility (just press F9 in debug mode).
 
 # Status
 Wice is still a work in progress. The base system is working quite well but it's not 100% finished.

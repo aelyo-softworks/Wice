@@ -7,6 +7,9 @@ namespace Wice.Samples.Gallery
 {
     static class Program
     {
+        private static readonly string _storageDirectoryPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), typeof(Program).Namespace);
+        public static string StorageDirectoryPath => _storageDirectoryPath;
+
         static void Main()
         {
 #if DEBUG
@@ -52,7 +55,6 @@ namespace Wice.Samples.Gallery
                 using (var dw = new Application())
                 {
                     var win = new GalleryWindow();
-                    //win.ResizeClient(400, 900);
                     win.Center();
                     win.Show();
                     dw.Run();

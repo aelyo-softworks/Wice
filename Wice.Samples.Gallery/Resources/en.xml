@@ -1,0 +1,10 @@
+﻿<lang n="en">
+  <s n="appName">Wice Sample Gallery</s>
+
+  <s n="page.main">Home</s>
+  <s n="page.main.tt">The home Page</s>
+  <s n="page.main.desc">Windows Interface Composition Engine ("Wice") is a .NET UI engine for creating Windows application.</s>
+
+  <s n="page.inputs">Inputs</s>
+  <s n="page.inputs.tt">A page with the list of available inputs visuals</s>
+</lang>

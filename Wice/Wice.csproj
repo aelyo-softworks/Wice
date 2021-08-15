@@ -102,6 +102,7 @@
     <Compile Include="PropertyGrid\IEditorCreator.cs" />
     <Compile Include="PropertyGrid\PasswordEditorCreator.cs" />
     <Compile Include="PropertyInvalidateReason.cs" />
+    <Compile Include="RichTextBox.cs" />
     <Compile Include="TextBoxSetSelection.cs" />
     <Compile Include="Utilities\CommandLine.cs" />
     <Compile Include="Utilities\UndoStack.cs" />

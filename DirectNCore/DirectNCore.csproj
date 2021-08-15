@@ -882,5 +882,7 @@
     <Compile Include="..\DirectN\Utilities\WindowsFunctions.cs" Link="Utilities\WindowsFunctions.cs" />
     <Compile Include="..\DirectN\Utilities\WindowsVersionUtilities.cs" Link="Utilities\WindowsVersionUtilities.cs" />
     <Compile Include="..\DirectN\Utilities\WinRTUtilities.cs" Link="Utilities\WinRTUtilities.cs" />
+    <Compile Include="..\DirectN\Utilities\TextServicesGenerator.cs" Link="Utilities\TextServicesGenerator.cs" />
+    <Compile Include="..\DirectN\Utilities\ManagedIStream.cs" Link="Utilities\ManagedIStream.cs" />
   </ItemGroup>
 </Project>

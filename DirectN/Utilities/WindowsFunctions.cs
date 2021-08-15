@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -323,13 +324,56 @@ namespace DirectN
         [DllImport("shell32", CharSet = CharSet.Unicode)]
         public static extern int ShellAbout(IntPtr hWnd, string szApp, string szOtherStuff, IntPtr hIcon);
 
-#pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
-        [DllImport("kernel32", CharSet = CharSet.Ansi)]
-#pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
+        [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true)]
         public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
 
+        [DllImport("kernel32", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern bool SetDllDirectory(string lpPathName);
+
+        [DllImport("kernel32", CharSet = CharSet.Unicode)] 
+        public static extern IntPtr GetModuleHandle(string lpModuleName);
+
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
-        public static extern IntPtr GetModuleHandle(string modName);
+        private static extern IntPtr GetModuleFileName(IntPtr hModule, StringBuilder lpFilename, int nSize);
+
+        public static string GetModuleFileName(IntPtr hModule)
+        {
+            var sb = new StringBuilder(1024);
+            GetModuleFileName(hModule, sb, sb.Capacity);
+            return sb.ToString().Nullify();
+        }
+
+        [DllImport("kernel32", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern IntPtr LoadLibrary(string lpLibFileName);
+
+        public static T LoadDelegate<T>(string dllPath, string functionName, bool throwOnError = true)
+        {
+            if (dllPath == null)
+                throw new ArgumentNullException(nameof(dllPath));
+
+            if (functionName == null)
+                throw new ArgumentNullException(nameof(functionName));
+
+            var module = LoadLibrary(dllPath);
+            if (module == IntPtr.Zero)
+            {
+                if (throwOnError)
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+
+                return default;
+            }
+
+            var address = GetProcAddress(module, functionName);
+            if (address == IntPtr.Zero)
+            {
+                if (throwOnError)
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+
+                return default;
+            }
+
+            return (T)(object)Marshal.GetDelegateForFunctionPointer(address, typeof(T));
+        }
 
         public static string GetWindowModuleFileName(IntPtr handle)
         {

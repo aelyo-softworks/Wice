@@ -128,6 +128,6 @@ namespace DirectN
         void TxImmReleaseContext(int himc);
 
         [PreserveSig]
-        HRESULT TxGetSelectionBarWidth(out int lSelBarWidth);
+        HRESULT TxGetSelectionBarWidth(ref int lSelBarWidth);
     }
 }

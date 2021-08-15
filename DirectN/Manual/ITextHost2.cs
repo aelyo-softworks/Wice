@@ -129,7 +129,7 @@ namespace DirectN
         new void TxImmReleaseContext(int himc);
 
         [PreserveSig]
-        new HRESULT TxGetSelectionBarWidth(out int lSelBarWidth);
+        new HRESULT TxGetSelectionBarWidth(ref int lSelBarWidth);
 
         // ITextHost2
         [PreserveSig]

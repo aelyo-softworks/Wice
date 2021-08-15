@@ -7,6 +7,7 @@ using System.Threading;
 
 namespace DirectN
 {
+    [ComVisible(true)]
     public class TextHost : ITextHost2, IDisposable//, ICustomQueryInterface
     {
         private bool _disposedValue;
@@ -23,55 +24,94 @@ namespace DirectN
         private ComMemory<PARAFORMAT2> _paraFormat;
         private readonly TextServices32 _services32;
 
-        public TextHost()
+        public TextHost(TextServicesGenerator generator = TextServicesGenerator.Default)
         {
             _textColor = 0xFFFFFF; // white
             _backColor = 0x00FFFFFF; // transparent
             _options = TextHostOptions.Multiline;
-            //if (IntPtr.Size == 4)
-            {
-                HostThunk = new TextHostThunk(this);
-            }
+            HostThunk = new TextHostThunk(this);
 
-            _services = TextServicesFunctions.CreateTextServices<ITextServices2>(this);
-
+            _services = this.Create<ITextServices2>(generator);
             if (IntPtr.Size == 4)
             {
                 _services32 = new TextServices32(_services);
             }
         }
 
-        public TextHostThunk HostThunk { get; }
+        internal TextHostThunk HostThunk { get; }
+
+        // ITextDocument(2)
+        public dynamic Document
+        {
+            get
+            {
+                dynamic doc = _services;
+                return doc;
+            }
+        }
 
         public string Text
         {
             get
             {
-                if (_services == null)
-                    return null;
-
-                _services.TxGetText(out var text).ThrowOnError();
-                return text;
+                //_services.TxGetText(out var text).ThrowOnError();
+                GetWholeRange().GetText2(0, out string value);
+                return value;
             }
             set
             {
-                HRESULT hr;
-                if (IntPtr.Size == 4)
-                {
-                    hr = _services32.TxSetText(value);
-                }
-                else
-                {
-                    hr = _services.TxSetText(value);
-
-                    // unfortunately, this doesn't work ... only 1 (90), but we have that already with vertical
-                    //const int EM_SETPAGEROTATE = 1260;
-                    //hr = _services.TxSendMessage(EM_SETPAGEROTATE, new IntPtr(3), IntPtr.Zero, out _);
-                }
-                if (hr.IsError)
-                {
-                }
+                GetWholeRange().SetText2(0, value);
             }
+        }
+
+#pragma warning disable IDE1006 // Naming Styles
+
+        // GetText2/SetText2 flags
+        private const int tomConvertRTF = 0x00002000;
+        private const int tomGetUtf16 = 0x00020000;
+        private const int tomConvertMathML = 0x00010000;
+        private const int tomConvertLinearFormat = 0x00040000;
+        private const int tomConvertOMML = 0x00080000;
+        private const int tomConvertRuby = 0x00100000;
+        private const int tomConvertHtml = 0x00900000; // only works for read & with Office's riched20
+
+        private const int tomStory = 6;
+#pragma warning restore IDE1006 // Naming Styles
+
+        public string RtfText
+        {
+            get
+            {
+                GetWholeRange().GetText2(tomConvertRTF | tomGetUtf16, out string value);
+                return value;
+            }
+            set
+            {
+                GetWholeRange().SetText2(tomConvertRTF, value);
+            }
+        }
+
+        public string HtmlText
+        {
+            get
+            {
+                GetWholeRange().GetText2(tomConvertHtml | tomGetUtf16, out string value);
+                return value;
+            }
+            set
+            {
+                // https://devblogs.microsoft.com/math-in-office/richedit-html-support/
+                // note this doesn't seem to work right now...
+                GetWholeRange().SetText2(tomConvertHtml, value);
+            }
+        }
+
+        private dynamic GetWholeRange()
+        {
+            dynamic d = _services;
+            var range = d.Range(0, 0);
+            range.MoveEnd(tomStory, 1);
+            return range;
         }
 
         public TextHostOptions Options
@@ -83,7 +123,7 @@ namespace DirectN
                     return;
 
                 _options = value;
-                ChangeBit(TXTBIT.TXTBIT_WORDWRAP | TXTBIT.TXTBIT_VERTICAL);
+                ChangeBitNotify(TXTBIT.TXTBIT_WORDWRAP | TXTBIT.TXTBIT_VERTICAL | TXTBIT.TXTBIT_READONLY | TXTBIT.TXTBIT_MULTILINE);
             }
         }
 
@@ -165,7 +205,9 @@ namespace DirectN
             }
         }
 
-        public static Action<TraceLevel, string, string> TraceFunc { get; set; }
+#if DEBUG
+        public static ILogger Logger { get; set; }
+#endif
 
         public static int ToColor(_D3DCOLORVALUE color)
         {
@@ -184,24 +226,24 @@ namespace DirectN
         private void ResetCharFormat()
         {
             Interlocked.Exchange(ref _charFormat, null)?.Dispose();
-            ChangeBit(TXTBIT.TXTBIT_CHARFORMATCHANGE);
+            ChangeBitNotify(TXTBIT.TXTBIT_CHARFORMATCHANGE);
         }
 
         private void ResetParaFormat()
         {
             Interlocked.Exchange(ref _paraFormat, null)?.Dispose();
-            ChangeBit(TXTBIT.TXTBIT_PARAFORMATCHANGE);
+            ChangeBitNotify(TXTBIT.TXTBIT_PARAFORMATCHANGE);
         }
 
-        private void ChangeBit(TXTBIT bit)
+        private void ChangeBitNotify(TXTBIT bit)
         {
-            if (IntPtr.Size == 4)
+            if (_services32 != null)
             {
-                _services32.OnTxPropertyBitsChange(bit, bit);
+                _services32.OnTxPropertyBitsChange(bit, bit).ThrowOnError();
             }
             else
             {
-                _services.OnTxPropertyBitsChange(bit, bit);
+                _services.OnTxPropertyBitsChange(bit, bit).ThrowOnError();
             }
         }
 
@@ -211,7 +253,7 @@ namespace DirectN
             var extent = constraint.PixelToHiMetric();
             var width = int.MaxValue;
             var height = int.MaxValue;
-            if (IntPtr.Size == 4)
+            if (_services32 != null)
             {
                 _services32.TxGetNaturalSize2(DVASPECT.DVASPECT_CONTENT, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, mode, ref extent, ref width, ref height, out ascent).ThrowOnError();
             }
@@ -229,13 +271,21 @@ namespace DirectN
         //    return CustomQueryInterfaceResult.NotHandled;
         //}
 
+        [Conditional("DEBUG")]
         private static void Trace(string message = null, [CallerMemberName] string methodName = null) => Trace(TraceLevel.Info, message, methodName);
-        private static void Trace(TraceLevel level, string message = null, [CallerMemberName] string methodName = null) => TraceFunc?.Invoke(level, message, methodName);//MixMux.D3D11Interop.D3D11Image.Trace(message, methodName);
 
-        public void Activate(ref tagRECT rect)
+        [Conditional("DEBUG")]
+        private static void Trace(TraceLevel level, string message = null, [CallerMemberName] string methodName = null)
+        {
+#if DEBUG
+            Logger?.Log(level, message, methodName);
+#endif
+        }
+
+        public void Activate(tagRECT rect)
         {
             _rect = rect;
-            if (IntPtr.Size == 4)
+            if (_services32 != null)
             {
                 _services32.OnTxInPlaceActivate(ref rect).ThrowOnError();
                 _services32.OnTxUIActivate().ThrowOnError();
@@ -247,15 +297,13 @@ namespace DirectN
             }
         }
 
-        public void Draw(ID2D1RenderTarget target, int left, int top, int right, int bottom)
+        public void Draw(ID2D1RenderTarget target, tagRECT rc)
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            var rc = new tagRECT(left, top, right, bottom);
             rc = rc.PixelToDip();
-
-            if (IntPtr.Size == 4)
+            if (_services32 != null)
             {
                 _services32.TxDrawD2D(target, ref rc, IntPtr.Zero, TXTVIEW.TXTVIEW_ACTIVE).ThrowOnError();
             }
@@ -472,7 +520,7 @@ namespace DirectN
             //pdwBits &= ~TXTBIT.TXTBIT_USEPASSWORD;
             //pdwBits &= ~TXTBIT.TXTBIT_READONLY;
 
-            pdwBits = TXTBIT.TXTBIT_RICHTEXT | TXTBIT.TXTBIT_D2DDWRITE | TXTBIT.TXTBIT_READONLY;
+            pdwBits = TXTBIT.TXTBIT_RICHTEXT | TXTBIT.TXTBIT_D2DDWRITE;
             if (_options.HasFlag(TextHostOptions.WordWrap))
             {
                 pdwBits |= TXTBIT.TXTBIT_WORDWRAP;
@@ -481,6 +529,11 @@ namespace DirectN
             if (_options.HasFlag(TextHostOptions.Vertical))
             {
                 pdwBits |= TXTBIT.TXTBIT_VERTICAL;
+            }
+
+            if (_options.HasFlag(TextHostOptions.ReadOnly))
+            {
+                pdwBits |= TXTBIT.TXTBIT_READONLY;
             }
 
             if (_options.HasFlag(TextHostOptions.Multiline))
@@ -496,13 +549,13 @@ namespace DirectN
 
         public HRESULT TxGetScrollBars(out SBOUT pdwScrollBar)
         {
-            pdwScrollBar = SBOUT.WS_VSCROLL | SBOUT.WS_HSCROLL;
+            //pdwScrollBar = SBOUT.WS_VSCROLL | SBOUT.WS_HSCROLL;
             pdwScrollBar = 0;
             Trace("pdwScrollBar: " + pdwScrollBar);
             return HRESULTS.S_OK;
         }
 
-        public HRESULT TxGetSelectionBarWidth(out int lSelBarWidth)
+        public HRESULT TxGetSelectionBarWidth(ref int lSelBarWidth)
         {
             lSelBarWidth = 0;
             Trace("lSelBarWidth: " + lSelBarWidth);
@@ -527,8 +580,7 @@ namespace DirectN
             prc.bottom = 0;
             prc = prc.PixelToHiMetric();
             Trace("prc: " + prc);
-            return HRESULTS.E_NOTIMPL;
-            //return HRESULTS.S_OK;
+            return HRESULTS.S_OK;
         }
 
         public HRESULT TxGetWindow(out IntPtr phwnd)
@@ -658,11 +710,8 @@ namespace DirectN
             Trace("fUpdate: " + fUpdate);
         }
 
-        [DllImport("user32", ExactSpelling = true)]
+        [DllImport("user32")]
         private static extern int GetSysColor(COLOR nIndex);
-
-        //[DllImport("user32", ExactSpelling = true)]
-        //private static extern IntPtr GetDC(IntPtr hWnd);
 
         protected virtual void Dispose(bool disposing)
         {
@@ -673,7 +722,7 @@ namespace DirectN
                     // dispose managed state (managed objects).
                 }
 
-                TextServicesFunctions.ShutdownTextServices(_services);
+                TextServicesFunctions.Shutdown(_services);
                 _charFormat?.Dispose();
                 _paraFormat?.Dispose();
                 HostThunk?.Dispose();

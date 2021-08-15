@@ -9,5 +9,6 @@ namespace DirectN
         WordWrap = 0x1,
         Vertical = 0x2,
         Multiline = 0x4,
+        ReadOnly = 0x8,
     }
 }

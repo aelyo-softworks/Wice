@@ -80,8 +80,6 @@ namespace Wice
             return new D2D_SIZE_F(width, height);
         }
 
-        protected override void RenderBackgroundCore(RenderContext context) => base.RenderBackgroundCore(context);
-
         protected internal override void RenderCore(RenderContext context)
         {
             base.RenderCore(context);

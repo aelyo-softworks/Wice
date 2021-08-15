@@ -128,7 +128,7 @@ namespace Wice.DevTools
         static bool AddFile(string path)
         {
             var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
-            return ext == ".cs" || ext == ".resx" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".ico" || ext == ".manifest";
+            return ext == ".cs" || ext == ".resx" || ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".ico" || ext == ".manifest" || ext == ".xml";
         }
 
         static string GetAction(string path)
@@ -143,6 +143,7 @@ namespace Wice.DevTools
                 case ".png":
                 case ".jpg":
                 case ".jpeg":
+                case ".xml":
                     return "EmbeddedResource";
 
                 case ".ico":

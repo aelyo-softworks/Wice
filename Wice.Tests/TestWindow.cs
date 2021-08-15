@@ -45,9 +45,11 @@ namespace Wice.Tests
             //AddEditableTexts();
             //AddTextWithSpaces(this);
 
+            AddRtf1();
+
             //AddSimpleGrid();
             //AddSimpleGrid2();
-            AddSimplePropertyGrid();
+            //AddSimplePropertyGrid();
             //AddSimplePropertyGrid2();
             //AddSimplePropertyGrid3();
 
@@ -1007,6 +1009,13 @@ namespace Wice.Tests
                 //text.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_JUSTIFIED;
                 //text.WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD;
             }
+        }
+
+        public void AddRtf1()
+        {
+            RichTextBox.Logger = UILogger.Instance;
+            var rtf = new RichTextBox();
+            Children.Add(rtf);
         }
 
         public void AddReadOnlyText() => AddReadOnlyText(this);

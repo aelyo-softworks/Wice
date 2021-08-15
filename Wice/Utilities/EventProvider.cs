@@ -22,16 +22,20 @@ namespace Wice.Utilities
 
         public void WriteMessageEvent(string message, byte level = 0, long keyword = 0)
         {
-            if (message == null)
-                throw new ArgumentNullException(nameof(message));
-
-            if (_handle == 0)
-                throw new ObjectDisposedException(nameof(EventProvider));
+            if (message == null || _handle == 0)
+                return; // silent fail
 
             EventWriteString(_handle, level, keyword, message);
         }
 
-        public void Dispose() => Interlocked.Exchange(ref _handle, 0);
+        public void Dispose()
+        {
+            var handle = Interlocked.Exchange(ref _handle, 0);
+            if (handle != 0)
+            {
+                EventUnregister(handle);
+            }
+        }
 
         [DllImport("advapi32")]
         private static extern int EventRegister([MarshalAs(UnmanagedType.LPStruct)] Guid providerId, IntPtr enableCallback, IntPtr callbackContext, out long regHandle);

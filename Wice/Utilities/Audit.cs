@@ -187,7 +187,7 @@ namespace Wice.Utilities
                 _queue.Clear();
             }
 
-            if (records.Length > 0)
+            if (records.Length > 0 && DirectoryPath != null)
             {
                 var name = FileNamePrefix + string.Format(AuditingFileFormat, DateTime.Now, Environment.MachineName);
                 var path = System.IO.Path.Combine(DirectoryPath, name);
