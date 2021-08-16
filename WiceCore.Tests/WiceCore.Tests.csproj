@@ -26,5 +26,9 @@
     <EmbeddedResource Include="..\Wice.Tests\Resources\aelyo_flat.png" Link="Resources\aelyo_flat.png" />
     <EmbeddedResource Include="..\Wice.Tests\Resources\calibrate.jpeg" Link="Resources\calibrate.jpeg" />
     <EmbeddedResource Include="..\Wice.Tests\Resources\rainier.jpg" Link="Resources\rainier.jpg" />
+    <Content Include="..\Wice.Tests\wice.rtf" Link="wice.rtf" />
+    <Content Include="..\Wice.Tests\tiger.svg" Link="tiger.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

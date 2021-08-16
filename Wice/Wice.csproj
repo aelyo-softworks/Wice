@@ -81,8 +81,11 @@
     <Compile Include="EditorMode.cs" />
     <Compile Include="EditorHost.cs" />
     <Compile Include="EventTrigger.cs" />
+    <Compile Include="Utilities\AssemblyResourceStreamer.cs" />
+    <Compile Include="Utilities\FileStreamer.cs" />
     <Compile Include="IBindingDisplayName.cs" />
     <Compile Include="IPasswordCapable.cs" />
+    <Compile Include="IReadStreamer.cs" />
     <Compile Include="ITextBoxProperties.cs" />
     <Compile Include="IValueable.cs" />
     <Compile Include="ListBoxDataBindContext.cs" />
@@ -103,6 +106,8 @@
     <Compile Include="PropertyGrid\PasswordEditorCreator.cs" />
     <Compile Include="PropertyInvalidateReason.cs" />
     <Compile Include="RichTextBox.cs" />
+    <Compile Include="Utilities\StreamStreamer.cs" />
+    <Compile Include="SvgImage.cs" />
     <Compile Include="TextBoxSetSelection.cs" />
     <Compile Include="Utilities\CommandLine.cs" />
     <Compile Include="Utilities\UndoStack.cs" />

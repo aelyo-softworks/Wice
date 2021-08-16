@@ -1861,7 +1861,6 @@ namespace Wice
                         item.OnDetachingFromParent(this, EventArgs.Empty);
                         item.Parent = null;
                         item.Level = this is Window ? 0 : 1;
-                        //item.ComputeViewOrder(false);
                         item.ClearViewOrders();
                         OnChildRemoved(this, new ValueEventArgs<Visual>(item));
                         item.Invalidate(VisualPropertyInvalidateModes.ParentMeasure, new CollectionChangedInvalidateReason(GetType(), item.GetType(), e.Action));
@@ -1894,7 +1893,6 @@ namespace Wice
 
                     item.Parent = this;
                     item.Level = Level + 1;
-                    //item.ComputeViewOrder(true);
                     item.ResetViewOrders();
                     item.OnAttachedToParent(this, EventArgs.Empty);
                     OnChildAdded(this, new ValueEventArgs<Visual>(item));
@@ -2005,46 +2003,6 @@ namespace Wice
             }
             return;
         }
-
-        //public virtual D2D_SIZE_F EstimateWidth(bool useArrange)
-        //{
-        //    if (useArrange)
-        //    {
-        //        var ar = ArrangedRect;
-        //        if (ar.IsSet)
-        //            return ar.Size;
-        //    }
-
-        //    var width = Width;
-        //    var height = Height;
-
-        //    var maxWidth = MaxWidth;
-        //    if (maxWidth.IsSet() && width.IsSet() && width > maxWidth)
-        //    {
-        //        width = maxWidth;
-        //    }
-
-        //    var minWidth = MinWidth;
-        //    if (minWidth.IsSet() && width.IsSet() && width < minWidth)
-        //    {
-        //        width = minWidth;
-        //    }
-
-        //    var maxHeight = MaxHeight;
-        //    if (maxHeight.IsSet() && height.IsSet() && height > maxHeight)
-        //    {
-        //        height = maxHeight;
-        //    }
-
-        //    var minHeight = MinHeight;
-        //    if (minHeight.IsSet() && height.IsSet() && height < minHeight)
-        //    {
-        //        height = minHeight;
-        //    }
-
-        //    // this can return invalid values
-        //    return new D2D_SIZE_F { width = width, height = height };
-        //}
 
         public D2D_RECT_F ComputeConstrainedSize(D2D_RECT_F finalRect) => ComputeConstrainedSizeWithoutMargin(finalRect - Margin) + Margin;
         public D2D_RECT_F ComputeConstrainedSizeWithoutMargin(D2D_RECT_F childRect) // w/o margin
@@ -2305,7 +2263,6 @@ namespace Wice
             if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Offset))
             {
                 cv.Offset = RenderOffset + new Vector3(withoutMargin.left, withoutMargin.top, 0);
-                //Application.Trace("this:" + this + " offset:" + cv.Offset);
             }
 
             if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Size))

@@ -884,5 +884,59 @@
     <Compile Include="..\DirectN\Utilities\WinRTUtilities.cs" Link="Utilities\WinRTUtilities.cs" />
     <Compile Include="..\DirectN\Utilities\TextServicesGenerator.cs" Link="Utilities\TextServicesGenerator.cs" />
     <Compile Include="..\DirectN\Utilities\ManagedIStream.cs" Link="Utilities\ManagedIStream.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_ASPECT_ALIGN.cs" Link="Generated\D2D1_SVG_ASPECT_ALIGN.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_ASPECT_SCALING.cs" Link="Generated\D2D1_SVG_ASPECT_SCALING.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_ATTRIBUTE_POD_TYPE.cs" Link="Generated\D2D1_SVG_ATTRIBUTE_POD_TYPE.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_ATTRIBUTE_STRING_TYPE.cs" Link="Generated\D2D1_SVG_ATTRIBUTE_STRING_TYPE.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_DISPLAY.cs" Link="Generated\D2D1_SVG_DISPLAY.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_LENGTH.cs" Link="Generated\D2D1_SVG_LENGTH.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_LENGTH_UNITS.cs" Link="Generated\D2D1_SVG_LENGTH_UNITS.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_LINE_CAP.cs" Link="Generated\D2D1_SVG_LINE_CAP.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_LINE_JOIN.cs" Link="Generated\D2D1_SVG_LINE_JOIN.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_OVERFLOW.cs" Link="Generated\D2D1_SVG_OVERFLOW.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_PAINT_TYPE.cs" Link="Generated\D2D1_SVG_PAINT_TYPE.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_PATH_COMMAND.cs" Link="Generated\D2D1_SVG_PATH_COMMAND.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_PRESERVE_ASPECT_RATIO.cs" Link="Generated\D2D1_SVG_PRESERVE_ASPECT_RATIO.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_UNIT_TYPE.cs" Link="Generated\D2D1_SVG_UNIT_TYPE.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_VIEWBOX.cs" Link="Generated\D2D1_SVG_VIEWBOX.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SVG_VISIBILITY.cs" Link="Generated\D2D1_SVG_VISIBILITY.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1SvgAttribute.cs" Link="Generated\ID2D1SvgAttribute.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1SvgDocument.cs" Link="Generated\ID2D1SvgDocument.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1SvgElement.cs" Link="Generated\ID2D1SvgElement.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1SvgGlyphStyle.cs" Link="Generated\ID2D1SvgGlyphStyle.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1SvgPaint.cs" Link="Generated\ID2D1SvgPaint.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1SvgPathData.cs" Link="Generated\ID2D1SvgPathData.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1SvgPointCollection.cs" Link="Generated\ID2D1SvgPointCollection.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1SvgStrokeDashArray.cs" Link="Generated\ID2D1SvgStrokeDashArray.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION.cs" Link="Generated\D2D1_COLOR_BITMAP_GLYPH_SNAP_OPTION.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_COLOR_CONTEXT_TYPE.cs" Link="Generated\D2D1_COLOR_CONTEXT_TYPE.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_GAMMA1.cs" Link="Generated\D2D1_GAMMA1.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_GRADIENT_MESH_PATCH.cs" Link="Generated\D2D1_GRADIENT_MESH_PATCH.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS.cs" Link="Generated\D2D1_IMAGE_SOURCE_FROM_DXGI_OPTIONS.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_IMAGE_SOURCE_LOADING_OPTIONS.cs" Link="Generated\D2D1_IMAGE_SOURCE_LOADING_OPTIONS.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_INK_BEZIER_SEGMENT.cs" Link="Generated\D2D1_INK_BEZIER_SEGMENT.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_INK_NIB_SHAPE.cs" Link="Generated\D2D1_INK_NIB_SHAPE.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_INK_POINT.cs" Link="Generated\D2D1_INK_POINT.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_ORIENTATION.cs" Link="Generated\D2D1_ORIENTATION.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_PATCH_EDGE_MODE.cs" Link="Generated\D2D1_PATCH_EDGE_MODE.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SIMPLE_COLOR_PROFILE.cs" Link="Generated\D2D1_SIMPLE_COLOR_PROFILE.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_SPRITE_OPTIONS.cs" Link="Generated\D2D1_SPRITE_OPTIONS.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_TRANSFORMED_IMAGE_SOURCE_OPTIONS.cs" Link="Generated\D2D1_TRANSFORMED_IMAGE_SOURCE_OPTIONS.cs" />
+    <Compile Include="..\DirectN\Generated\D2D1_TRANSFORMED_IMAGE_SOURCE_PROPERTIES.cs" Link="Generated\D2D1_TRANSFORMED_IMAGE_SOURCE_PROPERTIES.cs" />
+    <Compile Include="..\DirectN\Generated\DXGI_COLOR_SPACE_TYPE.cs" Link="Generated\DXGI_COLOR_SPACE_TYPE.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1ColorContext1.cs" Link="Generated\ID2D1ColorContext1.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1DeviceContext2.cs" Link="Generated\ID2D1DeviceContext2.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1DeviceContext3.cs" Link="Generated\ID2D1DeviceContext3.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1DeviceContext4.cs" Link="Generated\ID2D1DeviceContext4.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1DeviceContext5.cs" Link="Generated\ID2D1DeviceContext5.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1GradientMesh.cs" Link="Generated\ID2D1GradientMesh.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1ImageSource.cs" Link="Generated\ID2D1ImageSource.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1ImageSourceFromWic.cs" Link="Generated\ID2D1ImageSourceFromWic.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1Ink.cs" Link="Generated\ID2D1Ink.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1InkStyle.cs" Link="Generated\ID2D1InkStyle.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1LookupTable3D.cs" Link="Generated\ID2D1LookupTable3D.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1SpriteBatch.cs" Link="Generated\ID2D1SpriteBatch.cs" />
+    <Compile Include="..\DirectN\Generated\ID2D1TransformedImageSource.cs" Link="Generated\ID2D1TransformedImageSource.cs" />
+    <Compile Include="..\DirectN\Utilities\UnmanagedMemoryStream.cs" Link="Utilities\UnmanagedMemoryStream.cs" />
   </ItemGroup>
 </Project>

@@ -17,6 +17,7 @@ using Windows.UI.Composition.Diagnostics;
 
 namespace Wice.Tests
 {
+    // this is a test bench!
     public class TestWindow : Window
     {
         public TestWindow()
@@ -50,7 +51,9 @@ namespace Wice.Tests
             //AddRtbVertical();
             //AddRtbRtfFile();
             //AddRtbHtml();
-            AddScrollableRtbRtfFile();
+            //AddScrollableRtbRtfFile();
+
+            AddSvg();
 
             //AddSimpleGrid();
             //AddSimpleGrid2();
@@ -1014,6 +1017,13 @@ namespace Wice.Tests
                 //text.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_JUSTIFIED;
                 //text.WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD;
             }
+        }
+
+        public void AddSvg()
+        {
+            var svg = new SvgImage();
+            svg.Document = new FileStreamer("tiger.svg");
+            Children.Add(svg);
         }
 
         public void AddRtb()

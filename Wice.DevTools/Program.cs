@@ -130,7 +130,7 @@ namespace Wice.DevTools
             var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
             return ext == ".cs" ||
                 ext == ".resx" ||
-                ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".ico" ||
+                ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".ico" || ext == ".svg" ||
                 ext == ".manifest" ||
                 ext == ".rtf" ||
                 ext == ".xml";
@@ -150,6 +150,7 @@ namespace Wice.DevTools
                 case ".jpeg":
                 case ".xml":
                 case ".rtf":
+                case ".svg":
                     return "EmbeddedResource";
 
                 case ".ico":

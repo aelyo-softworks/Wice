@@ -39,27 +39,64 @@ namespace DirectN
             return available;
         }
 
-        public static T WinRTCast<T>(this object obj)
+        public static T WinRTCast<T>(this object obj, bool throwOnError = true) where T : class
         {
             if (obj == null)
                 return default;
-#if NET
 
-            var unk = Marshal.GetIUnknownForObject(obj);
-            return MarshalInterface<T>.FromAbi(unk);
+            if (throwOnError)
+            {
+#if NET
+                var unkt = Marshal.GetIUnknownForObject(obj);
+                return MarshalInterface<T>.FromAbi(unkt);
 #else
-            return (T)obj;
+                return (T)obj;
+#endif
+            }
+
+#if NET
+            var unk = Marshal.GetIUnknownForObject(obj);
+            if (unk == IntPtr.Zero)
+                return default;
+
+            try
+            {
+                return MarshalInterface<T>.FromAbi(unk);
+            }
+            catch
+            {
+                return default;
+            }
+#else
+            return obj as T;
 #endif
         }
 
-        public static T ComCast<T>(this object obj)
+        public static T ComCast<T>(this object obj, bool throwOnError = true) where T : class
         {
             if (obj == null)
                 return default;
+
+            if (throwOnError)
+            {
 #if NET
-            return obj.As<T>();
+                return obj.As<T>();
 #else
-            return (T)obj;
+                return (T)obj;
+#endif
+            }
+
+#if NET
+            try
+            {
+                return obj.As<T>();
+            }
+            catch
+            {
+                return default;
+            }
+#else
+            return obj as T;
 #endif
         }
     }

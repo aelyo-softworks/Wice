@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace DirectN
@@ -13,6 +14,16 @@ namespace DirectN
         public float _22;
         public float _31;
         public float _32;
+
+        public D2D_MATRIX_3X2_F(Matrix3x2 mx)
+        {
+            _11 = mx.M11;
+            _12 = mx.M12;
+            _21 = mx.M21;
+            _22 = mx.M22;
+            _31 = mx.M31;
+            _32 = mx.M32;
+        }
 
         public D2D_MATRIX_3X2_F(
             float m11, float m12,
@@ -157,7 +168,11 @@ namespace DirectN
             }
         }
 
+        public Matrix3x2 ToMatrix3x2() => new Matrix3x2(_11, _12, _21, _22, _31, _32);
+
         public static D2D_MATRIX_3X2_F operator *(D2D_MATRIX_3X2_F left, D2D_MATRIX_3X2_F right) => Multiply(left, right);
         public static D2D_MATRIX_3X2_F operator /(D2D_MATRIX_3X2_F left, D2D_MATRIX_3X2_F right) => Divide(left, right);
+        public static implicit operator Matrix3x2(D2D_MATRIX_3X2_F mx) => mx.ToMatrix3x2();
+        public static implicit operator D2D_MATRIX_3X2_F(Matrix3x2 mx) => new D2D_MATRIX_3X2_F(mx);
     }
 }

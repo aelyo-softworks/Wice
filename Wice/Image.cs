@@ -21,23 +21,6 @@ namespace Wice
             BackgroundColor = _D3DCOLORVALUE.Transparent;
         }
 
-        //protected override tagRECT? Direct2DRenderRect
-        //{
-        //    get
-        //    {
-        //        var src = Source;
-        //        if (src == null || src.IsDisposed)
-        //            return null;
-
-        //        var stretch = Stretch;
-        //        var size = src.GetSize();
-        //        var rr = RelativeRenderRect;
-        //        var factor = GetScaleFactor(rr.Size, size.ToD2D_SIZE_F(), stretch, StretchDirection);
-        //        var destRc = new D2D_RECT_F(0, 0, size.width * factor.width, size.height * factor.height);
-        //        return destRc.TotagRECT();
-        //    }
-        //}
-
         public IComObject<IWICBitmapSource> Source { get => (IComObject<IWICBitmapSource>)GetPropertyValue(SourceProperty); set => SetPropertyValue(SourceProperty, value); }
         public float SourceOpacity { get => (float)GetPropertyValue(SourceOpacityProperty); set => SetPropertyValue(SourceOpacityProperty, value); }
         public Stretch Stretch { get => (Stretch)GetPropertyValue(StretchProperty); set => SetPropertyValue(StretchProperty, value); }
@@ -80,13 +63,80 @@ namespace Wice
             return new D2D_SIZE_F(width, height);
         }
 
+        internal static D2D_RECT_F GetDestinationRectangle(
+            D2D_SIZE_F size,
+            Alignment horizontalAlignment,
+            Alignment verticalAlignment,
+            Stretch stretch,
+            StretchDirection stretchDirection,
+            D2D_RECT_F renderRect)
+        {
+            // stretch takes priority with regards to h/v aligments
+            // if the bitmap doesn't strech, it uses it's source's size
+
+            var rr = renderRect;
+            var factor = GetScaleFactor(rr.Size, size, stretch, stretchDirection);
+            var destRc = new D2D_RECT_F(0, 0, size.width * factor.width, size.height * factor.height);
+
+            var ha = horizontalAlignment;
+            float w;
+            float h;
+            switch (ha)
+            {
+                case Alignment.Center:
+                case Alignment.Stretch:
+                    w = (rr.Width - destRc.Width) / 2f;
+                    destRc.left += w;
+                    destRc.right += w;
+                    break;
+
+                case Alignment.Far:
+                    w = rr.Width - destRc.Width;
+                    destRc.left += w;
+                    if (destRc.left < 0)
+                    {
+                        destRc.left = 0;
+                    }
+                    destRc.right += w;
+                    break;
+
+                case Alignment.Near:
+                    break;
+            }
+
+            var va = verticalAlignment;
+            switch (va)
+            {
+                case Alignment.Center:
+                case Alignment.Stretch:
+                    h = (rr.Height - destRc.Height) / 2f;
+                    destRc.top += h;
+                    destRc.bottom += h;
+                    break;
+
+                case Alignment.Far:
+                    h = rr.Height - destRc.Height;
+                    destRc.top += h;
+                    if (destRc.top < 0)
+                    {
+                        destRc.top = 0;
+                    }
+                    destRc.bottom += h;
+                    break;
+
+                case Alignment.Near:
+                    break;
+            }
+            return destRc;
+        }
+
         protected internal override void RenderCore(RenderContext context)
         {
             base.RenderCore(context);
             var src = Source;
             if (src != null && !src.IsDisposed)
             {
-                ComObject<ID2D1Bitmap> bmp = _bitmap;
+                var bmp = _bitmap;
                 if (bmp == null)
                 {
                     context.DeviceContext.Object.CreateBitmapFromWicBitmap(Source.Object, IntPtr.Zero, out ID2D1Bitmap bitmap).ThrowOnError();
@@ -96,64 +146,13 @@ namespace Wice
 
                 if (bmp != null && !bmp.IsDisposed)
                 {
-                    // stretch takes priority with regards to h/v aligments
-                    // if the bitmap doesn't strech, it uses it's source's size
-                    var stretch = Stretch;
-                    var size = src.GetSize();
-                    var rr = RelativeRenderRect;
-                    var factor = GetScaleFactor(rr.Size, size.ToD2D_SIZE_F(), stretch, StretchDirection);
-                    var destRc = new D2D_RECT_F(0, 0, size.width * factor.width, size.height * factor.height);
-
-                    var ha = HorizontalAlignment;
-                    float w;
-                    float h;
-                    switch (ha)
-                    {
-                        case Alignment.Center:
-                        case Alignment.Stretch:
-                            w = (rr.Width - destRc.Width) / 2f;
-                            destRc.left += w;
-                            destRc.right += w;
-                            break;
-
-                        case Alignment.Far:
-                            w = rr.Width - destRc.Width;
-                            destRc.left += w;
-                            if (destRc.left < 0)
-                            {
-                                destRc.left = 0;
-                            }
-                            destRc.right += w;
-                            break;
-
-                        case Alignment.Near:
-                            break;
-                    }
-
-                    var va = VerticalAlignment;
-                    switch (va)
-                    {
-                        case Alignment.Center:
-                        case Alignment.Stretch:
-                            h = (rr.Height - destRc.Height) / 2f;
-                            destRc.top += h;
-                            destRc.bottom += h;
-                            break;
-
-                        case Alignment.Far:
-                            h = rr.Height - destRc.Height;
-                            destRc.top += h;
-                            if (destRc.top < 0)
-                            {
-                                destRc.top = 0;
-                            }
-                            destRc.bottom += h;
-                            break;
-
-                        case Alignment.Near:
-                            break;
-                    }
-
+                    var destRc = GetDestinationRectangle(
+                        src.GetSizeF(),
+                        HorizontalAlignment,
+                        VerticalAlignment,
+                        Stretch,
+                        StretchDirection,
+                        RelativeRenderRect);
                     var srcRectangle = SourceRectangle;
                     context.DeviceContext.DrawBitmap(bmp, SourceOpacity, InterpolationMode, destRc, srcRectangle);
                 }

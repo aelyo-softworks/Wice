@@ -310,6 +310,11 @@
     <Compile Include="..\Wice\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
     <Compile Include="..\Wice\WiceException.cs" Link="WiceException.cs" />
     <Compile Include="..\Wice\RichTextBox.cs" Link="RichTextBox.cs" />
+    <Compile Include="..\Wice\SvgImage.cs" Link="SvgImage.cs" />
+    <Compile Include="..\Wice\Utilities\AssemblyResourceStreamer.cs" Link="Utilities\AssemblyResourceStreamer.cs" />
+    <Compile Include="..\Wice\Utilities\FileStreamer.cs" Link="Utilities\FileStreamer.cs" />
+    <Compile Include="..\Wice\IReadStreamer.cs" Link="IReadStreamer.cs" />
+    <Compile Include="..\Wice\Utilities\StreamStreamer.cs" Link="Utilities\StreamStreamer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />
