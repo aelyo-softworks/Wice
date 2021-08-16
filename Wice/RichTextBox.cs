@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Threading;
 using DirectN;
 
@@ -9,7 +8,7 @@ namespace Wice
     public class RichTextBox : RenderVisual, IDisposable
     {
         private TextHost _host;
-        private bool _disposedValue = false;
+        private bool _disposedValue;
 
 #if DEBUG
         public static ILogger Logger { get => TextHost.Logger; set => TextHost.Logger = value; }

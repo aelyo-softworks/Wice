@@ -13,7 +13,7 @@ namespace Wice
         public static VisualProperty StretchDirectionProperty = VisualProperty.Add(typeof(Image), nameof(StretchDirection), VisualPropertyInvalidateModes.Measure, StretchDirection.Both);
         public static VisualProperty SourceRectangleProperty = VisualProperty.Add<D2D_RECT_F?>(typeof(Image), nameof(SourceRectangle), VisualPropertyInvalidateModes.Measure);
 
-        private bool _disposedValue = false;
+        private bool _disposedValue;
         private ComObject<ID2D1Bitmap> _bitmap;
 
         public Image()

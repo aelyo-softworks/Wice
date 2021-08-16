@@ -10,7 +10,7 @@ namespace Wice
         public static VisualProperty StretchProperty = VisualProperty.Add(typeof(SvgImage), nameof(Stretch), VisualPropertyInvalidateModes.Measure, Stretch.Uniform);
         public static VisualProperty StretchDirectionProperty = VisualProperty.Add(typeof(SvgImage), nameof(StretchDirection), VisualPropertyInvalidateModes.Measure, StretchDirection.Both);
 
-        private bool _disposedValue = false;
+        private bool _disposedValue;
         private UnmanagedMemoryStream _documentBuffer;
         private bool _bufferStream;
 

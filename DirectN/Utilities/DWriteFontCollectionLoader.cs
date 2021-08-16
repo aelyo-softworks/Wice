@@ -7,7 +7,7 @@ namespace DirectN
 {
     public class DWriteFontCollectionLoader : IDWriteFontCollectionLoader, IDisposable
     {
-        private bool _disposedValue = false;
+        private bool _disposedValue;
         private readonly FontFileLoader _loader = new FontFileLoader();
 
         public DWriteFontCollectionLoader()

@@ -8,7 +8,7 @@ namespace Wice.Utilities
 {
     public class EventProviderLogger : ILogger, IDisposable
     {
-        private bool _disposedValue = false;
+        private bool _disposedValue;
         private readonly EventProvider _provider;
 
         public EventProviderLogger(Guid providerId)
