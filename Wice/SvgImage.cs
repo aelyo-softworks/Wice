@@ -16,7 +16,7 @@ namespace Wice
 
         public SvgImage()
         {
-            BackgroundColor = _D3DCOLORVALUE.Pink;
+            BackgroundColor = _D3DCOLORVALUE.Transparent;
             BufferStream = true;
         }
 
@@ -88,7 +88,7 @@ namespace Wice
                         if (stream != null)
                         {
                             _documentBuffer = new UnmanagedMemoryStream(stream);
-                            Application.Trace("loaded buffer size:" + _documentBuffer.Length);
+                            //Application.Trace("loaded buffer size:" + _documentBuffer.Length);
                         }
                     }
                 }
@@ -97,7 +97,7 @@ namespace Wice
                 {
                     _documentBuffer.Position = 0;
                     dc.CreateSvgDocument(_documentBuffer, rc.Size, out svg).ThrowOnError();
-                    Application.Trace("loaded doc from buffer");
+                    //Application.Trace("loaded doc from buffer");
                 }
             }
             else
@@ -107,7 +107,7 @@ namespace Wice
                     if (stream != null)
                     {
                         dc.CreateSvgDocument(new ManagedIStream(stream), rc.Size, out svg).ThrowOnError();
-                        Application.Trace("loaded doc");
+                        //Application.Trace("loaded doc");
                     }
                 }
             }
@@ -116,7 +116,7 @@ namespace Wice
 
             using (var document = new ComObject<ID2D1SvgDocument>(svg))
             {
-                Application.Trace("draw");
+                //Application.Trace("draw");
                 dc.DrawSvgDocument(document.Object);
             }
         }

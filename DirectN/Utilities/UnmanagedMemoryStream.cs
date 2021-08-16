@@ -15,6 +15,7 @@ namespace DirectN
         {
             _stream = SHCreateMemStream(IntPtr.Zero, 0);
             Check();
+            Position = 0;
         }
 
         public UnmanagedMemoryStream(Stream stream, int bufferSize = 81920) // below LOH
@@ -151,6 +152,7 @@ namespace DirectN
             }
         }
 
+        void IStream.Read(byte[] pv, int cb, IntPtr pcbRead) => Read(pv, cb, pcbRead);
         private int Read(byte[] pv, int cb, IntPtr pcbRead)
         {
             int read;
@@ -171,7 +173,6 @@ namespace DirectN
             return read;
         }
 
-        void IStream.Read(byte[] pv, int cb, IntPtr pcbRead) => Read(pv, cb, pcbRead);
         void IStream.Write(byte[] pv, int cb, IntPtr pcbWritten)
         {
             int written;
