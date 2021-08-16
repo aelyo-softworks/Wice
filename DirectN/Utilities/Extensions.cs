@@ -29,20 +29,24 @@ namespace DirectN
         public static int LOWORD(this IntPtr value) => LOWORD((int)(long)value);
 
         public static float Ceiling(this float value) => (float)Math.Ceiling(value);
-        public static int CeilingI(this float value) => (int)Math.Ceiling(value);
-        public static uint CeilingU(this float value) => (uint)Math.Ceiling(value);
+        public static int CeilingI(this float value) => Math.Ceiling(value).ToInt32();
+        public static uint CeilingU(this float value) => Math.Ceiling(value).ToUInt32();
         public static float Floor(this float value) => (float)Math.Floor(value);
-        public static int FloorI(this float value) => (int)Math.Floor(value);
+        public static int FloorI(this float value) => Math.Floor(value).ToInt32();
+        public static uint FloorU(this float value) => Math.Floor(value).ToUInt32();
         public static float Round(this float value) => (float)Math.Round(value);
-        public static int RoundI(this float value) => (int)Math.Round(value);
+        public static int RoundI(this float value) => Math.Round(value).ToInt32();
+        public static uint RoundU(this float value) => Math.Round(value).ToUInt32();
 
         public static double Ceiling(this double value) => Math.Ceiling(value);
-        public static int CeilingI(this double value) => (int)Math.Ceiling(value);
-        public static uint CeilingU(this double value) => (uint)Math.Ceiling(value);
+        public static int CeilingI(this double value) => Math.Ceiling(value).ToInt32();
+        public static uint CeilingU(this double value) => Math.Ceiling(value).ToUInt32();
         public static double Floor(this double value) => Math.Floor(value);
-        public static int FloorI(this double value) => (int)Math.Floor(value);
+        public static int FloorI(this double value) => Math.Floor(value).ToInt32();
+        public static uint FloorU(this double value) => Math.Floor(value).ToUInt32();
         public static double Round(this double value) => Math.Round(value);
-        public static int RoundI(this double value) => (int)Math.Round(value);
+        public static int RoundI(this double value) => Math.Round(value).ToInt32();
+        public static uint RoundU(this double value) => Math.Round(value).ToUInt32();
 
         public static float Clamp(this float value, float min, float max = float.MaxValue) => value < min ? min : value > max ? max : value;
         public static byte Clamp(this byte value, byte min, byte max = byte.MaxValue) => value < min ? min : value > max ? max : value;
@@ -64,10 +68,13 @@ namespace DirectN
 
         public static uint ToUInt32(this float value)
         {
-            if (value < 0)
+            if (float.IsNaN(value))
+                throw new OverflowException();
+
+            if (value <= 0)
                 return 0;
 
-            if (value > uint.MaxValue)
+            if (value >= uint.MaxValue)
                 return uint.MaxValue;
 
             return (uint)value;
@@ -75,10 +82,41 @@ namespace DirectN
 
         public static int ToInt32(this float value)
         {
-            if (value < int.MinValue)
+            if (float.IsNaN(value))
+                throw new OverflowException();
+
+            if (value <= int.MinValue)
                 return int.MinValue;
 
-            if (value > int.MaxValue)
+            if (value >= int.MaxValue)
+                return int.MaxValue;
+
+            return (int)value;
+        }
+
+        public static uint ToUInt32(this double value)
+        {
+            if (double.IsNaN(value))
+                throw new OverflowException();
+
+            if (value <= 0)
+                return 0;
+
+            if (value >= uint.MaxValue)
+                return uint.MaxValue;
+
+            return (uint)value;
+        }
+
+        public static int ToInt32(this double value)
+        {
+            if (double.IsNaN(value))
+                throw new OverflowException();
+
+            if (value <= int.MinValue)
+                return int.MinValue;
+
+            if (value >= int.MaxValue)
                 return int.MaxValue;
 
             return (int)value;

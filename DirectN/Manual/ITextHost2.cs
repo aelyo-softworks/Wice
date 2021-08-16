@@ -157,7 +157,7 @@ namespace DirectN
         HRESULT TxGetEditStyle(TXES dwItem, out TXES pdwData);
 
         [PreserveSig]
-        HRESULT TxGetWindowStyles(out int pdwStyle, out int pdwExStyle);
+        HRESULT TxGetWindowStyles(out WS pdwStyle, out WS_EX pdwExStyle);
 
         [PreserveSig]
         HRESULT TxShowDropCaret(bool fShow, IntPtr hdc, IntPtr prc);

@@ -39,6 +39,14 @@ namespace DirectN
 
         public tagRECT(int left, int top, int right, int bottom)
         {
+#if DEBUG
+            if (right < left)
+                throw new ArgumentException(null, nameof(right));
+
+            if (bottom < top)
+                throw new ArgumentException(null, nameof(bottom));
+#endif
+
             this.left = left;
             this.top = top;
             this.right = right;
@@ -61,16 +69,28 @@ namespace DirectN
             bottom = (int)(top + size.height);
         }
 
-        public tagRECT(double left, double top, double right, double bottom)
-        {
-            this.left = left.FloorI();
-            this.top = top.FloorI();
-            this.right = right.CeilingI();
-            this.bottom = bottom.CeilingI();
-        }
-
         public tagRECT(float left, float top, float right, float bottom)
         {
+#if DEBUG
+            if (left.IsNotSet())
+                throw new ArgumentException(null, nameof(left));
+
+            if (top.IsNotSet())
+                throw new ArgumentException(null, nameof(top));
+
+            if (right.IsNotSet())
+                throw new ArgumentException(null, nameof(right));
+
+            if (bottom.IsNotSet())
+                throw new ArgumentException(null, nameof(bottom));
+
+            if (right < left)
+                throw new ArgumentException(null, nameof(right));
+
+            if (bottom < top)
+                throw new ArgumentException(null, nameof(bottom));
+#endif
+
             this.left = left.FloorI();
             this.top = top.FloorI();
             this.right = right.CeilingI();
@@ -97,18 +117,7 @@ namespace DirectN
         public D2D_RECT_F ToD2D_RECT_F() => new D2D_RECT_F(left, top, right, bottom);
         public Vector2 ToVector2() => new Vector2(Width, Height);
 
-        public tagRECT PixelToHiMetric()
-        {
-            var dpi = D2D1Functions.Dpi;
-            return new tagRECT(
-                (int)(tagSIZE.HIMETRIC_PER_INCH * left / dpi.width),
-                (int)(tagSIZE.HIMETRIC_PER_INCH * top / dpi.height),
-                (int)(tagSIZE.HIMETRIC_PER_INCH * right / dpi.width),
-                (int)(tagSIZE.HIMETRIC_PER_INCH * bottom / dpi.height)
-                );
-        }
-
-        public D2D_RECT_F PixelToHiMetricF()
+        public D2D_RECT_F PixelToHiMetric()
         {
             var dpi = D2D1Functions.Dpi;
             return new D2D_RECT_F(
@@ -119,17 +128,7 @@ namespace DirectN
                 );
         }
 
-        public tagRECT HiMetricToPixel()
-        {
-            var dpi = D2D1Functions.Dpi;
-            return new tagRECT(
-                (int)(left * dpi.width / tagSIZE.HIMETRIC_PER_INCH),
-                (int)(top * dpi.height / tagSIZE.HIMETRIC_PER_INCH),
-                (int)(right * dpi.width / tagSIZE.HIMETRIC_PER_INCH),
-                (int)(bottom * dpi.height / tagSIZE.HIMETRIC_PER_INCH));
-        }
-
-        public D2D_RECT_F HiMetricToPixelF()
+        public D2D_RECT_F HiMetricToPixel()
         {
             var dpi = D2D1Functions.Dpi;
             return new D2D_RECT_F(
@@ -139,22 +138,22 @@ namespace DirectN
                 bottom * dpi.height / tagSIZE.HIMETRIC_PER_INCH);
         }
 
-        public tagRECT PixelToDip()
+        public D2D_RECT_F PixelToDip()
         {
             var scale = D2D1Functions.DpiScale;
             if (scale.width == 1 && scale.height == 1)
-                return this;
+                return ToD2D_RECT_F();
 
-            return new tagRECT((int)(left / scale.width), (int)(top / scale.height), (int)(right / scale.width), (int)(bottom / scale.height));
+            return new D2D_RECT_F(left / scale.width, top / scale.height, right / scale.width, bottom / scale.height);
         }
 
-        public tagRECT DipToPixel()
+        public D2D_RECT_F DipToPixel()
         {
             var scale = D2D1Functions.DpiScale;
             if (scale.width == 1 && scale.height == 1)
-                return this;
+                return ToD2D_RECT_F();
 
-            return new tagRECT((int)(left * scale.width), (int)(top * scale.height), (int)(right * scale.width), (int)(bottom * scale.height));
+            return new D2D_RECT_F(left * scale.width, top * scale.height, right * scale.width, bottom * scale.height);
         }
     }
 }

@@ -174,7 +174,7 @@ namespace DirectN
         private delegate HRESULT TxGetEditStyleFn(IntPtr pThis, TXES dwItem, out TXES pdwData);
 
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
-        private delegate HRESULT TxGetWindowStylesFn(IntPtr pThis, out int pdwStyle, out int pdwExStyle);
+        private delegate HRESULT TxGetWindowStylesFn(IntPtr pThis, out WS pdwStyle, out WS_EX pdwExStyle);
 
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)]
         private delegate HRESULT TxShowDropCaretFn(IntPtr pThis, bool fShow, IntPtr hdc, IntPtr prc);
@@ -390,7 +390,7 @@ namespace DirectN
         private static IntPtr TxSetCursor2(IntPtr pThis, IntPtr hcur, bool bText) => GetHost(pThis).TxSetCursor2(hcur, bText);
         private static void TxFreeTextServicesNotification(IntPtr pThis) => GetHost(pThis).TxFreeTextServicesNotification();
         private static HRESULT TxGetEditStyle(IntPtr pThis, TXES dwItem, out TXES pdwData) => GetHost(pThis).TxGetEditStyle(dwItem, out pdwData);
-        private static HRESULT TxGetWindowStyles(IntPtr pThis, out int pdwStyle, out int pdwExStyle) => GetHost(pThis).TxGetWindowStyles(out pdwStyle, out pdwExStyle);
+        private static HRESULT TxGetWindowStyles(IntPtr pThis, out WS pdwStyle, out WS_EX pdwExStyle) => GetHost(pThis).TxGetWindowStyles(out pdwStyle, out pdwExStyle);
         private static HRESULT TxShowDropCaret(IntPtr pThis, bool fShow, IntPtr hdc, IntPtr prc) => GetHost(pThis).TxShowDropCaret(fShow, hdc, prc);
         private static HRESULT TxDestroyCaret(IntPtr pThis) => GetHost(pThis).TxDestroyCaret();
         private static HRESULT TxGetHorzExtent(IntPtr pThis, out int plHorzExtent) => GetHost(pThis).TxGetHorzExtent(out plHorzExtent);

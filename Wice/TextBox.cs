@@ -1377,16 +1377,16 @@ namespace Wice
                 {
                     e.Handled = true;
                     FontSize = size;
-                    if (Parent is IScrollView)
-                    {
-                        Invalidate(VisualPropertyInvalidateModes.Measure, new InvalidateReason(GetType()));
-                    }
+                    //if (Parent is IScrollView)
+                    //{
+                    //    Invalidate(VisualPropertyInvalidateModes.Measure, new InvalidateReason(GetType()));
+                    //}
                 }
                 return;
             }
 
-            if (Parent is IScrollView)
-                return;
+            //if (Parent is IScrollView)
+            //    return;
 
             var offset = e.Delta * GetFontSize();
             e.Handled = true;
@@ -2160,29 +2160,29 @@ namespace Wice
 
             //EnsureCaretWidthVisible(ref caretRc, rr.width);
 
-            if (Parent is IScrollView scrollView)
-            {
-                var margin = Margin;
-                var view = scrollView.ViewSize;
-                if (caretRc.bottom + margin.top > (scrollView.VerticalOffset + view.height))
-                {
-                    scrollView.VerticalOffset = caretRc.bottom + margin.top - view.height;
-                }
-                else if ((caretRc.top + margin.top) < scrollView.VerticalOffset)
-                {
-                    scrollView.VerticalOffset = caretRc.top + margin.top;
-                }
+            //if (Parent is IScrollView scrollView)
+            //{
+            //    var margin = Margin;
+            //    var view = scrollView.ViewSize;
+            //    if (caretRc.bottom + margin.top > (scrollView.VerticalOffset + view.height))
+            //    {
+            //        scrollView.VerticalOffset = caretRc.bottom + margin.top - view.height;
+            //    }
+            //    else if ((caretRc.top + margin.top) < scrollView.VerticalOffset)
+            //    {
+            //        scrollView.VerticalOffset = caretRc.top + margin.top;
+            //    }
 
-                if ((caretRc.right + margin.left) >= (scrollView.HorizontalOffset + view.width))
-                {
-                    scrollView.HorizontalOffset = caretRc.right + margin.left - view.width;
-                }
-                else if ((caretRc.left + margin.left) < scrollView.HorizontalOffset)
-                {
-                    scrollView.HorizontalOffset = caretRc.left + margin.left;
-                }
-            }
-            else
+            //    if ((caretRc.right + margin.left) >= (scrollView.HorizontalOffset + view.width))
+            //    {
+            //        scrollView.HorizontalOffset = caretRc.right + margin.left - view.width;
+            //    }
+            //    else if ((caretRc.left + margin.left) < scrollView.HorizontalOffset)
+            //    {
+            //        scrollView.HorizontalOffset = caretRc.left + margin.left;
+            //    }
+            //}
+            //else
             {
                 if (caretRc.bottom > (rr.height - _origin.y - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0)))
                 {

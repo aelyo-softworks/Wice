@@ -208,7 +208,6 @@
     <Compile Include="ValueEventArgs.cs" />
     <Compile Include="VerticalScrollBar.cs" />
     <Compile Include="HorizontalScrollBar.cs" />
-    <Compile Include="IScrollable.cs" />
     <Compile Include="ScrollBar.cs" />
     <Compile Include="ScrollBarVisibility.cs" />
     <Compile Include="ScrollViewer.cs" />
@@ -266,7 +265,6 @@
     <Compile Include="Effects\UnpremultiplyEffect.cs" />
     <Compile Include="Effects\VignetteEffect.cs" />
     <Compile Include="Effects\WhiteLevelAdjustmentEffect.cs" />
-    <Compile Include="IScrollView.cs" />
     <Compile Include="Path.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="RoundedRectangle.cs" />

@@ -6,6 +6,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ApplicationManifest>..\Wice.Samples.Gallery\app.manifest</ApplicationManifest>
     <ApplicationIcon>..\Assets\wice_color.ico</ApplicationIcon>
+    <RootNamespace>Wice.Samples.Gallery</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="README.md" />
@@ -24,6 +25,7 @@
     <Compile Include="..\Wice.Samples.Gallery\Titled.cs" Link="Titled.cs" />
     <EmbeddedResource Include="..\Wice.Samples.Gallery\Resources\aelyo_flat.png" Link="Resources\aelyo_flat.png" />
     <EmbeddedResource Include="..\Wice.Samples.Gallery\Resources\en.xml" Link="Resources\en.xml" />
+    <EmbeddedResource Include="..\Wice.Samples.Gallery\Resources\wice.rtf" Link="Resources\wice.rtf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

@@ -54,9 +54,15 @@ namespace DirectN
         {
             get
             {
-                //_services.TxGetText(out var text).ThrowOnError();
-                GetWholeRange().GetText2(0, out string value);
-                return value;
+                try
+                {
+                    GetWholeRange().GetText2(0, out string value);
+                    return value;
+                }
+                catch
+                {
+                    return string.Empty;
+                }
             }
             set
             {
@@ -82,8 +88,15 @@ namespace DirectN
         {
             get
             {
-                GetWholeRange().GetText2(tomConvertRTF | tomGetUtf16, out string value);
-                return value;
+                try
+                {
+                    GetWholeRange().GetText2(tomConvertRTF | tomGetUtf16, out string value);
+                    return value;
+                }
+                catch
+                {
+                    return string.Empty;
+                }
             }
             set
             {
@@ -95,8 +108,15 @@ namespace DirectN
         {
             get
             {
-                GetWholeRange().GetText2(tomConvertHtml | tomGetUtf16, out string value);
-                return value;
+                try
+                {
+                    GetWholeRange().GetText2(tomConvertHtml | tomGetUtf16, out string value);
+                    return value;
+                }
+                catch
+                {
+                    return string.Empty;
+                }
             }
             set
             {
@@ -108,7 +128,7 @@ namespace DirectN
 
         private dynamic GetWholeRange()
         {
-            dynamic d = _services;
+            var d = Document;
             var range = d.Range(0, 0);
             range.MoveEnd(tomStory, 1);
             return range;
@@ -122,8 +142,11 @@ namespace DirectN
                 if (_options == value)
                     return;
 
+                var oldValue = _options;
                 _options = value;
-                ChangeBitNotify(TXTBIT.TXTBIT_WORDWRAP | TXTBIT.TXTBIT_VERTICAL | TXTBIT.TXTBIT_READONLY | TXTBIT.TXTBIT_MULTILINE);
+
+                var change = (TXTBIT)(oldValue ^ _options);
+                ChangeBitNotify(change);
             }
         }
 
@@ -223,6 +246,8 @@ namespace DirectN
             return i;
         }
 
+        public static _D3DCOLORVALUE ToColor(int color) => new _D3DCOLORVALUE(color);
+
         private void ResetCharFormat()
         {
             Interlocked.Exchange(ref _charFormat, null)?.Dispose();
@@ -237,6 +262,9 @@ namespace DirectN
 
         private void ChangeBitNotify(TXTBIT bit)
         {
+            if (bit == 0)
+                return;
+
             if (_services32 != null)
             {
                 _services32.OnTxPropertyBitsChange(bit, bit).ThrowOnError();
@@ -247,12 +275,25 @@ namespace DirectN
             }
         }
 
-        public D2D_SIZE_F Measure(TXTNATURALSIZE mode, D2D_SIZE_F constraint) => Measure(mode, constraint, out _);
-        public D2D_SIZE_F Measure(TXTNATURALSIZE mode, D2D_SIZE_F constraint, out int ascent)
+        public tagSIZE GetNaturalSize(TXTNATURALSIZE mode, D2D_SIZE_F constraint) => GetNaturalSize(mode, constraint, out _);
+        public tagSIZE GetNaturalSize(TXTNATURALSIZE mode, D2D_SIZE_F constraint, out int ascent)
         {
-            var extent = constraint.PixelToHiMetric();
-            var width = int.MaxValue;
-            var height = int.MaxValue;
+            // for some reason, -1, -1 avoids the himetric mumbo jumbo computation...
+            var extent = new tagSIZE { width = -1, height = -1 };
+            
+            var ct = constraint.TotagSize();
+            var width = ct.width;
+            if (Options.HasFlag(TextHostOptions.WordWrap))
+            {
+                if (width == int.MaxValue)
+                {
+                    // not sure we should do this or throw some error
+                    //Options &= ~TextHostOptions.WordWrap;
+                }
+            }
+
+            var height = 0; // warning! not sure why this seems to be always good? check vertical mode
+
             if (_services32 != null)
             {
                 _services32.TxGetNaturalSize2(DVASPECT.DVASPECT_CONTENT, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, mode, ref extent, ref width, ref height, out ascent).ThrowOnError();
@@ -261,7 +302,7 @@ namespace DirectN
             {
                 _services.TxGetNaturalSize2(DVASPECT.DVASPECT_CONTENT, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, mode, ref extent, ref width, ref height, out ascent).ThrowOnError();
             }
-            return new tagSIZE(width, height).HiMetricToPixelF();
+            return new tagSIZE(width, height);
         }
 
         //CustomQueryInterfaceResult ICustomQueryInterface.GetInterface(ref Guid iid, out IntPtr ppv)
@@ -302,7 +343,8 @@ namespace DirectN
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            rc = rc.PixelToDip();
+            Trace("rc: " + rc);
+            rc = rc.PixelToDip().TotagRECT();
             if (_services32 != null)
             {
                 _services32.TxDrawD2D(target, ref rc, IntPtr.Zero, TXTVIEW.TXTVIEW_ACTIVE).ThrowOnError();
@@ -418,6 +460,7 @@ namespace DirectN
                 //format.dwMask |= CFM.CFM_EFFECTS2;
 
                 _charFormat = new ComMemory<CHARFORMAT2W>(format);
+                Trace("fmt: " + format);
             }
 
             ppCF = _charFormat.Pointer;
@@ -435,6 +478,7 @@ namespace DirectN
                 format.wBorderWidth = (short)D2D1Functions.PointsToTwips(20);
                 format.wAlignment = Aligment;
                 _paraFormat = new ComMemory<PARAFORMAT2>(format);
+                Trace("fmt: " + format);
             }
 
             ppPF = _paraFormat.Pointer;
@@ -481,7 +525,7 @@ namespace DirectN
             //lpExtent.width = 400;
             //lpExtent.height = 400;
             //lpExtent = lpExtent.PixelToHiMetric();
-            //Trace("lpExtent: " + lpExtent);
+            Trace("lpExtent: " + lpExtent);
             //return HRESULTS.S_OK;
             return HRESULTS.E_NOTIMPL;
         }
@@ -578,7 +622,7 @@ namespace DirectN
             prc.top = 0;
             prc.right = 0;
             prc.bottom = 0;
-            prc = prc.PixelToHiMetric();
+            prc = prc.PixelToHiMetric().TotagRECT();
             Trace("prc: " + prc);
             return HRESULTS.S_OK;
         }
@@ -590,7 +634,7 @@ namespace DirectN
             return HRESULTS.S_OK;
         }
 
-        public HRESULT TxGetWindowStyles(out int pdwStyle, out int pdwExStyle)
+        public HRESULT TxGetWindowStyles(out WS pdwStyle, out WS_EX pdwExStyle)
         {
             pdwStyle = 0;
             pdwExStyle = 0;
@@ -611,7 +655,7 @@ namespace DirectN
 
         public void TxInvalidateRect(IntPtr prc, bool fMode)
         {
-            //Trace("prc: " + prc + " fMode: " + fMode);
+            Trace("prc: " + prc + " fMode: " + fMode);
         }
 
         public bool TxIsDoubleClickPending()

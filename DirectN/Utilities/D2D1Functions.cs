@@ -91,11 +91,12 @@ namespace DirectN
             }
         }
 
+        //  A point is 1/72 of an inch
+        //  A twip is 1/1440 of an inch
         // https://blogs.msdn.microsoft.com/text/2009/12/11/wpf-text-measurement-units/
-        public static float PointsToDips(float pt) => 96 / (72 * pt);
-        public static float DipsToPoints(float dip) => 72 / (96 * dip);
+        // https://docs.microsoft.com/en-us/windows/win32/learnwin32/dpi-and-device-independent-pixels
         public static float PointsToTwips(float pt) => pt * 20;
-        public static float TwipsToPoints(float twips) => twips * 20;
+        public static float TwipsToPoints(float twips) => twips / 20;
 
         public static double PixelsToDips(int pixels, double dpi) => pixels * 96 / dpi;
         public static int DipsToPixels(int dips, double dpi) => (int)(dips * dpi / 96);

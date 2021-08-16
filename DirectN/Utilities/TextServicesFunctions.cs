@@ -7,8 +7,8 @@ namespace DirectN
 {
     public static class TextServicesFunctions
     {
-        public static ITextServices Create(this ITextHost2 host, TextServicesGenerator generator = TextServicesGenerator.Default) => Create<ITextServices>(host, generator);
-        public static T Create<T>(this ITextHost2 host, TextServicesGenerator generator = TextServicesGenerator.Default) where T : ITextServices
+        public static ITextServices Create(this ITextHost host, TextServicesGenerator generator = TextServicesGenerator.Default) => Create<ITextServices>(host, generator);
+        public static T Create<T>(this ITextHost host, TextServicesGenerator generator = TextServicesGenerator.Default) where T : ITextServices
         {
             if (host == null)
                 throw new ArgumentNullException(nameof(host));
@@ -26,8 +26,8 @@ namespace DirectN
             return CreateTextServices<T>(host, TextServicesGenerator.Default);
         }
 
-        public static ITextServices CreateOffice(this ITextHost2 host) => CreateOffice<ITextServices>(host);
-        public static T CreateOffice<T>(this ITextHost2 host) where T : ITextServices
+        public static ITextServices CreateOffice(this ITextHost host) => CreateOffice<ITextServices>(host);
+        public static T CreateOffice<T>(this ITextHost host) where T : ITextServices
         {
             if (host == null)
                 throw new ArgumentNullException(nameof(host));
@@ -53,19 +53,34 @@ namespace DirectN
             return CreateTextServices<T>(host, TextServicesGenerator.Office);
         }
 
-        private static T CreateTextServices<T>(ITextHost2 host, TextServicesGenerator generator)
+        private static IntPtr GetPointer(ITextHost host)
+        {
+            try
+            {
+                return Marshal.GetComInterfaceForObject(host, typeof(ITextHost2));
+            }
+            catch (InvalidCastException)
+            {
+                // do nothing
+            }
+            return Marshal.GetComInterfaceForObject(host, typeof(ITextHost));
+        }
+
+        private static T CreateTextServices<T>(ITextHost host, TextServicesGenerator generator)
         {
             object unk;
             if (IntPtr.Size == 8)
             {
+                // for some reason (internal to riched?), we can't pass the object itself, we must use a pointer
+                var pp = GetPointer(host);
                 if (generator == TextServicesGenerator.Office)
                 {
                     // don't check error
-                    CreateOfficeTextServices(null, host, out unk);
+                    CreateOfficeTextServices(null, pp, out unk);
                 }
                 else
                 {
-                    CreateTextServices(null, host, out unk).ThrowOnError();
+                    CreateTextServices(null, pp, out unk).ThrowOnError();
                 }
             }
             else
@@ -80,6 +95,7 @@ namespace DirectN
                 }
                 else
                 {
+                    // note this crashes for .NET 5 and x86. I don't understand why
                     CreateTextServices(null, th.HostThunk.Pointer, out unk).ThrowOnError();
                 }
             }
@@ -172,17 +188,11 @@ namespace DirectN
         [DllImport("riched20", EntryPoint = nameof(CreateTextServices))]
         private static extern HRESULT CreateOfficeTextServices([MarshalAs(UnmanagedType.IUnknown)] object punkOuter, IntPtr pITextHost, [MarshalAs(UnmanagedType.IUnknown)] out object ppUnk);
 
-        [DllImport("riched20", EntryPoint = nameof(CreateTextServices))]
-        private static extern HRESULT CreateOfficeTextServices([MarshalAs(UnmanagedType.IUnknown)] object punkOuter, ITextHost pITextHost, [MarshalAs(UnmanagedType.IUnknown)] out object ppUnk);
-
         [DllImport("riched20", EntryPoint = nameof(ShutdownTextServices))]
         private static extern HRESULT ShutdownOfficeTextServices([MarshalAs(UnmanagedType.IUnknown)] object pTextServices);
 
         [DllImport("msftedit")]
         private static extern HRESULT CreateTextServices([MarshalAs(UnmanagedType.IUnknown)] object punkOuter, IntPtr pITextHost, [MarshalAs(UnmanagedType.IUnknown)] out object ppUnk);
-
-        [DllImport("msftedit")]
-        private static extern HRESULT CreateTextServices([MarshalAs(UnmanagedType.IUnknown)] object punkOuter, ITextHost pITextHost, [MarshalAs(UnmanagedType.IUnknown)] out object ppUnk);
 
         [DllImport("msftedit")]
         private static extern HRESULT ShutdownTextServices([MarshalAs(UnmanagedType.IUnknown)] object pTextServices);

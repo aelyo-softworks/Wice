@@ -45,7 +45,12 @@ namespace Wice.Tests
             //AddEditableTexts();
             //AddTextWithSpaces(this);
 
-            AddRtf1();
+            //AddRtb();
+            //AddRtbDoc();
+            //AddRtbVertical();
+            //AddRtbRtfFile();
+            //AddRtbHtml();
+            AddScrollableRtbRtfFile();
 
             //AddSimpleGrid();
             //AddSimpleGrid2();
@@ -1011,11 +1016,87 @@ namespace Wice.Tests
             }
         }
 
-        public void AddRtf1()
+        public void AddRtb()
         {
+#if DEBUG
             RichTextBox.Logger = UILogger.Instance;
+#endif
             var rtf = new RichTextBox();
             Children.Add(rtf);
+
+            rtf.RtfText = @"{\rtf1\ansi\deff0
+            {\colortbl;\red0\green0\blue0;\red255\green0\blue0;}
+            This line is the default color\line
+            \cf2
+            This is red with special characters: éèà 😱 \line
+            \cf1
+            This line is the default color
+            }";
+        }
+
+        public void AddRtbDoc()
+        {
+#if DEBUG
+            RichTextBox.Logger = UILogger.Instance;
+#endif
+            var rtf = new RichTextBox();
+            Children.Add(rtf);
+
+            var doc = rtf.Document;
+            doc.Open(new ManagedIStream("héllo" + Environment.NewLine + "😀world!"), 0, 1200);
+        }
+
+        public void AddRtbHtml()
+        {
+#if DEBUG
+            RichTextBox.Logger = UILogger.Instance;
+#endif
+            // as of today, html can only work with Office's riched20.dll
+            var rtf = new RichTextBox(TextServicesGenerator.Office);
+            Children.Add(rtf);
+
+            // setting HTML text doesn't work, but getting it does work...
+            //rtf.HtmlText = @"<html><head><style>body{font-family:Arial,sans-serif;font-size:10pt;}</style><style>.cf0{font-family:Calibri;font-size:9.7pt;background-color:#FFFFFF;}</style></head><body><p>h&#xE9;llo</p><p>world</p></body></html>";
+            rtf.HtmlText = @"<html><body><p>hello world</p></body></html>";
+        }
+
+        public void AddRtbVertical()
+        {
+#if DEBUG
+            RichTextBox.Logger = UILogger.Instance;
+#endif
+            var rtf = new RichTextBox();
+            Children.Add(rtf);
+
+            rtf.Options |= TextHostOptions.Vertical;
+            rtf.Text = "héllo\nworld";
+        }
+
+        public void AddRtbRtfFile()
+        {
+#if DEBUG
+            RichTextBox.Logger = UILogger.Instance;
+#endif
+            var rtf = new RichTextBox();
+            Children.Add(rtf);
+
+            rtf.RtfText = File.ReadAllText(@"wice.rtf");
+        }
+
+        public void AddScrollableRtbRtfFile()
+        {
+#if DEBUG
+            RichTextBox.Logger = UILogger.Instance;
+#endif
+            var sv = new ScrollViewer();
+            sv.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            Children.Add(sv);
+
+            var rtf = new RichTextBox();
+            rtf.Width = 500;
+            rtf.Options |= TextHostOptions.WordWrap;
+            rtf.RtfText = File.ReadAllText(@"wice.rtf");
+            sv.Viewer.Child = rtf;
         }
 
         public void AddReadOnlyText() => AddReadOnlyText(this);

@@ -59,8 +59,8 @@ namespace DirectN
         public static implicit operator Vector2(D2D_SIZE_F sz) => new Vector2(sz.width, sz.height);
         public static implicit operator D2D_SIZE_F(Vector2 sz) => new D2D_SIZE_F(sz.X, sz.Y);
 
-        public tagSIZE ToSize() => new tagSIZE((int)width, (int)height);
-        public D2D_SIZE_U ToD2D_SIZE_U() => new D2D_SIZE_U(width.ToUInt32(), height.ToUInt32());
+        public tagSIZE TotagSize() => new tagSIZE(width, height);
+        public D2D_SIZE_U ToD2D_SIZE_U() => new D2D_SIZE_U(width, height);
         public D2D_SIZE_F ToD2D_SIZE_F() => new D2D_SIZE_F(width, height);
         public D2D_VECTOR_2F ToD2D_VECTOR_2F() => new D2D_VECTOR_2F(width, height);
         public Vector2 ToVector2() => new Vector2(width, height);
@@ -80,28 +80,16 @@ namespace DirectN
         public static readonly D2D_SIZE_F PositiveInfinity = new D2D_SIZE_F(float.PositiveInfinity, float.PositiveInfinity);
 #endif
 
-        public D2D_SIZE_F PixelToHiMetricF()
+        public D2D_SIZE_F PixelToHiMetric()
         {
             var dpi = D2D1Functions.Dpi;
             return new D2D_SIZE_F(tagSIZE.HIMETRIC_PER_INCH * width / dpi.width, tagSIZE.HIMETRIC_PER_INCH * height / dpi.height);
         }
 
-        public tagSIZE PixelToHiMetric()
-        {
-            var dpi = D2D1Functions.Dpi;
-            return new tagSIZE((uint)(tagSIZE.HIMETRIC_PER_INCH * width / dpi.width), (uint)(tagSIZE.HIMETRIC_PER_INCH * height / dpi.height));
-        }
-
-        public D2D_SIZE_F HiMetricToPixelF()
+        public D2D_SIZE_F HiMetricToPixel()
         {
             var dpi = D2D1Functions.Dpi;
             return new D2D_SIZE_F(width * dpi.width / tagSIZE.HIMETRIC_PER_INCH, height * dpi.height / tagSIZE.HIMETRIC_PER_INCH);
-        }
-
-        public tagSIZE HiMetricToPixel()
-        {
-            var dpi = D2D1Functions.Dpi;
-            return new tagSIZE((uint)(width * dpi.width / tagSIZE.HIMETRIC_PER_INCH), (uint)(height * dpi.height / tagSIZE.HIMETRIC_PER_INCH));
         }
 
         public D2D_SIZE_F PixelToDip()

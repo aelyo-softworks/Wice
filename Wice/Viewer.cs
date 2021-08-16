@@ -115,14 +115,5 @@ namespace Wice
                 child.Arrange(rc);
             }
         }
-
-        //protected internal override InvalidateMode GetParentInvalidateMode(InvalidateMode mode, InvalidateReason reason)
-        //{
-        //    if (base.GetParentInvalidateMode(mode, reason) == InvalidateMode.None)
-        //        return InvalidateMode.None;
-
-        //    // we are defined by our parent
-        //    return InvalidateMode.Arrange;
-        //}
     }
 }

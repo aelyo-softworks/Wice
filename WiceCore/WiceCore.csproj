@@ -70,8 +70,6 @@
     <Compile Include="..\Wice\IOneChildParent.cs" Link="IOneChildParent.cs" />
     <Compile Include="..\Wice\IPasswordCapable.cs" Link="IPasswordCapable.cs" />
     <Compile Include="..\Wice\IPropertyOwner.cs" Link="IPropertyOwner.cs" />
-    <Compile Include="..\Wice\IScrollable.cs" Link="IScrollable.cs" />
-    <Compile Include="..\Wice\IScrollView.cs" Link="IScrollView.cs" />
     <Compile Include="..\Wice\ISelectable.cs" Link="ISelectable.cs" />
     <Compile Include="..\Wice\ISelectorVisual.cs" Link="ISelectorVisual.cs" />
     <Compile Include="..\Wice\ItemVisual.cs" Link="ItemVisual.cs" />

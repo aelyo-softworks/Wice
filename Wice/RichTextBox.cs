@@ -1,10 +1,11 @@
 ﻿using System;
-using System.IO;
+using System.ComponentModel;
 using System.Threading;
 using DirectN;
 
 namespace Wice
 {
+    // this currently is only read-only
     public class RichTextBox : RenderVisual, IDisposable
     {
         private TextHost _host;
@@ -16,50 +17,140 @@ namespace Wice
 
         public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
         {
-            BackgroundColor = _D3DCOLORVALUE.Transparent;
+            Generator = generator;
             _host = new TextHost(generator);
             _host.TextColor = 0;
-            //_host.Options |= TextHostOptions.Vertical;
-            //_host.Text = @"{\rtf1\ansi\ansicpg1252\uc1\htmautsp\deff2{\fonttbl{\f0\fcharset0 Times New Roman;}{\f2\fcharset0 Segoe UI;}}{\colortbl\red0\green0\blue0;\red255\green255\blue255;}\loch\hich\dbch\pard\plain\ltrpar\itap0{\lang1033\fs18\f2\cf0 \cf0\ql{\f2 {\lang1036\ltrch azeaze }{\lang1036\b\ltrch ceci }{\lang1036\ltrch est en gras}\li0\ri0\sa0\sb0\fi0\ql\par}
-            //}
-            //}";
-            //_host.RtfText = File.ReadAllText(@"d:\temp\wice.rtf");
-            //_host.Text = File.ReadAllText(@"d:\temp\wice.htm");
-            _host.Text = "héllo\nworld";
-
-            //_host.HtmlText = @"<html><head><style>body{font-family:Arial,sans-serif;font-size:10pt;}</style><style>.cf0{font-family:Calibri;font-size:9.7pt;background-color:#FFFFFF;}</style></head><body><p>h&#xE9;llo</p><p>world</p></body></html>";
-            //_host.HtmlText = "hello";
-            //var html = @"<html><head><style>body{font-family:Arial,sans-serif;font-size:10pt;}</style><style>.cf0{font-family:Calibri;font-size:9.7pt;background-color:#FFFFFF;}</style></head><body><p>héllo</p><p>world</p></body></html>";
-            //var rtf = @"{\rtf1\ansi\ansicpg1252\uc1\htmautsp\deff2{\fonttbl{\f0\fcharset0 Times New Roman;}{\f2\fcharset0 Segoe UI;}}{\colortbl\red0\green0\blue0;\red255\green255\blue255;}\loch\hich\dbch\pard\plain\ltrpar\itap0{\lang1033\fs18\f2\cf0 \cf0\ql{\f2 {\lang1036\ltrch azeaze }{\lang1036\b\ltrch ceci }{\lang1036\ltrch est en gras}\li0\ri0\sa0\sb0\fi0\ql\par}
-            //}
-            //}";
-            //var doc = _host.Document;
-            //doc.Open(new ManagedIStream("héllo" + Environment.NewLine + "😀world!"), 0, 1200);
-
-            //_host.Text = "<html><body>this is a text</body></html>";
-
-            //_host.Text = @"{\rtf1\ansi\deff0
-            //{\colortbl;\red0\green0\blue0;\red255\green0\blue0;}
-            //This line is the default color\line
-            //\cf2
-            //This héllo 😱 is red\line
-            //\cf1
-            //This line is the default color
-            //}";
+            BackgroundColor = _D3DCOLORVALUE.Transparent;
         }
 
-        //protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => new D2D_SIZE_F(40, 40);
+        public dynamic Document => _host?.Document;
+        public TextServicesGenerator Generator { get; }
+        public string GeneratorVersion => Document.Generator;
+
+        public _D3DCOLORVALUE TextColor
+        {
+            get => TextHost.ToColor((_host?.TextColor).GetValueOrDefault());
+            set
+            {
+                var host = _host;
+                if (host == null)
+                    return;
+
+                OnPropertyChanging(nameof(Options));
+                host.TextColor = TextHost.ToColor(value);
+                Invalidate(nameof(Options), VisualPropertyInvalidateModes.Render);
+            }
+        }
+
+        public TextHostOptions Options
+        {
+            get => (_host?.Options).GetValueOrDefault();
+            set
+            {
+                var host = _host;
+                if (host == null)
+                    return;
+
+                OnPropertyChanging(nameof(Options));
+                host.Options = value;
+                Invalidate(nameof(Options));
+            }
+        }
+
+        public string Text
+        {
+            get => _host?.Text;
+            set
+            {
+                var host = _host;
+                if (host == null)
+                    return;
+
+                OnPropertyChanging(nameof(Text));
+                host.Text = value;
+                Invalidate(nameof(Text));
+            }
+        }
+
+        public string RtfText
+        {
+            get => _host?.RtfText;
+            set
+            {
+                var host = _host;
+                if (host == null)
+                    return;
+
+                OnPropertyChanging(nameof(RtfText));
+                host.RtfText = value;
+                Invalidate(nameof(RtfText));
+            }
+        }
+
+        // only works with Office generator
+        public string HtmlText
+        {
+            get => _host?.HtmlText;
+            set
+            {
+                var host = _host;
+                if (host == null)
+                    return;
+
+                OnPropertyChanging(nameof(HtmlText));
+                host.HtmlText = value;
+                Invalidate(nameof(HtmlText));
+            }
+        }
+
+        private void Invalidate(string propertyName, VisualPropertyInvalidateModes modes = VisualPropertyInvalidateModes.Measure)
+        {
+            OnPropertyChanging(propertyName);
+            Application.CheckRunningAsMainThread();
+            Invalidate(modes, new InvalidateReason(GetType()));
+        }
+
+        protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
+        {
+            var host = _host;
+            if (host == null)
+                return base.MeasureCore(constraint);
+
+            var size = host.GetNaturalSize(TXTNATURALSIZE.TXTNS_FITTOCONTENT, constraint);
+            return size.ToD2D_SIZE_F();
+        }
 
         protected override void ArrangeCore(D2D_RECT_F finalRect)
         {
             base.ArrangeCore(finalRect);
-            _host.Activate(finalRect.TotagRECT());
+            var rc = new tagRECT(0, 0, finalRect.Width, finalRect.Height);
+            _host?.Activate(rc);
         }
 
         protected internal override void RenderCore(RenderContext context)
         {
             base.RenderCore(context);
-            _host.Draw(context.DeviceContext.Object, ArrangedRect.TotagRECT());
+            var ar = ArrangedRect;
+            var rc = new tagRECT(0, 0, ar.Width, ar.Height);
+            _host?.Draw(context.DeviceContext.Object, rc);
+        }
+
+        protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions options = null)
+        {
+            if (!base.SetPropertyValue(property, value, options))
+                return false;
+
+            if (property == BackgroundColorProperty)
+            {
+                var host = _host;
+                if (host != null)
+                {
+                    host.BackColor = TextHost.ToColor((_D3DCOLORVALUE)value);
+                }
+                return true;
+            }
+
+            return true;
         }
 
         protected virtual void Dispose(bool disposing)

@@ -123,8 +123,7 @@ namespace DirectN
         public D2D_POINT_2F CenterPoint => new D2D_POINT_2F(left + Width / 2f, top + Height / 2f);
 
         public D2D_SIZE_F Size { get => new D2D_SIZE_F(Width, Height); set { Width = value.width; Height = value.height; } }
-        public D2D_SIZE_U SizeU => new D2D_SIZE_U { width = (uint)Width, height = (uint)Height };
-        public D2D_SIZE_U SizeCeilingU => new D2D_SIZE_U { width = Width.CeilingU(), height = Height.CeilingU() };
+        public D2D_SIZE_U SizeU => new D2D_SIZE_U(Width, Height);
         public D2D_POINT_2F LeftTop => new D2D_POINT_2F(left, top);
         public D2D_POINT_2F LeftBottom => new D2D_POINT_2F(left, bottom);
         public D2D_POINT_2F RightTop => new D2D_POINT_2F(right, top);

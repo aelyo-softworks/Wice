@@ -31,8 +31,7 @@ namespace DirectN
         public bool Equals(D2D_POINT_2F other) => x.Equals(other.x) && y.Equals(other.y);
         public bool Equals(Point other) => x.Equals((float)other.X) && y.Equals((float)other.Y);
         public bool Equals(Vector3 other) => x.Equals(other.X) && y.Equals(other.Y) && other.Z.Equals(0f);
-        public tagPOINT TotagPOINT() => new tagPOINT((int)x, (int)y);
-        public tagPOINT TotagPOINTFloor() => new tagPOINT(x.FloorI(), y.FloorI());
+        public tagPOINT TotagPOINT() => new tagPOINT(x, y);
         public D2D_POINT_2F Floor() => new D2D_POINT_2F(x.Floor(), y.Floor());
         public D2D_POINT_2F Ceiling() => new D2D_POINT_2F(x.Ceiling(), y.Ceiling());
         public override bool Equals(object obj) => (obj is D2D_POINT_2F sz && Equals(sz)) || (obj is D2D_VECTOR_2F vc && Equals(vc)) || (obj is Point pt && Equals(pt)) || (obj is Vector3 v3 && Equals(v3));
@@ -49,7 +48,7 @@ namespace DirectN
         public static implicit operator D2D_POINT_2F(Point pt) => new D2D_POINT_2F(pt.X, pt.Y);
         public static implicit operator Vector3(D2D_POINT_2F pt) => new Vector3(pt.x, pt.y, 0);
         public static implicit operator D2D_POINT_2F(Vector3 pt) => new D2D_POINT_2F(pt.X, pt.Y);
-        public static implicit operator tagPOINT(D2D_POINT_2F pt) => new tagPOINT((int)pt.x, (int)pt.y);
+        public static implicit operator tagPOINT(D2D_POINT_2F pt) => new tagPOINT(pt.x, pt.y);
         public static implicit operator D2D_POINT_2F(tagPOINT pt) => new D2D_POINT_2F(pt.x, pt.y);
 
         // d2d1helper.h
