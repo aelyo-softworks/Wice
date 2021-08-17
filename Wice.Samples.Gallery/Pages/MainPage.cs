@@ -8,13 +8,14 @@ namespace Wice.Samples.Gallery.Pages
     {
         public MainPage()
         {
-            //Title.Text = I18n.T("page.main");
+            // home has no title
             Title.IsVisible = false;
 
 #if DEBUG
             RichTextBox.Logger = Utilities.UILogger.Instance;
 #endif
 
+            // add a rich text box in a scroll viewer
             var sv = new ScrollViewer();
             sv.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             sv.Viewer.IsWidthUnconstrained = false;
@@ -37,5 +38,9 @@ namespace Wice.Samples.Gallery.Pages
 
             sv.Viewer.Child = desc;
         }
+
+        public override string HeaderText => I18n.T("page.main");
+        public override string IconText => MDL2GlyphResource.Home;
+        public override string ToolTipText => I18n.T("page.main.tt");
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DirectN;
+﻿using DirectN;
 using Wice.Samples.Gallery.Resources;
 
 namespace Wice.Samples.Gallery.Pages
@@ -13,7 +8,6 @@ namespace Wice.Samples.Gallery.Pages
         public InputsPage()
         {
             Title.Text = I18n.T("page.inputs");
-            Title.HoverForegroundBrush = new SolidColorBrush(Application.CurrentTheme.ButtonColor);
 
             var desc = new TextBox();
             SetDockType(desc, DockType.Top);
@@ -21,5 +15,9 @@ namespace Wice.Samples.Gallery.Pages
             desc.Text = I18n.T("page.inputs.desc");
             Children.Add(desc);
         }
+        
+        public override string HeaderText => I18n.T("page.inputs");
+        public override string IconText => MDL2GlyphResource.Input;
+        public override string ToolTipText => I18n.T("page.inputs.tt");
     }
 }

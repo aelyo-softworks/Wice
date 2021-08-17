@@ -79,16 +79,12 @@ namespace Wice.Samples.Gallery
         {
             var mainPage = new MainPage();
             mainPage.Name = nameof(mainPage);
-            var mainHeader = AddPageHeader(mainPage, I18n.T("page.main"), MDL2GlyphResource.Home);
-            mainHeader.SelectedButton.IsVisible = false;
-            mainHeader.ToolTipContentCreator = tt => CreateDefaultToolTipContent(tt, I18n.T("page.main.tt"));
+            var mainHeader = AddPageHeader(mainPage);
             Dock.SetDockType(mainHeader, DockType.Top);
             menu.Children.Add(mainHeader);
 
             var inputsPage = new InputsPage();
-            var inputsHeader = AddPageHeader(inputsPage, I18n.T("page.inputs"), MDL2GlyphResource.Input);
-            inputsHeader.SelectedButton.IsVisible = false;
-            inputsHeader.ToolTipContentCreator = tt => CreateDefaultToolTipContent(tt, I18n.T("page.inputs.tt"));
+            var inputsHeader = AddPageHeader(inputsPage);
             Dock.SetDockType(inputsHeader, DockType.Top);
             menu.Children.Add(inputsHeader);
 
@@ -111,17 +107,19 @@ namespace Wice.Samples.Gallery
             }
         }
 
-        private SymbolHeader AddPageHeader(Page page, string text, string iconText)
+        private SymbolHeader AddPageHeader(Page page)
         {
             var header = new SymbolHeader();
             header.Data = page;
             _headers.Add(header);
             header.Margin = D2D_RECT_F.Thickness(10, 0);
             header.Height = 40;
-            header.Icon.Text = iconText;
-            header.Text.Text = text;
+            header.Icon.Text = page.IconText;
+            header.Text.Text = page.HeaderText;
             header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0));
             ConfigureHeaderText(header.Text);
+            header.SelectedButton.IsVisible = false;
+            header.ToolTipContentCreator = tt => CreateDefaultToolTipContent(tt, page.ToolTipText);
 
             header.IsSelectedChanged += (s, e) =>
             {

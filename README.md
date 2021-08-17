@@ -1,4 +1,4 @@
-# What is it?
+﻿# What is it?
 
 ![Wice](Assets/wice_color.svg)
 
@@ -21,11 +21,25 @@ But... why Wice?
 * It's more modern than Winforms (GDI/GDI+) and WPF (still based on DirectX 9).
 * It has no sandbox like UWP, and doesn't require the Win2D crap.
 * It compiles much faster than UWP or WinUI projects because the tooling is the standard .NET tooling.
-* It has no external dependencies, so it's free from deployment pain (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" <rant> why should I need to "deploy" my apps? </rant>). Using .NET 5, you can even publish your app as a single zero-dependency .exe.
+* It has no external dependencies, so it's free from deployment pain (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" my apps at all?`</rant>`). Using .NET 5, you can even publish your app as a single zero-dependency .exe.
 * It has the real Windows Acrylic (no hack!) brush w/o the need for UWP.
 * It ships with an integrated in-process (Snoop-like for people familiar with WPF) visual Spy utility (just press F9 in debug mode).
 
 # Status
 Wice is still a work in progress. The base system is working quite well but it's not 100% finished.
 
-Post an issue if you have a problem using the test and sample code.
+Post an issue if you have a problem or a question, using sample reproducible code.
+
+# List of projects
+.NET Standard & Framework projects:
+* **DirectN**: a .NET Standard 2 project that contains .NET interop and utility code for DXGI, WIC, DirectX 11, Direct2D, Direct Write, etc. It's a substract (with some additions and modifications) of this Open Source project: https://github.com/smourier/DirectN
+* **Wice**: the Wice engine.
+* **Wice.Samples.Gallery**: a sample gallery project.   This is what you should try if you're new to Wice.
+* Wice.Tests: a test bench project. You shouldn't really use it
+* Wice.DevTools: an internal tool that helps synchronize .NET 5 projects from .NET Framework projects.
+
+.NET 5 projects:
+* **DirectNCore**: this is the same as DirectN but compiled for .NET 5. All sources are linked to DirectN.
+* **WiceCore**: this is the same as Wice but compiled for .NET 5. All sources are linked to Wice.
+* **WiceCore.Samples.Gallery**: this is the same as Wice.Samples.Gallery but compiled for .NET 5. All sources are linked to Wice.Samples.Gallery.
+* WiceCore.Tests: this is the same as Wice.Tests but compiled for .NET 5. All sources are linked to Wice.Tests. 
