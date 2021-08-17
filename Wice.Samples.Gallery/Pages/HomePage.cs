@@ -1,12 +1,11 @@
 ﻿using System.Reflection;
 using DirectN;
-using Wice.Samples.Gallery.Resources;
 
 namespace Wice.Samples.Gallery.Pages
 {
-    public class MainPage : Page
+    public class HomePage : Page
     {
-        public MainPage()
+        public HomePage()
         {
             // home has no title
             Title.IsVisible = false;
@@ -39,8 +38,6 @@ namespace Wice.Samples.Gallery.Pages
             sv.Viewer.Child = desc;
         }
 
-        public override string HeaderText => I18n.T("page.main");
         public override string IconText => MDL2GlyphResource.Home;
-        public override string ToolTipText => I18n.T("page.main.tt");
     }
 }

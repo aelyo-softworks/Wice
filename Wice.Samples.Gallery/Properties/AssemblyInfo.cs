@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 #if DEBUG
@@ -7,10 +6,10 @@ using System.Runtime.InteropServices;
 #else
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
-[assembly: AssemblyTitle("Windows Interface Composition Engine - Samples - Gallery")]
+[assembly: AssemblyTitle("Wice - Samples - Gallery")]
 [assembly: AssemblyCompany("Aelyo Softworks")]
 [assembly: AssemblyProduct("Wice")]
-[assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks 2020-2021. All rights reserved.")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 

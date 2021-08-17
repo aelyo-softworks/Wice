@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using DirectN;
 
-namespace Wice.Samples.Gallery
+namespace Wice.Samples.Gallery.Pages
 {
     public class Titled : Dock
     {

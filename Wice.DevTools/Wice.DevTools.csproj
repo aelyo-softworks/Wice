@@ -42,6 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\DirectN\Properties\AssemblyVersionInfo.cs">
+      <Link>Properties\AssemblyVersionInfo.cs</Link>
+    </Compile>
     <Compile Include="CommandType.cs" />
     <Compile Include="CSharpProject.cs" />
     <Compile Include="MsBuildProject.cs" />

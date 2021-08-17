@@ -2,20 +2,18 @@
 using DirectN;
 using Wice.Effects;
 using Wice.Samples.Gallery.Pages;
-using Wice.Samples.Gallery.Resources;
 
 namespace Wice.Samples.Gallery
 {
     public class GalleryWindow : Window
     {
+        private const int _headersMargin = 10;
         private Border _pageHolder;
         private readonly List<SymbolHeader> _headers = new List<SymbolHeader>();
 
         // define Window settings
         public GalleryWindow()
         {
-            Title = I18n.T("appName");
-
             // we draw our own titlebar using Wice itself
             WindowsFrameMode = WindowsFrameMode.None;
 
@@ -44,7 +42,6 @@ namespace Wice.Samples.Gallery
             Children.Add(titleBar);
 
             var menuBack = new Border();
-            menuBack.Name = nameof(menuBack);
             menuBack.Width = 250;
             menuBack.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFE6E6E6));
             menuBack.Opacity = 0.5f;
@@ -77,16 +74,25 @@ namespace Wice.Samples.Gallery
         // add headers & pages & selection logic
         private void AddHeaderAndPages(Dock menu)
         {
-            var mainPage = new MainPage();
-            mainPage.Name = nameof(mainPage);
-            var mainHeader = AddPageHeader(mainPage);
+            var homePage = new HomePage();
+            var mainHeader = AddPageHeader(homePage);
             Dock.SetDockType(mainHeader, DockType.Top);
             menu.Children.Add(mainHeader);
 
-            var inputsPage = new InputsPage();
-            var inputsHeader = AddPageHeader(inputsPage);
+            var inputPage = new InputPage();
+            var inputsHeader = AddPageHeader(inputPage);
             Dock.SetDockType(inputsHeader, DockType.Top);
             menu.Children.Add(inputsHeader);
+
+            var layoutPage = new LayoutPage();
+            var layoutHeader = AddPageHeader(layoutPage);
+            Dock.SetDockType(layoutHeader, DockType.Top);
+            menu.Children.Add(layoutHeader);
+
+            var aboutPage = new AboutPage();
+            var aboutHeader = AddPageHeader(aboutPage);
+            Dock.SetDockType(aboutHeader, DockType.Bottom);
+            menu.Children.Add(aboutHeader);
 
             // select main
             mainHeader.IsSelected = true;
@@ -112,7 +118,7 @@ namespace Wice.Samples.Gallery
             var header = new SymbolHeader();
             header.Data = page;
             _headers.Add(header);
-            header.Margin = D2D_RECT_F.Thickness(10, 0);
+            header.Margin = D2D_RECT_F.Thickness(_headersMargin, 0);
             header.Height = 40;
             header.Icon.Text = page.IconText;
             header.Text.Text = page.HeaderText;
@@ -133,7 +139,7 @@ namespace Wice.Samples.Gallery
 
         private void ConfigureHeaderText(TextBox text)
         {
-            text.Margin = D2D_RECT_F.Thickness(10, 0, 10, 0);
+            text.Margin = D2D_RECT_F.Thickness(_headersMargin, 0, _headersMargin, 0);
             text.FontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_ULTRA_CONDENSED;
             text.DrawOptions = D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT;
 
