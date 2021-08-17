@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading;
 using DirectN;
 
@@ -21,11 +22,22 @@ namespace Wice
             BackgroundColor = _D3DCOLORVALUE.Transparent;
         }
 
+        [Category(CategoryBehavior)]
         public IComObject<IWICBitmapSource> Source { get => (IComObject<IWICBitmapSource>)GetPropertyValue(SourceProperty); set => SetPropertyValue(SourceProperty, value); }
+
+        [Category(CategoryRender)]
         public float SourceOpacity { get => (float)GetPropertyValue(SourceOpacityProperty); set => SetPropertyValue(SourceOpacityProperty, value); }
+
+        [Category(CategoryLayout)]
         public Stretch Stretch { get => (Stretch)GetPropertyValue(StretchProperty); set => SetPropertyValue(StretchProperty, value); }
+
+        [Category(CategoryLayout)]
         public StretchDirection StretchDirection { get => (StretchDirection)GetPropertyValue(StretchDirectionProperty); set => SetPropertyValue(StretchDirectionProperty, value); }
+
+        [Category(CategoryRender)]
         public D2D1_INTERPOLATION_MODE InterpolationMode { get => (D2D1_INTERPOLATION_MODE)GetPropertyValue(InterpolationModeProperty); set => SetPropertyValue(InterpolationModeProperty, value); }
+
+        [Category(CategoryLayout)]
         public D2D_RECT_F? SourceRectangle { get => (D2D_RECT_F?)GetPropertyValue(SourceRectangleProperty); set => SetPropertyValue(SourceRectangleProperty, value); }
 
         protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => GetSize(constraint);

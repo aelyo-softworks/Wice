@@ -34,7 +34,7 @@ Post an issue if you have a problem or a question, using sample reproducible cod
 .NET Standard & Framework projects:
 * **DirectN**: a .NET Standard 2 project that contains .NET interop and utility code for DXGI, WIC, DirectX 11, Direct2D, Direct Write, etc. It's a substract (with some additions and modifications) of this Open Source project: https://github.com/smourier/DirectN
 * **Wice**: the Wice engine.
-* **Wice.Samples.Gallery**: a sample gallery project.   This is what you should try if you're new to Wice.
+* **Wice.Samples.Gallery**: a sample demo / gallery project. **===>** This is what you should try if you're new to Wice.
 * Wice.Tests: a test bench project. You shouldn't really use it
 * Wice.DevTools: an internal tool that helps synchronize .NET 5 projects from .NET Framework projects.
 

@@ -53,7 +53,7 @@ namespace Wice.Tests
             //AddRtbHtml();
             //AddScrollableRtbRtfFile();
 
-            AddSvg();
+            //AddSvg();
 
             //AddSimpleGrid();
             //AddSimpleGrid2();
@@ -81,6 +81,8 @@ namespace Wice.Tests
             //AddFixedStack();
             //AddStackImageText();
             //AddSizeToContentStack();
+
+            AddWrap();
 
             //AddStateBoxes();
             //AddNullableCheckBox();
@@ -1681,6 +1683,42 @@ namespace Wice.Tests
             cancelButton.Text.Text = "Cancel";
             Dock.SetDockType(cancelButton, DockType.Bottom);
             doc.Children.Add(cancelButton);
+        }
+
+        public void AddWrap()
+        {
+            var wrap = new Wrap();
+            wrap.Orientation = Orientation.Horizontal;
+            Children.Add(wrap);
+
+            var r = new Random(Environment.TickCount);
+            var max = 100;
+            for (var i = 0; i < max; i++)
+            {
+                var b = new Border();
+                b.Name = "border" + i;
+                wrap.Children.Add(b);
+                b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+                var color = new _D3DCOLORVALUE(0, 1 - (i / (float)max), 1 - (i / (float)max));
+                b.RenderBrush = Compositor.CreateColorBrush(color);
+                b.Width = r.Next(10, 60);
+                b.Height = r.Next(10, 60);
+            }
+
+            KeyDown += (s, e) =>
+            {
+                if (e.Key == VirtualKeys.S)
+                {
+                    if (wrap.Orientation == Orientation.Horizontal)
+                    {
+                        wrap.Orientation = Orientation.Vertical;
+                    }
+                    else
+                    {
+                        wrap.Orientation = Orientation.Horizontal;
+                    }
+                }
+            };
         }
 
         public void AddStacks()

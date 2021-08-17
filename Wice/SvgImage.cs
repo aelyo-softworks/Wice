@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading;
 using DirectN;
 
@@ -20,6 +21,7 @@ namespace Wice
             BufferStream = true;
         }
 
+        [Category(CategoryBehavior)]
         public bool BufferStream
         {
             get => _bufferStream;
@@ -33,8 +35,13 @@ namespace Wice
             }
         }
 
+        [Category(CategoryBehavior)]
         public IReadStreamer Document { get => (IReadStreamer)GetPropertyValue(DocumentProperty); set => SetPropertyValue(DocumentProperty, value); }
+
+        [Category(CategoryLayout)]
         public Stretch Stretch { get => (Stretch)GetPropertyValue(StretchProperty); set => SetPropertyValue(StretchProperty, value); }
+
+        [Category(CategoryLayout)]
         public StretchDirection StretchDirection { get => (StretchDirection)GetPropertyValue(StretchDirectionProperty); set => SetPropertyValue(StretchDirectionProperty, value); }
 
         protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions options = null)

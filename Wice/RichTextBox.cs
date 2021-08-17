@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading;
 using DirectN;
 
@@ -22,10 +23,16 @@ namespace Wice
             BackgroundColor = _D3DCOLORVALUE.Transparent;
         }
 
+        [Category(CategoryLive)]
         public dynamic Document => _host?.Document;
+
+        [Category(CategoryBehavior)]
         public TextServicesGenerator Generator { get; }
+
+        [Category(CategoryBehavior)]
         public string GeneratorVersion => Document.Generator;
 
+        [Category(CategoryRender)]
         public _D3DCOLORVALUE TextColor
         {
             get => TextHost.ToColor((_host?.TextColor).GetValueOrDefault());
@@ -41,6 +48,7 @@ namespace Wice
             }
         }
 
+        [Category(CategoryLayout)]
         public TextHostOptions Options
         {
             get => (_host?.Options).GetValueOrDefault();
@@ -56,6 +64,7 @@ namespace Wice
             }
         }
 
+        [Category(CategoryBehavior)]
         public string Text
         {
             get => _host?.Text;
@@ -71,6 +80,7 @@ namespace Wice
             }
         }
 
+        [Category(CategoryBehavior)]
         public string RtfText
         {
             get => _host?.RtfText;
@@ -87,6 +97,7 @@ namespace Wice
         }
 
         // only works with Office generator
+        [Category(CategoryBehavior)]
         public string HtmlText
         {
             get => _host?.HtmlText;

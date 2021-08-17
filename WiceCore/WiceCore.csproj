@@ -315,6 +315,7 @@
     <Compile Include="..\Wice\Utilities\FileStreamer.cs" Link="Utilities\FileStreamer.cs" />
     <Compile Include="..\Wice\IReadStreamer.cs" Link="IReadStreamer.cs" />
     <Compile Include="..\Wice\Utilities\StreamStreamer.cs" Link="Utilities\StreamStreamer.cs" />
+    <Compile Include="..\Wice\Wrap.cs" Link="Wrap.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

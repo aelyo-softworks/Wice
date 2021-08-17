@@ -352,6 +352,7 @@
     <Compile Include="Window.cs" />
     <Compile Include="WindowsFrameMode.cs" />
     <Compile Include="WindowTimer.cs" />
+    <Compile Include="Wrap.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectN\DirectN.csproj">
