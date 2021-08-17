@@ -271,6 +271,10 @@ namespace Wice
         public void SetDrawingEffect(object drawingEffect, DWRITE_TEXT_RANGE range) => SetDrawingEffect(drawingEffect, new DWRITE_TEXT_RANGE[] { range });
         public virtual void SetDrawingEffect(object drawingEffect, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.DrawingEffect, drawingEffect, ranges);
 
+        public void SetSolidColor(_D3DCOLORVALUE color) => SetSolidColor(color, new DWRITE_TEXT_RANGE(0));
+        public void SetSolidColor(_D3DCOLORVALUE color, DWRITE_TEXT_RANGE range) => SetSolidColor(color, new DWRITE_TEXT_RANGE[] { range });
+        public virtual void SetSolidColor(_D3DCOLORVALUE color, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.SolidColor, color, ranges);
+
         private string PasswordText
         {
             get
@@ -675,6 +679,36 @@ namespace Wice
                             _layout.Object.SetInlineObject((IDWriteInlineObject)range.Value, range.Range).ThrowOnError();
                         }
                         break;
+
+                    case FontRangeType.SolidColor:
+                        // needs device context
+                        break;
+
+                    default:
+                        throw new NotSupportedException();
+                }
+            }
+        }
+
+        private void ApplyRanges(RenderContext context)
+        {
+            if (_finalRanges == null)
+                return;
+
+            foreach (var fr in _finalRanges)
+            {
+                switch (fr.Type)
+                {
+                    case FontRangeType.SolidColor:
+                        foreach (var range in fr.Ranges)
+                        {
+                            var color = (_D3DCOLORVALUE)range.Value;
+                            using (var brush = context.DeviceContext.CreateSolidColorBrush(color))
+                            {
+                                _layout.Object.SetDrawingEffect(brush.Object, range.Range).ThrowOnError();
+                            }
+                        }
+                        break;
                 }
             }
         }
@@ -981,6 +1015,7 @@ namespace Wice
 
             var layout = GetLayout(rr.width, rr.height);
 
+            ApplyRanges(context);
             context.DeviceContext.PushAxisAlignedClip(clip);
             try
             {
@@ -2402,6 +2437,7 @@ namespace Wice
             Typography,
             InlineObject,
             DrawingEffect,
+            SolidColor
         }
 
         private void SetFontRangeValue(FontRangeType type, object value, DWRITE_TEXT_RANGE[] ranges)

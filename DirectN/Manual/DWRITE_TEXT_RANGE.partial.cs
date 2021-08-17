@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace DirectN
 {
@@ -32,6 +33,40 @@ namespace DirectN
         }
 
         public override string ToString() => "S:" + startPosition + " E:" + EndPosition + " L:" + length;
+
+        public static IEnumerable<DWRITE_TEXT_RANGE> Search(string input, string search, StringComparison comparison = StringComparison.CurrentCulture, int maxCount = int.MaxValue, int startPosition = 0, int endPosition = int.MaxValue)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+
+            if (search == null)
+                throw new ArgumentNullException(nameof(search));
+
+            if (startPosition < 0)
+                throw new ArgumentOutOfRangeException(nameof(startPosition));
+
+            if (endPosition < startPosition)
+                throw new ArgumentOutOfRangeException(nameof(endPosition));
+
+            if (endPosition == startPosition || maxCount == 0 || search.Length == 0 || input.Length == 0 || search.Length > input.Length)
+                yield break;
+
+            var count = 0;
+            var len = input.Length - search.Length;
+            for (var i = Math.Min(startPosition, input.Length); i <= Math.Min(endPosition, len); i++)
+            {
+                if (count == maxCount)
+                    yield break;
+
+                var text = input.Substring(i, search.Length);
+                if (string.Compare(text, search, comparison) == 0)
+                {
+                    yield return new DWRITE_TEXT_RANGE((uint)i, (uint)search.Length);
+                    // we don't support overlaps
+                    i += search.Length - 1;
+                }
+            }
+        }
 
         public static DWRITE_TEXT_RANGE FromTo(uint startPosition, uint endPosition, bool allowReverse = true)
         {
