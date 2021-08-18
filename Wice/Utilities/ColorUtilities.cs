@@ -43,8 +43,30 @@ namespace Wice.Utilities
             }
         }
 
-        public static _D3DCOLORVALUE GetSysColor(COLOR color) => new _D3DCOLORVALUE(WindowsFunctions.GetSysColor(color), 255);
-        public static _D3DCOLORVALUE GetThemeSysColor(IntPtr theme, COLOR color) => new _D3DCOLORVALUE(WindowsFunctions.GetThemeSysColor(theme, color), 255);
+        public static _D3DCOLORVALUE GetSysColor(COLOR color) => _D3DCOLORVALUE.FromCOLORREF(WindowsFunctions.GetSysColor(color));
+        public static _D3DCOLORVALUE GetThemeSysColor(IntPtr theme, COLOR color) => _D3DCOLORVALUE.FromCOLORREF(WindowsFunctions.GetThemeSysColor(theme, color));
+        public static _D3DCOLORVALUE GetThemeColor(string classList, int partId = 0, int stateId = 0, int propId = 0, _D3DCOLORVALUE? defaultColor = null, IntPtr? hwnd = null)
+        {
+            if (classList == null)
+                throw new ArgumentNullException(nameof(classList));
+
+            var theme = WindowsFunctions.OpenThemeData(hwnd ?? IntPtr.Zero, classList);
+            if (theme == IntPtr.Zero)
+                return defaultColor ?? _D3DCOLORVALUE.Black;
+
+            try
+            {
+                var hr = WindowsFunctions.GetThemeColor(theme, partId, stateId, propId, out var color);
+                if (hr.IsError)
+                    return defaultColor ?? _D3DCOLORVALUE.Black;
+
+                return _D3DCOLORVALUE.FromCOLORREF(color);
+            }
+            finally
+            {
+                WindowsFunctions.CloseThemeData(theme);
+            }
+        }
 
         private static ConcurrentDictionary<string, ImmersiveColor> GetImmersiveColors()
         {
@@ -62,7 +84,7 @@ namespace Wice.Utilities
                     var nt = Marshal.PtrToStructure<IMMERSIVE_COLOR_NAMED_TYPES>(ptr);
                     var color = GetColorFromPreference(ref pref, nt.colorType, false, IMMERSIVE_HC_CACHE_MODE.IHCM_USE_CACHED_VALUE);
                     var ic = new ImmersiveColor(nt.pszColorType, nt.colorType);
-                    ic.Color = new _D3DCOLORVALUE(color);
+                    ic.Color = _D3DCOLORVALUE.FromCOLORREF(color);
                     dic[ic.Name] = ic;
                     i++;
                 }
@@ -82,7 +104,7 @@ namespace Wice.Utilities
         static extern int GetUserColorPreference(out IMMERSIVE_COLOR_PREFERENCE pcpPreference, bool fForceReload);
 
         [DllImport("uxtheme")]
-        static extern uint GetColorFromPreference(ref IMMERSIVE_COLOR_PREFERENCE cpcpPreference, int colorType, bool fNoHighContrast, IMMERSIVE_HC_CACHE_MODE mode);
+        static extern int GetColorFromPreference(ref IMMERSIVE_COLOR_PREFERENCE cpcpPreference, int colorType, bool fNoHighContrast, IMMERSIVE_HC_CACHE_MODE mode);
 
         private enum IMMERSIVE_HC_CACHE_MODE
         {

@@ -9,12 +9,7 @@ namespace Wice
     {
         internal readonly List<Visual> _visualsStack = new List<Visual>();
 
-        internal MouseEventArgs()
-        {
-        }
-
         internal MouseEventArgs(int x, int y, MouseVirtualKeys vk)
-            : this()
         {
             X = x;
             Y = y;
@@ -22,6 +17,8 @@ namespace Wice
         }
 
         public MouseVirtualKeys Keys { get; }
+
+        // window relative
         public int X { get; }
         public int Y { get; }
         public IReadOnlyList<Visual> VisualsStack => _visualsStack;

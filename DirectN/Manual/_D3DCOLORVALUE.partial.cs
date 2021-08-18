@@ -30,13 +30,13 @@ namespace DirectN
         {
         }
 
-        public _D3DCOLORVALUE(int argb, byte alpha)
-            : this((uint)((alpha << 24) | argb))
+        public _D3DCOLORVALUE(int rgb, byte alpha)
+            : this((uint)((alpha << 24) | rgb))
         {
         }
 
-        public _D3DCOLORVALUE(uint argb, byte alpha)
-            : this(((uint)(alpha << 24) | argb))
+        public _D3DCOLORVALUE(uint rgb, byte alpha)
+            : this(((uint)(alpha << 24) | rgb))
         {
         }
 
@@ -78,6 +78,14 @@ namespace DirectN
 
         public static _D3DCOLORVALUE FromColor(System.Drawing.Color color) => FromArgb(color.A, color.R, color.G, color.B);
         public static _D3DCOLORVALUE FromColor(Color color) => FromArgb(color.A, color.R, color.G, color.B);
+        public static _D3DCOLORVALUE FromCOLORREF(int color, byte alpha = 255)
+        {
+            // swap r & b
+            var r = (color & 0xFF) << 16;
+            var b = (color >> 16) & 0xFF;
+            var g = color & 0xFF00;
+            return new _D3DCOLORVALUE(r | g | b, alpha);
+        }
         public static _D3DCOLORVALUE FromArgb(byte r, byte g, byte b) => FromArgb(1, r, g, b);
         public static _D3DCOLORVALUE FromArgb(byte a, byte r, byte g, byte b) => new _D3DCOLORVALUE(ByteToSingle(a), ByteToSingle(r), ByteToSingle(g), ByteToSingle(b));
         public static _D3DCOLORVALUE? FromName(string name)

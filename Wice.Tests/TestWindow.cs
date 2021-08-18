@@ -53,7 +53,7 @@ namespace Wice.Tests
             //AddRtbHtml();
             //AddScrollableRtbRtfFile();
 
-            //AddSvg();
+            AddSvg();
 
             //AddSimpleGrid();
             //AddSimpleGrid2();
@@ -82,7 +82,7 @@ namespace Wice.Tests
             //AddStackImageText();
             //AddSizeToContentStack();
 
-            AddWrap();
+            //AddWrap();
 
             //AddStateBoxes();
             //AddNullableCheckBox();

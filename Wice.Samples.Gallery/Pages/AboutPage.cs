@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Pages
 {
@@ -27,17 +28,14 @@ namespace Wice.Samples.Gallery.Pages
             tb.VerticalAlignment = Alignment.Near;
             tb.WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD;
             var asm = typeof(Application).Assembly;
-            var url = "http://blabla";
+            var url = "https://github.com/aelyo-softworks/Wice";
             tb.Text = "Wice v" + asm.GetInformationalVersion() + Environment.NewLine
                 + System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription + Environment.NewLine
                 + asm.GetCopyright() + Environment.NewLine
-                + url;
+                + "Source code: " + url;
             stack.Children.Add(tb);
 
-            var range = DWRITE_TEXT_RANGE.Search(tb.Text, url).First();
-            tb.SetUnderline(true, range);
-            tb.SetFontWeight(DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_BOLD, range);
-            tb.SetSolidColor(_D3DCOLORVALUE.Blue, range);
+            tb.SetHyperLinkRange(url);
 
             // disclaimer
             var disc = new TextBox();

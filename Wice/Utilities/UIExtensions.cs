@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
@@ -16,6 +17,75 @@ namespace Wice.Utilities
 {
     public static class UIExtensions
     {
+        private static readonly Lazy<_D3DCOLORVALUE> _hyperLinkNormalColor = new Lazy<_D3DCOLORVALUE>(() => ColorUtilities.GetThemeColor("TEXTSTYLE", TEXT_HYPERLINKTEXT, TS_HYPERLINK_NORMAL, TMT_TEXTCOLOR), true);
+        private static readonly Lazy<_D3DCOLORVALUE> _hyperLinkHotColor = new Lazy<_D3DCOLORVALUE>(() => ColorUtilities.GetThemeColor("TEXTSTYLE", TEXT_HYPERLINKTEXT, TS_HYPERLINK_HOT, TMT_TEXTCOLOR), true);
+        private static readonly Lazy<_D3DCOLORVALUE> _hyperLinkDisabledColor = new Lazy<_D3DCOLORVALUE>(() => ColorUtilities.GetThemeColor("TEXTSTYLE", TEXT_HYPERLINKTEXT, TS_HYPERLINK_DISABLED, TMT_TEXTCOLOR), true);
+
+        public static _D3DCOLORVALUE HyperLinkNormalColor => _hyperLinkNormalColor.Value;
+        public static _D3DCOLORVALUE HyperLinkHotColor => _hyperLinkHotColor.Value;
+        public static _D3DCOLORVALUE HyperLinkDisabledColor => _hyperLinkDisabledColor.Value;
+
+        // see https://stackoverflow.com/questions/4009701/windows-visual-themes-gallery-of-parts-and-states/4009712#4009712
+#pragma warning disable IDE1006 // Naming Styles
+        const int TEXT_HYPERLINKTEXT = 6;
+        const int TS_HYPERLINK_NORMAL = 1;
+        const int TS_HYPERLINK_HOT = 2;
+        const int TS_HYPERLINK_DISABLED = 4;
+        const int TMT_TEXTCOLOR = 3803;
+#pragma warning restore IDE1006 // Naming Styles
+
+        public static void SetHyperLinkRange(this TextBox textBox, string text, Func<string, bool> onClick = null)
+        {
+            if (textBox == null)
+                throw new ArgumentNullException(nameof(textBox));
+
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
+            var range = DWRITE_TEXT_RANGE.Search(textBox.Text, text).First();
+            textBox.SetUnderline(true, range);
+            textBox.SetFontWeight(DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_SEMI_BOLD, range);
+            reset();
+
+            textBox.MouseLeave += (s, e) => reset();
+            textBox.MouseMove += (s, e) =>
+            {
+                if (textBox.IsPositionOverRange(e.GetPosition(textBox), range))
+                {
+                    textBox.SetSolidColor(HyperLinkHotColor, range);
+                    textBox.Cursor = DirectN.Cursor.Hand;
+                }
+                else
+                {
+                    reset();
+                }
+            };
+
+            textBox.MouseButtonDown += (s, e) =>
+            {
+                if (textBox.IsPositionOverRange(e.GetPosition(textBox), range))
+                {
+                    var handled = false;
+                    if (onClick != null)
+                    {
+                        handled = onClick(text);
+                    }
+
+                    if (!handled)
+                    {
+                        Process.Start(text);
+                    }
+                }
+                reset();
+            };
+
+            void reset()
+            {
+                textBox.SetSolidColor(HyperLinkNormalColor, range);
+                textBox.Cursor = null;
+            }
+        }
+
         public static T GetSelectedTag<T>(this TreeView tree)
         {
             var tag = tree.SelectedNode?.Tag;

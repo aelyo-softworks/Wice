@@ -537,6 +537,26 @@ namespace Wice
             }
         }
 
+        public bool IsPositionOverRange(D2D_POINT_2F position, DWRITE_TEXT_RANGE range) => IsPositionOverRange(position.x, position.y, range);
+        public bool IsPositionOverRange(float x, float y, DWRITE_TEXT_RANGE range)
+        {
+            var ht = HitTestPoint(x, y, out _, out var inside);
+            return inside && ht != null && range.Contains(ht.Value.textPosition);
+        }
+
+        public DWRITE_HIT_TEST_METRICS? HitTestPoint(float x, float y) => HitTestPoint(x, y, out _, out _);
+        public DWRITE_HIT_TEST_METRICS? HitTestPoint(float x, float y, out bool isTrailingHit, out bool isInside)
+        {
+            isTrailingHit = false;
+            isInside = false;
+            var layout = _layout;
+            if (layout == null)
+                return null;
+
+            _layout.Object.HitTestPoint(x, y, out isTrailingHit, out isInside, out var metrics);
+            return metrics;
+        }
+
         private IComObject<IDWriteTextFormat> GetFormat()
         {
             var format = Application.Current.ResourceManager.GetTextFormat(this);

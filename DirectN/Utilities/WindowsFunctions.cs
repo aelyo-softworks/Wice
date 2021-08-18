@@ -321,6 +321,15 @@ namespace DirectN
         [DllImport("uxtheme")]
         public static extern int GetThemeSysColor(IntPtr themeHandle, COLOR index);
 
+        [DllImport("uxtheme")]
+        public static extern HRESULT GetThemeColor(IntPtr themeHandle, int iPartId, int iStateId, int iPropId, out int pColor);
+
+        [DllImport("uxtheme", CharSet = CharSet.Unicode)]
+        public static extern IntPtr OpenThemeData(IntPtr hwnd, string pszClassList);
+
+        [DllImport("uxtheme")]
+        public static extern int CloseThemeData(IntPtr hTheme);
+
         [DllImport("shell32", CharSet = CharSet.Unicode)]
         public static extern int ShellAbout(IntPtr hWnd, string szApp, string szOtherStuff, IntPtr hIcon);
 

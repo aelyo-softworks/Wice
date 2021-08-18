@@ -21,6 +21,7 @@ namespace DirectN
             length = uint.MaxValue - startPosition;
         }
 
+        public bool Contains(uint position) => position >= startPosition && position < EndPosition;
         public bool IntersectsWith(DWRITE_TEXT_RANGE range) => Intersect(range).length > 0;
         public DWRITE_TEXT_RANGE Intersect(DWRITE_TEXT_RANGE range)
         {

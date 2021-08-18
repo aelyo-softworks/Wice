@@ -90,6 +90,8 @@ namespace Wice
         public virtual float DefaultFontSize { get => _defaultFontSize <= 0 ? 14f : _defaultFontSize; set => _defaultFontSize = value; }
         public virtual float DefaultSplitterSize { get => _defaultSplitterSize <= 0 ? 5f : _defaultSplitterSize; set => _defaultSplitterSize = value; }
 
+        public virtual _D3DCOLORVALUE LinkColor { get; set; }
+        public virtual _D3DCOLORVALUE HoverLinkColor { get; set; }
         public virtual _D3DCOLORVALUE SplitterColor { get; set; }
         public virtual _D3DCOLORVALUE BorderColor { get; set; }
         public virtual _D3DCOLORVALUE UnselectedColor { get; set; }
