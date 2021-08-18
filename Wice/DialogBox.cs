@@ -29,8 +29,18 @@ namespace Wice
             BackPanel.Arranged += (s, e) =>
             {
                 var ar = BackPanel.ArrangedRect;
-                Width = ar.Width;
-                Height = ar.Height;
+
+                // avoid infinite loops
+                const float minDiff = 0.01f;
+                if (Math.Abs(Width - ar.Width) > minDiff)
+                {
+                    Width = ar.Width;
+                }
+
+                if (Math.Abs(Height - ar.Height) > minDiff)
+                {
+                    Height = ar.Height;
+                }
             };
 
             TitleBar = CreateTitleBar();

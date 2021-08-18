@@ -53,13 +53,15 @@ namespace Wice.Tests
             //AddRtbHtml();
             //AddScrollableRtbRtfFile();
 
-            AddSvg();
+            //AddSvg();
 
             //AddSimpleGrid();
             //AddSimpleGrid2();
             //AddSimplePropertyGrid();
             //AddSimplePropertyGrid2();
             //AddSimplePropertyGrid3();
+            //AddSimplePropertyGrid4();
+            AddPropertyGridInDialog();
 
             //AddUniformGridShapes(10);
             //AddUniformColorGrid(10);
@@ -742,6 +744,47 @@ namespace Wice.Tests
                 Replace(",", string.Empty)
                 .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(4).Select(s => i++ + " : " + s);
             lb.DataSource = words;
+        }
+
+        private class TestPg
+        {
+            public string Text1 { get; internal set; }
+            public string Text2 { get; internal set; }
+            public string Text3 { get; internal set; }
+        }
+
+        public void AddSimplePropertyGrid4()
+        {
+            var sv = new ScrollViewer();
+            Children.Add(sv);
+            var pg = new PropertyGrid.PropertyGrid();
+            pg.CellMargin = 5;
+            sv.Viewer.Child = pg;
+
+            var tpg = new TestPg();
+            tpg.Text1 = "hello world";
+            tpg.Text2 = "hello world" + Environment.NewLine + " and again";
+            tpg.Text3 = "héllo world";
+            pg.SelectedObject = tpg;
+        }
+
+        public void AddPropertyGridInDialog()
+        {
+            var dlg = new DialogBox();
+            Children.Add(dlg);
+
+            var tlb = new TitleBar();
+            tlb.MaxButton.IsVisible = false;
+            tlb.MinButton.IsVisible = false;
+            dlg.Content.Children.Add(tlb);
+
+            var pg = new PropertyGrid.PropertyGrid();
+            pg.CellMargin = 5;
+            //pg.MaxWidth = 600;
+            //TextBox.WordWrappingProperty.SetValue(pg, DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER);
+            pg.Margin = D2D_RECT_F.Thickness(10);
+            pg.SelectedObject = new DiagnosticsInformation();
+            dlg.Content.Children.Add(pg);
         }
 
         public void AddSimplePropertyGrid()

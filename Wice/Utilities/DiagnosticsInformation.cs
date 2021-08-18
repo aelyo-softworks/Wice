@@ -71,9 +71,6 @@ namespace Wice.Utilities
         public ProcessorArchitecture ProcessorArchitecture => GetProcessorArchitecture();
 
         [Category(".NET")]
-        public IReadOnlyList<Version> InstalledFrameworkVersions => GetInstalledFrameworkVersions();
-
-        [Category(".NET")]
         [DisplayName("mscorlib Version")]
         public string CorLibVersion => typeof(int).Assembly.GetInformationalVersion();
 
@@ -93,16 +90,10 @@ namespace Wice.Utilities
         public string Bitness => GetBitness();
 
         [Category("Process")]
-        public string CurrentCulture => CultureInfo.CurrentCulture.Name;
+        public string CurrentCulture => CultureInfo.CurrentCulture.Name + Environment.NewLine + "UI: " + CultureInfo.CurrentUICulture.Name;
 
         [Category("Process")]
-        public string CurrentUICulture => CultureInfo.CurrentUICulture.Name;
-
-        [Category("Process")]
-        public DateTime UtcNow => DateTime.UtcNow;
-
-        [Category("Process")]
-        public DateTime Now => DateTime.Now;
+        public string Now => DateTime.Now + Environment.NewLine + "Utc: " + DateTime.UtcNow;
 
         [Category("Process")]
         public string InstalledUICulture => CultureInfo.InstalledUICulture.Name;
@@ -147,7 +138,7 @@ namespace Wice.Utilities
         }
 
         [Category("Graphics")]
-        [DisplayName("Adapter(s)")]
+        [DisplayName("Graphic Adapter(s)")]
         public string Adapters => string.Join(Environment.NewLine, GetAdapters().Select(a => a.GetDesc().Description));
 
         [Category("Graphics")]

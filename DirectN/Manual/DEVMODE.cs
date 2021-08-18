@@ -43,6 +43,6 @@ namespace DirectN
         public int dmPanningWidth;
         public int dmPanningHeight;
 
-        public override string ToString() => dmPelsWidth + " x " + dmPelsHeight + " " + dmDisplayFrequency + " Hz ";
+        public override string ToString() => dmPelsWidth + " x " + dmPelsHeight + ", " + dmDisplayFrequency + " Hz ";
     }
 }

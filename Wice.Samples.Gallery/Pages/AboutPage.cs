@@ -45,7 +45,7 @@ namespace Wice.Samples.Gallery.Pages
             SetDockType(disc, DockType.Top);
             Children.Add(disc);
 
-            var btn = new Button();
+            var btn = new RoundedButton();
             btn.VerticalAlignment = Alignment.Near;
             btn.HorizontalAlignment = Alignment.Near;
             btn.Text.Text = "System Info ...";
@@ -67,7 +67,8 @@ namespace Wice.Samples.Gallery.Pages
                 dlg.Content.Children.Add(tlb);
 
                 var pg = new PropertyGrid.PropertyGrid();
-                pg.MaxWidth = 600;
+                pg.CellMargin = D2D_RECT_F.Thickness(5, 0);
+                //pg.MaxWidth = 600;
                 //TextBox.WordWrappingProperty.SetValue(pg, DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER);
                 pg.Margin = D2D_RECT_F.Thickness(10);
                 pg.SelectedObject = new DiagnosticsInformation();
