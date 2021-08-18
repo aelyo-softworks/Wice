@@ -35,7 +35,7 @@ namespace Wice.Utilities
         [Category("Windows")]
         public string KernelVersion => WindowsVersionUtilities.KernelVersion?.ToString();
 
-#if NETFRAMEWORK
+#if !NET
         [Category("Windows")]
         public string WindowsVersion => GetManagementInfo<string>("Win32_OperatingSystem", "Version", null);
 
@@ -74,10 +74,14 @@ namespace Wice.Utilities
         public IReadOnlyList<Version> InstalledFrameworkVersions => GetInstalledFrameworkVersions();
 
         [Category(".NET")]
+        [DisplayName("mscorlib Version")]
         public string CorLibVersion => typeof(int).Assembly.GetInformationalVersion();
 
         [Category(".NET")]
         public string SystemVersion => typeof(Uri).Assembly.GetInformationalVersion();
+
+        [Category(".NET")]
+        public string FrameworkDescription => RuntimeInformation.FrameworkDescription;
 
         [Category(".NET")]
         public Version ClrVersion => Environment.Version;
@@ -103,18 +107,55 @@ namespace Wice.Utilities
         [Category("Process")]
         public string InstalledUICulture => CultureInfo.InstalledUICulture.Name;
 
-        [Category("Shell")]
-        public float DesktopDpiX => GetDpiSettings().Width;
+        [Category("Graphics")]
+        public string DesktopDpi
+        {
+            get
+            {
+                var dpi = GetDpiSettings();
+                return dpi.Width + " x " + dpi.Height;
+            }
+        }
 
-        [Category("Shell")]
-        public float DesktopDpiY => GetDpiSettings().Height;
+        private static IEnumerable<IComObject<IDXGIAdapter1>> GetAdapters()
+        {
+            using (var fac = DXGIFunctions.CreateDXGIFactory1())
+            {
+                var adapter = fac.EnumAdapters1().FirstOrDefault(a => !((DXGI_ADAPTER_FLAG)a.GetDesc1().Flags).HasFlag(DXGI_ADAPTER_FLAG.DXGI_ADAPTER_FLAG_SOFTWARE) && a.EnumOutputs<IDXGIOutput1>().Count() > 0);
+                if (adapter == null)
+                {
+                    adapter = fac.EnumAdapters1().FirstOrDefault();
+                }
 
-        [Category("Shell")]
-        public string Screens => string.Join(" | ", System.Windows.Forms.Screen.AllScreens.Select(s
-            => "Name: " + s.DeviceName + (s.Primary ? "(Primary)" : null) + " Bpp: " + s.BitsPerPixel + " Bounds: " + s.Bounds + " WorkingArea: " + s.WorkingArea));
+                yield return adapter;
+            }
+        }
+
+        private static IEnumerable<string> DisplayConfigQuery()
+        {
+            var dd = DISPLAY_DEVICE.All.ToList();
+            foreach (var path in DisplayConfig.Query())
+            {
+                var tar = DisplayConfig.GetDeviceInfoTargetName(path);
+                var src = DisplayConfig.GetDeviceInfoSourceName(path);
+                var display = dd.FirstOrDefault(m => m.DeviceName.EqualsIgnoreCase(src.viewGdiDeviceName));
+                if (display.DeviceName == null)
+                    yield return tar + " " + src.viewGdiDeviceName;
+
+                yield return tar + " " + display.CurrentSettings;
+            }
+        }
+
+        [Category("Graphics")]
+        [DisplayName("Adapter(s)")]
+        public string Adapters => string.Join(Environment.NewLine, GetAdapters().Select(a => a.GetDesc().Description));
+
+        [Category("Graphics")]
+        [DisplayName("Display(s)")]
+        public string Displays => string.Join(Environment.NewLine, DisplayConfigQuery());
 
         [Category("Software")]
-        public Version AssemblyVersion
+        public Version AssemblyInformationalVersion
         {
             get
             {
@@ -135,30 +176,7 @@ namespace Wice.Utilities
         }
 
         [Category("Software")]
-        public DateTime? AssemblyCompileDate => Assembly.GetLinkerTimestampUtc()?.ToLocalTime();
-
-        [Category("Software")]
         public string AssemblyConfiguration => Assembly.GetConfiguration();
-
-        [Category("Software")]
-        public string AssemblyDisplayName
-        {
-            get
-            {
-                var conf = AssemblyConfiguration.Nullify();
-                if (conf != null)
-                {
-                    conf += " - ";
-                }
-                var name = "Version " + AssemblyVersion + " - " + conf + Bitness;
-                var dt = AssemblyCompileDate;
-                if (dt.HasValue)
-                {
-                    name += " - Compiled " + dt.Value;
-                }
-                return name;
-            }
-        }
 
         public static SizeF GetDpiSettings()
         {
@@ -278,7 +296,7 @@ namespace Wice.Utilities
             return versions;
         }
 
-#if NETFRAMEWORK
+#if !NET
         public static T GetManagementInfo<T>(string className, string propertyName, T defaultValue)
         {
             if (className == null)
@@ -289,9 +307,9 @@ namespace Wice.Utilities
 
             try
             {
-                foreach (ManagementObject mo in new ManagementObjectSearcher(new WqlObjectQuery("select * from " + className)).Get())
+                foreach (System.Management.ManagementObject mo in new System.Management.ManagementObjectSearcher(new System.Management.WqlObjectQuery("select * from " + className)).Get())
                 {
-                    foreach (PropertyData data in mo.Properties)
+                    foreach (System.Management.PropertyData data in mo.Properties)
                     {
                         if (data == null || data.Name == null)
                             continue;

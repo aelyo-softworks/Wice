@@ -88,6 +88,12 @@ namespace DirectN
                 if (!(host is TextHost th))
                     throw new ArgumentException(null, nameof(host));
 
+                // note this crashes for .NET 5 and x86. I don't understand why
+#if NET
+                if (IntPtr.Size == 4)
+                    throw new NotSupportedException("Rich Text Box is not currently supported on .NET x86 architectures.");
+#endif
+
                 if (generator == TextServicesGenerator.Office)
                 {
                     // don't check error
@@ -95,7 +101,6 @@ namespace DirectN
                 }
                 else
                 {
-                    // note this crashes for .NET 5 and x86. I don't understand why
                     CreateTextServices(null, th.HostThunk.Pointer, out unk).ThrowOnError();
                 }
             }
@@ -132,7 +137,7 @@ namespace DirectN
                         return TextServicesGenerator.Default;
 
                     var fileName = Path.GetFileNameWithoutExtension(path);
-                    return fileName.EqualsIgnoreCase("riched20") ? TextServicesGenerator.Office: TextServicesGenerator.Default;
+                    return fileName.EqualsIgnoreCase("riched20") ? TextServicesGenerator.Office : TextServicesGenerator.Default;
                 }
                 finally
                 {

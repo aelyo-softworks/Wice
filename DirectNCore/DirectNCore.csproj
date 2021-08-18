@@ -939,5 +939,6 @@
     <Compile Include="..\DirectN\Generated\ID2D1TransformedImageSource.cs" Link="Generated\ID2D1TransformedImageSource.cs" />
     <Compile Include="..\DirectN\Utilities\UnmanagedMemoryStream.cs" Link="Utilities\UnmanagedMemoryStream.cs" />
     <Compile Include="..\DirectN\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+    <Compile Include="..\DirectN\Manual\DisplayConfig.cs" Link="Manual\DisplayConfig.cs" />
   </ItemGroup>
 </Project>

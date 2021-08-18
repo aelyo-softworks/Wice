@@ -73,7 +73,9 @@ namespace Wice.Utilities
 
                     if (!handled)
                     {
-                        Process.Start(text);
+                        var psi = new ProcessStartInfo(text);
+                        psi.UseShellExecute = true;
+                        Process.Start(psi);
                     }
                 }
                 reset();

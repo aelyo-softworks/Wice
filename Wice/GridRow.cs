@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Wice
 {
@@ -34,6 +35,7 @@ namespace Wice
             }
         }
 
+        [Browsable(false)]
         public IEnumerable<Visual> Cells
         {
             get

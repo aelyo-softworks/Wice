@@ -15,5 +15,20 @@ namespace DirectN
         public string monitorFriendlyDeviceName;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         public string monitorDevicePath;
+
+        public string OutputTechnologyName
+        {
+            get
+            {
+                var name = outputTechnology.ToString();
+                const string prefix = "DISPLAYCONFIG_OUTPUT_TECHNOLOGY_";
+                if (!name.StartsWith(prefix))
+                    return name;
+
+                return Conversions.Decamelize(name.Substring(prefix.Length), DecamelizeOptions.ForceFirstUpper | DecamelizeOptions.ForceRestLower);
+            }
+        }
+
+        public override string ToString() => monitorFriendlyDeviceName + " (" + OutputTechnologyName + ")";
     }
 }

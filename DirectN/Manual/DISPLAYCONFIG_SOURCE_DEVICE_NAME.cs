@@ -8,5 +8,7 @@ namespace DirectN
         public DISPLAYCONFIG_DEVICE_INFO_HEADER header;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         public string viewGdiDeviceName;
+
+        public override string ToString() => viewGdiDeviceName;
     }
 }

@@ -413,6 +413,10 @@ namespace Wice.Utilities
                         node.Collapse();
                         node.Expand();
                     }
+                    catch
+                    {
+                        // this crashes sometimes... not my fault!
+                    }
                     finally
                     {
                         treeViewVisuals.EndUpdate();
