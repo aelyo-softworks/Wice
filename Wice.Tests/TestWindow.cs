@@ -50,7 +50,7 @@ namespace Wice.Tests
             //AddRtbDoc();
             //AddRtbVertical();
             //AddRtbRtfFile();
-            //AddRtbHtml();
+            AddRtbHtml();
             //AddScrollableRtbRtfFile();
 
             //AddSvg();
@@ -61,7 +61,7 @@ namespace Wice.Tests
             //AddSimplePropertyGrid2();
             //AddSimplePropertyGrid3();
             //AddSimplePropertyGrid4();
-            AddPropertyGridInDialog();
+            //AddPropertyGridInDialog();
 
             //AddUniformGridShapes(10);
             //AddUniformColorGrid(10);
@@ -1110,9 +1110,12 @@ namespace Wice.Tests
             var rtf = new RichTextBox(TextServicesGenerator.Office);
             Children.Add(rtf);
 
+
+
             // setting HTML text doesn't work, but getting it does work...
             //rtf.HtmlText = @"<html><head><style>body{font-family:Arial,sans-serif;font-size:10pt;}</style><style>.cf0{font-family:Calibri;font-size:9.7pt;background-color:#FFFFFF;}</style></head><body><p>h&#xE9;llo</p><p>world</p></body></html>";
-            rtf.HtmlText = @"<html><body><p>hello world</p></body></html>";
+            rtf.Text = @"<html><body><p>hello world</p></body></html>";
+            //rtf.HtmlText = "\r\n<html><head><style>body{font-family:Arial,sans-serif;font-size:10pt;}</style><style>.cf0{font-family:Calibri;font-size:9.7pt;background-color:#FFFFFF;}</style></head><body><p>aa</p></body></html>";
         }
 
         public void AddRtbVertical()

@@ -4,9 +4,9 @@ using DirectN;
 
 namespace Wice.Samples.Gallery.Pages
 {
-    public class Titled : Dock
+    public abstract class Titled : Dock
     {
-        public Titled()
+        protected Titled()
         {
             SetDockType(this, DockType.Top);
             Title = CreateTitle();

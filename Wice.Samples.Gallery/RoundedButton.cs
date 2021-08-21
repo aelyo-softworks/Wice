@@ -6,17 +6,8 @@ namespace Wice.Samples.Gallery
 {
     public class RoundedButton : Button
     {
-        private static _D3DCOLORVALUE _buttonColor;
-        private static _D3DCOLORVALUE _buttonShadowColor;
-
         private readonly RoundedRectangle _rr = new RoundedRectangle();
         private readonly Canvas _canvas = new Canvas();
-
-        static RoundedButton()
-        {
-            _buttonColor = new _D3DCOLORVALUE(0xFF0078D7);
-            _buttonShadowColor = _buttonColor.ChangeAlpha(0x7F);
-        }
 
         public RoundedButton()
         {
@@ -49,7 +40,7 @@ namespace Wice.Samples.Gallery
             if (Compositor == null)
                 return;
 
-            _rr.RenderBrush = Compositor.CreateColorBrush(_buttonColor);
+            _rr.RenderBrush = Compositor.CreateColorBrush(GalleryWindow.ButtonColor);
             RenderBrush = null;
             Text.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White);
             Icon.ForegroundBrush = Text.ForegroundBrush;
@@ -58,7 +49,7 @@ namespace Wice.Samples.Gallery
             {
                 var shadow = Compositor.CreateDropShadow();
                 shadow.BlurRadius = 8;
-                shadow.Color = _buttonShadowColor;
+                shadow.Color = GalleryWindow.ButtonShadowColor;
                 shadow.Offset = new Vector3(0, 3, 0);
                 _canvas.RenderShadow = shadow;
             }

@@ -12,6 +12,7 @@ namespace Wice.Samples.Gallery
 
         static void Main()
         {
+
 #if DEBUG
             Application.Logger = UILogger.Instance;
             MFMediaTypeWrapper.Logger = DirectNLogger.Instance;

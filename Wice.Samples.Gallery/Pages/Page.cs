@@ -2,7 +2,7 @@
 {
     public abstract class Page : Titled
     {
-        public Page()
+        protected Page()
         {
             Title.Text = HeaderText;
         }
@@ -11,7 +11,7 @@
         {
             get
             {
-                const string postfix = "Page";
+                const string postfix = nameof(Page);
                 var typeName = GetType().Name;
                 if (typeName.Length > postfix.Length && typeName.EndsWith(postfix))
                     return typeName.Substring(0, typeName.Length - postfix.Length);

@@ -7,9 +7,18 @@ namespace Wice.Samples.Gallery
 {
     public class GalleryWindow : Window
     {
+        public static _D3DCOLORVALUE ButtonColor;
+        public static _D3DCOLORVALUE ButtonShadowColor;
+
         private const int _headersMargin = 10;
         private Border _pageHolder;
         private readonly List<SymbolHeader> _headers = new List<SymbolHeader>();
+
+        static GalleryWindow()
+        {
+            ButtonColor = new _D3DCOLORVALUE(0xFF0078D7);
+            ButtonShadowColor = ButtonColor.ChangeAlpha(0x7F);
+        }
 
         // define Window settings
         public GalleryWindow()
@@ -74,11 +83,13 @@ namespace Wice.Samples.Gallery
         // add headers & pages & selection logic
         private void AddHeaderAndPages(Dock menu)
         {
+            // home page
             var homePage = new HomePage();
             var mainHeader = AddPageHeader(homePage);
             Dock.SetDockType(mainHeader, DockType.Top);
             menu.Children.Add(mainHeader);
 
+            // all samples page
             var inputPage = new InputPage();
             var inputsHeader = AddPageHeader(inputPage);
             Dock.SetDockType(inputsHeader, DockType.Top);
@@ -89,6 +100,7 @@ namespace Wice.Samples.Gallery
             Dock.SetDockType(layoutHeader, DockType.Top);
             menu.Children.Add(layoutHeader);
 
+            // about page
             var aboutPage = new AboutPage();
             var aboutHeader = AddPageHeader(aboutPage);
             Dock.SetDockType(aboutHeader, DockType.Bottom);

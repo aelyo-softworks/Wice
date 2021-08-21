@@ -2,7 +2,7 @@
 
 namespace Wice.Samples.Gallery.Pages
 {
-    public class LayoutPage : Page
+    public class LayoutPage : SamplesPage
     {
         public LayoutPage()
         {

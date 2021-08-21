@@ -74,12 +74,15 @@ namespace DirectN
 
         // GetText2/SetText2 flags
         private const int tomConvertRTF = 0x00002000;
-        private const int tomGetUtf16 = 0x00020000;
         private const int tomConvertMathML = 0x00010000;
         private const int tomConvertLinearFormat = 0x00040000;
         private const int tomConvertOMML = 0x00080000;
         private const int tomConvertRuby = 0x00100000;
         private const int tomConvertHtml = 0x00900000; // only works for read & with Office's riched20
+
+        private const int tomGetUtf16 = 0x00020000;
+        private const int tomGetUtf8 = 0x08000000;
+
 
         private const int tomStory = 6;
 #pragma warning restore IDE1006 // Naming Styles

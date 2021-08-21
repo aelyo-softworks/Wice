@@ -6,10 +6,28 @@ using System.Threading.Tasks;
 
 namespace Wice.Samples.Gallery.Samples
 {
-    public class Sample
+    public abstract class Sample
     {
-        public string Title { get; }
-        public string IconText { get; }
-        public string Description { get; }
+        protected Sample()
+        {
+        }
+
+        public virtual string TypeName
+        {
+            get
+            {
+                const string postfix = nameof(Sample);
+                var typeName = GetType().Name;
+                if (typeName.Length > postfix.Length && typeName.EndsWith(postfix))
+                    return typeName.Substring(0, typeName.Length - postfix.Length);
+
+                return typeName;
+            }
+        }
+
+        public virtual string Title => TypeName;
+        public virtual string Description => "The " + Title + " sample";
+
+        public abstract string IconText { get; }
     }
 }
