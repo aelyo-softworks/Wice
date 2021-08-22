@@ -34,6 +34,7 @@ namespace Wice.Tests
                 );
 
             //AddBordersForVisualOrderCheck1();
+            AddBorders();
 
             //SizeToContent = DimensionOptions.WidthAndHeight;
             //AddCounter(1);
@@ -50,7 +51,7 @@ namespace Wice.Tests
             //AddRtbDoc();
             //AddRtbVertical();
             //AddRtbRtfFile();
-            AddRtbHtml();
+            //AddRtbHtml();
             //AddScrollableRtbRtfFile();
 
             //AddSvg();
@@ -957,6 +958,31 @@ namespace Wice.Tests
             {
                 b0.IsVisible = !b0.IsVisible;
             };
+        }
+
+        public void AddBorders()
+        {
+            var b1 = new Border();
+            b1.Name = nameof(b1);
+            b1.Width = 200;
+            b1.Height = 200;
+            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            Children.Add(b1);
+
+            var b11 = new Border();
+            b11.Name = nameof(b1);
+            b11.Width = 50;
+            b11.Height = 50;
+            b11.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            b1.Children.Add(b11);
+
+            var b2 = new Border();
+            b2.Name = nameof(b2);
+            b2.VerticalAlignment = Alignment.Near;
+            b2.Width = 100;
+            b2.Height = 100;
+            b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+            Children.Add(b2);
         }
 
         public void AddBordersForVisualOrderCheck1()

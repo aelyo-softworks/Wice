@@ -14,6 +14,13 @@ namespace Wice.Samples.Gallery.Samples.Layout.Border
         // this method's content will be displayed by the CodeBox visual
         public override void Layout(Visual parent)
         {
+            var border = new Wice.Border();
+            parent.Children.Add(border);
+
+            var textBox = new TextBox();
+            border.Children.Add(textBox);
+            textBox.Text = "Text inside a border";
+            textBox.FontSize = 18;
         }
     }
 }

@@ -9,10 +9,6 @@ namespace Wice.Samples.Gallery.Samples.Input
 {
     public class CheckBoxSampleList : SampleList
     {
-        public CheckBoxSampleList()
-        {
-        }
-
         public override string IconText => MDL2GlyphResource.CheckboxComposite;
     }
 }

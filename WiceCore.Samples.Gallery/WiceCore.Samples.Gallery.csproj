@@ -42,6 +42,7 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Sample.cs" Link="Samples\Sample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Border\SimpleBorderSample.cs" Link="Samples\Layout\Border\SimpleBorderSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Pages\SampleListVisual.cs" Link="Pages\SampleListVisual.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Pages\SampleVisual.cs" Link="Pages\SampleVisual.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

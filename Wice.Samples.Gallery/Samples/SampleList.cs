@@ -36,5 +36,7 @@ namespace Wice.Samples.Gallery.Samples
         }
 
         public IReadOnlyList<Sample> Samples { get; }
+
+        public override string ToString() => Title;
     }
 }

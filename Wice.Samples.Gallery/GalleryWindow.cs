@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using DirectN;
 using Wice.Effects;
 using Wice.Samples.Gallery.Pages;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery
 {
@@ -106,21 +108,6 @@ namespace Wice.Samples.Gallery
             }
         }
 
-        private void SelectPage(Page page)
-        {
-            // sets the current document to this page
-            ShowPage(page);
-
-            // deselect all other headers
-            foreach (var header in _headers)
-            {
-                if (header.Data == page)
-                    continue;
-
-                header.IsSelected = false;
-            }
-        }
-
         private SymbolHeader AddPageHeader(Page page)
         {
             var header = new SymbolHeader();
@@ -137,10 +124,9 @@ namespace Wice.Samples.Gallery
 
             header.IsSelectedChanged += (s, e) =>
             {
-                if (e.Value)
-                {
-                    SelectPage(page);
-                }
+                // show page & handle exclusive select
+                ShowPage(page);
+                _headers.Cast<ISelectable>().Select(header);
             };
             return header;
         }

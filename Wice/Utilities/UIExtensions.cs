@@ -88,6 +88,42 @@ namespace Wice.Utilities
             }
         }
 
+        public static void Select(this IEnumerable<ISelectable> selectables, ISelectable selected, bool raiseIsSelectedChanged = false) => Select(selectables, s => s == selected, raiseIsSelectedChanged);
+        public static void Select(this IEnumerable<ISelectable> selectables, Func<ISelectable, bool> selectionCompareFunc, bool raiseIsSelectedChanged = false)
+        {
+            if (selectionCompareFunc == null)
+                throw new ArgumentNullException(nameof(selectionCompareFunc));
+
+            if (selectables == null)
+                return;
+
+            foreach (var select in selectables)
+            {
+                if (select.RaiseIsSelectedChanged != raiseIsSelectedChanged)
+                {
+                    select.RaiseIsSelectedChanged = raiseIsSelectedChanged;
+                    doSelect();
+                    select.RaiseIsSelectedChanged = !raiseIsSelectedChanged;
+                }
+                else
+                {
+                    doSelect();
+                }
+
+                void doSelect()
+                {
+                    if (selectionCompareFunc(select))
+                    {
+                        select.IsSelected = true;
+                    }
+                    else
+                    {
+                        select.IsSelected = false;
+                    }
+                }
+            }
+        }
+
         public static T GetSelectedTag<T>(this TreeView tree)
         {
             var tag = tree.SelectedNode?.Tag;

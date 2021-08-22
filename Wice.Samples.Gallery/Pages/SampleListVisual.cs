@@ -11,23 +11,27 @@ namespace Wice.Samples.Gallery.Pages
             if (sampleList == null)
                 throw new ArgumentNullException(nameof(sampleList));
 
-            SampleList = sampleList;
             Title.Text = sampleList.Title;
 
+            // description
             var tb = new TextBox();
+            tb.Margin = D2D_RECT_F.Thickness(0, 0, 0, 10);
             tb.FontSize = 18;
             tb.FontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_LIGHT;
             tb.Text = sampleList.Description;
+            SetDockType(tb, DockType.Top);
             Children.Add(tb);
 
-            foreach (var sample in SampleList.Samples)
+            // a dock for all sample visuals
+            var dock = new Dock();
+            Children.Add(dock);
+
+            foreach (var sample in sampleList.Samples)
             {
-                var sampleTb = new TextBox();
-                sampleTb.Text = sample.Description;
-                Children.Add(sampleTb);
+                var visual = new SampleVisual(sample);
+                SetDockType(visual, DockType.Top);
+                dock.Children.Add(visual);
             }
         }
-
-        public SampleList SampleList { get; }
     }
 }

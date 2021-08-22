@@ -1893,7 +1893,7 @@ namespace Wice
 
         public static void ReleaseMouseCapture()
         {
-            Application.Trace("visual: " + _mouseCaptorVisual);
+            //Application.Trace("visual: " + _mouseCaptorVisual);
             Interlocked.Exchange(ref _mouseCaptorVisual, null);
             NativeWindow.ReleaseMouse();
         }
@@ -1903,7 +1903,7 @@ namespace Wice
         {
             Native.CaptureMouse();
             Interlocked.Exchange(ref _mouseCaptorVisual, visual);
-            Application.Trace("visual: " + visual);
+            //Application.Trace("visual: " + visual);
         }
 
         internal new void OnMouseWheelEvent(MouseWheelEventArgs e)

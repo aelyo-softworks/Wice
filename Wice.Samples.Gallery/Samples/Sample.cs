@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Wice.Samples.Gallery.Samples
+﻿namespace Wice.Samples.Gallery.Samples
 {
     public abstract class Sample
     {
@@ -15,5 +9,7 @@ namespace Wice.Samples.Gallery.Samples
         public abstract int SortOrder { get; }
         public abstract string Description { get; }
         public abstract void Layout(Visual parent);
+
+        public override string ToString() => Description;
     }
 }
