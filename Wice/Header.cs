@@ -118,7 +118,7 @@ namespace Wice
         [Category(CategoryBehavior)]
         public virtual IList<AccessKey> AccessKeys => _accessKeys;
 
-        protected virtual Visual CreateSelection() => new Border();
+        protected virtual Visual CreateSelection() => new Box();
         protected virtual Visual CreatePanel() => new Dock();
         protected virtual Visual CreateIcon() => new Visual();
         protected virtual TextBox CreateText() => new TextBox();

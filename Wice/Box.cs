@@ -4,7 +4,7 @@ using DirectN;
 
 namespace Wice
 {
-    public abstract class RenderBorder : RenderVisual, IOneChildParent
+    public class Box : Visual, IOneChildParent
     {
         protected override BaseObjectCollection<Visual> CreateChildren() => new BaseObjectCollection<Visual>(1);
 

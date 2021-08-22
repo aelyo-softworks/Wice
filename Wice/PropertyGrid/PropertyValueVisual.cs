@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Wice.PropertyGrid
 {
-    public class PropertyValueVisual : Border
+    public class PropertyValueVisual : Box
     {
         public PropertyValueVisual(PropertyGridProperty property)
         {

@@ -4,7 +4,7 @@ using Windows.UI.Composition;
 namespace Wice
 {
     // only (re)created if window loses focus
-    public class FocusVisual : Border//, IModalVisual
+    public class FocusVisual : Box//, IModalVisual
     {
         public FocusVisual()
         {

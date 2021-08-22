@@ -17,7 +17,6 @@
     <Compile Include="..\Wice\BaseObjectPropertyOptions.cs" Link="BaseObjectPropertyOptions.cs" />
     <Compile Include="..\Wice\BaseObjectSetOptions.cs" Link="BaseObjectSetOptions.cs" />
     <Compile Include="..\Wice\BitmapBrush.cs" Link="BitmapBrush.cs" />
-    <Compile Include="..\Wice\Border.cs" Link="Border.cs" />
     <Compile Include="..\Wice\Brush.cs" Link="Brush.cs" />
     <Compile Include="..\Wice\Button.cs" Link="Button.cs" />
     <Compile Include="..\Wice\ButtonBase.cs" Link="ButtonBase.cs" />
@@ -105,7 +104,6 @@
     <Compile Include="..\Wice\RadialGradientBrush.cs" Link="RadialGradientBrush.cs" />
     <Compile Include="..\Wice\RadioButton.cs" Link="RadioButton.cs" />
     <Compile Include="..\Wice\Rectangle.cs" Link="Rectangle.cs" />
-    <Compile Include="..\Wice\RenderBorder.cs" Link="RenderBorder.cs" />
     <Compile Include="..\Wice\RenderContext.cs" Link="RenderContext.cs" />
     <Compile Include="..\Wice\RenderLayerVisual.cs" Link="RenderLayerVisual.cs" />
     <Compile Include="..\Wice\RenderVisual.cs" Link="RenderVisual.cs" />
@@ -314,6 +312,8 @@
     <Compile Include="..\Wice\Utilities\StreamStreamer.cs" Link="Utilities\StreamStreamer.cs" />
     <Compile Include="..\Wice\Wrap.cs" Link="Wrap.cs" />
     <Compile Include="..\Wice\..\DirectN\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+    <Compile Include="..\Wice\Box.cs" Link="Box.cs" />
+    <Compile Include="..\Wice\RenderBox.cs" Link="RenderBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

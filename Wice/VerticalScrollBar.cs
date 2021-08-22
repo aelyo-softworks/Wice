@@ -36,7 +36,7 @@ namespace Wice
         protected override ScrollBarButton CreateSmallIncrease() => new ScrollBarButton(DockType.Bottom);
         protected override ButtonBase CreateLargeIncrease() => new ButtonBase();
         protected override Thumb CreateThumb() => new Thumb();
-        protected virtual Visual CreateCorner() => new Border();
+        protected virtual Visual CreateCorner() => new Box();
 
         protected internal override void UpdateCorner(ScrollViewer view)
         {

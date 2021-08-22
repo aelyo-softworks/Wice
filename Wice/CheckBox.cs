@@ -18,30 +18,30 @@ namespace Wice
 
         public static Visual CreateDefaultTrueVisual()
         {
-            var border = new Border();
+            var box = new Box();
 
             var path = new Path
             {
                 StrokeThickness = Application.CurrentTheme.BorderSize / 2,
             };
             
-            border.Arranged += (s, e) =>
+            box.Arranged += (s, e) =>
             {
-                var geoSource = Application.Current.ResourceManager.GetCheckButtonGeometrySource(border.ArrangedRect.Width, border.ArrangedRect.Height);
+                var geoSource = Application.Current.ResourceManager.GetCheckButtonGeometrySource(box.ArrangedRect.Width, box.ArrangedRect.Height);
                 path.GeometrySource2D = geoSource.GetIGeometrySource2();
             };
 
-            border.AttachedToComposition += (s, e) =>
+            box.AttachedToComposition += (s, e) =>
             {
-                border.RenderBrush = border.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor);
-                path.StrokeBrush = border.Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor);
+                box.RenderBrush = box.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor);
+                path.StrokeBrush = box.Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor);
             };
 
-            border.Children.Add(path);
+            box.Children.Add(path);
 #if DEBUG
-            border.Name = nameof(CheckBox) + ".true";
+            box.Name = nameof(CheckBox) + ".true";
 #endif
-            return border;
+            return box;
         }
 
         public static Visual CreateDefaultFalseVisual()

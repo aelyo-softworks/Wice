@@ -35,7 +35,7 @@ namespace Wice
             var rect = (Rectangle)CheckBox.CreateDefaultFalseVisual();
             canvas.Children.Add(rect);
 
-            var b = new Border();
+            var b = new Box();
             b.Margin = D2D_RECT_F.Thickness(Application.CurrentTheme.BorderSize);
             canvas.Children.Add(b);
 #if DEBUG

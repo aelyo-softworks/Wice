@@ -33,8 +33,8 @@ namespace Wice.Tests
                 useWindowsAcrylic: true
                 );
 
-            //AddBordersForVisualOrderCheck1();
-            AddBorders();
+            //AddBoxesForVisualOrderCheck1();
+            AddBoxes();
 
             //SizeToContent = DimensionOptions.WidthAndHeight;
             //AddCounter(1);
@@ -202,7 +202,7 @@ namespace Wice.Tests
             tb.IsMain = true;
             Children.Add(tb);
 
-            var menuBack = new Border();
+            var menuBack = new Box();
             menuBack.Name = nameof(menuBack);
             menuBack.Width = 300;
             menuBack.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFE6E6E6));
@@ -220,7 +220,7 @@ namespace Wice.Tests
             grid.Rows.Add(new GridRow());
             Children.Add(grid);
 
-            var document = new Border();
+            var document = new Box();
             document.Name = nameof(document);
             Grid.SetColumn(document, 1);
             Grid.SetRow(document, 1);
@@ -233,11 +233,11 @@ namespace Wice.Tests
             var header = CreateHeader("Compos", MDL2GlyphResource.PrintCustomRange);
             stack.Children.Add(header);
             //header.Child = CreateMeasureUniformGrid(10);
-            header.Child = new Border { Height = 100, RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue) };
+            header.Child = new Box { Height = 100, RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue) };
 
             header = CreateHeader("Inputs", MDL2GlyphResource.VideoCapture);
             stack.Children.Add(header);
-            header.Child = new Border { Height = 10, RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red) };
+            header.Child = new Box { Height = 10, RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red) };
 
             KeyDown += (s, e) =>
             {
@@ -290,29 +290,29 @@ namespace Wice.Tests
             });
             popup.Show();
 
-            var border = new Border();
-            border.Height = 100;
-            border.Width = 200;
-            border.RenderBrush = popup.Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
-            popup.Children.Add(border);
+            var box = new Box();
+            box.Height = 100;
+            box.Width = 200;
+            box.RenderBrush = popup.Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            popup.Children.Add(box);
         }
 
         public void AddToolTip()
         {
-            var border = new Border();
-            Children.Add(border);
-            border.Height = 100;
-            border.Width = 100;
-            border.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
-            border.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello red world");
+            var box = new Box();
+            Children.Add(box);
+            box.Height = 100;
+            box.Width = 100;
+            box.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            box.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello red world");
 
-            var border2 = new Border();
-            border.VerticalAlignment = Alignment.Near;
-            Children.Add(border2);
-            border2.Height = 100;
-            border2.Width = 100;
-            border2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
-            border2.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello blue world");
+            var box2 = new Box();
+            box.VerticalAlignment = Alignment.Near;
+            Children.Add(box2);
+            box2.Height = 100;
+            box2.Width = 100;
+            box2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            box2.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello blue world");
 
             PopupWindow popup = null;
             KeyDown += (s, e) =>
@@ -349,14 +349,14 @@ namespace Wice.Tests
                         popup.IsFocusable = false;
                         popup.Show();
 
-                        var pborder = new Border();
-                        pborder.Height = 100;
-                        pborder.Width = 50;
-                        pborder.DoWhenAttachedToComposition(() =>
+                        var pbox = new Box();
+                        pbox.Height = 100;
+                        pbox.Width = 50;
+                        pbox.DoWhenAttachedToComposition(() =>
                         {
-                            pborder.RenderBrush = popup.Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+                            pbox.RenderBrush = popup.Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
                         });
-                        popup.Children.Add(pborder);
+                        popup.Children.Add(pbox);
                     }
                     return;
                 }
@@ -663,7 +663,7 @@ namespace Wice.Tests
 
         public void AddResizableListBox()
         {
-            var b = new Border();
+            var b = new Box();
             b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
             b.HorizontalAlignment = Alignment.Center;
             b.VerticalAlignment = Alignment.Center;
@@ -844,7 +844,7 @@ namespace Wice.Tests
             //var grid = new Grid();
             //Children.Add(grid);
 
-            var b = new Border();
+            var b = new Box();
             //b.VerticalAlignment = Alignment.Near;
             b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightSalmon);
             b.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello world!");
@@ -855,12 +855,12 @@ namespace Wice.Tests
             //dock.LastChildFill = false;
             b.Children.Add(dock);
 
-            var border = new Border();
-            Dock.SetDockType(border, DockType.Top);
-            //border.VerticalAlignment = Alignment.Near;
-            border.Height = 50;
-            border.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
-            dock.Children.Add(border);
+            var box = new Box();
+            Dock.SetDockType(box, DockType.Top);
+            //box.VerticalAlignment = Alignment.Near;
+            box.Height = 50;
+            box.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            dock.Children.Add(box);
 
             var pg = new PropertyGrid.PropertyGrid();
             Dock.SetDockType(pg, DockType.Top);
@@ -940,14 +940,14 @@ namespace Wice.Tests
             stack.Width = 300;
             stack.Height = 300;
 
-            var b0 = new Border();
+            var b0 = new Box();
             stack.Children.Add(b0);
             b0.Name = nameof(b0);
             b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
             b0.Width = 100;
             b0.Height = 100;
 
-            var b1 = new Border();
+            var b1 = new Box();
             stack.Children.Add(b1);
             b1.Name = nameof(b1);
             b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
@@ -960,23 +960,23 @@ namespace Wice.Tests
             };
         }
 
-        public void AddBorders()
+        public void AddBoxes()
         {
-            var b1 = new Border();
+            var b1 = new Box();
             b1.Name = nameof(b1);
             b1.Width = 200;
             b1.Height = 200;
             b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
             Children.Add(b1);
 
-            var b11 = new Border();
+            var b11 = new Box();
             b11.Name = nameof(b1);
             b11.Width = 50;
             b11.Height = 50;
             b11.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
             b1.Children.Add(b11);
 
-            var b2 = new Border();
+            var b2 = new Box();
             b2.Name = nameof(b2);
             b2.VerticalAlignment = Alignment.Near;
             b2.Width = 100;
@@ -985,20 +985,20 @@ namespace Wice.Tests
             Children.Add(b2);
         }
 
-        public void AddBordersForVisualOrderCheck1()
+        public void AddBoxesForVisualOrderCheck1()
         {
-            var b1 = new Border();
+            var b1 = new Box();
             b1.Name = nameof(b1);
             b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
             Children.Add(b1);
 
-            var b2 = new Border();
+            var b2 = new Box();
             b2.Name = nameof(b2);
             b2.Width = 100;
             b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
             Children.Add(b2);
 
-            var b3 = new Border();
+            var b3 = new Box();
             b3.Name = nameof(b3);
             b3.Height = 60;
             b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
@@ -1008,18 +1008,18 @@ namespace Wice.Tests
             {
                 if (e.Key == VirtualKeys.A)
                 {
-                    var b4 = new Border();
+                    var b4 = new Box();
                     b4.Name = nameof(b4);
                     b4.Height = 40;
                     b4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
 
-                    var b5 = new Border();
+                    var b5 = new Box();
                     b5.Name = nameof(b5);
                     b5.Height = 30;
                     b5.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black);
                     b4.Children.Add(b5);
 
-                    var b6 = new Border();
+                    var b6 = new Box();
                     b6.Name = nameof(b6);
                     b6.Height = 25;
                     b6.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightCoral);
@@ -1328,9 +1328,9 @@ namespace Wice.Tests
                 html.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.Gold);
                 html.Text = color.Item2.ToString();
 
-                var border = new Border();
-                grid.Children.Add(border);
-                border.RenderBrush = Compositor.CreateColorBrush(color.Item2);
+                var box = new Box();
+                grid.Children.Add(box);
+                box.RenderBrush = Compositor.CreateColorBrush(color.Item2);
             }
         }
 
@@ -1363,9 +1363,9 @@ namespace Wice.Tests
                 html.FontSize = text.FontSize;
                 html.Text = color.Value.Color.HtmlString;
 
-                var border = new Border();
-                grid.Children.Add(border);
-                border.RenderBrush = Compositor.CreateColorBrush(color.Value.Color);
+                var box = new Box();
+                grid.Children.Add(box);
+                box.RenderBrush = Compositor.CreateColorBrush(color.Value.Color);
                 i++;
                 if (i == max)
                     break;
@@ -1382,12 +1382,12 @@ namespace Wice.Tests
             //scrollView.Viewer.ClipChildren = false;
             Children.Add(scrollView);
 
-            //var border = new Border2();
-            //border.Name = nameof(border);
-            //border.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
-            //border.Height = 300;
-            //border.Width = 300;
-            //scrollView.Viewer.Child = border;
+            //var box = new Box2();
+            //box.Name = nameof(box);
+            //box.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            //box.Height = 300;
+            //box.Width = 300;
+            //scrollView.Viewer.Child = box;
 
             var grid = CreateMeasureUniformGrid(10, 300, 300);
             scrollView.Viewer.Child = grid;
@@ -1571,13 +1571,13 @@ namespace Wice.Tests
             grid.Rows.Add(new GridRow());
             grid.Rows.Add(new GridRow());
 
-            var cell0 = new Border();
+            var cell0 = new Box();
             cell0.Name = nameof(cell0);
             grid.Children.Add(cell0);
             cell0.Margin = 10;
             cell0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Purple);
 
-            var cell1 = new Border();
+            var cell1 = new Box();
             cell0.Name = nameof(cell1);
             grid.Children.Add(cell1);
             cell1.Margin = 10;
@@ -1611,14 +1611,14 @@ namespace Wice.Tests
             grid.Rows.Add(new GridRow());
             grid.Rows.Add(new GridRow());
 
-            var cell0 = new Border();
+            var cell0 = new Box();
             cell0.Name = nameof(cell0);
             cell0.Height = 20;
             grid.Children.Add(cell0);
             cell0.Margin = 10;
             cell0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Purple);
 
-            var cell1 = new Border();
+            var cell1 = new Box();
             cell1.Name = nameof(cell1);
             cell1.Height = 20;
             grid.Children.Add(cell1);
@@ -1642,13 +1642,13 @@ namespace Wice.Tests
 
         public void AddFillImage()
         {
-            var border = new Border();
-            Children.Add(border);
-            //border.CompositionBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange);
-            //border.BackgroundColor = _D3DCOLORVALUE.Orange;
+            var box = new Box();
+            Children.Add(box);
+            //box.CompositionBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange);
+            //box.BackgroundColor = _D3DCOLORVALUE.Orange;
 
             var img = new Image();
-            border.Children.Add(img);
+            box.Children.Add(img);
             //img.BackgroundColor = _D3DCOLORVALUE.Transparent;
             //img.Opacity = 0.4f;
             //img.HoverBackgroundColor = _D3DCOLORVALUE.Wheat;
@@ -1693,7 +1693,7 @@ namespace Wice.Tests
 
             void addCell(int i, int j)
             {
-                var cell = new Border();
+                var cell = new Box();
                 cell.Name = "cell " + i + "x" + j;
                 visual.Children.Add(cell);
                 var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
@@ -1767,8 +1767,8 @@ namespace Wice.Tests
             var max = 100;
             for (var i = 0; i < max; i++)
             {
-                var b = new Border();
-                b.Name = "border" + i;
+                var b = new Box();
+                b.Name = "box" + i;
                 wrap.Children.Add(b);
                 b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
                 var color = new _D3DCOLORVALUE(0, 1 - (i / (float)max), 1 - (i / (float)max));
@@ -1800,11 +1800,11 @@ namespace Wice.Tests
             stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
             //stack.Width = 200;
 
-            var b0 = new Border();
+            var b0 = new Box();
             stack.Children.Add(b0);
             b0.Name = nameof(b0);
             b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
-            //border.HorizontalAlignment = DuiAlignment.Far;
+            //box.HorizontalAlignment = DuiAlignment.Far;
             b0.Width = 100;
             b0.Height = 100;
             //b0.Height = float.MaxValue;
@@ -1813,18 +1813,18 @@ namespace Wice.Tests
             stack.Children.Add(b1);
             b1.Name = "b1";
             b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
-            //border.HorizontalAlignment = DuiAlignment.Far;
+            //box.HorizontalAlignment = DuiAlignment.Far;
             b1.Width = 200;
             //b1.Height = 200;
 
-            var b2 = new Border();
+            var b2 = new Box();
             b2.Name = "b2";
             b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
             b2.Width = 50;
             b2.Height = 60;
             b1.Children.Add(b2);
 
-            var b3 = new Border();
+            var b3 = new Box();
             b3.Name = "b3";
             b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
             b3.Width = 70;
@@ -1861,14 +1861,14 @@ namespace Wice.Tests
             stack.HorizontalAlignment = Alignment.Center;
             stack.VerticalAlignment = Alignment.Center;
 
-            var b0 = new Border();
+            var b0 = new Box();
             stack.Children.Add(b0);
             b0.Name = nameof(b0);
             b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
             b0.Width = 100;
             b0.Height = 100;
 
-            var b1 = new Border();
+            var b1 = new Box();
             stack.Children.Add(b1);
             b1.Name = nameof(b1);
             b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
@@ -1885,14 +1885,14 @@ namespace Wice.Tests
             stack.Width = 300;
             stack.Height = 300;
 
-            var b0 = new Border();
+            var b0 = new Box();
             stack.Children.Add(b0);
             b0.Name = nameof(b0);
             b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
             b0.Width = 100;
             b0.Height = 100;
 
-            var b1 = new Border();
+            var b1 = new Box();
             stack.Children.Add(b1);
             b1.Name = nameof(b1);
             b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
@@ -1919,12 +1919,12 @@ namespace Wice.Tests
             doc.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange);
             Children.Add(doc);
 
-            var border = new Border();
-            border.Width = 100;
-            border.Height = 100;
-            doc.Children.Add(border);
-            Dock.SetDockType(border, DockType.Right);
-            border.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            var box = new Box();
+            box.Width = 100;
+            box.Height = 100;
+            doc.Children.Add(box);
+            Dock.SetDockType(box, DockType.Right);
+            box.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
         }
 
         public void AddDockAbout()
@@ -1936,9 +1936,9 @@ namespace Wice.Tests
 
             for (var i = 0; i < 10; i++)
             {
-                var border = new Border();
-                Dock.SetDockType(border, DockType.Top);
-                doc.Children.Add(border);
+                var box = new Box();
+                Dock.SetDockType(box, DockType.Top);
+                doc.Children.Add(box);
 
                 var tb = new TextBox();
                 tb.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
@@ -1946,19 +1946,19 @@ namespace Wice.Tests
                 tb.Text = i.ToString();
                 tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ChangeAlpha(i / 10f));
                 tb.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White.ChangeAlpha((10 - i) / 10f));
-                border.Children.Add(tb);
+                box.Children.Add(tb);
             }
 
-            var borderAbout = new Border();
-            borderAbout.Name = nameof(borderAbout);
-            Dock.SetDockType(borderAbout, DockType.Bottom);
-            doc.Children.Add(borderAbout);
+            var boxAbout = new Box();
+            boxAbout.Name = nameof(boxAbout);
+            Dock.SetDockType(boxAbout, DockType.Bottom);
+            doc.Children.Add(boxAbout);
 
             var tbAbout = new TextBox();
             tbAbout.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
             tbAbout.FontSize = 30;
             tbAbout.Text = "About";
-            borderAbout.Children.Add(tbAbout);
+            boxAbout.Children.Add(tbAbout);
         }
 
         public void AddDockNumbers()
@@ -1970,11 +1970,11 @@ namespace Wice.Tests
 
             for (var i = 0; i < 10; i++)
             {
-                var border = new Border();
-                //border.Width = 10;
-                //border.Height = 50;
-                Dock.SetDockType(border, DockType.Right);
-                doc.Children.Add(border);
+                var box = new Box();
+                //box.Width = 10;
+                //box.Height = 50;
+                Dock.SetDockType(box, DockType.Right);
+                doc.Children.Add(box);
 
                 var tb = new TextBox();
                 tb.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
@@ -1982,7 +1982,7 @@ namespace Wice.Tests
                 tb.Text = i.ToString();
                 tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ChangeAlpha(i / 10f));
                 tb.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White.ChangeAlpha((10 - i) / 10f));
-                border.Children.Add(tb);
+                box.Children.Add(tb);
             }
         }
 
@@ -1994,7 +1994,7 @@ namespace Wice.Tests
             dock.Margin = 50;
             dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black);
 
-            var b1 = new Border();
+            var b1 = new Box();
             dock.Children.Add(b1);
             Dock.SetDockType(b1, DockType.Top);
             b1.Name = "D#top";
@@ -2006,7 +2006,7 @@ namespace Wice.Tests
             dock.Children.Add(splitter1);
             splitter1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
 
-            var b2 = new Border();
+            var b2 = new Box();
             dock.Children.Add(b2);
             b2.Name = "D#bottom";
             b2.MinHeight = 20;
@@ -2018,7 +2018,7 @@ namespace Wice.Tests
             dock.Children.Add(splitter2);
             splitter2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
 
-            var b3 = new Border();
+            var b3 = new Box();
             dock.Children.Add(b3);
             b3.Name = "D#left";
             b3.MinWidth = 20;
@@ -2030,7 +2030,7 @@ namespace Wice.Tests
             dock.Children.Add(splitter3);
             splitter3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
 
-            var b4 = new Border();
+            var b4 = new Box();
             dock.Children.Add(b4);
             b4.Name = "D#right";
             b4.MinWidth = 20;
@@ -2042,7 +2042,7 @@ namespace Wice.Tests
             dock.Children.Add(splitter4);
             splitter4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
 
-            var b5 = new Border();
+            var b5 = new Box();
             dock.Children.Add(b5);
             b5.Name = "D#center";
             Dock.SetDockType(b5, DockType.Left);

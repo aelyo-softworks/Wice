@@ -13,7 +13,7 @@ namespace Wice.Samples.Gallery
         public static _D3DCOLORVALUE ButtonShadowColor;
 
         private const int _headersMargin = 10;
-        private Border _pageHolder;
+        private Box _pageHolder;
         private readonly List<SymbolHeader> _headers = new List<SymbolHeader>();
 
         static GalleryWindow()
@@ -60,7 +60,7 @@ namespace Wice.Samples.Gallery
             var titleBar = new TitleBar { IsMain = true };
             Children.Add(titleBar);
 
-            var menuBack = new Border();
+            var menuBack = new Box();
             menuBack.Width = 250;
             menuBack.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFE6E6E6));
             menuBack.Opacity = 0.5f;
@@ -76,7 +76,7 @@ namespace Wice.Samples.Gallery
             Children.Add(grid);
 
             // the document holds pages
-            var document = new Border();
+            var document = new Box();
             _pageHolder = document;
             document.Margin = D2D_RECT_F.Thickness(20, 0);
             Grid.SetColumn(document, 1);
