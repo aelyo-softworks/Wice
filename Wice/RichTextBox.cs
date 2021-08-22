@@ -33,7 +33,7 @@ namespace Wice
         public string GeneratorVersion => Document.Generator;
 
         [Category(CategoryRender)]
-        public _D3DCOLORVALUE TextColor
+        public virtual _D3DCOLORVALUE TextColor
         {
             get => TextHost.ToColor((_host?.TextColor).GetValueOrDefault());
             set
@@ -49,7 +49,7 @@ namespace Wice
         }
 
         [Category(CategoryLayout)]
-        public TextHostOptions Options
+        public virtual TextHostOptions Options
         {
             get => (_host?.Options).GetValueOrDefault();
             set
@@ -65,7 +65,7 @@ namespace Wice
         }
 
         [Category(CategoryBehavior)]
-        public string Text
+        public virtual string Text
         {
             get => _host?.Text;
             set
@@ -81,7 +81,7 @@ namespace Wice
         }
 
         [Category(CategoryBehavior)]
-        public string RtfText
+        public virtual string RtfText
         {
             get => _host?.RtfText;
             set
@@ -98,7 +98,7 @@ namespace Wice
 
         // only works with Office generator
         [Category(CategoryBehavior)]
-        public string HtmlText
+        public virtual string HtmlText
         {
             get => _host?.HtmlText;
             set
@@ -113,7 +113,7 @@ namespace Wice
             }
         }
 
-        private void Invalidate(string propertyName, VisualPropertyInvalidateModes modes = VisualPropertyInvalidateModes.Measure)
+        protected virtual void Invalidate(string propertyName, VisualPropertyInvalidateModes modes = VisualPropertyInvalidateModes.Measure)
         {
             OnPropertyChanging(propertyName);
             Application.CheckRunningAsMainThread();

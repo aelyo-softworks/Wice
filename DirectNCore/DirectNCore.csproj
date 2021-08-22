@@ -940,5 +940,7 @@
     <Compile Include="..\DirectN\Utilities\UnmanagedMemoryStream.cs" Link="Utilities\UnmanagedMemoryStream.cs" />
     <Compile Include="..\DirectN\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
     <Compile Include="..\DirectN\Manual\DisplayConfig.cs" Link="Manual\DisplayConfig.cs" />
+    <Compile Include="..\DirectN\Utilities\ColorUtilities.cs" Link="Utilities\ColorUtilities.cs" />
+    <Compile Include="..\DirectN\Utilities\ImmersiveColor.cs" Link="Utilities\ImmersiveColor.cs" />
   </ItemGroup>
 </Project>

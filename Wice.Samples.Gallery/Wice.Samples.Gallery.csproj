@@ -65,6 +65,7 @@
     <Compile Include="..\DirectN\Properties\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Utilities\CodeBox.cs" />
     <Compile Include="GalleryWindow.cs" />
     <Compile Include="Pages\AboutPage.cs" />
     <Compile Include="Pages\LayoutPage.cs" />
@@ -81,6 +82,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Pages\Titled.cs" />
+    <Compile Include="Utilities\ColorCode.cs" />
+    <Compile Include="Utilities\RtfFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectN\DirectN.csproj">

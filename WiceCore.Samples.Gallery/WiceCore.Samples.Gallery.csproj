@@ -36,6 +36,9 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Input\ButtonSample.cs" Link="Samples\Input\ButtonSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\BorderSample.cs" Link="Samples\Layout\BorderSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Pages\SampleButton.cs" Link="Pages\SampleButton.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Utilities\CodeBox.cs" Link="Utilities\CodeBox.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Utilities\ColorCode.cs" Link="Utilities\ColorCode.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Utilities\RtfFormatter.cs" Link="Utilities\RtfFormatter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

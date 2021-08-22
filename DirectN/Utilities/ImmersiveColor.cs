@@ -1,6 +1,4 @@
-﻿using DirectN;
-
-namespace Wice.Utilities
+﻿namespace DirectN
 {
     public sealed class ImmersiveColor
     {

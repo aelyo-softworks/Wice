@@ -11,7 +11,7 @@ namespace Wice.Samples.Gallery.Pages
             Title.IsVisible = false;
 
 #if DEBUG
-            RichTextBox.Logger = Utilities.UILogger.Instance;
+            RichTextBox.Logger = Wice.Utilities.UILogger.Instance;
 #endif
 
             // add a rich text box in a scroll viewer

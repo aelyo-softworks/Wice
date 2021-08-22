@@ -272,7 +272,6 @@
     <Compile Include="..\Wice\Utilities\Audit.cs" Link="Utilities\Audit.cs" />
     <Compile Include="..\Wice\Utilities\AuditRecord.cs" Link="Utilities\AuditRecord.cs" />
     <Compile Include="..\Wice\Utilities\AuditRecordType.cs" Link="Utilities\AuditRecordType.cs" />
-    <Compile Include="..\Wice\Utilities\ColorUtilities.cs" Link="Utilities\ColorUtilities.cs" />
     <Compile Include="..\Wice\Utilities\CommandLine.cs" Link="Utilities\CommandLine.cs" />
     <Compile Include="..\Wice\Utilities\ComObjectLogger.cs" Link="Utilities\ComObjectLogger.cs" />
     <Compile Include="..\Wice\Utilities\CompositionObjectEqualityComparer.cs" Link="Utilities\CompositionObjectEqualityComparer.cs" />
@@ -292,7 +291,6 @@
     <Compile Include="..\Wice\Utilities\EventProvider.cs" Link="Utilities\EventProvider.cs" />
     <Compile Include="..\Wice\Utilities\EventProviderLogger.cs" Link="Utilities\EventProviderLogger.cs" />
     <Compile Include="..\Wice\Utilities\GeometrySource2D.cs" Link="Utilities\GeometrySource2D.cs" />
-    <Compile Include="..\Wice\Utilities\ImmersiveColor.cs" Link="Utilities\ImmersiveColor.cs" />
     <Compile Include="..\Wice\Utilities\IOUtilities.cs" Link="Utilities\IOUtilities.cs" />
     <Compile Include="..\Wice\Utilities\IQuadTree.cs" Link="Utilities\IQuadTree.cs" />
     <Compile Include="..\Wice\Utilities\QuadTree.cs" Link="Utilities\QuadTree.cs" />

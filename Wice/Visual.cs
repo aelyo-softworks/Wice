@@ -55,17 +55,17 @@ namespace Wice
         public static VisualProperty FocusIndexProperty = VisualProperty.Add<int?>(typeof(Visual), nameof(FocusIndex), VisualPropertyInvalidateModes.Render);
         public static VisualProperty ToolTipContentCreatorProperty = VisualProperty.Add<Action<ToolTip>>(typeof(Visual), nameof(ToolTipContentCreator), VisualPropertyInvalidateModes.None);
 
-        internal static object NullifyString(BaseObject obj, object value) => ((string)value).Nullify();
+        protected static object NullifyString(BaseObject obj, object value) => ((string)value).Nullify();
 
         private static void IsMouseOverChanged(BaseObject obj, object newValue, object oldValue) => ((Visual)obj).IsMouseOverChanged((bool)newValue);
 
-        internal static object ValidateNonNullString(BaseObject obj, object value)
+        protected static object ValidateNonNullString(BaseObject obj, object value)
         {
             var s = (string)value;
             return s ?? string.Empty;
         }
 
-        internal static object ValidateWidthOrHeight(BaseObject obj, object value)
+        protected static object ValidateWidthOrHeight(BaseObject obj, object value)
         {
             var f = (float)value;
             if (float.IsNaN(f))

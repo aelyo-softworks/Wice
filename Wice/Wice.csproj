@@ -204,7 +204,6 @@
     <Compile Include="Typography.cs" />
     <Compile Include="Utilities\DataBindingEvaluator.cs" />
     <Compile Include="Utilities\EnumBitValue.cs" />
-    <Compile Include="Utilities\ColorUtilities.cs" />
     <Compile Include="Utilities\CompositionObjectEqualityComparer.cs" />
     <Compile Include="Utilities\DecamelizeOptions.cs" />
     <Compile Include="Utilities\Decamelizer.cs" />
@@ -213,7 +212,6 @@
     <Compile Include="Utilities\EventProvider.cs" />
     <Compile Include="Utilities\CompositionUtilities.cs" />
     <Compile Include="Utilities\GeometrySource2D.cs" />
-    <Compile Include="Utilities\ImmersiveColor.cs" />
     <Compile Include="Utilities\IQuadTree.cs" />
     <Compile Include="Utilities\StringFormatter.cs" />
     <Compile Include="ValueEventArgs.cs" />

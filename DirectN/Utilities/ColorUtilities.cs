@@ -2,9 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using DirectN;
 
-namespace Wice.Utilities
+namespace DirectN
 {
     public static class ColorUtilities
     {
