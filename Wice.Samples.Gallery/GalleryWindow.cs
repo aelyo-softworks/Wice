@@ -43,6 +43,14 @@ namespace Wice.Samples.Gallery
             AddControls();
         }
 
+        public void ShowPage(Visual page)
+        {
+            if (_pageHolder == null)
+                return; // too early
+
+            _pageHolder.Child = page;
+        }
+
         // add basic controls for layout
         private void AddControls()
         {
@@ -65,6 +73,7 @@ namespace Wice.Samples.Gallery
             grid.Rows.Add(new GridRow());
             Children.Add(grid);
 
+            // the document holds pages
             var document = new Border();
             _pageHolder = document;
             document.Margin = D2D_RECT_F.Thickness(20, 0);
@@ -83,37 +92,24 @@ namespace Wice.Samples.Gallery
         // add headers & pages & selection logic
         private void AddHeaderAndPages(Dock menu)
         {
-            // home page
-            var homePage = new HomePage();
-            var mainHeader = AddPageHeader(homePage);
-            Dock.SetDockType(mainHeader, DockType.Top);
-            menu.Children.Add(mainHeader);
+            foreach (var page in Page.GetPages())
+            {
+                var header = AddPageHeader(page);
+                Dock.SetDockType(header, page.DockType);
+                menu.Children.Add(header);
 
-            // all samples page
-            var inputPage = new InputPage();
-            var inputsHeader = AddPageHeader(inputPage);
-            Dock.SetDockType(inputsHeader, DockType.Top);
-            menu.Children.Add(inputsHeader);
-
-            var layoutPage = new LayoutPage();
-            var layoutHeader = AddPageHeader(layoutPage);
-            Dock.SetDockType(layoutHeader, DockType.Top);
-            menu.Children.Add(layoutHeader);
-
-            // about page
-            var aboutPage = new AboutPage();
-            var aboutHeader = AddPageHeader(aboutPage);
-            Dock.SetDockType(aboutHeader, DockType.Bottom);
-            menu.Children.Add(aboutHeader);
-
-            // select main
-            mainHeader.IsSelected = true;
+                // select main
+                if (page is HomePage)
+                {
+                    header.IsSelected = true;
+                }
+            }
         }
 
         private void SelectPage(Page page)
         {
             // sets the current document to this page
-            _pageHolder.Child = page;
+            ShowPage(page);
 
             // deselect all other headers
             foreach (var header in _headers)

@@ -1478,7 +1478,7 @@ namespace Wice
             base.OnMouseButtonUp(sender, e);
             if (e.Button == MouseButton.Left)
             {
-                Window?.ReleaseMouseCapture(this);
+                Window.ReleaseMouseCapture();
                 _selecting = false;
             }
         }

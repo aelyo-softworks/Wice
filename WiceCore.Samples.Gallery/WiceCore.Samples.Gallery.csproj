@@ -26,19 +26,22 @@
     <Compile Include="..\Wice.Samples.Gallery\Pages\InputPage.cs" Link="Pages\InputPage.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Pages\HomePage.cs" Link="Pages\HomePage.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Pages\Page.cs" Link="Pages\Page.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Sample.cs" Link="Samples\Sample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Pages\Titled.cs" Link="Pages\Titled.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Pages\AboutPage.cs" Link="Pages\AboutPage.cs" />
     <Compile Include="..\Wice.Samples.Gallery\..\DirectN\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
     <Compile Include="..\Wice.Samples.Gallery\RoundedButton.cs" Link="RoundedButton.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Pages\SamplesPage.cs" Link="Pages\SamplesPage.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\CheckBoxSample.cs" Link="Samples\Input\CheckBoxSample.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\ButtonSample.cs" Link="Samples\Input\ButtonSample.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\BorderSample.cs" Link="Samples\Layout\BorderSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Pages\SampleButton.cs" Link="Pages\SampleButton.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Utilities\CodeBox.cs" Link="Utilities\CodeBox.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Utilities\ColorCode.cs" Link="Utilities\ColorCode.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Utilities\RtfFormatter.cs" Link="Utilities\RtfFormatter.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Pages\SampleListPage.cs" Link="Pages\SampleListPage.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\CheckBoxSampleList.cs" Link="Samples\Input\CheckBoxSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\ButtonSampleList.cs" Link="Samples\Input\ButtonSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\BorderSampleList.cs" Link="Samples\Layout\BorderSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\SampleList.cs" Link="Samples\SampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Sample.cs" Link="Samples\Sample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Border\SimpleBorderSample.cs" Link="Samples\Layout\Border\SimpleBorderSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Pages\SampleListVisual.cs" Link="Pages\SampleListVisual.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

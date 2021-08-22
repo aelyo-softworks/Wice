@@ -200,7 +200,6 @@ namespace Wice
             if (!IsEnabled)
                 return;
 
-            Application.Trace("Header");
             OnSelectedButtonClick(e);
             base.OnMouseButtonDown(sender, e);
         }

@@ -7,7 +7,7 @@ namespace Wice.Samples.Gallery.Pages
     // a visual button for a given sample
     public class SampleButton : ButtonBase
     {
-        public SampleButton(Sample sample)
+        public SampleButton(SampleList sample)
         {
             if (sample == null)
                 throw new ArgumentNullException(nameof(sample));
@@ -40,13 +40,13 @@ namespace Wice.Samples.Gallery.Pages
             Dock.SetDockType(title, DockType.Top);
             Child.Children.Add(title);
 
-            if (!string.IsNullOrEmpty(sample.Description))
+            if (!string.IsNullOrEmpty(sample.Header))
             {
                 var desc = new TextBox();
                 desc.Margin = D2D_RECT_F.Thickness(5);
                 desc.FontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_SEMI_LIGHT;
                 desc.WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD;
-                desc.Text = sample.Description;
+                desc.Text = sample.Header;
                 Dock.SetDockType(desc, DockType.Top);
                 Child.Children.Add(desc);
             }

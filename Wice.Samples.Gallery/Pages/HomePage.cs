@@ -10,9 +10,9 @@ namespace Wice.Samples.Gallery.Pages
             // home has no title
             Title.IsVisible = false;
 
-#if DEBUG
-            RichTextBox.Logger = Wice.Utilities.UILogger.Instance;
-#endif
+//#if DEBUG
+//            RichTextBox.Logger = Wice.Utilities.UILogger.Instance;
+//#endif
 
             // add a rich text box in a scroll viewer
             var sv = new ScrollViewer();
@@ -39,5 +39,6 @@ namespace Wice.Samples.Gallery.Pages
         }
 
         public override string IconText => MDL2GlyphResource.Home;
+        public override int SortOrder => 0;
     }
 }

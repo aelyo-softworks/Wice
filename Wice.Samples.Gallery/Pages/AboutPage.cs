@@ -79,5 +79,7 @@ namespace Wice.Samples.Gallery.Pages
         public override string HeaderText => base.HeaderText + " Wice";
         public override string ToolTipText => HeaderText;
         public override string IconText => MDL2GlyphResource.Info;
+        public override int SortOrder => int.MaxValue;
+        public override DockType DockType => DockType.Bottom;
     }
 }

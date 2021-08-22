@@ -7,9 +7,9 @@ using DirectN;
 
 namespace Wice.Samples.Gallery.Samples.Input
 {
-    public class ButtonSample : Sample
+    public class ButtonSampleList : SampleList
     {
-        public ButtonSample()
+        public ButtonSampleList()
         {
         }
 

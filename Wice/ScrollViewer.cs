@@ -498,7 +498,7 @@ namespace Wice
         {
             if (e.Button == MouseButton.Left)
             {
-                ReleaseMouseCapture();
+                Window.ReleaseMouseCapture();
                 Interlocked.Exchange(ref _timer, null)?.Dispose();
             }
             base.OnMouseButtonUp(sender, e);

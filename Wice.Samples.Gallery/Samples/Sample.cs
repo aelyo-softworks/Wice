@@ -12,22 +12,8 @@ namespace Wice.Samples.Gallery.Samples
         {
         }
 
-        public virtual string TypeName
-        {
-            get
-            {
-                const string postfix = nameof(Sample);
-                var typeName = GetType().Name;
-                if (typeName.Length > postfix.Length && typeName.EndsWith(postfix))
-                    return typeName.Substring(0, typeName.Length - postfix.Length);
-
-                return typeName;
-            }
-        }
-
-        public virtual string Title => TypeName;
-        public virtual string Description => "The " + Title + " sample";
-
-        public abstract string IconText { get; }
+        public abstract int SortOrder { get; }
+        public abstract string Description { get; }
+        public abstract void Layout(Visual parent);
     }
 }

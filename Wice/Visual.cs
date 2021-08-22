@@ -260,7 +260,7 @@ namespace Wice
         public bool IsDragging => DragState != null;
 
         [Category(CategoryLive)]
-        public bool HasCapturedMouse => Window?.IsMouseCaptured(this) == true;
+        public bool HasCapturedMouse => Window.IsMouseCaptured(this) == true;
 
         [Category(CategoryLayout)]
         public bool IsSizeSet => Width.IsSet() && Height.IsSet();
@@ -541,7 +541,7 @@ namespace Wice
                 }
                 else
                 {
-                    ReleaseMouseCapture();
+                    Window.ReleaseMouseCapture();
                     RemoveFromComposition(true);
                 }
                 OnPropertyChanged();
@@ -1768,7 +1768,6 @@ namespace Wice
         protected virtual void OnMouseButtonUp(object sender, MouseButtonEventArgs e) => MouseButtonUp?.Invoke(sender, e);
         protected virtual void OnMouseButtonDoubleClick(object sender, MouseButtonEventArgs e) => MouseButtonDoubleClick?.Invoke(sender, e);
         protected virtual void CaptureMouse() => Window?.CaptureMouse(this);
-        protected virtual void ReleaseMouseCapture() => Window?.ReleaseMouseCapture(this);
 
         protected virtual ContainerVisual CreateCompositionVisual() => Window.Compositor.CreateSpriteVisual();
         protected virtual BaseObjectCollection<Visual> CreateChildren() => new BaseObjectCollection<Visual>();
@@ -2512,7 +2511,7 @@ namespace Wice
         protected virtual DragState CancelDragMove(EventArgs e)
         {
             var state = DragState;
-            ReleaseMouseCapture();
+            Window.ReleaseMouseCapture();
             if (DragState is IDisposable disp)
             {
                 disp.Dispose();

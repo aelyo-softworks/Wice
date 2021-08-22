@@ -27,6 +27,9 @@ namespace Wice
     {
         private static Lazy<uint> _maximumBitmapSize = new Lazy<uint>(GetMaximumBitmapSize, true);
         public static uint MaximumBitmapSize => _maximumBitmapSize.Value;
+
+        private static Visual _mouseCaptorVisual;
+        public static Visual MouseCaptorVisual => _mouseCaptorVisual;
         private readonly object _lock = new object();
 
         private readonly ConcurrentList<Task> _tasks = new ConcurrentList<Task>();
@@ -55,7 +58,6 @@ namespace Wice
         private List<Visual> _mousedEnteredVisuals = new List<Visual>();
         private readonly ConcurrentDictionary<Visual, InvalidateMode> _invalidations = new ConcurrentDictionary<Visual, InvalidateMode>();
         private bool _mouseTracking; // https://docs.microsoft.com/en-us/windows/win32/learnwin32/other-mouse-operations
-        private Visual _mouseCaptorVisual;
         private readonly Scheduler _scheduler;
         private bool _frameExtended;
         private float _frameSize;
@@ -1889,30 +1891,19 @@ namespace Wice
             OnResized(this, EventArgs.Empty);
         }
 
-        public virtual void ReleaseMouseCapture(Visual visual)
+        public static void ReleaseMouseCapture()
         {
+            Application.Trace("visual: " + _mouseCaptorVisual);
+            Interlocked.Exchange(ref _mouseCaptorVisual, null);
             NativeWindow.ReleaseMouse();
-            if (visual == null)
-            {
-                _mouseCaptorVisual = null;
-                return;
-            }
-
-            if (visual == _mouseCaptorVisual)
-            {
-                _mouseCaptorVisual = null;
-                return;
-            }
         }
 
-        public virtual bool IsMouseCaptured(Visual visual = null) => (visual != null && visual == _mouseCaptorVisual) || (visual == null && _mouseCaptorVisual != null);
+        public static bool IsMouseCaptured(Visual visual = null) => (visual != null && visual == _mouseCaptorVisual) || (visual == null && _mouseCaptorVisual != null);
         public virtual void CaptureMouse(Visual visual)
         {
             Native.CaptureMouse();
-            if (visual == _mouseCaptorVisual)
-                return;
-
-            _mouseCaptorVisual = visual;
+            Interlocked.Exchange(ref _mouseCaptorVisual, visual);
+            Application.Trace("visual: " + visual);
         }
 
         internal new void OnMouseWheelEvent(MouseWheelEventArgs e)
@@ -1959,15 +1950,15 @@ namespace Wice
             CheckVisualsTree();
 #endif
             var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
-#if DEBUG
-            var stack = GetIntersectingVisuals(rc);
-            var i = 0;
-            foreach (var st in stack)
-            {
-                Application.Trace("stack[" + i + "]: " + st.Level + "/" + st.ZIndexOrDefault + " " + st.FullName);
-                i++;
-            }
-#endif
+//#if DEBUG
+//            var stack = GetIntersectingVisuals(rc);
+//            var i = 0;
+//            foreach (var st in stack)
+//            {
+//                Application.Trace("stack[" + i + "]: " + st.Level + "/" + st.ZIndexOrDefault + " " + st.FullName);
+//                i++;
+//            }
+//#endif
             foreach (var visual in GetIntersectingVisuals(rc))
             {
                 if (visual.DisableMouseEvents)
@@ -2644,7 +2635,7 @@ namespace Wice
                                 var clix = ncx - rc.left;
                                 var cliy = ncy - rc.top;
                                 // note border is not rendered so we don't use it
-                                win.OnMouseEvent(msg2, new MouseEventArgs((int)clix, (int)cliy, 0));
+                                win.OnMouseEvent(msg2, new MouseEventArgs(clix, cliy, 0));
                             }
                         }
                     }

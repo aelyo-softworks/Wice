@@ -7,9 +7,9 @@ using DirectN;
 
 namespace Wice.Samples.Gallery.Samples.Input
 {
-    public class CheckBoxSample : Sample
+    public class CheckBoxSampleList : SampleList
     {
-        public CheckBoxSample()
+        public CheckBoxSampleList()
         {
         }
 
