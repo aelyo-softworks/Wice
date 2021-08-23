@@ -23,7 +23,7 @@ namespace Wice
 
         protected override BaseObjectCollection<Visual> CreateChildren() => new BaseObjectCollection<Visual>(0);
         public new ShapeVisual CompositionVisual => (ShapeVisual)base.CompositionVisual;
-        protected override ContainerVisual CreateCompositionVisual() => Window.Compositor.CreateShapeVisual();
+        protected override ContainerVisual CreateCompositionVisual() => Window?.Compositor?.CreateShapeVisual();
 
         // to be consistent with CompositionSpriteShape's FillBrush property
         [Category(CategoryRender)]

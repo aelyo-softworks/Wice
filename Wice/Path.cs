@@ -32,6 +32,6 @@ namespace Wice
         [Category(CategoryRender)]
         public new CompositionPathGeometry Geometry => (CompositionPathGeometry)base.Geometry;
 
-        protected override CompositionGeometry CreateGeometry() => Window.Compositor.CreatePathGeometry();
+        protected override CompositionGeometry CreateGeometry() => Window?.Compositor?.CreatePathGeometry();
     }
 }

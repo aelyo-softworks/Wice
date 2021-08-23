@@ -6,6 +6,6 @@ namespace Wice
     {
         public new CompositionLineGeometry Geometry => (CompositionLineGeometry)base.Geometry;
 
-        protected override CompositionGeometry CreateGeometry() => Window.Compositor.CreateLineGeometry();
+        protected override CompositionGeometry CreateGeometry() => Window?.Compositor?.CreateLineGeometry();
     }
 }

@@ -264,7 +264,7 @@ namespace Wice
         protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
         {
             //Application.Trace("this: " + this + " constraint: " + constraint);
-            var padding = Padding;
+            //var padding = Padding;
 
             // reset all
             foreach (var col in Columns)

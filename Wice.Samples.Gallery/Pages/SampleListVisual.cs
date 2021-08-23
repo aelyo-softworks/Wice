@@ -24,6 +24,8 @@ namespace Wice.Samples.Gallery.Pages
 
             // a dock for all sample visuals
             var dock = new Dock();
+            dock.HorizontalAlignment = Alignment.Near;
+            dock.VerticalAlignment = Alignment.Near;
             Children.Add(dock);
 
             foreach (var sample in sampleList.Samples)

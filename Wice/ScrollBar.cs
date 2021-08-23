@@ -118,18 +118,22 @@ namespace Wice
         protected override void OnRendered(object sender, EventArgs e)
         {
             base.OnRendered(sender, e);
+            var compositor = Window.Compositor;
+            if (compositor == null)
+                return;
+
             if (IsOverlay)
             {
-                RenderBrush = Window.Compositor.CreateColorBrush(_D3DCOLORVALUE.Transparent);
-                Thumb.RenderBrush = Window.Compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarOverlayThumbColor);
+                RenderBrush = compositor.CreateColorBrush(_D3DCOLORVALUE.Transparent);
+                Thumb.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarOverlayThumbColor);
                 Thumb.CornerRadius = new Vector2(Application.CurrentTheme.ScrollBarOverlayCornerRadius);
                 SmallDecrease.IsVisible = false;
                 SmallIncrease.IsVisible = false;
             }
             else
             {
-                RenderBrush = Window.Compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarBackgroundColor);
-                Thumb.RenderBrush = Window.Compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarThumbColor);
+                RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarBackgroundColor);
+                Thumb.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarThumbColor);
                 Thumb.CornerRadius = new Vector2(0);
                 SmallDecrease.IsVisible = true;
                 SmallIncrease.IsVisible = true;

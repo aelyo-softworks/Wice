@@ -7,7 +7,7 @@ using DirectN;
 
 namespace Wice.Tests
 {
-    public class Border2 : RenderBorder
+    public class Border2 : Border
     {
         protected override void RenderCore(RenderContext context)
         {

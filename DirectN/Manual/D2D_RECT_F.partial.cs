@@ -478,7 +478,7 @@ namespace DirectN
             return Sized(left.left - right.left, left.top - right.top, left.Width + right.HorizontalThickness, left.Height + right.VerticalThickness);
         }
 
-        // margin/thickness type calculation
+        // padding/thickness type calculation
         public static D2D_RECT_F operator -(D2D_RECT_F left, D2D_RECT_F right)
         {
             if (left.IsInvalid || right.IsInvalid)

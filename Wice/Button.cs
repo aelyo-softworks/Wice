@@ -65,7 +65,11 @@ namespace Wice
         protected override void UpdateStyle()
         {
             base.UpdateStyle();
-            RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.ButtonColor);
+            var compositor = Compositor;
+            if (compositor != null)
+            {
+                RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ButtonColor);
+            }
         }
 
         protected virtual void UpdateMargins()

@@ -152,21 +152,25 @@ namespace Wice
                         target.CompositionVisual.CenterPoint = new Vector3(size.width / 2, size.height / 2, 0);
                         target.SuspendCompositionUpdateParts(CompositionUpdateParts.RotationAngleInDegrees);
 
-                        Compositor.RunScopedBatch(() =>
+                        var compositor = Compositor;
+                        if (compositor != null)
                         {
-                            var animation = Compositor.CreateScalarKeyFrameAnimation();
-                            animation.Duration = Application.CurrentTheme.SelectedAnimationDuration;
-                            animation.InsertKeyFrame(0, 0);
-                            animation.InsertKeyFrame(1, IsSelected ? 180 : -180, Compositor.CreateLinearEasingFunction());
-                            target.CompositionVisual.StartAnimation(nameof(ContainerVisual.RotationAngleInDegrees), animation);
-                        }, () =>
-                        {
-                            target.ResumeCompositionUpdateParts();
-                            if (SelectedButton.Child is TextBox tb)
+                            compositor.RunScopedBatch(() =>
                             {
-                                tb.Text = IsSelected ? MDL2GlyphResource.ChevronUp : MDL2GlyphResource.ChevronDown;
-                            }
-                        });
+                                var animation = compositor.CreateScalarKeyFrameAnimation();
+                                animation.Duration = Application.CurrentTheme.SelectedAnimationDuration;
+                                animation.InsertKeyFrame(0, 0);
+                                animation.InsertKeyFrame(1, IsSelected ? 180 : -180, compositor.CreateLinearEasingFunction());
+                                target.CompositionVisual.StartAnimation(nameof(ContainerVisual.RotationAngleInDegrees), animation);
+                            }, () =>
+                            {
+                                target.ResumeCompositionUpdateParts();
+                                if (SelectedButton.Child is TextBox tb)
+                                {
+                                    tb.Text = IsSelected ? MDL2GlyphResource.ChevronUp : MDL2GlyphResource.ChevronDown;
+                                }
+                            });
+                        }
                     }
                 }
                 else

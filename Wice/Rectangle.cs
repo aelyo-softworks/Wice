@@ -6,7 +6,7 @@ namespace Wice
     {
         public new CompositionRectangleGeometry Geometry => (CompositionRectangleGeometry)base.Geometry;
 
-        protected override CompositionGeometry CreateGeometry() => Window.Compositor.CreateRectangleGeometry();
+        protected override CompositionGeometry CreateGeometry() => Window?.Compositor?.CreateRectangleGeometry();
 
         protected override void Render()
         {

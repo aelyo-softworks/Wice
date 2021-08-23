@@ -13,7 +13,7 @@ namespace Wice
 
         public new CompositionRoundedRectangleGeometry Geometry => (CompositionRoundedRectangleGeometry)base.Geometry;
 
-        protected override CompositionGeometry CreateGeometry() => Window.Compositor.CreateRoundedRectangleGeometry();
+        protected override CompositionGeometry CreateGeometry() => Window?.Compositor?.CreateRoundedRectangleGeometry();
 
         protected override void Render()
         {

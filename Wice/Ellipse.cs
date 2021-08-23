@@ -18,7 +18,7 @@ namespace Wice
         // useful to define radius with respect to parent/max size
         public Vector2 RadiusOffset { get => (Vector2)GetPropertyValue(RadiusOffsetProperty); set => SetPropertyValue(RadiusOffsetProperty, value); }
 
-        protected override CompositionGeometry CreateGeometry() => Window.Compositor.CreateEllipseGeometry();
+        protected override CompositionGeometry CreateGeometry() => Window?.Compositor?.CreateEllipseGeometry();
 
         protected override void Render()
         {

@@ -31,8 +31,6 @@ namespace Wice
                         dlg.ShowWindowOverlay = false;
                     }
 
-                    //dlg.Height = 100;
-                    //dlg.Width = 100;
                     dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightPink);
                     dlg.PlacementMode = PlacementMode.OuterBottomRight;
                     dlg.PlacementTarget = this;

@@ -282,7 +282,11 @@ namespace Wice
             }
             else
             {
-                visual.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor);
+                var compositor = Compositor;
+                if (compositor != null)
+                {
+                    visual.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor);
+                }
             }
 
             return selected != visual.IsSelected;

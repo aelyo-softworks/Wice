@@ -161,21 +161,6 @@ namespace Wice.PropertyGrid
             host.Name = "editor[" + visual.Property.Name + "]";
 #endif
 
-            // only one dialog opened for a property grid
-            //host.DialogClosed += (s, e) =>
-            //{
-            //    _openedHost = null;
-            //};
-
-            //host.DialogOpened += (s, e) =>
-            //{
-            //    if (_openedHost != null)
-            //    {
-            //        _openedHost.CloseDialog();
-            //    }
-            //    _openedHost = host;
-            //};
-
             host.EditorMode = EditorMode.NonModal;
             host.HorizontalAlignment = Alignment.Stretch;
             host.Header.Text.Text = visual.Property.TextValue;
@@ -183,7 +168,6 @@ namespace Wice.PropertyGrid
             host.Header.Panel.Margin = 0;
             host.Header.SelectedButtonText.Opacity = 0;
             host.MouseOverChanged += (s, e) => host.Header.SelectedButtonText.Opacity = host.IsMouseOver ? 1 : 0;
-            //host.DoWhenAttachedToComposition(() => host.HoverRenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.SelectedHoverColor));
             host.Header.Text.PropertyChanged += (s, e) =>
             {
                 if (e.PropertyName == nameof(TextBox.FontSize))

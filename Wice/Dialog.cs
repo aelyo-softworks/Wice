@@ -157,7 +157,11 @@ namespace Wice
 
         protected virtual CompositionShadow CreateShadow()
         {
-            var shadow = Compositor.CreateDropShadow();
+            var compositor = Compositor;
+            if (compositor == null)
+                return null;
+
+            var shadow = compositor.CreateDropShadow();
             shadow.BlurRadius = Application.CurrentTheme.DialogShadowBlurRadius;
             shadow.Color = Application.CurrentTheme.DialogShadowColor;
             return shadow;

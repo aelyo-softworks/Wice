@@ -17,7 +17,7 @@ namespace Wice
         public CompositionSpriteShape Shape { get; private set; }
 
         protected abstract CompositionGeometry CreateGeometry();
-        protected virtual CompositionSpriteShape CreateShape() => Window.Compositor.CreateSpriteShape(Geometry);
+        protected virtual CompositionSpriteShape CreateShape() => Window?.Compositor?.CreateSpriteShape(Geometry);
 
         protected override void OnAttachedToComposition(object sender, EventArgs e)
         {

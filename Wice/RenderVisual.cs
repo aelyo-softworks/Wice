@@ -117,9 +117,6 @@ namespace Wice
         protected internal virtual void RenderCore(RenderContext context) => RenderBackgroundCore(context);
         protected virtual void RenderBackgroundCore(RenderContext context)
         {
-            if (!CompositionVisual.IsVisible)
-                return;
-
             var bg = BackgroundColor;
             if (bg.HasValue)
             {

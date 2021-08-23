@@ -27,6 +27,7 @@ namespace DirectN
         public static int HIWORD(this IntPtr value) => HIWORD((int)(long)value);
         public static int LOWORD(this int value) => value & 0xffff;
         public static int LOWORD(this IntPtr value) => LOWORD((int)(long)value);
+        public static float ToZero(this float value) => float.IsNaN(value) ? 0 : value;
 
         public static float Ceiling(this float value) => (float)Math.Ceiling(value);
         public static int CeilingI(this float value) => Math.Ceiling(value).ToInt32();

@@ -151,7 +151,6 @@
     <Compile Include="RenderLayerVisual.cs" />
     <Compile Include="PlacementMode.cs" />
     <Compile Include="Popup.cs" />
-    <Compile Include="RenderBorder.cs" />
     <Compile Include="Brush.cs" />
     <Compile Include="Alignment.cs" />
     <Compile Include="Border.cs" />

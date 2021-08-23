@@ -1,12 +1,29 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using DirectN;
 
 namespace Wice
 {
-    public class Border : Visual, IOneChildParent
+    // note for border (thickness) rendering, it can be better (try the magnify tool) to use two composited borders than a border with BorderThickness not 0
+    public class Border : RenderVisual, IOneChildParent
     {
-        protected override BaseObjectCollection<Visual> CreateChildren() => new BaseObjectCollection<Visual>(1);
+        public static VisualProperty BorderBrushProperty = VisualProperty.Add<Brush>(typeof(Border), nameof(BorderBrush), VisualPropertyInvalidateModes.Render);
+        public static VisualProperty BorderThicknessProperty = VisualProperty.Add(typeof(Border), nameof(BorderThickness), VisualPropertyInvalidateModes.Measure, 0f);
+        public static VisualProperty CornerRadiusProperty = VisualProperty.Add(typeof(RoundedRectangle), nameof(CornerRadius), VisualPropertyInvalidateModes.Render, new Vector2());
+
+        protected override bool FallbackToTransparentBackground => true;
+
+        // note this is quite different than WPF's one, it's the composition one
+        [Category(CategoryRender)]
+        public Vector2 CornerRadius { get => (Vector2)GetPropertyValue(CornerRadiusProperty); set => SetPropertyValue(CornerRadiusProperty, value); }
+
+        [Category(CategoryRender)]
+        public Brush BorderBrush { get => (Brush)GetPropertyValue(BorderBrushProperty); set => SetPropertyValue(BorderBrushProperty, value); }
+
+        [Category(CategoryRender)]
+        public float BorderThickness { get => (float)GetPropertyValue(BorderThicknessProperty); set => SetPropertyValue(BorderThicknessProperty, value); }
 
         [Browsable(false)]
         public Visual Child
@@ -26,16 +43,69 @@ namespace Wice
             }
         }
 
+        protected override BaseObjectCollection<Visual> CreateChildren() => new BaseObjectCollection<Visual>(1);
+
         protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
         {
+            var padding = Padding - BorderThickness.ToZero();
+
+            var leftPadding = padding.left.IsSet() && padding.left > 0;
+            if (leftPadding && constraint.width.IsSet())
+            {
+                constraint.width = Math.Max(0, constraint.width - padding.left);
+            }
+
+            var topPadding = padding.top.IsSet() && padding.top > 0;
+            if (topPadding && constraint.height.IsSet())
+            {
+                constraint.height = Math.Max(0, constraint.height - padding.top);
+            }
+
+            var rightPadding = padding.right.IsSet() && padding.right > 0;
+            if (rightPadding && constraint.width.IsSet())
+            {
+                constraint.width = Math.Max(0, constraint.width - padding.right);
+            }
+
+            var bottomPadding = padding.bottom.IsSet() && padding.bottom > 0;
+            if (bottomPadding && constraint.height.IsSet())
+            {
+                constraint.height = Math.Max(0, constraint.height - padding.bottom);
+            }
+
+            var width = 0f;
+            var height = 0f;
+
             var child = Child;
             if (child != null)
             {
                 child.Measure(constraint);
-                return child.DesiredSize;
+                var size = child.DesiredSize;
+                width = size.width;
+                height = size.height;
             }
 
-            return base.MeasureCore(constraint);
+            if (leftPadding)
+            {
+                width += padding.left;
+            }
+
+            if (topPadding)
+            {
+                height += padding.top;
+            }
+
+            if (rightPadding)
+            {
+                width += padding.right;
+            }
+
+            if (bottomPadding)
+            {
+                height += padding.bottom;
+            }
+
+            return new D2D_SIZE_F(width, height);
         }
 
         protected override void ArrangeCore(D2D_RECT_F finalRect)
@@ -43,7 +113,91 @@ namespace Wice
             var child = Child;
             if (child != null)
             {
-                child.Arrange(new D2D_RECT_F(finalRect.Size));
+                var padding = Padding - BorderThickness.ToZero();
+                var rc = new D2D_RECT_F();
+                if (padding.left.IsSet() && padding.left > 0)
+                {
+                    rc.left = padding.left;
+                }
+
+                if (padding.top.IsSet() && padding.top > 0)
+                {
+                    rc.top = padding.top;
+                }
+
+                if (padding.right.IsSet() && padding.right > 0)
+                {
+                    rc.Width = Math.Max(0, finalRect.Width - padding.right - rc.left);
+                }
+                else
+                {
+                    rc.Width = finalRect.Width;
+                }
+
+                if (padding.bottom.IsSet() && padding.bottom > 0)
+                {
+                    rc.Height = Math.Max(0, finalRect.Height - padding.bottom - rc.top);
+                }
+                else
+                {
+                    rc.Height = finalRect.Height;
+                }
+
+                child.Arrange(rc);
+            }
+        }
+
+        protected override void RenderBackgroundCore(RenderContext context)
+        {
+            var radius = CornerRadius;
+            if (radius.X > 0 || radius.Y > 0)
+            {
+                context.DeviceContext.Clear(_D3DCOLORVALUE.Transparent);
+                var bg = BackgroundColor;
+                if (bg.HasValue)
+                {
+                    var borderThickness = BorderThickness.ToZero();
+                    var rc = new D2D_RECT_F(RenderSize);
+                    rc = rc.Deflate(borderThickness / 2);
+                    var rr = new D2D1_ROUNDED_RECT();
+                    rr.rect = rc;
+                    rr.radiusX = radius.X.ToZero();
+                    rr.radiusY = radius.Y.ToZero();
+                    context.DeviceContext.Object.FillRoundedRectangle(ref rr, context.CreateSolidColorBrush(bg.Value).Object);
+                }
+                return;
+            }
+            base.RenderBackgroundCore(context);
+        }
+
+        protected internal override void RenderCore(RenderContext context)
+        {
+            base.RenderCore(context);
+            if (!CompositionVisual.IsVisible)
+                return;
+
+            var borderThickness = BorderThickness.ToZero();
+            if (borderThickness > 0)
+            {
+                var brush = BorderBrush?.GetBrush(context);
+                if (brush != null)
+                {
+                    var rc = new D2D_RECT_F(RenderSize);
+                    rc = rc.Deflate(borderThickness / 2);
+                    var radius = CornerRadius;
+                    if (radius.X > 0 || radius.Y > 0)
+                    {
+                        var rr = new D2D1_ROUNDED_RECT();
+                        rr.rect = rc;
+                        rr.radiusX = radius.X.ToZero();
+                        rr.radiusY = radius.Y.ToZero();
+                        context.DeviceContext.Object.DrawRoundedRectangle(ref rr, brush.Object, borderThickness, null);
+                    }
+                    else
+                    {
+                        context.DeviceContext.Object.DrawRectangle(ref rc, brush.Object, borderThickness, null);
+                    }
+                }
             }
         }
     }

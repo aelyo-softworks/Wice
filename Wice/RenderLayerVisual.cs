@@ -13,7 +13,7 @@ namespace Wice
 
         [Category(CategoryRender)]
         public new LayerVisual CompositionVisual => (LayerVisual)base.CompositionVisual;
-        protected override ContainerVisual CreateCompositionVisual() => Window.Compositor.CreateLayerVisual();
+        protected override ContainerVisual CreateCompositionVisual() => Window?.Compositor?.CreateLayerVisual();
 
         protected override void Render()
         {

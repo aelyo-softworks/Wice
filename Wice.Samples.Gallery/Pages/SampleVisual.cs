@@ -7,7 +7,7 @@ using Wice.Samples.Gallery.Samples;
 
 namespace Wice.Samples.Gallery.Pages
 {
-    public class SampleVisual : Border
+    public class SampleVisual : Dock
     {
         public SampleVisual(Sample sample)
         {
@@ -17,9 +17,22 @@ namespace Wice.Samples.Gallery.Pages
             var sampleTb = new TextBox();
             sampleTb.FontSize = 20;
             sampleTb.Text = sample.Description;
-            //SetDockType(sampleTb, DockType.Top);
+            SetDockType(sampleTb, DockType.Top);
             Children.Add(sampleTb);
-            sample.Layout(this);
+
+            var sampleBorder = new Border();
+            sampleBorder.HorizontalAlignment = Alignment.Near;
+            sampleBorder.VerticalAlignment = Alignment.Near;
+            //sampleBorder.Height = 200;
+            //sampleBorder.Width = 200;
+            SetDockType(sampleBorder, DockType.Top);
+            Children.Add(sampleBorder);
+
+            DoWhenAttachedToComposition(() =>
+            {
+                sample.Compositor = Compositor;
+                sample.Layout(sampleBorder);
+            });
         }
     }
 }

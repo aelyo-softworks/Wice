@@ -1769,7 +1769,7 @@ namespace Wice
         protected virtual void OnMouseButtonDoubleClick(object sender, MouseButtonEventArgs e) => MouseButtonDoubleClick?.Invoke(sender, e);
         protected virtual void CaptureMouse() => Window?.CaptureMouse(this);
 
-        protected virtual ContainerVisual CreateCompositionVisual() => Window.Compositor.CreateSpriteVisual();
+        protected virtual ContainerVisual CreateCompositionVisual() => Compositor?.CreateSpriteVisual();
         protected virtual BaseObjectCollection<Visual> CreateChildren() => new BaseObjectCollection<Visual>();
 
         protected override bool AreValuesEqual(object value1, object value2)
@@ -1921,7 +1921,7 @@ namespace Wice
             if (cv == null)
                 return;
 
-            // note: we don't currently raise detached + detached, although we do it...
+            // note: we don't currently raise detached + detached events here
             cv.Parent.Children.Remove(cv);
             InsertCompositionVisual();
         }

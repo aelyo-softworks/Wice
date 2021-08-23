@@ -105,7 +105,6 @@
     <Compile Include="..\Wice\RadialGradientBrush.cs" Link="RadialGradientBrush.cs" />
     <Compile Include="..\Wice\RadioButton.cs" Link="RadioButton.cs" />
     <Compile Include="..\Wice\Rectangle.cs" Link="Rectangle.cs" />
-    <Compile Include="..\Wice\RenderBorder.cs" Link="RenderBorder.cs" />
     <Compile Include="..\Wice\RenderContext.cs" Link="RenderContext.cs" />
     <Compile Include="..\Wice\RenderLayerVisual.cs" Link="RenderLayerVisual.cs" />
     <Compile Include="..\Wice\RenderVisual.cs" Link="RenderVisual.cs" />

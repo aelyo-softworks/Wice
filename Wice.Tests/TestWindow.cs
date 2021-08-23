@@ -962,27 +962,49 @@ namespace Wice.Tests
 
         public void AddBorders()
         {
+            //ClipChildren = false;
             var b1 = new Border();
+            //b1.ClipChildren = false;
             b1.Name = nameof(b1);
-            b1.Width = 200;
-            b1.Height = 200;
+            b1.BorderThickness = 10;
+            b1.CornerRadius = new Vector2(40);
+            b1.HorizontalAlignment = Alignment.Center;
+            b1.VerticalAlignment = Alignment.Center;
+            b1.BorderBrush = new SolidColorBrush(_D3DCOLORVALUE.Red);
+            b1.Padding = 10;
+            b1.Width = 150;
+            b1.Height = 150;
             b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
             Children.Add(b1);
 
-            var b11 = new Border();
-            b11.Name = nameof(b1);
-            b11.Width = 50;
-            b11.Height = 50;
-            b11.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
-            b1.Children.Add(b11);
+            //var image = new Image();
+            //image.Name = "img";
+            //image.HorizontalAlignment = Alignment.Center;
+            //image.VerticalAlignment = Alignment.Center;
+            //image.Stretch = Stretch.None;
+            //image.Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), GetType().Namespace + ".Resources.aelyo_flat.png");
+            //b1.Children.Add(image);
+
+            //var textBox = new TextBox();
+            //b1.Children.Add(textBox);
+            //textBox.Text = "Text inside a border";
+            //textBox.FontSize = 18;
 
             var b2 = new Border();
             b2.Name = nameof(b2);
-            b2.VerticalAlignment = Alignment.Near;
-            b2.Width = 100;
-            b2.Height = 100;
+            //b2.Margin = 5;
+            //b2.Width = 50;
+            //b2.Height = 50;
             b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
-            Children.Add(b2);
+            b1.Children.Add(b2);
+
+            //var b3 = new Border();
+            //b3.Name = nameof(b3);
+            //b3.VerticalAlignment = Alignment.Near;
+            //b3.Width = 100;
+            //b3.Height = 100;
+            //b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+            //Children.Add(b3);
         }
 
         public void AddBordersForVisualOrderCheck1()

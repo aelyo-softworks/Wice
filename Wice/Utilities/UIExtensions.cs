@@ -88,6 +88,24 @@ namespace Wice.Utilities
             }
         }
 
+        public static void SetBrush(this Windows.UI.Composition.Visual visual, CompositionBrush brush)
+        {
+            if (visual is SpriteVisual sprite)
+            {
+                sprite.Brush = brush;
+                return;
+            }
+
+            if (visual is ShapeVisual shapeVisual)
+            {
+                foreach (var shape in shapeVisual.EnumerateAllShapes().OfType<CompositionSpriteShape>())
+                {
+                    shape.FillBrush = brush;
+                }
+                return;
+            }
+        }
+
         public static void Select(this IEnumerable<ISelectable> selectables, ISelectable selected, bool raiseIsSelectedChanged = false) => Select(selectables, s => s == selected, raiseIsSelectedChanged);
         public static void Select(this IEnumerable<ISelectable> selectables, Func<ISelectable, bool> selectionCompareFunc, bool raiseIsSelectedChanged = false)
         {
