@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Wice.Tests\app.manifest" Link="app.manifest" />
+    <Compile Include="..\Wice.Tests\Border2.cs" Link="Border2.cs" />
     <Compile Include="..\Wice.Tests\Program.cs" Link="Program.cs" />
     <Compile Include="..\Wice.Tests\TestWindow.cs" Link="TestWindow.cs" />
     <Compile Include="..\Wice.Tests\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
@@ -29,6 +30,5 @@
     <Content Include="..\Wice.Tests\tiger.svg" Link="tiger.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Compile Include="..\Wice.Tests\Box2.cs" Link="Box2.cs" />
   </ItemGroup>
 </Project>

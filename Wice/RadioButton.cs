@@ -25,9 +25,9 @@ namespace Wice
             if (compositor == null)
                 throw new ArgumentNullException(nameof(compositor));
 
-            var box = new Box();
+            var border = new Border();
             var canvas = new Canvas();
-            box.Child = canvas;
+            border.Child = canvas;
 
             var ellipse = new Ellipse
             {
@@ -47,7 +47,7 @@ namespace Wice
 #if DEBUG
             canvas.Name = nameof(CheckBox) + ".true";
 #endif
-            return box;
+            return border;
         }
 
         public static Visual CreateDefaultFalseVisual(Compositor compositor)

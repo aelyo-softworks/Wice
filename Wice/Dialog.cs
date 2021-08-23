@@ -172,7 +172,7 @@ namespace Wice
                 var opacity = WindowOverlayOpacity ?? Application.CurrentTheme.DialogWindowOverlayOpacity;
                 if (opacity > 0)
                 {
-                    var overlay = new Box();
+                    var overlay = new Border();
 #if DEBUG
                     overlay.Name = "dialogOverlay";
 #endif

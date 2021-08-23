@@ -7,7 +7,7 @@ using Wice.Samples.Gallery.Samples;
 
 namespace Wice.Samples.Gallery.Pages
 {
-    public class SampleVisual : Box
+    public class SampleVisual : Border
     {
         public SampleVisual(Sample sample)
         {

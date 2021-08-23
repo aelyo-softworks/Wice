@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Wice
 {
-    public class ItemVisual : Box, IOneChildParent, IFocusableParent, ISelectable
+    public class ItemVisual : Border, IOneChildParent, IFocusableParent, ISelectable
     {
         public static VisualProperty IsSelectedProperty = VisualProperty.Add(typeof(ItemVisual), nameof(IsSelected), VisualPropertyInvalidateModes.Measure, false);
 

@@ -6,7 +6,7 @@ using Windows.UI.Composition;
 
 namespace Wice
 {
-    public class Caret : Box
+    public class Caret : Border
     {
 #if DEBUG
         public static VisualProperty BlinkProperty = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);

@@ -5,7 +5,7 @@ using DirectN;
 
 namespace Wice
 {
-    public class ButtonBase : Box, IAccessKeyParent
+    public class ButtonBase : Border, IAccessKeyParent
     {
         public event EventHandler<EventArgs> Click;
 
