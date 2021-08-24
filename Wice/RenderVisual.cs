@@ -104,12 +104,6 @@ namespace Wice
             });
         }
 
-        protected override void SetCompositionBrush(CompositionBrush brush)
-        {
-            // we set our brush
-            // base.SetBrush(brush);
-        }
-
         protected internal virtual void RenderOverChildren(RenderContext context)
         {
         }

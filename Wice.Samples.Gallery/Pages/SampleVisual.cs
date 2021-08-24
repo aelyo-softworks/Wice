@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DirectN;
 using Wice.Samples.Gallery.Samples;
 
 namespace Wice.Samples.Gallery.Pages
@@ -21,10 +22,9 @@ namespace Wice.Samples.Gallery.Pages
             Children.Add(sampleTb);
 
             var sampleBorder = new Border();
-            sampleBorder.HorizontalAlignment = Alignment.Near;
-            sampleBorder.VerticalAlignment = Alignment.Near;
-            //sampleBorder.Height = 200;
-            //sampleBorder.Width = 200;
+            sampleBorder.BorderThickness = 1;
+            sampleBorder.Padding = 10;
+            sampleBorder.BorderBrush = new SolidColorBrush(_D3DCOLORVALUE.LightGray);
             SetDockType(sampleBorder, DockType.Top);
             Children.Add(sampleBorder);
 

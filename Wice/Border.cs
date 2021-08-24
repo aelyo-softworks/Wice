@@ -143,7 +143,8 @@ namespace Wice
                     rc.Height = finalRect.Height;
                 }
 
-                child.Arrange(rc);
+                var rc2 = Canvas.GetRect(rc.Size, child);
+                child.Arrange(new D2D_RECT_F(rc.left + rc2.left, rc.top + rc2.top, rc2.Size));
             }
         }
 
@@ -188,6 +189,16 @@ namespace Wice
                 return;
             }
             base.RenderBackgroundCore(context);
+        }
+
+        protected override void RenderD2DSurface()
+        {
+            // using D2D cancels Windows.UI.Composition animations, so avoid when possible...
+            // note however that this means we currently don't support animations on borders with cornerradius or borderthickness set
+            if (BorderThickness.ToZero() == 0 && CornerRadius.IsZero())
+                return;
+
+            base.RenderD2DSurface();
         }
 
         protected internal override void RenderCore(RenderContext context)

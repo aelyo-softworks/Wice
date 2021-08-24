@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using DirectN;
-using Wice.Utilities;
 
 namespace Wice
 {

@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using DirectN;
 using Wice.Utilities;
+using Windows.UI.Composition;
 
 namespace Wice
 {
@@ -295,6 +296,12 @@ namespace Wice
         {
             var text = base.ToString() + " '" + Text?.Replace('\r', '⏎').Replace("\n", string.Empty) + "'";
             return text.TrimWithEllipsis();
+        }
+
+        protected override void SetCompositionBrush(CompositionBrush brush)
+        {
+            // we use or own system
+            //base.SetCompositionBrush(brush);
         }
 
         protected virtual void DoOnTextChanged(object sender, ValueEventArgs<string> e)
@@ -1455,6 +1462,12 @@ namespace Wice
             }
 
             Invalidate(VisualPropertyInvalidateModes.Measure, new InvalidateReason(GetType()));
+        }
+
+        protected override void OnMouseLeave(object sender, MouseEventArgs e)
+        {
+            base.OnMouseLeave(sender, e);
+            _selecting = false;
         }
 
         protected override void OnMouseButtonDown(object sender, MouseButtonEventArgs e)

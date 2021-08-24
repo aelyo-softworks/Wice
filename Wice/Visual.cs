@@ -1580,7 +1580,8 @@ namespace Wice
 
         private void AnimateColor(_D3DCOLORVALUE to, _D3DCOLORVALUE? from = null)
         {
-            if (Compositor == null)
+            var compositor = Compositor;
+            if (compositor == null)
                 return;
 
             // note: we need to clone all brushes.
@@ -1591,8 +1592,8 @@ namespace Wice
             {
                 if (!(sv.Brush is CompositionColorBrush cb))
                 {
-                    // no clone since we crate it
-                    sv.Brush = Compositor.CreateColorBrush(from ?? _D3DCOLORVALUE.Transparent);
+                    // no clone since we create it
+                    sv.Brush = compositor.CreateColorBrush(from ?? _D3DCOLORVALUE.Transparent);
                 }
                 else
                 {
@@ -1615,9 +1616,9 @@ namespace Wice
             if (brushes.Count == 0)
                 return;
 
-            var animation = Compositor.CreateColorKeyFrameAnimation();
+            var animation = compositor.CreateColorKeyFrameAnimation();
             animation.Duration = ColorAnimationDuration ?? Application.CurrentTheme.BrushAnimationDuration;
-            animation.InsertKeyFrame(1f, to, ColorAnimationEasingFunction ?? Compositor.CreateLinearEasingFunction());
+            animation.InsertKeyFrame(1f, to, ColorAnimationEasingFunction ?? compositor.CreateLinearEasingFunction());
             foreach (var brush in brushes)
             {
                 brush.StartAnimation(nameof(CompositionColorBrush.Color), animation);
@@ -2457,6 +2458,7 @@ namespace Wice
             }
             else
             {
+                Application.Trace(this + " mouse out");
                 SetCompositionBrush(render);
             }
         }

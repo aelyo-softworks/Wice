@@ -35,6 +35,7 @@ namespace DirectN
         public static bool IsSet(this Vector2 value) => value.X.IsSet() && value.Y.IsSet();
         public static bool IsNotSet(this Vector2 value) => value.X.IsNotSet() || value.Y.IsNotSet();
         public static bool IsNotZero(this Vector2 value) => IsValid(value) && value.X != 0 && value.Y != 0;
+        public static bool IsZero(this Vector2 value) => IsValid(value) && value.X == 0 && value.Y == 0;
 
         public static float Ceiling(this float value) => (float)Math.Ceiling(value);
         public static int CeilingI(this float value) => Math.Ceiling(value).ToInt32();
