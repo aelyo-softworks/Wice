@@ -147,11 +147,31 @@ namespace Wice
             }
         }
 
+        protected override void Render()
+        {
+            base.Render();
+            if (ClipChildren)
+            {
+                // use a rounded clip
+                var radius = CornerRadius;
+                if (radius.IsNotZero())
+                {
+                    // note this is not visually perfect as clipping is done by Windows.UI.Composition
+                    // while rendering is done by D2D and both do not 100% agree on what's a radius
+                    var geometry = Compositor.CreateRoundedRectangleGeometry();
+                    geometry.CornerRadius = radius;
+                    geometry.Size = RenderSize;
+                    CompositionVisual.Clip = Compositor.CreateGeometricClip(geometry);
+                }
+            }
+        }
+
         protected override void RenderBackgroundCore(RenderContext context)
         {
             var radius = CornerRadius;
-            if (radius.X > 0 || radius.Y > 0)
+            if (radius.IsNotZero())
             {
+                // draw rounded background
                 context.DeviceContext.Clear(_D3DCOLORVALUE.Transparent);
                 var bg = BackgroundColor;
                 if (bg.HasValue)
@@ -176,6 +196,7 @@ namespace Wice
             if (!CompositionVisual.IsVisible)
                 return;
 
+            // draw border
             var borderThickness = BorderThickness.ToZero();
             if (borderThickness > 0)
             {
@@ -184,8 +205,10 @@ namespace Wice
                 {
                     var rc = new D2D_RECT_F(RenderSize);
                     rc = rc.Deflate(borderThickness / 2);
+
+                    // rounded border?
                     var radius = CornerRadius;
-                    if (radius.X > 0 || radius.Y > 0)
+                    if (radius.IsNotZero())
                     {
                         var rr = new D2D1_ROUNDED_RECT();
                         rr.rect = rc;

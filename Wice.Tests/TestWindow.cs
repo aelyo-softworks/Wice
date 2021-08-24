@@ -993,8 +993,8 @@ namespace Wice.Tests
             var b2 = new Border();
             b2.Name = nameof(b2);
             //b2.Margin = 5;
-            //b2.Width = 50;
-            //b2.Height = 50;
+            //b2.Width = 140;
+            //b2.Height = 140;
             b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
             b1.Children.Add(b2);
 

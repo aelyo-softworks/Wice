@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,8 +15,8 @@ namespace DirectN
     {
         public static bool IsValid(this float value) => !float.IsNaN(value);
         public static bool IsInvalid(this float value) => float.IsNaN(value);
-        public static bool IsSet(this float value) => IsValid(value) && value != float.PositiveInfinity && value != float.NegativeInfinity;
-        public static bool IsNotSet(this float value) => IsInvalid(value) || value == float.PositiveInfinity || value == float.NegativeInfinity;
+        public static bool IsSet(this float value) => IsValid(value) && !float.IsInfinity(value);
+        public static bool IsNotSet(this float value) => IsInvalid(value) || float.IsInfinity(value);
         public static bool IsMinOrMax(this float value) => value == float.MaxValue || value == float.MinValue;
         public static bool IsMax(this float value) => value == float.MaxValue;
         public static bool IsMin(this float value) => value == float.MinValue;
@@ -28,6 +29,12 @@ namespace DirectN
         public static int LOWORD(this int value) => value & 0xffff;
         public static int LOWORD(this IntPtr value) => LOWORD((int)(long)value);
         public static float ToZero(this float value) => float.IsNaN(value) ? 0 : value;
+
+        public static bool IsValid(this Vector2 value) => value.X.IsValid() && value.Y.IsValid();
+        public static bool IsInvalid(this Vector2 value) => value.X.IsInvalid() || value.Y.IsInvalid();
+        public static bool IsSet(this Vector2 value) => value.X.IsSet() && value.Y.IsSet();
+        public static bool IsNotSet(this Vector2 value) => value.X.IsNotSet() || value.Y.IsNotSet();
+        public static bool IsNotZero(this Vector2 value) => IsValid(value) && value.X != 0 && value.Y != 0;
 
         public static float Ceiling(this float value) => (float)Math.Ceiling(value);
         public static int CeilingI(this float value) => Math.Ceiling(value).ToInt32();
