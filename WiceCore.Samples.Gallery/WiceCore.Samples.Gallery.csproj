@@ -47,6 +47,9 @@
     <Compile Include="..\Wice.Samples.Gallery\Utilities\WiceLanguage.cs" Link="Utilities\WiceLanguage.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Border\RoundBorderSample.cs" Link="Samples\Layout\Border\RoundBorderSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Border\BordersSample.cs" Link="Samples\Layout\Border\BordersSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\CanvasSampleList.cs" Link="Samples\Layout\CanvasSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Canvas\SimpleCanvasSample.cs" Link="Samples\Layout\Canvas\SimpleCanvasSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Canvas\BoundsCanvasSample.cs" Link="Samples\Layout\Canvas\BoundsCanvasSample.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

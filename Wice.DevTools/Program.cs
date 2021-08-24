@@ -137,7 +137,7 @@ namespace Wice.DevTools
                         if (l.IndexOf("remove from display", StringComparison.OrdinalIgnoreCase) >= 0)
                             return;
 
-                        l = l.Replace("new Wice.", "new "); //trick because some samples must use a namespace
+                        l = l.Replace("Wice.", string.Empty); //trick because some samples must use a namespace
                         lines.Add(l);
                     }
                 }

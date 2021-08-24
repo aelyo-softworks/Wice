@@ -47,6 +47,7 @@ namespace Wice.Samples.Gallery.Pages
                 desc.FontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_SEMI_LIGHT;
                 desc.WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD;
                 desc.Text = sample.Header;
+                desc.ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, desc.Text);
                 Dock.SetDockType(desc, DockType.Top);
                 Child.Children.Add(desc);
             }

@@ -67,9 +67,12 @@
     </Compile>
     <Compile Include="Pages\SampleListVisual.cs" />
     <Compile Include="Pages\SampleVisual.cs" />
+    <Compile Include="Samples\Layout\CanvasSampleList.cs" />
     <Compile Include="Samples\Layout\Border\BordersSample.cs" />
     <Compile Include="Samples\Layout\Border\RoundBorderSample.cs" />
     <Compile Include="Samples\Layout\Border\SimpleBorderSample.cs" />
+    <Compile Include="Samples\Layout\Canvas\BoundsCanvasSample.cs" />
+    <Compile Include="Samples\Layout\Canvas\SimpleCanvasSample.cs" />
     <Compile Include="Samples\Sample.cs" />
     <Compile Include="Utilities\CodeBox.cs" />
     <Compile Include="GalleryWindow.cs" />
@@ -116,9 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
-    <EmbeddedResource Include="Resources\wice.rtf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\wice.rtf" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
