@@ -121,7 +121,47 @@
     <None Include="app.manifest" />
     <EmbeddedResource Include="Resources\wice.rtf" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Samples\Collections\CheckBoxList\" />
+    <Folder Include="Samples\Collections\ComboBox\" />
+    <Folder Include="Samples\Collections\EnumListBox\" />
+    <Folder Include="Samples\Collections\FlagsEnumListBox\" />
+    <Folder Include="Samples\Collections\ListBox\" />
+    <Folder Include="Samples\Collections\PropertyGrid\" />
+    <Folder Include="Samples\Collections\StateButtonList\" />
+    <Folder Include="Samples\Input\CheckBox\" />
+    <Folder Include="Samples\Input\RadioButton\" />
+    <Folder Include="Samples\Input\StateButton\" />
+    <Folder Include="Samples\Input\ToggleSwitch\" />
+    <Folder Include="Samples\Layout\DockSplitter\" />
+    <Folder Include="Samples\Layout\Dock\" />
+    <Folder Include="Samples\Layout\GridSplitter\" />
+    <Folder Include="Samples\Layout\Grid\" />
+    <Folder Include="Samples\Layout\Stack\" />
+    <Folder Include="Samples\Layout\UniformGrid\" />
+    <Folder Include="Samples\Layout\Wrap\" />
+    <Folder Include="Samples\Media\Brushes\" />
+    <Folder Include="Samples\Media\Image\" />
+    <Folder Include="Samples\Media\Shapes\" />
+    <Folder Include="Samples\Media\SvgImage\" />
+    <Folder Include="Samples\Misc\Application\" />
+    <Folder Include="Samples\Misc\Caret\" />
+    <Folder Include="Samples\Misc\Focus\" />
+    <Folder Include="Samples\Misc\VisualTree\" />
+    <Folder Include="Samples\Scrolling\ScrollBar\" />
+    <Folder Include="Samples\Scrolling\ScrollViewer\" />
+    <Folder Include="Samples\Scrolling\Thumb\" />
+    <Folder Include="Samples\Status\ToolTip\" />
+    <Folder Include="Samples\Styles\" />
+    <Folder Include="Samples\Text\RichTextBox\" />
+    <Folder Include="Samples\Text\TextBox\" />
+    <Folder Include="Samples\Windows\Dialog\" />
+    <Folder Include="Samples\Windows\MessageBox\" />
+    <Folder Include="Samples\Windows\PopupWindow\" />
+    <Folder Include="Samples\Windows\Popup\" />
+    <Folder Include="Samples\Windows\TitleBar\" />
+    <Folder Include="Samples\Windows\Window\" />
+  </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>

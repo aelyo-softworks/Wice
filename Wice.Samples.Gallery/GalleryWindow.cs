@@ -78,7 +78,7 @@ namespace Wice.Samples.Gallery
             // the document holds pages
             var document = new Border();
             _pageHolder = document;
-            document.Margin = D2D_RECT_F.Thickness(20, 0);
+            document.Margin = D2D_RECT_F.Thickness(20, 0, 0, 0);
             Grid.SetColumn(document, 1);
             Grid.SetRow(document, 1);
             grid.Children.Add(document);
