@@ -67,6 +67,8 @@
     </Compile>
     <Compile Include="Pages\SampleListVisual.cs" />
     <Compile Include="Pages\SampleVisual.cs" />
+    <Compile Include="Samples\Layout\Border\BordersSample.cs" />
+    <Compile Include="Samples\Layout\Border\RoundBorderSample.cs" />
     <Compile Include="Samples\Layout\Border\SimpleBorderSample.cs" />
     <Compile Include="Samples\Sample.cs" />
     <Compile Include="Utilities\CodeBox.cs" />

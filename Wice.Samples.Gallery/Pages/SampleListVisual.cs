@@ -22,16 +22,21 @@ namespace Wice.Samples.Gallery.Pages
             SetDockType(tb, DockType.Top);
             Children.Add(tb);
 
+            var sv = new ScrollViewer();
+            sv.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+            Children.Add(sv);
+
             // a dock for all sample visuals
             var dock = new Dock();
             dock.Margin = D2D_RECT_F.Thickness(10, 0, 0, 0);
             dock.HorizontalAlignment = Alignment.Near;
             dock.VerticalAlignment = Alignment.Near;
-            Children.Add(dock);
+            sv.Child = dock;
 
             foreach (var sample in sampleList.Samples)
             {
                 var visual = new SampleVisual(sample);
+                visual.Margin = D2D_RECT_F.Thickness(0, 0, 0, 10);
                 SetDockType(visual, DockType.Top);
                 dock.Children.Add(visual);
             }

@@ -7,14 +7,14 @@ namespace Wice.Samples.Gallery.Samples.Layout.Border
         public override int SortOrder => 0;
         public override string Description => "A border around a TextBox.";
 
-        public override void Layout(Visual parentVisual)
+        public override void Layout(Visual parent)
         {
             var border = new Wice.Border();
             border.BorderThickness = 2;
-            border.HorizontalAlignment = Alignment.Near;
-            border.BorderBrush = new SolidColorBrush(new _D3DCOLORVALUE(0xFFFFD700));
-            parentVisual.Children.Add(border);
-            Dock.SetDockType(border, DockType.Top);
+            border.HorizontalAlignment = Alignment.Near; // force border to use child's size (default is Stretch)
+            border.BorderBrush = new SolidColorBrush(new _D3DCOLORVALUE(0xFFFFD700)); // by-value color
+            parent.Children.Add(border);
+            Dock.SetDockType(border, DockType.Top); // remove from display
 
             var textBox = new TextBox();
             textBox.Padding = 10;

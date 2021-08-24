@@ -1,14 +1,49 @@
 <samples>
-  <sample namespace="Samples.Layout.Border.SimpleBorderSample">public override void Layout(Visual parentVisual)
+  <sample namespace="Samples.Layout.Border.BordersSample">void Layout(Visual parent)
+{
+    var canvas = new Canvas();
+    parent.Children.Add(canvas);
+
+    var rnd = new Random(Environment.TickCount);
+    for (var i = 0; i &lt; 10; i++)
+    {
+        var box = new Border();
+        // use composition brush
+        box.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)));
+        box.Width = rnd.Next(10, 200);
+        box.Height = rnd.Next(10, 150);
+        canvas.Children.Add(box);
+        Canvas.SetLeft(box, rnd.Next(0, 200));
+        Canvas.SetTop(box, rnd.Next(0, 100));
+
+        // if you hover the mouse on a box, it's color will change
+        box.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)));
+    }
+}</sample>
+  <sample namespace="Samples.Layout.Border.RoundBorderSample">void Layout(Visual parent)
+{
+    var border = new Border();
+    border.BorderThickness = 2.5f;
+    border.CornerRadius = new Vector2(5);
+    border.BorderBrush = new SolidColorBrush(_D3DCOLORVALUE.YellowGreen); // well-known colors
+    parent.Children.Add(border);
+
+    var textBox = new TextBox();
+    textBox.Padding = 10;
+    border.Children.Add(textBox);
+    textBox.Text = "Text inside a round border";
+    textBox.FontSize = 18;
+}</sample>
+  <sample namespace="Samples.Layout.Border.SimpleBorderSample">void Layout(Visual parent)
 {
     var border = new Border();
     border.BorderThickness = 2;
-    border.HorizontalAlignment = Alignment.Near;
-    border.BorderBrush = new SolidColorBrush(new _D3DCOLORVALUE(0xFFFFD700));
-    parentVisual.Children.Add(border);
-    Dock.SetDockType(border, DockType.Top);
+    border.HorizontalAlignment = Alignment.Near; // force border to use child's size (default is Stretch)
+    border.BorderBrush = new SolidColorBrush(new _D3DCOLORVALUE(0xFFFFD700)); // by-value color
+    parent.Children.Add(border);
 
     var textBox = new TextBox();
+    textBox.Padding = 10;
     border.Children.Add(textBox);
     textBox.Text = "Text inside a border";
     textBox.FontSize = 18;

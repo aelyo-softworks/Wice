@@ -30,6 +30,9 @@ namespace DirectN
         public static int LOWORD(this IntPtr value) => LOWORD((int)(long)value);
         public static float ToZero(this float value) => float.IsNaN(value) ? 0 : value;
 
+        public static float NextFloat(this Random random) => (float)random?.NextDouble();
+        public static byte NextByte(this Random random, byte minValue = 0, byte maxValue = 255) => (byte)random?.Next(minValue, maxValue);
+
         public static bool IsValid(this Vector2 value) => value.X.IsValid() && value.Y.IsValid();
         public static bool IsInvalid(this Vector2 value) => value.X.IsInvalid() || value.Y.IsInvalid();
         public static bool IsSet(this Vector2 value) => value.X.IsSet() && value.Y.IsSet();

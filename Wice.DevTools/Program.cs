@@ -116,7 +116,7 @@ namespace Wice.DevTools
                             continue;
 
                         tabs = line.Substring(0, index);
-                        addLine(line.Substring(index));
+                        addLine(line.Substring(index).Replace("public override ", string.Empty));
                     }
                     else
                     {
@@ -134,6 +134,9 @@ namespace Wice.DevTools
 
                     void addLine(string l)
                     {
+                        if (l.IndexOf("remove from display", StringComparison.OrdinalIgnoreCase) >= 0)
+                            return;
+
                         l = l.Replace("new Wice.", "new "); //trick because some samples must use a namespace
                         lines.Add(l);
                     }
