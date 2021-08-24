@@ -43,6 +43,8 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Border\SimpleBorderSample.cs" Link="Samples\Layout\Border\SimpleBorderSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Pages\SampleListVisual.cs" Link="Pages\SampleListVisual.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Pages\SampleVisual.cs" Link="Pages\SampleVisual.cs" />
+    <EmbeddedResource Include="..\Wice.Samples.Gallery\Resources\samples.xml" Link="Resources\samples.xml" />
+    <Compile Include="..\Wice.Samples.Gallery\Utilities\WiceLanguage.cs" Link="Utilities\WiceLanguage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

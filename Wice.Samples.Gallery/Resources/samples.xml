@@ -1,0 +1,16 @@
+<samples>
+  <sample namespace="Samples.Layout.Border.SimpleBorderSample">public override void Layout(Visual parentVisual)
+{
+    var border = new Border();
+    border.BorderThickness = 2;
+    border.HorizontalAlignment = Alignment.Near;
+    border.BorderBrush = new SolidColorBrush(new _D3DCOLORVALUE(0xFFFFD700));
+    parentVisual.Children.Add(border);
+    Dock.SetDockType(border, DockType.Top);
+
+    var textBox = new TextBox();
+    border.Children.Add(textBox);
+    textBox.Text = "Text inside a border";
+    textBox.FontSize = 18;
+}</sample>
+</samples>

@@ -8,13 +8,6 @@ namespace Wice.Samples.Gallery.Samples
     {
         protected SampleList()
         {
-            // load all samples in this assembly and folder, using reflection
-            Samples = GetType().Assembly.GetTypes()
-                .Where(t => typeof(Sample).IsAssignableFrom(t) && !t.IsAbstract && t.Namespace == GetType().Namespace + "." + TypeName)
-                .Select(t => (Sample)Activator.CreateInstance(t))
-                .OrderBy(t => t.SortOrder)
-                .ToList()
-                .AsReadOnly();
         }
 
         public abstract string IconText { get; }
@@ -35,7 +28,11 @@ namespace Wice.Samples.Gallery.Samples
             }
         }
 
-        public IReadOnlyList<Sample> Samples { get; }
+        // load all samples in this assembly and folder, using reflection
+        public IEnumerable<Sample> Samples => GetType().Assembly.GetTypes()
+                .Where(t => typeof(Sample).IsAssignableFrom(t) && !t.IsAbstract && t.Namespace == GetType().Namespace + "." + TypeName)
+                .Select(t => (Sample)Activator.CreateInstance(t))
+                .OrderBy(t => t.SortOrder);
 
         public override string ToString() => Title;
     }

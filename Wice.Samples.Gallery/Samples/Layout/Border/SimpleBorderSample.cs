@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DirectN;
+﻿using DirectN;
 
 namespace Wice.Samples.Gallery.Samples.Layout.Border
 {
@@ -12,16 +7,17 @@ namespace Wice.Samples.Gallery.Samples.Layout.Border
         public override int SortOrder => 0;
         public override string Description => "A border around a TextBox.";
 
-        // this method's content will be displayed by the CodeBox visual
-        public override void Layout(Visual parent)
+        public override void Layout(Visual parentVisual)
         {
             var border = new Wice.Border();
             border.BorderThickness = 2;
             border.HorizontalAlignment = Alignment.Near;
             border.BorderBrush = new SolidColorBrush(new _D3DCOLORVALUE(0xFFFFD700));
-            parent.Children.Add(border);
+            parentVisual.Children.Add(border);
+            Dock.SetDockType(border, DockType.Top);
 
             var textBox = new TextBox();
+            textBox.Padding = 10;
             border.Children.Add(textBox);
             textBox.Text = "Text inside a border";
             textBox.FontSize = 18;

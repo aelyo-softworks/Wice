@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using ColorCode;
 using ColorCode.Common;
@@ -12,7 +13,7 @@ namespace Wice.Samples.Gallery.Utilities
 {
     public class RtfFormatter : CodeColorizerBase
     {
-        private readonly static ConcurrentDictionary<string, ColorIndex> _scopeColorIndex = new ConcurrentDictionary<string, ColorIndex>(StringComparer.OrdinalIgnoreCase);
+        private readonly static ConcurrentDictionary<string, ColorIndex> _scopeNames = new ConcurrentDictionary<string, ColorIndex>(StringComparer.OrdinalIgnoreCase);
 
         public RtfFormatter(TextWriter writer, string fontName = null, IDictionary<string, _D3DCOLORVALUE> colors = null, _D3DCOLORVALUE? defaultColor = null)
             : base(null, null)
@@ -30,6 +31,7 @@ namespace Wice.Samples.Gallery.Utilities
             defaultColor = defaultColor ?? _D3DCOLORVALUE.Black;
             DefaultColor = defaultColor.Value;
             var defColors = GetDefaultColors(DefaultColor);
+            var values = Enum.GetValues(typeof(ColorIndex));
             var names = Enum.GetNames(typeof(ColorIndex));
             for (var i = 0; i < names.Length; i++)
             {
@@ -48,6 +50,12 @@ namespace Wice.Samples.Gallery.Utilities
                 Writer.Write(@"\blue");
                 Writer.Write(color.BB);
                 writer.Write(';');
+
+                if (i > 0)
+                {
+                    var field = typeof(ScopeName).GetField(names[i], BindingFlags.Static | BindingFlags.Public);
+                    _scopeNames[(string)field.GetValue(null)] = (ColorIndex)values.GetValue(i);
+                }
             }
 
             Writer.WriteLine('}');
@@ -64,33 +72,22 @@ namespace Wice.Samples.Gallery.Utilities
             dic[ColorIndex.String.ToString()] = _D3DCOLORVALUE.FromArgb(128, 0, 0);
             dic[ColorIndex.StringCSharpVerbatim.ToString()] = _D3DCOLORVALUE.FromArgb(128, 0, 0);
             dic[ColorIndex.Number.ToString()] = _D3DCOLORVALUE.FromArgb(128, 0, 0);
+            dic[ColorIndex.ClassName.ToString()] = _D3DCOLORVALUE.FromArgb(43, 145, 175);
             return dic;
         }
 
-        private static ColorIndex GetScopeColorIndex(string name)
+        private static ColorIndex GetScopeColorIndex(string scopeName)
         {
-            if (name == null)
+            if (scopeName == null)
                 return ColorIndex.Default;
 
-            if (!_scopeColorIndex.TryGetValue(name, out var index))
-            {
-                var values = Enum.GetValues(typeof(ColorIndex));
-                var names = Enum.GetNames(typeof(ColorIndex));
-                index = ColorIndex.Default;
-                for (var i = 0; i < names.Length; i++)
-                {
-                    if (names[i].EqualsIgnoreCase(name))
-                    {
-                        index = (ColorIndex)values.GetValue(i);
-                        break;
-                    }
-                }
-                _scopeColorIndex[name] = index;
-            }
+            if (!_scopeNames.TryGetValue(scopeName, out var index))
+                return ColorIndex.Default;
+
             return index;
         }
 
-        // we currently only use the ones defined in ColorCode for C#
+        // we currently only use the ones defined in ColorCode for C#, they *must* match
         private enum ColorIndex
         {
             Default,
@@ -99,6 +96,7 @@ namespace Wice.Samples.Gallery.Utilities
             String,
             StringCSharpVerbatim,
             Number,
+            ClassName,
             XmlDocTag,
             XmlDocComment,
             PreprocessorKeyword,

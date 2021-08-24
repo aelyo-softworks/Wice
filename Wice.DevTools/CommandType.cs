@@ -8,5 +8,6 @@
         UpdateWiceCore,
         UpdateWiceCoreTests,
         UpdateWiceCoreSamplesGallery,
+        UpdateWiceSamplesGalleryCode,
     }
 }

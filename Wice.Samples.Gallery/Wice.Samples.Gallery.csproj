@@ -88,6 +88,7 @@
     <Compile Include="Pages\Titled.cs" />
     <Compile Include="Utilities\ColorCode.cs" />
     <Compile Include="Utilities\RtfFormatter.cs" />
+    <Compile Include="Utilities\WiceLanguage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectN\DirectN.csproj">
@@ -108,6 +109,7 @@
     <Content Include="..\Assets\wice_color.ico">
       <Link>wice_color.ico</Link>
     </Content>
+    <EmbeddedResource Include="Resources\samples.xml" />
     <EmbeddedResource Include="Resources\aelyo_flat.png" />
   </ItemGroup>
   <ItemGroup>

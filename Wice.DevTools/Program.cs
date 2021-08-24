@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
 using Wice.Utilities;
+using IOPath = System.IO.Path;
 
 namespace Wice.DevTools
 {
@@ -77,9 +79,80 @@ namespace Wice.DevTools
                     UpdateWiceCoreSamplesGallery();
                     break;
 
+                case CommandType.UpdateWiceSamplesGalleryCode:
+                    UpdateWiceSamplesGalleryCode();
+                    UpdateWiceCoreSamplesGallery();
+                    break;
+
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        static void UpdateWiceSamplesGalleryCode()
+        {
+            var source = new CSharpProject(@"..\..\..\Wice.Samples.Gallery\Wice.Samples.Gallery.csproj");
+            var samplesFile = new XmlDocument();
+            samplesFile.LoadXml("<samples/>");
+
+            foreach (var path in source.IncludedFilePaths)
+            {
+                var name = IOPath.GetFileName(path);
+                const string sampleToken = "Sample.cs";
+                if (name.Length <= sampleToken.Length || !name.EndsWith(sampleToken))
+                    continue;
+
+                // gather sample lines
+                var lines = new List<string>();
+                string tabs = null;
+                var index = -1;
+                foreach (var line in File.ReadAllLines(IOPath.Combine(source.ProjectDirectoryPath, path)))
+                {
+                    if (tabs == null)
+                    {
+                        const string tok = "public override void Layout(";
+                        index = line.IndexOf(tok);
+                        if (index < 0)
+                            continue;
+
+                        tabs = line.Substring(0, index);
+                        addLine(line.Substring(index));
+                    }
+                    else
+                    {
+                        if (line.Length > index)
+                        {
+                            addLine(line.Substring(index));
+                        }
+                        else
+                        {
+                            addLine(line);
+                        }
+                        if (line.TrimEnd() == (tabs + "}"))
+                            break;
+                    }
+
+                    void addLine(string l)
+                    {
+                        l = l.Replace("new Wice.", "new "); //trick because some samples must use a namespace
+                        lines.Add(l);
+                    }
+                }
+
+                if (lines.Count == 0)
+                    continue;
+
+                var element = samplesFile.CreateElement("sample");
+                samplesFile.DocumentElement.AppendChild(element);
+                var ns = IOPath.ChangeExtension(path, string.Empty);
+                ns = ns.Substring(0, ns.Length - 1);
+                ns = ns.Replace(IOPath.DirectorySeparatorChar, '.');
+                element.SetAttribute("namespace", ns);
+                element.InnerText = string.Join(Environment.NewLine, lines);
+            }
+
+            var resourcesPath = IOPath.Combine(source.ProjectDirectoryPath, "Resources", "samples.xml");
+            samplesFile.Save(resourcesPath);
         }
 
         static void UpdateDirectN(string directNPath)
@@ -90,8 +163,8 @@ namespace Wice.DevTools
                 if (!file.StartsWith(@"Generated\", StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                var sourcePath = System.IO.Path.Combine(directNPath, file);
-                var destinationPath = System.IO.Path.Combine(target.ProjectDirectoryPath, file);
+                var sourcePath = IOPath.Combine(directNPath, file);
+                var destinationPath = IOPath.Combine(target.ProjectDirectoryPath, file);
                 IOUtilities.FileOverwrite(sourcePath, destinationPath);
                 Console.WriteLine("Copied " + sourcePath + " => " + destinationPath);
             }
@@ -127,7 +200,7 @@ namespace Wice.DevTools
 
         static bool AddFile(string path)
         {
-            var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+            var ext = IOPath.GetExtension(path).ToLowerInvariant();
             return ext == ".cs" ||
                 ext == ".resx" ||
                 ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".ico" || ext == ".svg" ||
@@ -138,7 +211,7 @@ namespace Wice.DevTools
 
         static string GetAction(string path)
         {
-            var ext = System.IO.Path.GetExtension(path).ToLowerInvariant();
+            var ext = IOPath.GetExtension(path).ToLowerInvariant();
             switch (ext)
             {
                 case ".cs":
@@ -238,11 +311,13 @@ namespace Wice.DevTools
             Console.WriteLine("    This tool is used to run a specific Wice Development command.");
             Console.WriteLine();
             Console.WriteLine("Commands:");
-            Console.WriteLine("    UpdateDirectN <path>       Update the Wice DirectN project from the public github DirectN project.");
-            Console.WriteLine("    UpdateDirectNCore          Update the DirectNCore project from the DirectN project.");
-            Console.WriteLine("    UpdateWiceCore             Update the WiceCore project from the Wice project.");
-            Console.WriteLine("    UpdateWiceCoreTests        Update the WiceCore.Tests project from the Wice.Tests project.");
-            Console.WriteLine("    UpdateWiceSamplesGallery   Update the WiceCore.Samples.Gallery project from the Wice.Samples.Gallery project.");
+            Console.WriteLine("    UpdateDirectN <path>           Update the Wice DirectN project from the public github DirectN project.");
+            Console.WriteLine("    UpdateDirectNCore              Update the DirectNCore project from the DirectN project.");
+            Console.WriteLine("    UpdateWiceCore                 Update the WiceCore project from the Wice project.");
+            Console.WriteLine("    UpdateWiceCoreTests            Update the WiceCore.Tests project from the Wice.Tests project.");
+            Console.WriteLine("    UpdateWiceCoreSamplesGallery   Update the WiceCore.Samples.Gallery project from the Wice.Samples.Gallery project.");
+            Console.WriteLine("    UpdateWiceSamplesGalleryCode   Update the Wice.Samples.Gallery project and the WiceCore.Samples.Gallery project.");
+
             Console.WriteLine();
         }
     }
