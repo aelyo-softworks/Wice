@@ -87,12 +87,12 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\DockSampleList.cs" Link="Samples\Layout\DockSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\FocusSampleList.cs" Link="Samples\Misc\FocusSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\TitleBarSampleList.cs" Link="Samples\Misc\TitleBarSampleList.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\VisualTreeSampleList.cs" Link="Samples\Misc\VisualTreeSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\ApplicationSampleList.cs" Link="Samples\Misc\ApplicationSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Scrolling\ThumbSampleList.cs" Link="Samples\Scrolling\ThumbSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Scrolling\ScrollBarSampleList.cs" Link="Samples\Scrolling\ScrollBarSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Dock\SimpleDockSample.cs" Link="Samples\Layout\Dock\SimpleDockSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Scrolling\ScrollViewerSampleList.cs" Link="Samples\Scrolling\ScrollViewerSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\VisualsTreeSampleList.cs" Link="Samples\Misc\VisualsTreeSampleList.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />
