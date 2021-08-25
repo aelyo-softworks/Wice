@@ -13,7 +13,7 @@ namespace Wice.Samples.Gallery.Pages
                 throw new ArgumentNullException(nameof(sample));
 
             Margin = D2D_RECT_F.Thickness(5);
-            DoWhenAttachedToComposition(() => RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray));
+            DoWhenAttachedToComposition(() => RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray.ChangeAlpha(128)));
             Width = 300;
             Height = 150;
 
