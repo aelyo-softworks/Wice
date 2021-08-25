@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Wice
 {
-    public class CheckBoxList : StateButtonList
+    public class CheckBoxList : StateButtonListBox
     {
         protected override StateButton CreateStateButton(DataBindContext context)
         {

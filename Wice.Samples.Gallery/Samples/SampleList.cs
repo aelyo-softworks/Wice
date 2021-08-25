@@ -13,8 +13,8 @@ namespace Wice.Samples.Gallery.Samples
         public abstract string IconText { get; }
 
         public virtual string Title => TypeName;
-        public virtual string Header => "The " + Title + " sample list";
-        public virtual string Description => "The " + Title + " visual.";
+        public virtual string SubTitle => "The " + Title + " visual.";
+        public virtual string Description => "The " + Title + " sample list";
         public virtual string TypeName
         {
             get

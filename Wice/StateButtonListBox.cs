@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace Wice
 {
-    public abstract class StateButtonList : ListBox
+    public abstract class StateButtonListBox : ListBox
     {
-        protected StateButtonList()
+        protected StateButtonListBox()
         {
             SelectionMode = SelectionMode.Multiple;
         }

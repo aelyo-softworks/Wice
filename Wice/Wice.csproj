@@ -163,7 +163,7 @@
     <Compile Include="Header.cs" />
     <Compile Include="SelectionMode.cs" />
     <Compile Include="StateButton.cs" />
-    <Compile Include="StateButtonList.cs" />
+    <Compile Include="StateButtonListBox.cs" />
     <Compile Include="StateButtonState.cs" />
     <Compile Include="SymbolHeaderedContent.cs" />
     <Compile Include="HeaderedContent.cs" />

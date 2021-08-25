@@ -122,7 +122,6 @@
     <Compile Include="..\Wice\SolidColorBrush.cs" Link="SolidColorBrush.cs" />
     <Compile Include="..\Wice\Stack.cs" Link="Stack.cs" />
     <Compile Include="..\Wice\StateButton.cs" Link="StateButton.cs" />
-    <Compile Include="..\Wice\StateButtonList.cs" Link="StateButtonList.cs" />
     <Compile Include="..\Wice\StateButtonState.cs" Link="StateButtonState.cs" />
     <Compile Include="..\Wice\Stretch.cs" Link="Stretch.cs" />
     <Compile Include="..\Wice\StretchDirection.cs" Link="StretchDirection.cs" />
@@ -313,6 +312,7 @@
     <Compile Include="..\Wice\Utilities\StreamStreamer.cs" Link="Utilities\StreamStreamer.cs" />
     <Compile Include="..\Wice\Wrap.cs" Link="Wrap.cs" />
     <Compile Include="..\Wice\..\DirectN\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+    <Compile Include="..\Wice\StateButtonListBox.cs" Link="StateButtonListBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />
