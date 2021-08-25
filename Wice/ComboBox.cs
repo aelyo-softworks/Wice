@@ -5,6 +5,7 @@ using DirectN;
 
 namespace Wice
 {
+    // this currently doesn't work
     public class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
     {
         public static VisualProperty MaxDropDownHeightProperty = VisualProperty.Add(typeof(Visual), nameof(MaxDropDownHeight), VisualPropertyInvalidateModes.Measure, float.NaN, ValidateWidthOrHeight);

@@ -1,6 +1,6 @@
 ﻿using DirectN;
 
-namespace Wice.Samples.Gallery.Samples.Layout.Canvas
+namespace Wice.Samples.Gallery.Samples.Layout.Dock
 {
     public class BoundsCanvasSample : Sample
     {

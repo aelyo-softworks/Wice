@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DirectN;
+﻿using DirectN;
 
 namespace Wice.Samples.Gallery.Samples.Input
 {
     public class RadioButtonSampleList : SampleList
     {
         public override string IconText => MDL2GlyphResource.RadioBtnOn;
+        public override string SubTitle => "RadioButton visual is a specialized type of StateButton visual. Grouping is not supported yet.";
     }
 }

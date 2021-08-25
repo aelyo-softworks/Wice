@@ -34,7 +34,7 @@ namespace Wice.Tests
                 );
 
             //AddBordersForVisualOrderCheck1();
-            AddBorders();
+            //AddBorders();
 
             //SizeToContent = DimensionOptions.WidthAndHeight;
             //AddCounter(1);
@@ -97,7 +97,7 @@ namespace Wice.Tests
             //AddButtonInDock();
             //AddButton();
 
-            //AddComboBox();
+            AddComboBox();
             //AddListBox();
             //AddResizableListBox();
             //AddScollableListBox();

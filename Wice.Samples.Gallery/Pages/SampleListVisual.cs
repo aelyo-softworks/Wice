@@ -15,8 +15,9 @@ namespace Wice.Samples.Gallery.Pages
 
             // description
             var tb = new TextBox();
-            tb.Margin = D2D_RECT_F.Thickness(0, 0, 0, 10);
+            tb.Margin = D2D_RECT_F.Thickness(0, 0, 10, 10);
             tb.FontSize = 18;
+            tb.WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD;
             tb.FontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_LIGHT;
             tb.Text = sampleList.Description;
             SetDockType(tb, DockType.Top);

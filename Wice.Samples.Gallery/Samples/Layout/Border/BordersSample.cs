@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 using DirectN;
 
 namespace Wice.Samples.Gallery.Samples.Layout.Border
@@ -14,7 +13,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.Border
             var canvas = new Wice.Canvas();
             canvas.Height = 200; // remove from display
             parent.Children.Add(canvas);
-            Dock.SetDockType(canvas, DockType.Top); // remove from display
+            Wice.Dock.SetDockType(canvas, DockType.Top); // remove from display
 
             var rnd = new Random(Environment.TickCount);
             for (var i = 0; i < 10; i++)

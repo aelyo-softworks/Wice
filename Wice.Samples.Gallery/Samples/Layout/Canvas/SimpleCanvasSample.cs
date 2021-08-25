@@ -14,7 +14,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.Canvas
             canvas.Height = 120;
             canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray);
             parent.Children.Add(canvas);
-            Dock.SetDockType(canvas, DockType.Top); // remove from display
+            Wice.Dock.SetDockType(canvas, DockType.Top); // remove from display
 
             var b0 = new Wice.Border();
             b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);

@@ -79,11 +79,11 @@
     <Compile Include="Samples\Collections\FlagsEnumListBoxSampleList.cs" />
     <Compile Include="Samples\Collections\EnumListBoxSampleList.cs" />
     <Compile Include="Samples\Collections\PropertyGridSampleList.cs" />
-    <Compile Include="Samples\Collections\ComboBoxSampleList.cs" />
     <Compile Include="Samples\Collections\CheckBoxListSampleList.cs" />
     <Compile Include="Samples\Input\StateButtonSampleList.cs" />
     <Compile Include="Samples\Input\ToggleSwitchSampleList.cs" />
     <Compile Include="Samples\Input\RadioButtonSampleList.cs" />
+    <Compile Include="Samples\Layout\Dock\SimpleDockSample.cs" />
     <Compile Include="Samples\Layout\WrapSampleList.cs" />
     <Compile Include="Samples\Layout\UniformGridSampleList.cs" />
     <Compile Include="Samples\Layout\StackSampleList.cs" />
@@ -101,13 +101,12 @@
     <Compile Include="Samples\Media\ImageSampleList.cs" />
     <Compile Include="Samples\Media\ShapeSampleList.cs" />
     <Compile Include="Samples\Media\SvgImageSampleList.cs" />
-    <Compile Include="Samples\Misc\CaretSampleList.cs" />
     <Compile Include="Samples\Misc\FocusSampleList.cs" />
     <Compile Include="Samples\Misc\TitleBarSampleList.cs" />
-    <Compile Include="Samples\Misc\VisualTreeSampleList.cs" />
+    <Compile Include="Samples\Misc\VisualsTreeSampleList.cs" />
     <Compile Include="Samples\Misc\ApplicationSampleList.cs" />
     <Compile Include="Samples\Sample.cs" />
-    <Compile Include="Samples\Scrolling\ScrollingSampleList.cs" />
+    <Compile Include="Samples\Scrolling\ScrollViewerSampleList.cs" />
     <Compile Include="Samples\Scrolling\ThumbSampleList.cs" />
     <Compile Include="Samples\Scrolling\ScrollBarSampleList.cs" />
     <Compile Include="Samples\Status\ToolTipSampleList.cs" />
@@ -167,7 +166,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Samples\Collections\CheckBoxList\" />
-    <Folder Include="Samples\Collections\ComboBox\" />
     <Folder Include="Samples\Collections\EnumListBox\" />
     <Folder Include="Samples\Collections\FlagsEnumListBox\" />
     <Folder Include="Samples\Collections\ListBox\" />
@@ -179,7 +177,6 @@
     <Folder Include="Samples\Input\StateButton\" />
     <Folder Include="Samples\Input\ToggleSwitch\" />
     <Folder Include="Samples\Layout\DockSplitter\" />
-    <Folder Include="Samples\Layout\Dock\" />
     <Folder Include="Samples\Layout\GridSplitter\" />
     <Folder Include="Samples\Layout\Grid\" />
     <Folder Include="Samples\Layout\Stack\" />
@@ -190,7 +187,6 @@
     <Folder Include="Samples\Media\Shape\" />
     <Folder Include="Samples\Media\SvgImage\" />
     <Folder Include="Samples\Misc\Application\" />
-    <Folder Include="Samples\Misc\Caret\" />
     <Folder Include="Samples\Misc\Focus\" />
     <Folder Include="Samples\Misc\TitleBar\" />
     <Folder Include="Samples\Misc\VisualTree\" />

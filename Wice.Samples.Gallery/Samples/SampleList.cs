@@ -14,7 +14,7 @@ namespace Wice.Samples.Gallery.Samples
 
         public virtual string Title => TypeName;
         public virtual string SubTitle => "The " + Title + " visual.";
-        public virtual string Description => "The " + Title + " sample list";
+        public virtual string Description => SubTitle;
         public virtual string TypeName
         {
             get

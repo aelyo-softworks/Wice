@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DirectN;
+﻿using DirectN;
 
 namespace Wice.Samples.Gallery.Samples.Input
 {
     public class StateButtonSampleList : SampleList
     {
-        public override string IconText => MDL2GlyphResource.RadioBtnOn;
+        public override string IconText => MDL2GlyphResource.ButtonX;
+        public override string SubTitle => "The StateButton visual is represents a button that changes state at each user input.";
     }
 }

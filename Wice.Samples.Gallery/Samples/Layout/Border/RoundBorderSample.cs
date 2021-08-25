@@ -15,7 +15,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.Border
             border.CornerRadius = new Vector2(5);
             border.BorderBrush = new SolidColorBrush(_D3DCOLORVALUE.YellowGreen); // well-known colors
             parent.Children.Add(border);
-            Dock.SetDockType(border, DockType.Top); // remove from display
+            Wice.Dock.SetDockType(border, DockType.Top); // remove from display
 
             var textBox = new TextBox();
             textBox.Padding = 10;
