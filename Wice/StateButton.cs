@@ -5,7 +5,7 @@ using DirectN;
 
 namespace Wice
 {
-    public class StateButton : ButtonBase, IValueable
+    public class StateButton : ButtonBase, IValueable, ISelectable
     {
         public static VisualProperty ValueProperty = VisualProperty.Add<object>(typeof(StateButton), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: ConvertValue);
 
@@ -21,6 +21,7 @@ namespace Wice
         }
 
         public event EventHandler<ValueEventArgs> ValueChanged;
+        public event EventHandler<ValueEventArgs<bool>> IsSelectedChanged; // only for true/false values
 
         private readonly List<StateButtonState> _states = new List<StateButtonState>();
 
@@ -28,6 +29,23 @@ namespace Wice
         {
             Width = Application.CurrentTheme.BoxSize;
             Height = Application.CurrentTheme.BoxSize;
+        }
+
+        bool ISelectable.RaiseIsSelectedChanged { get; set; }
+        bool ISelectable.IsSelected
+        {
+            get => true.Equals(Value);
+            set
+            {
+                foreach (var state in _states)
+                {
+                    if (value.Equals(state.Value))
+                    {
+                        Value = value;
+                        break;
+                    }
+                }
+            }
         }
 
         bool IValueable.CanChangeValue { get => IsEnabled; set => IsEnabled = value; }
@@ -49,7 +67,15 @@ namespace Wice
 
         [Category(CategoryBehavior)]
         public object Value { get => GetPropertyValue(ValueProperty); set => SetPropertyValue(ValueProperty, value); }
-        
+
+        protected virtual void OnIsSelectedChanged(object sender, ValueEventArgs<bool> e)
+        {
+            if (((ISelectable)this).RaiseIsSelectedChanged)
+            {
+                IsSelectedChanged?.Invoke(sender, e);
+            }
+        }
+
         public virtual void AddState(StateButtonState state)
         {
             if (state == null)
@@ -69,6 +95,11 @@ namespace Wice
             if (property == ValueProperty)
             {
                 UpdateValueState(EventArgs.Empty);
+                OnValueChanged(this, new ValueEventArgs(value));
+                if (true.Equals(value) || false.Equals(value))
+                {
+                    OnIsSelectedChanged(this, new ValueEventArgs<bool>((bool)value));
+                }
             }
             return true;
         }
@@ -124,7 +155,7 @@ namespace Wice
         protected override void OnClick(object sender, EventArgs e)
         {
             var state = GetNextState();
-            if (state  != null)
+            if (state != null)
             {
                 Child = state.CreateChild(this, e);
                 Value = state.Value;

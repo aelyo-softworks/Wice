@@ -77,7 +77,7 @@ namespace Wice.Tests
             //AddOneDockChild();
             //AddDockNumbers();
             //AddDockAbout(); 
-            //AddHorizontalButtonsDock();
+            AddHorizontalButtonsDock();
             //AddVerticalButtonsDock();
 
             //AddStacks();
@@ -97,7 +97,7 @@ namespace Wice.Tests
             //AddButtonInDock();
             //AddButton();
 
-            AddComboBox();
+            //AddComboBox();
             //AddListBox();
             //AddResizableListBox();
             //AddScollableListBox();

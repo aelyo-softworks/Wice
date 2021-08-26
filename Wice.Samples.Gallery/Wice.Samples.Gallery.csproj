@@ -80,6 +80,12 @@
     <Compile Include="Samples\Collections\EnumListBoxSampleList.cs" />
     <Compile Include="Samples\Collections\PropertyGridSampleList.cs" />
     <Compile Include="Samples\Collections\CheckBoxListSampleList.cs" />
+    <Compile Include="Samples\Input\Button\ButtonDockSample.cs" />
+    <Compile Include="Samples\Input\Button\SimpleButtonSample.cs" />
+    <Compile Include="Samples\Input\CheckBox\ThreeStateCheckBoxSample.cs" />
+    <Compile Include="Samples\Input\CheckBox\TwoStateCheckBoxSample.cs" />
+    <Compile Include="Samples\Input\RadioButton\RadioButtonsSample.cs" />
+    <Compile Include="Samples\Input\RadioButton\SimpleRadioButtonSample.cs" />
     <Compile Include="Samples\Input\StateButtonSampleList.cs" />
     <Compile Include="Samples\Input\ToggleSwitchSampleList.cs" />
     <Compile Include="Samples\Input\RadioButtonSampleList.cs" />
@@ -171,9 +177,6 @@
     <Folder Include="Samples\Collections\ListBox\" />
     <Folder Include="Samples\Collections\PropertyGrid\" />
     <Folder Include="Samples\Collections\StateButtonList\" />
-    <Folder Include="Samples\Input\Button\" />
-    <Folder Include="Samples\Input\CheckBox\" />
-    <Folder Include="Samples\Input\RadioButton\" />
     <Folder Include="Samples\Input\StateButton\" />
     <Folder Include="Samples\Input\ToggleSwitch\" />
     <Folder Include="Samples\Layout\DockSplitter\" />

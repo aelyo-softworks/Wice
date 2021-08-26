@@ -1,4 +1,147 @@
 <samples>
+  <sample namespace="Samples.Input.Button.ButtonDockSample">void Layout(Visual parent)
+{
+    var dock = new Dock();
+    dock.Height = 50;
+    dock.LastChildFill = false;
+    dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Olive);
+    parent.Children.Add(dock);
+
+    var okButton = new Button();
+    okButton.Margin = 10;
+    okButton.MinWidth = 70;
+    okButton.Click += (s, e) =&gt; MessageBox.Show(parent.Window, "You pressed OK");
+    okButton.Text.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER;
+    okButton.Text.Text = "OK";
+    Dock.SetDockType(okButton, DockType.Right);
+    dock.Children.Add(okButton);
+
+    var cancelButton = new Button();
+    cancelButton.Margin = 3;
+    cancelButton.MinWidth = 70;
+    cancelButton.Click += (s, e) =&gt; MessageBox.Show(parent.Window, "You pressed Cancel");
+    cancelButton.Text.Text = "Cancel";
+    cancelButton.Icon.Text = MDL2GlyphResource.Cancel;
+    Dock.SetDockType(cancelButton, DockType.Right);
+    dock.Children.Add(cancelButton);
+}</sample>
+  <sample namespace="Samples.Input.Button.SimpleButtonSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Click += (s, e) =&gt; MessageBox.Show(parent.Window, "You clicked me!");
+    btn.Text.Text = "Click Me!";
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Input.CheckBox.ThreeStateCheckBoxSample">void Layout(Visual parent)
+{
+    // stack checkbox and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add nullable checkbox
+    var cb = new NullableCheckBox();
+    stack.Children.Add(cb);
+
+    // add results textbox
+    var tb = new TextBox();
+    tb.Margin = D2D_RECT_F.Thickness(10, 0);
+    stack.Children.Add(tb);
+
+    cb.Click += (s, e) =&gt;
+    {
+        if (cb.Value == null)
+        {
+            tb.Text = "CheckBox state is undetermined.";
+        }
+        else
+        {
+            tb.Text = "CheckBox is " + (cb.Value.Value ? "Checked" : "Unchecked");
+        }
+    };
+}</sample>
+  <sample namespace="Samples.Input.CheckBox.TwoStateCheckBoxSample">void Layout(Visual parent)
+{
+    // stack checkbox and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add checkbox
+    var cb = new CheckBox();
+    stack.Children.Add(cb);
+
+    // add results textbox
+    var tb = new TextBox();
+    tb.Margin = D2D_RECT_F.Thickness(10, 0);
+    stack.Children.Add(tb);
+
+    cb.Click += (s, e) =&gt;
+    {
+        tb.Text = "CheckBox is " + (cb.Value ? "Checked" : "Unchecked");
+    };
+}</sample>
+  <sample namespace="Samples.Input.RadioButton.RadioButtonsSample">void Layout(Visual parent)
+{
+    // dock radio button and textbox
+    var dock = new Dock();
+    parent.Children.Add(dock);
+
+    // add radio buttons with texts
+    var rb0 = new RadioButton();
+    rb0.Name = "button 0";
+    rb0.Margin = D2D_RECT_F.Thickness(10, 0);
+    dock.Children.Add(rb0);
+
+    var rb1 = new RadioButton();
+    rb1.Name = "button 1";
+    rb1.Margin = D2D_RECT_F.Thickness(10, 0);
+    dock.Children.Add(rb1);
+
+    var rb2 = new RadioButton();
+    rb2.Name = "button 2";
+    rb2.Margin = D2D_RECT_F.Thickness(10, 0);
+    dock.Children.Add(rb2);
+
+    // add results textbox
+    var tb = new TextBox();
+    tb.Margin = D2D_RECT_F.Thickness(10, 0);
+    dock.Children.Add(tb);
+
+    rb0.Click += onRadioButtonClick;
+    rb1.Click += onRadioButtonClick;
+    rb2.Click += onRadioButtonClick;
+
+    void onRadioButtonClick(object sender, EventArgs e)
+    {
+        var rb = (RadioButton)sender;
+        tb.Text = "Selected RadioButton is " + rb.Name;
+
+        // use a method extension to deselect all other buttons
+        new[] { rb0, rb1, rb2 }.OfType&lt;ISelectable&gt;().Select(rb);
+    }
+}</sample>
+  <sample namespace="Samples.Input.RadioButton.SimpleRadioButtonSample">void Layout(Visual parent)
+{
+    // stack radio button and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add radio button
+    var rb = new RadioButton();
+    stack.Children.Add(rb);
+
+    // add results textbox
+    var tb = new TextBox();
+    tb.Margin = D2D_RECT_F.Thickness(10, 0);
+    stack.Children.Add(tb);
+
+    rb.Click += (s, e) =&gt;
+    {
+        tb.Text = "RadioButton is " + (rb.Value ? "Checked" : "Unchecked");
+    };
+}</sample>
   <sample namespace="Samples.Layout.Dock.SimpleDockSample">void Layout(Visual parent)
 {
     var canvas = new Canvas();

@@ -106,7 +106,36 @@ namespace Wice.Utilities
             }
         }
 
-        public static void Select(this IEnumerable<ISelectable> selectables, ISelectable selected, bool raiseIsSelectedChanged = false) => Select(selectables, s => s == selected, raiseIsSelectedChanged);
+        public static void Unselect(this IEnumerable<ISelectable> selectables, bool raiseIsSelectedChanged = false) => Select(selectables, (ISelectable)null, raiseIsSelectedChanged);
+        public static void Select(this IEnumerable<ISelectable> selectables, ISelectable selected, bool raiseIsSelectedChanged = false)
+        {
+            if (selected != null)
+            {
+                Select(selectables, s => s == selected, raiseIsSelectedChanged);
+                return;
+            }
+
+            // deselect
+            foreach (var select in selectables)
+            {
+                if (select.RaiseIsSelectedChanged != raiseIsSelectedChanged)
+                {
+                    select.RaiseIsSelectedChanged = raiseIsSelectedChanged;
+                    doSelect();
+                    select.RaiseIsSelectedChanged = !raiseIsSelectedChanged;
+                }
+                else
+                {
+                    doSelect();
+                }
+
+                void doSelect()
+                {
+                    select.IsSelected = false;
+                }
+            }
+        }
+
         public static void Select(this IEnumerable<ISelectable> selectables, Func<ISelectable, bool> selectionCompareFunc, bool raiseIsSelectedChanged = false)
         {
             if (selectionCompareFunc == null)

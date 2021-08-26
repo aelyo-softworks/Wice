@@ -93,6 +93,12 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Dock\SimpleDockSample.cs" Link="Samples\Layout\Dock\SimpleDockSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Scrolling\ScrollViewerSampleList.cs" Link="Samples\Scrolling\ScrollViewerSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\VisualsTreeSampleList.cs" Link="Samples\Misc\VisualsTreeSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\Button\SimpleButtonSample.cs" Link="Samples\Input\Button\SimpleButtonSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\Button\ButtonDockSample.cs" Link="Samples\Input\Button\ButtonDockSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\CheckBox\TwoStateCheckBoxSample.cs" Link="Samples\Input\CheckBox\TwoStateCheckBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\CheckBox\ThreeStateCheckBoxSample.cs" Link="Samples\Input\CheckBox\ThreeStateCheckBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\RadioButton\RadioButtonsSample.cs" Link="Samples\Input\RadioButton\RadioButtonsSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\RadioButton\SimpleRadioButtonSample.cs" Link="Samples\Input\RadioButton\SimpleRadioButtonSample.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

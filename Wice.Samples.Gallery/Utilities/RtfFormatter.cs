@@ -73,7 +73,7 @@ namespace Wice.Samples.Gallery.Utilities
             dic[ColorIndex.StringCSharpVerbatim.ToString()] = _D3DCOLORVALUE.FromArgb(128, 0, 0);
             dic[ColorIndex.Number.ToString()] = _D3DCOLORVALUE.FromArgb(128, 0, 0);
             dic[ColorIndex.ClassName.ToString()] = _D3DCOLORVALUE.FromArgb(43, 145, 175);
-            dic[ColorIndex.BuiltinFunction.ToString()] = _D3DCOLORVALUE.DarkOliveGreen;
+            dic[ColorIndex.BuiltinFunction.ToString()] = _D3DCOLORVALUE.Olive;
             return dic;
         }
 

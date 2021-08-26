@@ -31,10 +31,14 @@ namespace Wice.Samples.Gallery.Utilities
 
             // usual types
             types.Add(nameof(_D3DCOLORVALUE));
+            types.Add(nameof(D2D_RECT_F));
+            types.Add(nameof(D2D_POINT_2F));
+            types.Add(nameof(D2D_SIZE_F));
             types.Add(nameof(Vector2));
             types.Add(nameof(Vector3));
             types.Add(nameof(Random));
             types.Add(nameof(Environment));
+            types.Add(nameof(MDL2GlyphResource));
 
             // hexa
             _rules.Add(new LanguageRule(@"\b0x[0-9A-F]{1,}\b", new Dictionary<int, string> { { 0, ScopeName.Number } }));
