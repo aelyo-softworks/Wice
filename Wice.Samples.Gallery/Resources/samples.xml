@@ -278,6 +278,92 @@
         results.Text = "ToggleSwitch is " + (toggle.Value ? "Checked" : "Unchecked");
     };
 }</sample>
+  <sample namespace="Samples.Layout.DockSplitter.SimpleDockSplitterSample">void Layout(Visual parent)
+{
+    var dock = new Dock();
+    parent.Children.Add(dock);
+    dock.Height = 200;
+
+    var b1 = new Border();
+    dock.Children.Add(b1);
+    Dock.SetDockType(b1, DockType.Top);
+    b1.MinHeight = 20;
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+
+    var splitter1 = new DockSplitter();
+    splitter1.Name = nameof(splitter1);
+    dock.Children.Add(splitter1);
+    splitter1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+
+    var b2 = new Border();
+    dock.Children.Add(b2);
+    b2.MinHeight = 20;
+    Dock.SetDockType(b2, DockType.Bottom);
+    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+
+    var splitter2 = new DockSplitter();
+    splitter2.Name = nameof(splitter2);
+    dock.Children.Add(splitter2);
+    splitter2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+
+    var b3 = new Border();
+    dock.Children.Add(b3);
+    b3.MinWidth = 20;
+    Dock.SetDockType(b3, DockType.Left);
+    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+
+    var splitter3 = new DockSplitter();
+    splitter3.Name = nameof(splitter3);
+    dock.Children.Add(splitter3);
+    splitter3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+
+    var b4 = new Border();
+    dock.Children.Add(b4);
+    b4.MinWidth = 20;
+    Dock.SetDockType(b4, DockType.Right);
+    b4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange);
+
+    var splitter4 = new DockSplitter();
+    splitter4.Name = nameof(splitter4);
+    dock.Children.Add(splitter4);
+    splitter4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+
+    var b5 = new Border();
+    dock.Children.Add(b5);
+    Dock.SetDockType(b5, DockType.Left);
+    b5.MinWidth = 10;
+    b5.MinHeight = 10;
+    b5.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Violet);
+}</sample>
+  <sample namespace="Samples.Layout.GridSplitter.SimpleGridSplitterSample">void Layout(Visual parent)
+{
+}</sample>
+  <sample namespace="Samples.Layout.Grid.SimpleGridSample">void Layout(Visual parent)
+{
+    var grid = new Grid();
+    grid.Height = 100;
+    grid.Width = 100;
+    parent.Children.Add(grid);
+
+    // add 2 columns and 2 rows
+    grid.Columns.Add(new GridColumn());
+    grid.Columns.Add(new GridColumn());
+    grid.Rows.Add(new GridRow());
+    grid.Rows.Add(new GridRow());
+
+    var cell0 = new Border();
+    grid.Children.Add(cell0);
+    cell0.Margin = 10;
+    cell0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Purple);
+
+    var cell1 = new Border();
+    grid.Children.Add(cell1);
+    cell1.Margin = 10;
+    cell1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+
+    Grid.SetColumn(cell1, 2);
+    Grid.SetRow(cell1, 2);
+}</sample>
   <sample namespace="Samples.Layout.Dock.SimpleDockSample">void Layout(Visual parent)
 {
     var canvas = new Canvas();
@@ -317,6 +403,14 @@
     Canvas.SetRight(b3, 0);
     Canvas.SetBottom(b3, 0);
     canvas.Children.Add(b3);
+}</sample>
+  <sample namespace="Samples.Layout.Stack.SimpleStackSample">void Layout(Visual parent)
+{
+    var stack = new Stack();
+    parent.Children.Add(stack);
+}</sample>
+  <sample namespace="Samples.Layout.UniformGrid.SimpleUniformGridSample">void Layout(Visual parent)
+{
 }</sample>
   <sample namespace="Samples.Layout.Border.BordersSample">void Layout(Visual parent)
 {
@@ -446,5 +540,23 @@
     Canvas.SetLeft(b3, 60);
     Canvas.SetTop(b3, 60);
     canvas.Children.Add(b3);
+}</sample>
+  <sample namespace="Samples.Layout.Wrap.SimpleWrapSample">void Layout(Visual parent)
+{
+    var wrap = new Wrap();
+    wrap.Orientation = Orientation.Horizontal;
+    parent.Children.Add(wrap);
+
+    var rnd = new Random(Environment.TickCount);
+    var max = 100;
+    for (var i = 0; i &lt; max; i++)
+    {
+        var border = new Border();
+        wrap.Children.Add(border);
+        var color = _D3DCOLORVALUE.FromArgb(rnd.NextByte(), rnd.NextByte(), rnd.NextByte());
+        border.RenderBrush = Compositor.CreateColorBrush(color);
+        border.Width = rnd.Next(10, 60);
+        border.Height = rnd.Next(10, 60);
+    }
 }</sample>
 </samples>

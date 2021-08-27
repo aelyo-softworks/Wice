@@ -32,6 +32,7 @@ namespace Wice.Samples.Gallery.Samples
         public IEnumerable<Sample> Samples => GetType().Assembly.GetTypes()
                 .Where(t => typeof(Sample).IsAssignableFrom(t) && !t.IsAbstract && t.Namespace == GetType().Namespace + "." + TypeName)
                 .Select(t => (Sample)Activator.CreateInstance(t))
+                .Where(t => t.IsEnabled)
                 .OrderBy(t => t.SortOrder);
 
         public override string ToString() => Title;

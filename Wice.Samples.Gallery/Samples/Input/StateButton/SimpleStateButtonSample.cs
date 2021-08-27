@@ -4,7 +4,6 @@ namespace Wice.Samples.Gallery.Samples.Input.StateButton
 {
     public class SimpleStateButtonSample : Sample
     {
-        public override int SortOrder => 0;
         public override string Description => "A 4-state button";
 
         public override void Layout(Visual parent)

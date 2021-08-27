@@ -4,7 +4,6 @@ namespace Wice.Samples.Gallery.Samples.Layout.Border
 {
     public class SimpleBorderSample : Sample
     {
-        public override int SortOrder => 0;
         public override string Description => "A border around a TextBox.";
 
         public override void Layout(Visual parent)

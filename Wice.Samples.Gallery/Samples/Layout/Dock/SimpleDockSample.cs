@@ -2,10 +2,9 @@
 
 namespace Wice.Samples.Gallery.Samples.Layout.Dock
 {
-    public class BoundsCanvasSample : Sample
+    public class SimpleDockSample : Sample
     {
-        public override int SortOrder => 1;
-        public override string Description => "A canvas with borders at corners.";
+        public override string Description => "A dock with borders at corners. Note Dock is used in many other samples.";
 
         public override void Layout(Visual parent)
         {

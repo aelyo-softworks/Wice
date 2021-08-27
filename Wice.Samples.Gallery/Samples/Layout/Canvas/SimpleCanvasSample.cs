@@ -4,7 +4,6 @@ namespace Wice.Samples.Gallery.Samples.Layout.Canvas
 {
     public class SimpleCanvasSample : Sample
     {
-        public override int SortOrder => 0;
         public override string Description => "A canvas with filled borders.";
 
         public override void Layout(Visual parent)

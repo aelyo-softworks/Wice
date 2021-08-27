@@ -1,6 +1,6 @@
 ﻿using DirectN;
 
-namespace Wice.Samples.Gallery.Samples.Status
+namespace Wice.Samples.Gallery.Samples.Misc
 {
     public class ToolTipSampleList : SampleList
     {

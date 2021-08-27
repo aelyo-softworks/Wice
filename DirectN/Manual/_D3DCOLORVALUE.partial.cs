@@ -86,7 +86,7 @@ namespace DirectN
             var g = color & 0xFF00;
             return new _D3DCOLORVALUE(r | g | b, alpha);
         }
-        public static _D3DCOLORVALUE FromArgb(byte r, byte g, byte b) => FromArgb(1, r, g, b);
+        public static _D3DCOLORVALUE FromArgb(byte r, byte g, byte b) => FromArgb(255, r, g, b);
         public static _D3DCOLORVALUE FromArgb(byte a, byte r, byte g, byte b) => new _D3DCOLORVALUE(ByteToSingle(a), ByteToSingle(r), ByteToSingle(g), ByteToSingle(b));
         public static _D3DCOLORVALUE? FromName(string name)
         {

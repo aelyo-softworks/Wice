@@ -4,7 +4,6 @@ namespace Wice.Samples.Gallery.Samples.Input.RadioButton
 {
     public class SimpleRadioButtonSample : Sample
     {
-        public override int SortOrder => 0;
         public override string Description => "A simple radio button";
 
         public override void Layout(Visual parent)

@@ -329,10 +329,19 @@ namespace DirectN
 
         public static D2D_RECT_F Union(IEnumerable<D2D_RECT_F> rects)
         {
+            if (rects == null)
+                throw new ArgumentNullException(nameof(rects));
+
             var rc = new D2D_RECT_F();
-            if (rects != null)
+            var first = true;
+            foreach (var rect in rects)
             {
-                foreach (var rect in rects)
+                if (first)
+                {
+                    rc = rect;
+                    first = false;
+                }
+                else
                 {
                     rc = rc.Union(rect);
                 }

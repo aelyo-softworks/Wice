@@ -4,7 +4,6 @@ namespace Wice.Samples.Gallery.Samples.Input.ToggleSwitch
 {
     public class ToggleSwitchSample : Sample
     {
-        public override int SortOrder => 0;
         public override string Description => "A toggle switch button";
 
         public override void Layout(Visual parent)

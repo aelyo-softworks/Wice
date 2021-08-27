@@ -4,7 +4,6 @@ namespace Wice.Samples.Gallery.Samples.Input.CheckBox
 {
     public class TwoStateCheckBoxSample : Sample
     {
-        public override int SortOrder => 0;
         public override string Description => "A 2-state check box";
 
         public override void Layout(Visual parent)

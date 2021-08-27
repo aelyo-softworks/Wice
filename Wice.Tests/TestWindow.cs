@@ -56,7 +56,7 @@ namespace Wice.Tests
 
             //AddSvg();
 
-            //AddSimpleGrid();
+            AddSimpleGrid();
             //AddSimpleGrid2();
             //AddSimplePropertyGrid();
             //AddSimplePropertyGrid2();
@@ -87,7 +87,7 @@ namespace Wice.Tests
 
             //AddWrap();
 
-            AddStateBoxes();
+            //AddStateBoxes();
             //AddNullableCheckBox();
             //AddCheckBox();
             //AddRadioButtons();
@@ -1587,6 +1587,8 @@ namespace Wice.Tests
         {
             var grid = new Grid();
             Children.Add(grid);
+            //grid.Width = 100;
+            //grid.Height = 100;
             grid.Name = nameof(grid);
             grid.Margin = 10;
 
