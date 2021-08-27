@@ -20,19 +20,19 @@ namespace Wice.Samples.Gallery.Samples.Input.CheckBox
             stack.Children.Add(cb);
 
             // add results textbox
-            var tb = new Wice.TextBox();
-            tb.Margin = D2D_RECT_F.Thickness(10, 0);
-            stack.Children.Add(tb);
+            var results = new Wice.TextBox();
+            results.Margin = D2D_RECT_F.Thickness(10, 0);
+            stack.Children.Add(results);
 
             cb.Click += (s, e) =>
             {
                 if (cb.Value == null)
                 {
-                    tb.Text = "CheckBox state is undetermined.";
+                    results.Text = "CheckBox state is undetermined.";
                 }
                 else
                 {
-                    tb.Text = "CheckBox is " + (cb.Value.Value ? "Checked" : "Unchecked");
+                    results.Text = "CheckBox is " + (cb.Value.Value ? "Checked" : "Unchecked");
                 }
             };
         }

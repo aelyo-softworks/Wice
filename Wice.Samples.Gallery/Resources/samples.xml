@@ -44,19 +44,19 @@
     stack.Children.Add(cb);
 
     // add results textbox
-    var tb = new TextBox();
-    tb.Margin = D2D_RECT_F.Thickness(10, 0);
-    stack.Children.Add(tb);
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    stack.Children.Add(results);
 
     cb.Click += (s, e) =&gt;
     {
         if (cb.Value == null)
         {
-            tb.Text = "CheckBox state is undetermined.";
+            results.Text = "CheckBox state is undetermined.";
         }
         else
         {
-            tb.Text = "CheckBox is " + (cb.Value.Value ? "Checked" : "Unchecked");
+            results.Text = "CheckBox is " + (cb.Value.Value ? "Checked" : "Unchecked");
         }
     };
 }</sample>
@@ -72,13 +72,13 @@
     stack.Children.Add(cb);
 
     // add results textbox
-    var tb = new TextBox();
-    tb.Margin = D2D_RECT_F.Thickness(10, 0);
-    stack.Children.Add(tb);
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    stack.Children.Add(results);
 
     cb.Click += (s, e) =&gt;
     {
-        tb.Text = "CheckBox is " + (cb.Value ? "Checked" : "Unchecked");
+        results.Text = "CheckBox is " + (cb.Value ? "Checked" : "Unchecked");
     };
 }</sample>
   <sample namespace="Samples.Input.RadioButton.RadioButtonsSample">void Layout(Visual parent)
@@ -104,9 +104,9 @@
     dock.Children.Add(rb2);
 
     // add results textbox
-    var tb = new TextBox();
-    tb.Margin = D2D_RECT_F.Thickness(10, 0);
-    dock.Children.Add(tb);
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    dock.Children.Add(results);
 
     rb0.Click += onRadioButtonClick;
     rb1.Click += onRadioButtonClick;
@@ -115,10 +115,10 @@
     void onRadioButtonClick(object sender, EventArgs e)
     {
         var rb = (RadioButton)sender;
-        tb.Text = "Selected RadioButton is " + rb.Name;
+        results.Text = "Selected RadioButton is " + rb.Name;
 
         // use a method extension to deselect all other buttons
-        new[] { rb0, rb1, rb2 }.OfType&lt;ISelectable&gt;().Select(rb);
+        new[] { rb0, rb1, rb2 }.Select(rb);
     }
 }</sample>
   <sample namespace="Samples.Input.RadioButton.SimpleRadioButtonSample">void Layout(Visual parent)
@@ -129,17 +129,153 @@
     parent.Children.Add(stack);
 
     // add radio button
-    var rb = new RadioButton();
-    stack.Children.Add(rb);
+    var btn = new RadioButton();
+    stack.Children.Add(btn);
 
     // add results textbox
-    var tb = new TextBox();
-    tb.Margin = D2D_RECT_F.Thickness(10, 0);
-    stack.Children.Add(tb);
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    stack.Children.Add(results);
 
-    rb.Click += (s, e) =&gt;
+    btn.Click += (s, e) =&gt;
     {
-        tb.Text = "RadioButton is " + (rb.Value ? "Checked" : "Unchecked");
+        results.Text = "RadioButton is " + (btn.Value ? "Checked" : "Unchecked");
+    };
+}</sample>
+  <sample namespace="Samples.Input.StateButton.CheckBoxStateButtonSample">void Layout(Visual parent)
+{
+    // stack state button and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add state button
+    var btn = new StateButton();
+    btn.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+
+    // add "true" / checked state
+    btn.AddState(new StateButtonState(true, (button, args, state) =&gt; new TextBox
+    {
+        ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White),
+        Text = "X",
+        VerticalAlignment = Alignment.Center,
+        HorizontalAlignment = Alignment.Center
+    })); ;
+
+    // add "false" / unchecked set
+    btn.AddState(new StateButtonState(false, (button, args, state) =&gt; new TextBox()));
+    btn.Width = 20;
+    btn.Height = 20;
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    results.HorizontalAlignment = Alignment.Center;
+    results.VerticalAlignment = Alignment.Center;
+    stack.Children.Add(results);
+
+    stack.Children.Add(btn);
+    btn.Click += (s, e) =&gt;
+    {
+        results.Text = "\"CheckBox\" StateButton is " + (((bool)btn.Value) ? "Checked" : "Unchecked");
+    };
+}</sample>
+  <sample namespace="Samples.Input.StateButton.SimpleStateButtonSample">void Layout(Visual parent)
+{
+    // stack state button and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add state button
+    var btn = new StateButton();
+    btn.Width = 100;
+    btn.Height = 100;
+    for (var i = 0; i &lt; 4; i++)
+    {
+        // second parameter defines the child visual, here just a textbox
+        btn.AddState(new StateButtonState("state " + i, (button, args, state) =&gt;
+        {
+            var tb = new TextBox();
+            tb.Text = state.ToString();
+            tb.HorizontalAlignment = Alignment.Center;
+            tb.VerticalAlignment = Alignment.Center;
+            return tb;
+        }));
+    }
+
+    // select one value
+    btn.Value = "state 0";
+    btn.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.OldLace);
+    stack.Children.Add(btn);
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    results.HorizontalAlignment = Alignment.Center;
+    results.VerticalAlignment = Alignment.Center;
+    stack.Children.Add(results);
+
+    btn.Click += (s, e) =&gt;
+    {
+        results.Text = "StateButton value is " + btn.Value;
+    };
+}</sample>
+  <sample namespace="Samples.Input.ToggleSwitch.GroupedToggleSwitchesSample">void Layout(Visual parent)
+{
+    // dock toggle switches and textbox
+    var dock = new Dock();
+    parent.Children.Add(dock);
+
+    // add toggle switches
+    var list = new List&lt;ToggleSwitch&gt;();
+    for (var i = 0; i &lt; 3; i++)
+    {
+        var toggle = new ToggleSwitch();
+        toggle.Margin = D2D_RECT_F.Thickness(10, 0);
+        toggle.Name = "switch " + i;
+        dock.Children.Add(toggle);
+        list.Add(toggle);
+    }
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    dock.Children.Add(results);
+
+    // hook click events
+    list.ForEach(t =&gt; t.Click += onRadioButtonClick);
+
+    void onRadioButtonClick(object sender, EventArgs e)
+    {
+        var rb = (ToggleSwitch)sender;
+        results.Text = "Selected ToggleSwitch is " + rb.Name;
+
+        // use a method extension to deselect all other buttons
+        list.Select(rb);
+    }
+}</sample>
+  <sample namespace="Samples.Input.ToggleSwitch.ToggleSwitchSample">void Layout(Visual parent)
+{
+    // stack state button and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add toggle switch button
+    var toggle = new ToggleSwitch();
+    stack.Children.Add(toggle);
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    results.HorizontalAlignment = Alignment.Center;
+    results.VerticalAlignment = Alignment.Center;
+    stack.Children.Add(results);
+
+    toggle.Click += (s, e) =&gt;
+    {
+        results.Text = "ToggleSwitch is " + (toggle.Value ? "Checked" : "Unchecked");
     };
 }</sample>
   <sample namespace="Samples.Layout.Dock.SimpleDockSample">void Layout(Visual parent)

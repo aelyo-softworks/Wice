@@ -87,8 +87,12 @@
     <Compile Include="Samples\Input\RadioButton\RadioButtonsSample.cs" />
     <Compile Include="Samples\Input\RadioButton\SimpleRadioButtonSample.cs" />
     <Compile Include="Samples\Input\StateButtonSampleList.cs" />
+    <Compile Include="Samples\Input\StateButton\CheckBoxStateButtonSample.cs" />
+    <Compile Include="Samples\Input\StateButton\SimpleStateButtonSample.cs" />
     <Compile Include="Samples\Input\ToggleSwitchSampleList.cs" />
     <Compile Include="Samples\Input\RadioButtonSampleList.cs" />
+    <Compile Include="Samples\Input\ToggleSwitch\GroupedToggleSwitchesSample.cs" />
+    <Compile Include="Samples\Input\ToggleSwitch\ToggleSwitchSample.cs" />
     <Compile Include="Samples\Layout\Dock\SimpleDockSample.cs" />
     <Compile Include="Samples\Layout\WrapSampleList.cs" />
     <Compile Include="Samples\Layout\UniformGridSampleList.cs" />
@@ -177,8 +181,6 @@
     <Folder Include="Samples\Collections\ListBox\" />
     <Folder Include="Samples\Collections\PropertyGrid\" />
     <Folder Include="Samples\Collections\StateButtonList\" />
-    <Folder Include="Samples\Input\StateButton\" />
-    <Folder Include="Samples\Input\ToggleSwitch\" />
     <Folder Include="Samples\Layout\DockSplitter\" />
     <Folder Include="Samples\Layout\GridSplitter\" />
     <Folder Include="Samples\Layout\Grid\" />

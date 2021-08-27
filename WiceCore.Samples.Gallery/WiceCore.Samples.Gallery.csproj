@@ -99,6 +99,10 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Input\CheckBox\ThreeStateCheckBoxSample.cs" Link="Samples\Input\CheckBox\ThreeStateCheckBoxSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Input\RadioButton\RadioButtonsSample.cs" Link="Samples\Input\RadioButton\RadioButtonsSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Input\RadioButton\SimpleRadioButtonSample.cs" Link="Samples\Input\RadioButton\SimpleRadioButtonSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\StateButton\SimpleStateButtonSample.cs" Link="Samples\Input\StateButton\SimpleStateButtonSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\StateButton\CheckBoxStateButtonSample.cs" Link="Samples\Input\StateButton\CheckBoxStateButtonSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\ToggleSwitch\ToggleSwitchSample.cs" Link="Samples\Input\ToggleSwitch\ToggleSwitchSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Input\ToggleSwitch\GroupedToggleSwitchesSample.cs" Link="Samples\Input\ToggleSwitch\GroupedToggleSwitchesSample.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

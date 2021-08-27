@@ -7,7 +7,7 @@ using Windows.UI.Composition;
 
 namespace Wice
 {
-    public class ToggleSwitch : ButtonBase, IValueable
+    public class ToggleSwitch : ButtonBase, IValueable, ISelectable
     {
         public static VisualProperty ValueProperty = VisualProperty.Add<bool>(typeof(ToggleSwitch), nameof(Value), VisualPropertyInvalidateModes.Render);
         public static VisualProperty OnButtonBrushProperty = VisualProperty.Add<CompositionBrush>(typeof(ToggleSwitch), nameof(OnButtonBrush), VisualPropertyInvalidateModes.Render);
@@ -22,6 +22,7 @@ namespace Wice
 
         event EventHandler<ValueEventArgs> IValueable.ValueChanged { add { UIExtensions.AddEvent(ref _valueChanged, value); } remove { UIExtensions.RemoveEvent(ref _valueChanged, value); } }
         public event EventHandler<ValueEventArgs<bool>> ValueChanged;
+        public event EventHandler<ValueEventArgs<bool>> IsSelectedChanged;
 
         bool IValueable.CanChangeValue { get => IsEnabled; set => IsEnabled = value; }
         object IValueable.Value => Value;
@@ -40,6 +41,9 @@ namespace Wice
             }
             return false;
         }
+
+        bool ISelectable.RaiseIsSelectedChanged { get; set; }
+        bool ISelectable.IsSelected { get => Value; set => Value = value; }
 
         public ToggleSwitch()
         {
@@ -140,10 +144,19 @@ namespace Wice
             base.Render();
         }
 
+        protected virtual void OnIsSelectedChanged(object sender, ValueEventArgs<bool> e)
+        {
+            if (((ISelectable)this).RaiseIsSelectedChanged)
+            {
+                IsSelectedChanged?.Invoke(sender, e);
+            }
+        }
+
         protected virtual void OnValueChanged(object sender, ValueEventArgs<bool> e)
         {
             ValueChanged?.Invoke(sender, e);
             _valueChanged?.Invoke(sender, e);
+            OnIsSelectedChanged(sender, e);
         }
 
         protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions options = null)

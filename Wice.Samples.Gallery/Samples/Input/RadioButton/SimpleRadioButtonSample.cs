@@ -16,17 +16,17 @@ namespace Wice.Samples.Gallery.Samples.Input.RadioButton
             Wice.Dock.SetDockType(stack, DockType.Top); // remove from display
 
             // add radio button
-            var rb = new Wice.RadioButton();
-            stack.Children.Add(rb);
+            var btn = new Wice.RadioButton();
+            stack.Children.Add(btn);
 
             // add results textbox
-            var tb = new Wice.TextBox();
-            tb.Margin = D2D_RECT_F.Thickness(10, 0);
-            stack.Children.Add(tb);
+            var results = new Wice.TextBox();
+            results.Margin = D2D_RECT_F.Thickness(10, 0);
+            stack.Children.Add(results);
 
-            rb.Click += (s, e) =>
+            btn.Click += (s, e) =>
             {
-                tb.Text = "RadioButton is " + (rb.Value ? "Checked" : "Unchecked");
+                results.Text = "RadioButton is " + (btn.Value ? "Checked" : "Unchecked");
             };
         }
     }

@@ -34,9 +34,9 @@ namespace Wice.Samples.Gallery.Samples.Input.RadioButton
             dock.Children.Add(rb2);
 
             // add results textbox
-            var tb = new Wice.TextBox();
-            tb.Margin = D2D_RECT_F.Thickness(10, 0);
-            dock.Children.Add(tb);
+            var results = new Wice.TextBox();
+            results.Margin = D2D_RECT_F.Thickness(10, 0);
+            dock.Children.Add(results);
 
             rb0.Click += onRadioButtonClick;
             rb1.Click += onRadioButtonClick;
@@ -45,7 +45,7 @@ namespace Wice.Samples.Gallery.Samples.Input.RadioButton
             void onRadioButtonClick(object sender, EventArgs e)
             {
                 var rb = (Wice.RadioButton)sender;
-                tb.Text = "Selected RadioButton is " + rb.Name;
+                results.Text = "Selected RadioButton is " + rb.Name;
 
                 // use a method extension to deselect all other buttons
                 new[] { rb0, rb1, rb2 }.Select(rb);
