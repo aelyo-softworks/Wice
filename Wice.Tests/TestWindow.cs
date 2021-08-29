@@ -56,7 +56,7 @@ namespace Wice.Tests
 
             //AddSvg();
 
-            AddSimpleGrid();
+            //AddSimpleGrid();
             //AddSimpleGrid2();
             //AddSimplePropertyGrid();
             //AddSimplePropertyGrid2();
@@ -71,7 +71,7 @@ namespace Wice.Tests
 
             //AddScrollViewImage();
             //AddScrollViewSmall();
-            //AddFillImage();
+            AddFillImage();
 
             //AddDock();
             //AddOneDockChild();

@@ -106,6 +106,7 @@ namespace Wice.DevTools
                 var lines = new List<string>();
                 string tabs = null;
                 var index = -1;
+                var wholeRemark = false;
                 foreach (var line in File.ReadAllLines(IOPath.Combine(source.ProjectDirectoryPath, path)))
                 {
                     if (tabs == null)
@@ -115,8 +116,12 @@ namespace Wice.DevTools
                         if (index < 0)
                             continue;
 
+                        wholeRemark = line.IndexOf("// whole remark") >= 0;
                         tabs = line.Substring(0, index);
-                        addLine(line.Substring(index).Replace("public override ", string.Empty));
+                        if (!wholeRemark)
+                        {
+                            addLine(line.Substring(index).Replace("public override ", string.Empty));
+                        }
                     }
                     else
                     {
@@ -138,12 +143,27 @@ namespace Wice.DevTools
                             return;
 
                         l = l.Replace("Wice.", string.Empty); //trick because some samples must use a namespace
+
+                        if (wholeRemark)
+                        {
+                            var remPos = l.IndexOf("//");
+                            if (remPos >= 0)
+                            {
+                                l = l.Substring(remPos + 2);
+                            }
+                        }
                         lines.Add(l);
                     }
                 }
 
                 if (lines.Count == 0)
                     continue;
+
+                if (wholeRemark && lines.Count > 2)
+                {
+                    lines.RemoveAt(0);
+                    lines.RemoveAt(lines.Count - 1);
+                }
 
                 var element = samplesFile.CreateElement("sample");
                 samplesFile.DocumentElement.AppendChild(element);

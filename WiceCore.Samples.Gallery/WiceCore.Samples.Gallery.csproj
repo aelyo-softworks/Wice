@@ -103,11 +103,24 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Input\ToggleSwitch\GroupedToggleSwitchesSample.cs" Link="Samples\Input\ToggleSwitch\GroupedToggleSwitchesSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\DockSplitter\SimpleDockSplitterSample.cs" Link="Samples\Layout\DockSplitter\SimpleDockSplitterSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Grid\SimpleGridSample.cs" Link="Samples\Layout\Grid\SimpleGridSample.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Stack\SimpleStackSample.cs" Link="Samples\Layout\Stack\SimpleStackSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\UniformGrid\SimpleUniformGridSample.cs" Link="Samples\Layout\UniformGrid\SimpleUniformGridSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Wrap\SimpleWrapSample.cs" Link="Samples\Layout\Wrap\SimpleWrapSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\GridSplitter\SimpleGridSplitterSample.cs" Link="Samples\Layout\GridSplitter\SimpleGridSplitterSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\ToolTipSampleList.cs" Link="Samples\Misc\ToolTipSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Stack\SimpleHorizontalStackSample.cs" Link="Samples\Layout\Stack\SimpleHorizontalStackSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Stack\SimpleVerticalStackSample.cs" Link="Samples\Layout\Stack\SimpleVerticalStackSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Stack\BoxesStackSample.cs" Link="Samples\Layout\Stack\BoxesStackSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\UniformGrid\ShapesUniformGridSample.cs" Link="Samples\Layout\UniformGrid\ShapesUniformGridSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\Application\ApplicationSample.cs" Link="Samples\Misc\Application\ApplicationSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\Focus\FocusSample.cs" Link="Samples\Misc\Focus\FocusSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\TitleBar\TitleBarSample.cs" Link="Samples\Misc\TitleBar\TitleBarSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\ToolTip\AdvancedToolTipSample.cs" Link="Samples\Misc\ToolTip\AdvancedToolTipSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\ToolTip\ToolTipSample.cs" Link="Samples\Misc\ToolTip\ToolTipSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\VisualsTree\VisualsTreeSample.cs" Link="Samples\Misc\VisualsTree\VisualsTreeSample.cs" />
+    <EmbeddedResource Include="..\Wice.Samples.Gallery\Resources\rainier.jpg" Link="Resources\rainier.jpg" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Media\Image\BasicImageSample.cs" Link="Samples\Media\Image\BasicImageSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Media\SvgImage\BasicSvgImageSample.cs" Link="Samples\Media\SvgImage\BasicSvgImageSample.cs" />
+    <EmbeddedResource Include="..\Wice.Samples.Gallery\Resources\tiger.svg" Link="Resources\tiger.svg" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

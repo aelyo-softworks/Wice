@@ -12,6 +12,7 @@ namespace Wice.Samples.Gallery.Samples
 
         public abstract string IconText { get; }
 
+        public virtual bool IsEnabled => true;
         public virtual string Title => TypeName;
         public virtual string SubTitle => "The " + Title + " visual.";
         public virtual string Description => SubTitle;

@@ -10,7 +10,7 @@
             btn.Click += (s, e) => MessageBox.Show(parent.Window, "You clicked me!");
             btn.Text.Text = "Click Me!";
             btn.HorizontalAlignment = Alignment.Near; // remove from display
-            Wice.Dock.SetDockType(btn, DockType.Top); // remove from display
+            Dock.SetDockType(btn, DockType.Top); // remove from display
             parent.Children.Add(btn);
         }
     }

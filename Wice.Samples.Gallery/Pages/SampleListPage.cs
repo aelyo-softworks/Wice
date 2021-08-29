@@ -12,6 +12,7 @@ namespace Wice.Samples.Gallery.Pages
             var sampleLists = GetType().Assembly.GetTypes()
                 .Where(t => typeof(SampleList).IsAssignableFrom(t) && !t.IsAbstract && t.Namespace == typeof(Program).Namespace + ".Samples." + TypeName)
                 .Select(t => (SampleList)Activator.CreateInstance(t))
+                .Where(t => t.IsEnabled)
                 .OrderBy(t => t.TypeName);
 
             // add a wrap that holds all sample lists

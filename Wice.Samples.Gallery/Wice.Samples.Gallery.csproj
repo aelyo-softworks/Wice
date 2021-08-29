@@ -59,6 +59,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -96,7 +97,10 @@
     <Compile Include="Samples\Layout\GridSplitter\SimpleGridSplitterSample.cs" />
     <Compile Include="Samples\Layout\Grid\SimpleGridSample.cs" />
     <Compile Include="Samples\Layout\Dock\SimpleDockSample.cs" />
-    <Compile Include="Samples\Layout\Stack\SimpleStackSample.cs" />
+    <Compile Include="Samples\Layout\Stack\SimpleHorizontalStackSample.cs" />
+    <Compile Include="Samples\Layout\Stack\BoxesStackSample.cs" />
+    <Compile Include="Samples\Layout\Stack\SimpleVerticalStackSample.cs" />
+    <Compile Include="Samples\Layout\UniformGrid\ShapesUniformGridSample.cs" />
     <Compile Include="Samples\Layout\UniformGrid\SimpleUniformGridSample.cs" />
     <Compile Include="Samples\Layout\WrapSampleList.cs" />
     <Compile Include="Samples\Layout\UniformGridSampleList.cs" />
@@ -114,13 +118,21 @@
     <Compile Include="Samples\Layout\Wrap\SimpleWrapSample.cs" />
     <Compile Include="Samples\Media\BrushSampleList.cs" />
     <Compile Include="Samples\Media\ImageSampleList.cs" />
+    <Compile Include="Samples\Media\Image\BasicImageSample.cs" />
     <Compile Include="Samples\Media\ShapeSampleList.cs" />
     <Compile Include="Samples\Media\SvgImageSampleList.cs" />
+    <Compile Include="Samples\Media\SvgImage\BasicSvgImageSample.cs" />
+    <Compile Include="Samples\Misc\ApplicationSampleList.cs" />
+    <Compile Include="Samples\Misc\Focus\FocusSample.cs" />
+    <Compile Include="Samples\Misc\Application\ApplicationSample.cs" />
     <Compile Include="Samples\Misc\FocusSampleList.cs" />
     <Compile Include="Samples\Misc\TitleBarSampleList.cs" />
+    <Compile Include="Samples\Misc\TitleBar\TitleBarSample.cs" />
     <Compile Include="Samples\Misc\ToolTipSampleList.cs" />
+    <Compile Include="Samples\Misc\ToolTip\AdvancedToolTipSample.cs" />
+    <Compile Include="Samples\Misc\ToolTip\ToolTipSample.cs" />
     <Compile Include="Samples\Misc\VisualsTreeSampleList.cs" />
-    <Compile Include="Samples\Misc\ApplicationSampleList.cs" />
+    <Compile Include="Samples\Misc\VisualsTree\VisualsTreeSample.cs" />
     <Compile Include="Samples\Sample.cs" />
     <Compile Include="Samples\Scrolling\ScrollViewerSampleList.cs" />
     <Compile Include="Samples\Scrolling\ThumbSampleList.cs" />
@@ -172,6 +184,8 @@
     <Content Include="..\Assets\wice_color.ico">
       <Link>wice_color.ico</Link>
     </Content>
+    <EmbeddedResource Include="Resources\tiger.svg" />
+    <EmbeddedResource Include="Resources\rainier.jpg" />
     <EmbeddedResource Include="Resources\samples.xml" />
     <EmbeddedResource Include="Resources\aelyo_flat.png" />
   </ItemGroup>
@@ -187,14 +201,7 @@
     <Folder Include="Samples\Collections\PropertyGrid\" />
     <Folder Include="Samples\Collections\StateButtonList\" />
     <Folder Include="Samples\Media\Brush\" />
-    <Folder Include="Samples\Media\Image\" />
     <Folder Include="Samples\Media\Shape\" />
-    <Folder Include="Samples\Media\SvgImage\" />
-    <Folder Include="Samples\Misc\Application\" />
-    <Folder Include="Samples\Misc\Focus\" />
-    <Folder Include="Samples\Misc\TitleBar\" />
-    <Folder Include="Samples\Misc\ToolTip\" />
-    <Folder Include="Samples\Misc\VisualTree\" />
     <Folder Include="Samples\Scrolling\ScrollBar\" />
     <Folder Include="Samples\Scrolling\ScrollViewer\" />
     <Folder Include="Samples\Scrolling\Thumb\" />

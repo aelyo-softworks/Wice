@@ -404,13 +404,119 @@
     Canvas.SetBottom(b3, 0);
     canvas.Children.Add(b3);
 }</sample>
-  <sample namespace="Samples.Layout.Stack.SimpleStackSample">void Layout(Visual parent)
+  <sample namespace="Samples.Layout.Stack.SimpleHorizontalStackSample">void Layout(Visual parent)
 {
     var stack = new Stack();
     parent.Children.Add(stack);
+    stack.Orientation = Orientation.Horizontal;
+    stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+
+    var b0 = new Border();
+    stack.Children.Add(b0);
+    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b0.Width = 100;
+    b0.Height = 100;
+
+    var b1 = new Border();
+    stack.Children.Add(b1);
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b1.Width = 50;
+    b1.Height = 50;
+}</sample>
+  <sample namespace="Samples.Layout.Stack.BoxesStackSample">void Layout(Visual parent)
+{
+    var stack = new Stack();
+    parent.Children.Add(stack);
+    stack.Width = 150;
+    stack.Width = 150;
+    stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+
+    var b0 = new Border();
+    stack.Children.Add(b0);
+    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b0.Width = 100;
+    b0.Height = 100;
+
+    var b1 = new Border();
+    stack.Children.Add(b1);
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b1.Width = 50;
+    b1.Height = 50;
+}</sample>
+  <sample namespace="Samples.Layout.Stack.SimpleVerticalStackSample">void Layout(Visual parent)
+{
+    var stack = new Stack();
+    parent.Children.Add(stack);
+    stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+
+    var b0 = new Border();
+    stack.Children.Add(b0);
+    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b0.Width = 100;
+    b0.Height = 100;
+
+    var b1 = new Border();
+    stack.Children.Add(b1);
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b1.Width = 50;
+    b1.Height = 50;
+}</sample>
+  <sample namespace="Samples.Layout.UniformGrid.ShapesUniformGridSample">void Layout(Visual parent)
+{
+    var grid = new UniformGrid();
+    grid.BackgroundColor = _D3DCOLORVALUE.Transparent;
+    grid.Rows = 10;
+    grid.Columns = grid.Rows;
+    parent.Children.Add(grid);
+    grid.Width = 300;
+    grid.Height = 300;
+
+    for (var i = 0; i &lt; grid.Rows; i++)
+    {
+        for (var j = 0; j &lt; grid.Columns; j++)
+        {
+            var shape = new Ellipse();
+            grid.Children.Add(shape);
+            var color = new _D3DCOLORVALUE(0, i / (float)grid.Rows, j / (float)grid.Columns);
+            shape.RenderBrush = Compositor.CreateColorBrush(color);
+            shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color);
+            shape.Shape.StrokeThickness = 0.5f;
+        }
+    }
 }</sample>
   <sample namespace="Samples.Layout.UniformGrid.SimpleUniformGridSample">void Layout(Visual parent)
 {
+    var grid = new UniformGrid();
+    parent.Children.Add(grid);
+    grid.Columns = 2;
+    grid.Rows = 2;
+    grid.Width = 300;
+    grid.Height = 300;
+    grid.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+
+    var b0 = new Border();
+    grid.Children.Add(b0);
+    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b0.Width = 100;
+    b0.Height = 100;
+
+    var b1 = new Border();
+    grid.Children.Add(b1);
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b1.Width = 50;
+    b1.Height = 50;
+
+    var b2 = new Border();
+    grid.Children.Add(b2);
+    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b2.Width = 50;
+    b2.Height = 50;
+
+    var b3 = new Border();
+    grid.Children.Add(b3);
+    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b3.Width = 100;
+    b3.Height = 100;
 }</sample>
   <sample namespace="Samples.Layout.Border.BordersSample">void Layout(Visual parent)
 {
@@ -558,5 +664,135 @@
         border.Width = rnd.Next(10, 60);
         border.Height = rnd.Next(10, 60);
     }
+}</sample>
+  <sample namespace="Samples.Media.Image.BasicImageSample">void Layout(Visual parent)
+{
+    var img = new Image();
+    parent.Children.Add(img);
+    img.Width = 400;
+    img.Margin = 10;
+    img.InterpolationMode = D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC;
+
+    // load from .NET embedded resource
+    img.Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.rainier.jpg");
+}</sample>
+  <sample namespace="Samples.Media.SvgImage.BasicSvgImageSample">void Layout(Visual parent)
+{
+    var img = new SvgImage();
+    parent.Children.Add(img);
+    img.Width = 400;
+    img.Height = 400;
+    img.Margin = 10;
+
+    // load from .NET embedded resource
+    img.Document = new AssemblyResourceStreamer(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.tiger.svg");
+}</sample>
+  <sample namespace="Samples.Misc.Focus.FocusSample">void Layout(Visual parent)
+{
+    for (var i = 0; i &lt; 4; i++)
+    {
+        var btn = new Button();
+        btn.Margin = 5;
+        btn.FocusedChanged += (s, e) =&gt;
+        {
+            btn.Text.Text = e.Value ? "Focused" : "Unfocused";
+        };
+        btn.Text.Text = "Unfocused";
+        parent.Children.Add(btn);
+
+        // focus the first one
+        if (i == 0)
+        {
+            btn.Focus();
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Misc.Application.ApplicationSample">class Program
+{
+    static void Main()
+    {
+        // create application
+        using (var dw = new Application())
+        {
+            // add (main) window to application
+            var win = new Window { Title = "Wice" };
+            win.ResizeClient(400, 400);
+            win.Center();
+            win.Show();
+            dw.Run();
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Misc.TitleBar.TitleBarSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Click += (s, e) =&gt;
+    {
+        var window = new Window();
+
+        // we draw our own titlebar using Wice
+        window.WindowsFrameMode = WindowsFrameMode.None;
+        window.Center();
+        window.Show();
+
+        // add a Wice titlebar
+        var titleBar = new TitleBar { IsMain = true };
+        window.Children.Add(titleBar);
+        window.ResizeClient(400, 400);
+    };
+
+    btn.Text.Text = "Open new window";
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Misc.ToolTip.AdvancedToolTipSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Hover me!";
+    parent.Children.Add(btn);
+
+    // a tooltip content is created using a function
+    btn.ToolTipContentCreator = tt =&gt; createToolTipContent(tt, "hello world");
+
+    // here is a custom tooltip creator function
+    void createToolTipContent(ToolTip tt, string text)
+    {
+        // clear default tooltip shadow
+        tt.Content.RenderShadow = null;
+
+        // note we must use the tooltip's compositor, not our window's compositor
+        // as the tooltip has its own window
+        tt.Content.RenderBrush = tt.Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+
+        var tb = new TextBox();
+        tb.Margin = 4;
+        tb.Text = text;
+        tb.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White);
+        tb.FontSize = 25;
+        tt.Content.Children.Add(tb);
+    }
+}</sample>
+  <sample namespace="Samples.Misc.ToolTip.ToolTipSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Hover me!";
+    parent.Children.Add(btn);
+
+    // a tooltip content is created using a function
+    // Wice provides a default function for default tooltips
+    btn.ToolTipContentCreator = tt =&gt; Window.CreateDefaultToolTipContent(tt, "hello world");
+}</sample>
+  <sample namespace="Samples.Misc.VisualsTree.VisualsTreeSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Open the VisualsTree Window";
+    btn.Click += (s, e) =&gt;
+    {
+        // note with .NET Framework you must reference Windows Forms to use the VisualsTree window
+        var vt = new Utilities.VisualsTree();
+        vt.SetCurrentWindow(parent.Window);
+        vt.Show(NativeWindow.FromHandle(parent.Window.Handle));
+    };
+
+    parent.Children.Add(btn);
 }</sample>
 </samples>
