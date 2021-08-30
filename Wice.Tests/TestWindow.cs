@@ -64,14 +64,14 @@ namespace Wice.Tests
             //AddSimplePropertyGrid4();
             //AddPropertyGridInDialog();
 
-            //AddUniformGridShapes(10);
+            AddUniformGridShapes(10);
             //AddUniformColorGrid(10);
             //AddUniformGridImmersiveColors();
             //AddUniformGridSysColors();
 
             //AddScrollViewImage();
             //AddScrollViewSmall();
-            AddFillImage();
+            //AddFillImage();
 
             //AddDock();
             //AddOneDockChild();
@@ -1517,7 +1517,8 @@ namespace Wice.Tests
             {
                 for (var j = 0; j < visual.Columns; j++)
                 {
-                    addEllipse(i, j);
+                    addLine(i, j);
+                    //addEllipse(i, j);
                 }
             }
 

@@ -676,6 +676,63 @@
     // load from .NET embedded resource
     img.Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.rainier.jpg");
 }</sample>
+  <sample namespace="Samples.Media.Shape.LineShapeSample">void Layout(Visual parent)
+{
+    var line1 = new Line();
+    line1.Width = 200;
+    line1.Height = 100;
+    line1.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Maroon);
+    line1.StrokeThickness = 1;
+    parent.Children.Add(line1);
+    line1.Arranged += (s, e) =&gt;
+    {
+        line1.Geometry.End = line1.ArrangedRect.Size;
+    };
+
+    var line2 = new Line();
+    line2.Width = 200;
+    line2.Height = 100;
+    line2.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.BlueViolet);
+    line2.StrokeThickness = 4;
+    parent.Children.Add(line2);
+    line2.Arranged += (s, e) =&gt;
+    {
+        var ar = line2.ArrangedRect.Size;
+        line2.Geometry.Start= new Vector2(0, ar.height);
+        line2.Geometry.End = new Vector2(ar.width, 0);
+    };
+    Dock.SetDockType(line2, DockType.Top);
+}</sample>
+  <sample namespace="Samples.Media.Shape.EllipseRectangleShapeSample">void Layout(Visual parent)
+{
+    var ellipse = new Ellipse();
+    ellipse.Width = 300;
+    ellipse.Height = 100;
+    ellipse.Radius = new System.Numerics.Vector2(150, 50);
+    ellipse.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+    ellipse.StrokeThickness = 2;
+    ellipse.StrokeDashArray = new float[] { 1, 2, 3 };
+    parent.Children.Add(ellipse);
+}</sample>
+  <sample namespace="Samples.Media.Shape.RoundedRectangleShapeSample">void Layout(Visual parent)
+{
+    var rectangle = new RoundedRectangle();
+    rectangle.CornerRadius = new System.Numerics.Vector2(50);
+    rectangle.Width = 100;
+    rectangle.Height = 100;
+    rectangle.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    rectangle.StrokeThickness = 20;
+    parent.Children.Add(rectangle);
+}</sample>
+  <sample namespace="Samples.Media.Shape.RectangleShapeSample">void Layout(Visual parent)
+{
+    var rectangle = new Rectangle();
+    rectangle.Width = 200;
+    rectangle.Height = 100;
+    rectangle.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    rectangle.StrokeThickness = 10;
+    parent.Children.Add(rectangle);
+}</sample>
   <sample namespace="Samples.Media.SvgImage.BasicSvgImageSample">void Layout(Visual parent)
 {
     var img = new SvgImage();

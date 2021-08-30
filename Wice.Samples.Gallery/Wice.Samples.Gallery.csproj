@@ -120,6 +120,10 @@
     <Compile Include="Samples\Media\ImageSampleList.cs" />
     <Compile Include="Samples\Media\Image\BasicImageSample.cs" />
     <Compile Include="Samples\Media\ShapeSampleList.cs" />
+    <Compile Include="Samples\Media\Shape\LineShapeSample.cs" />
+    <Compile Include="Samples\Media\Shape\EllipseRectangleShapeSample.cs" />
+    <Compile Include="Samples\Media\Shape\RoundedRectangleShapeSample.cs" />
+    <Compile Include="Samples\Media\Shape\RectangleShapeSample.cs" />
     <Compile Include="Samples\Media\SvgImageSampleList.cs" />
     <Compile Include="Samples\Media\SvgImage\BasicSvgImageSample.cs" />
     <Compile Include="Samples\Misc\ApplicationSampleList.cs" />
@@ -201,7 +205,6 @@
     <Folder Include="Samples\Collections\PropertyGrid\" />
     <Folder Include="Samples\Collections\StateButtonList\" />
     <Folder Include="Samples\Media\Brush\" />
-    <Folder Include="Samples\Media\Shape\" />
     <Folder Include="Samples\Scrolling\ScrollBar\" />
     <Folder Include="Samples\Scrolling\ScrollViewer\" />
     <Folder Include="Samples\Scrolling\Thumb\" />

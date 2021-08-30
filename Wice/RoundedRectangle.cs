@@ -22,6 +22,7 @@ namespace Wice
             if (ar.IsValid)
             {
                 Geometry.Size = (ar.Size - Margin).ToVector2();
+                Geometry.Offset = new Vector2(Margin.left, Margin.top);
                 Geometry.CornerRadius = CornerRadius;
             }
         }

@@ -121,6 +121,10 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Media\Image\BasicImageSample.cs" Link="Samples\Media\Image\BasicImageSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Media\SvgImage\BasicSvgImageSample.cs" Link="Samples\Media\SvgImage\BasicSvgImageSample.cs" />
     <EmbeddedResource Include="..\Wice.Samples.Gallery\Resources\tiger.svg" Link="Resources\tiger.svg" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Media\Shape\RectangleShapeSample.cs" Link="Samples\Media\Shape\RectangleShapeSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Media\Shape\RoundedRectangleShapeSample.cs" Link="Samples\Media\Shape\RoundedRectangleShapeSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Media\Shape\EllipseRectangleShapeSample.cs" Link="Samples\Media\Shape\EllipseRectangleShapeSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Media\Shape\LineShapeSample.cs" Link="Samples\Media\Shape\LineShapeSample.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />
