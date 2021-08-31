@@ -629,7 +629,7 @@ namespace Wice.Tests
             var lb = new FlagsEnumListBox();
             //lb.Value = MyFlagsEnum.Value0 | MyFlagsEnum.Value2 | MyFlagsEnum.Value4_x;
             //lb.Value = MyFlagsEnum.Value0;
-            lb.Value = SampleDaysOfWeek.WeekDays;
+            lb.Value = Samples.Gallery.Samples.Collections.PropertyGrid.SampleDaysOfWeek.WeekDays;
             lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
             Children.Add(lb);
 
@@ -805,7 +805,7 @@ namespace Wice.Tests
             sv.Viewer.Child = pg;
 
             //var cus = new { x = 123, y = "héllo" };
-            var cus = new SampleCustomer();
+            var cus = new Samples.Gallery.Samples.Collections.PropertyGrid.SampleCustomer();
             pg.SelectedObject = cus;
 
             //KeyDown += (s, e) =>
@@ -834,7 +834,7 @@ namespace Wice.Tests
             TextBox.ForegroundBrushProperty.SetValue(pg, new SolidColorBrush(_D3DCOLORVALUE.Black));
             Children.Add(pg);
 
-            var cus = new SampleCustomer();
+            var cus = new Samples.Gallery.Samples.Collections.PropertyGrid.SampleCustomer();
             pg.SelectedObject = cus;
 
         }
@@ -870,7 +870,7 @@ namespace Wice.Tests
             //TextBox.ForegroundBrushProperty.SetValue(pg, new SolidColorBrush(_D3DCOLORVALUE.Black));
             dock.Children.Add(pg);
 
-            var cus = new SampleCustomer();
+            var cus = new Samples.Gallery.Samples.Collections.PropertyGrid.SampleCustomer();
             pg.SelectedObject = cus;
 
             RunTaskOnMainThread(() =>

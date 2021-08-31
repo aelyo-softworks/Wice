@@ -265,7 +265,6 @@
     <Compile Include="..\Wice\PropertyGrid\PropertyGridSource.cs" Link="PropertyGrid\PropertyGridSource.cs" />
     <Compile Include="..\Wice\PropertyGrid\PropertyValueVisual.cs" Link="PropertyGrid\PropertyValueVisual.cs" />
     <Compile Include="..\Wice\PropertyGrid\PropertyVisuals.cs" Link="PropertyGrid\PropertyVisuals.cs" />
-    <Compile Include="..\Wice\PropertyGrid\SampleModel.cs" Link="PropertyGrid\SampleModel.cs" />
     <Compile Include="..\Wice\Resources\ResourcesUtilities.cs" Link="Resources\ResourcesUtilities.cs" />
     <Compile Include="..\Wice\Utilities\Audit.cs" Link="Utilities\Audit.cs" />
     <Compile Include="..\Wice\Utilities\AuditRecord.cs" Link="Utilities\AuditRecord.cs" />

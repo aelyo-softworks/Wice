@@ -181,7 +181,6 @@
     <Compile Include="PropertyGrid\PropertyGridProperty.cs" />
     <Compile Include="PropertyGrid\PropertyGridPropertyOptionsAttribute.cs" />
     <Compile Include="PropertyGrid\PropertyGridSource.cs" />
-    <Compile Include="PropertyGrid\SampleModel.cs" />
     <Compile Include="RadialGradientBrush.cs" />
     <Compile Include="GetRectOptions.cs" />
     <Compile Include="ScrollBarButton.cs" />

@@ -69,7 +69,6 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\MessageBoxSampleList.cs" Link="Samples\Windows\MessageBoxSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\WindowSampleList.cs" Link="Samples\Windows\WindowSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Pages\MiscPage.cs" Link="Pages\MiscPage.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Collections\StateButtonListBoxSampleList.cs" Link="Samples\Collections\StateButtonListBoxSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Input\StateButtonSampleList.cs" Link="Samples\Input\StateButtonSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Input\ToggleSwitchSampleList.cs" Link="Samples\Input\ToggleSwitchSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Input\RadioButtonSampleList.cs" Link="Samples\Input\RadioButtonSampleList.cs" />
@@ -126,6 +125,21 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\Dialog\DialogBoxSimpleSample.cs" Link="Samples\Windows\Dialog\DialogBoxSimpleSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\Window\WindowSample.cs" Link="Samples\Windows\Window\WindowSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\ScrollViewerSampleList.cs" Link="Samples\Layout\ScrollViewerSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\ScrollViewer\ScrollViewerBasicSample.cs" Link="Samples\Layout\ScrollViewer\ScrollViewerBasicSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Collections\CheckBoxList\CheckBoxListSample.cs" Link="Samples\Collections\CheckBoxList\CheckBoxListSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Collections\EnumListBox\EnumListBoxSample.cs" Link="Samples\Collections\EnumListBox\EnumListBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Collections\FlagsEnumListBox\FlagsEnumListBoxSample.cs" Link="Samples\Collections\FlagsEnumListBox\FlagsEnumListBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Collections\ListBox\ListBoxSample.cs" Link="Samples\Collections\ListBox\ListBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Collections\ListBox\AdvancedListBoxSample.cs" Link="Samples\Collections\ListBox\AdvancedListBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\PropertyGridSample.cs" Link="Samples\Collections\PropertyGrid\PropertyGridSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="Samples\Collections\PropertyGrid\SampleModel.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Text\RichTextBox\SimpleRichTextBoxSample.cs" Link="Samples\Text\RichTextBox\SimpleRichTextBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Text\TextBox\SimpleTextBoxSample.cs" Link="Samples\Text\TextBox\SimpleTextBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Text\TextBox\EditableTextBoxSample.cs" Link="Samples\Text\TextBox\EditableTextBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Text\TextBox\UnicodeTextBoxSample.cs" Link="Samples\Text\TextBox\UnicodeTextBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Text\RichTextBox\DocumentRichTextBoxSample.cs" Link="Samples\Text\RichTextBox\DocumentRichTextBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Text\RichTextBox\RtfRichTextBoxSample.cs" Link="Samples\Text\RichTextBox\RtfRichTextBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Text\TextBox\ColorFontTextBoxSample.cs" Link="Samples\Text\TextBox\ColorFontTextBoxSample.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

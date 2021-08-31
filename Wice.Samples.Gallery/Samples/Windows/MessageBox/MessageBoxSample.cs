@@ -1,6 +1,4 @@
-﻿using DirectN;
-
-namespace Wice.Samples.Gallery.Samples.Windows.MessageBox
+﻿namespace Wice.Samples.Gallery.Samples.Windows.MessageBox
 {
     public class MessageBoxSample : Sample
     {

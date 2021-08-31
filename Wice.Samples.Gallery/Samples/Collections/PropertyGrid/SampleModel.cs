@@ -6,8 +6,9 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 using DirectN;
+using Wice.PropertyGrid;
 
-namespace Wice.PropertyGrid
+namespace Wice.Samples.Gallery.Samples.Collections.PropertyGrid
 {
     public class AutoObject : INotifyPropertyChanged
     {

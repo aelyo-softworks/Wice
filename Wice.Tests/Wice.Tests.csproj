@@ -52,6 +52,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs">
+      <Link>SampleModel.cs</Link>
+    </Compile>
     <Compile Include="Border2.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

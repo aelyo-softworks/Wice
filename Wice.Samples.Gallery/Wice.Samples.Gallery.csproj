@@ -73,7 +73,13 @@
     <Compile Include="Pages\WindowsPage.cs" />
     <Compile Include="Pages\SampleListVisual.cs" />
     <Compile Include="Pages\SampleVisual.cs" />
-    <Compile Include="Samples\Collections\StateButtonListBoxSampleList.cs" />
+    <Compile Include="Samples\Collections\EnumListBox\EnumListBoxSample.cs" />
+    <Compile Include="Samples\Collections\CheckBoxList\CheckBoxListSample.cs" />
+    <Compile Include="Samples\Collections\FlagsEnumListBox\FlagsEnumListBoxSample.cs" />
+    <Compile Include="Samples\Collections\ListBox\AdvancedListBoxSample.cs" />
+    <Compile Include="Samples\Collections\ListBox\ListBoxSample.cs" />
+    <Compile Include="Samples\Collections\PropertyGrid\PropertyGridSample.cs" />
+    <Compile Include="Samples\Collections\PropertyGrid\SampleModel.cs" />
     <Compile Include="Samples\Collections\ListBoxSampleList.cs" />
     <Compile Include="Samples\Collections\FlagsEnumListBoxSampleList.cs" />
     <Compile Include="Samples\Collections\EnumListBoxSampleList.cs" />
@@ -97,6 +103,7 @@
     <Compile Include="Samples\Layout\Grid\SimpleGridSample.cs" />
     <Compile Include="Samples\Layout\Dock\SimpleDockSample.cs" />
     <Compile Include="Samples\Layout\ScrollViewerSampleList.cs" />
+    <Compile Include="Samples\Layout\ScrollViewer\ScrollViewerBasicSample.cs" />
     <Compile Include="Samples\Layout\Stack\SimpleHorizontalStackSample.cs" />
     <Compile Include="Samples\Layout\Stack\BoxesStackSample.cs" />
     <Compile Include="Samples\Layout\Stack\SimpleVerticalStackSample.cs" />
@@ -141,7 +148,14 @@
     <Compile Include="Samples\Misc\VisualsTree\VisualsTreeSample.cs" />
     <Compile Include="Samples\Sample.cs" />
     <Compile Include="Samples\Text\RichTextBoxSampleList.cs" />
+    <Compile Include="Samples\Text\RichTextBox\RtfRichTextBoxSample.cs" />
+    <Compile Include="Samples\Text\RichTextBox\DocumentRichTextBoxSample.cs" />
+    <Compile Include="Samples\Text\RichTextBox\SimpleRichTextBoxSample.cs" />
     <Compile Include="Samples\Text\TextBoxSampleList.cs" />
+    <Compile Include="Samples\Text\TextBox\EditableTextBoxSample.cs" />
+    <Compile Include="Samples\Text\TextBox\ColorFontTextBoxSample.cs" />
+    <Compile Include="Samples\Text\TextBox\UnicodeTextBoxSample.cs" />
+    <Compile Include="Samples\Text\TextBox\SimpleTextBoxSample.cs" />
     <Compile Include="Samples\Windows\DialogSampleList.cs" />
     <Compile Include="Samples\Windows\Dialog\DialogBoxSimpleSample.cs" />
     <Compile Include="Samples\Windows\Dialog\DialogSimpleSample.cs" />
@@ -189,6 +203,7 @@
     <Content Include="..\Assets\wice_color.ico">
       <Link>wice_color.ico</Link>
     </Content>
+    <EmbeddedResource Include="Resources\lorem-cn.txt" />
     <EmbeddedResource Include="Resources\tiger.svg" />
     <EmbeddedResource Include="Resources\rainier.jpg" />
     <EmbeddedResource Include="Resources\samples.xml" />
@@ -198,17 +213,7 @@
     <None Include="app.manifest" />
     <EmbeddedResource Include="Resources\wice.rtf" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Samples\Collections\CheckBoxList\" />
-    <Folder Include="Samples\Collections\EnumListBox\" />
-    <Folder Include="Samples\Collections\FlagsEnumListBox\" />
-    <Folder Include="Samples\Collections\ListBox\" />
-    <Folder Include="Samples\Collections\PropertyGrid\" />
-    <Folder Include="Samples\Collections\StateButtonList\" />
-    <Folder Include="Samples\Layout\ScrollViewer\" />
-    <Folder Include="Samples\Text\RichTextBox\" />
-    <Folder Include="Samples\Text\TextBox\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
       <Visible>False</Visible>

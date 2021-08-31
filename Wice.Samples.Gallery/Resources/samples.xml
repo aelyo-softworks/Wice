@@ -1,4 +1,117 @@
 <samples>
+  <sample namespace="Samples.Collections.EnumListBox.EnumListBoxSample">void Layout(Visual parent)
+{
+    var lb = new EnumListBox();
+    lb.Value = States.State1;
+    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    parent.Children.Add(lb);
+
+    // States is defined like this
+    //enum States
+    //{
+    //    State1,
+    //    State2,
+    //    State3,
+    //    State4,
+    //    State5,
+    //}
+}</sample>
+  <sample namespace="Samples.Collections.CheckBoxList.CheckBoxListSample">void Layout(Visual parent)
+{
+    var lb = new CheckBoxList();
+    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    parent.Children.Add(lb);
+
+    // set the list box's data source
+    lb.DataSource = new[] { "hello", "happy", "world" };
+}</sample>
+  <sample namespace="Samples.Collections.FlagsEnumListBox.FlagsEnumListBoxSample">void Layout(Visual parent)
+{
+    var lb = new FlagsEnumListBox();
+
+    // use existing multi-valued enum
+    lb.Value = SampleDaysOfWeek.WeekDays;
+
+    // WeekDays is a combination of other flags so if you select it, it will select other corresponding values as well.
+    // Also NoDay (0) is not displayed since it correspond to no selection.
+
+    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    parent.Children.Add(lb);
+
+    // SampleDaysOfWeek is defined like this
+    //[Flags]
+    //public enum SampleDaysOfWeek
+    //{
+    //    NoDay = 0,
+    //    Monday = 1,
+    //    Tuesday = 2,
+    //    Wednesday = 4,
+    //    Thursday = 8,
+    //    Friday = 16,
+    //    Saturday = 32,
+    //    Sunday = 64,
+    //    WeekDays = Monday | Tuesday | Wednesday | Thursday | Friday
+    //}
+}</sample>
+  <sample namespace="Samples.Collections.ListBox.AdvancedListBoxSample">void Layout(Visual parent)
+{
+    var lb = new ListBox();
+    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    parent.Children.Add(lb);
+
+    // set the list box's data source
+    lb.DataSource = new[] { "hello", "happy", "world" };
+}</sample>
+  <sample namespace="Samples.Collections.ListBox.ListBoxSample">void Layout(Visual parent)
+{
+    var lb = new ListBox();
+    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    parent.Children.Add(lb);
+
+    lb.DataBinder = new DataBinder
+    {
+        // called when an item visual (container) is being created
+        DataItemVisualCreator = (ctx) =&gt;
+        {
+            var tb = new TextBox();
+            tb.Height = 20;
+            ctx.DataVisual = tb;
+        },
+        // called when an item visual (container) is being bound to the data
+        DataItemVisualBinder = (ctx) =&gt;
+        {
+            var tb = (TextBox)ctx.DataVisual;
+            var data = (Tuple&lt;string, string&gt;)ctx.Data;
+            tb.Text = data.Item1;
+            tb.SetSolidColor(_D3DCOLORVALUE.FromName(data.Item1).Value);
+            tb.BackgroundColor = _D3DCOLORVALUE.FromName(data.Item2);
+        }
+    };
+
+    // set the list box's data source
+    lb.DataSource = new[] {
+        new Tuple&lt;string, string&gt;("blue", "white"),
+        new Tuple&lt;string, string&gt;("white", "black"),
+        new Tuple&lt;string, string&gt;("red", "white")
+    };
+}</sample>
+  <sample namespace="Samples.Collections.PropertyGrid.PropertyGridSample">void Layout(Visual parent)
+{
+    // wrap the property grid in a scroll viewer
+    var sv = new ScrollViewer();
+    sv.Height = 500;
+    sv.Width = 500;
+    parent.Children.Add(sv);
+
+    var pg = new PropertyGrid.PropertyGrid();
+    pg.CellMargin = 5;
+    sv.Viewer.Child = pg;
+
+    // use a custom complex object for demonstration
+    var cus = new SampleCustomer();
+    pg.SelectedObject = cus;
+
+}</sample>
   <sample namespace="Samples.Input.Button.ButtonDockSample">void Layout(Visual parent)
 {
     var dock = new Dock();
@@ -403,6 +516,24 @@
     Canvas.SetRight(b3, 0);
     Canvas.SetBottom(b3, 0);
     canvas.Children.Add(b3);
+}</sample>
+  <sample namespace="Samples.Layout.ScrollViewer.ScrollViewerBasicSample">void Layout(Visual parent)
+{
+    // create a 300 pixels height scroll viewer
+    var scrollViewer = new ScrollViewer();
+    parent.Children.Add(scrollViewer);
+    scrollViewer.Height = 300;
+    scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+
+    // add an image
+    var img = new Image();
+    img.InterpolationMode = D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC;
+
+    // load from .NET embedded resource
+    img.Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.rainier.jpg");
+
+    // set the scroll viewer's content
+    scrollViewer.Viewer.Child = img;
 }</sample>
   <sample namespace="Samples.Layout.Stack.SimpleHorizontalStackSample">void Layout(Visual parent)
 {
@@ -882,6 +1013,119 @@
     };
 
     parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Text.RichTextBox.RtfRichTextBoxSample">void Layout(Visual parent)
+{
+    var rtb = new RichTextBox();
+    parent.Children.Add(rtb);
+    Dock.SetDockType(rtb, DockType.Top);
+
+    rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    rtb.Padding = D2D_RECT_F.Thickness(10);
+    rtb.Margin = D2D_RECT_F.Thickness(10);
+
+    rtb.RtfText = @"{\rtf1\ansi\deff0
+        {\colortbl;\red0\green0\blue0;\red255\green0\blue0;}
+        This line is the default color\line
+        \cf2
+        This line is red with special characters: éèà 😱 \line
+        \cf1
+        This line is the default color
+        }";
+}</sample>
+  <sample namespace="Samples.Text.RichTextBox.DocumentRichTextBoxSample">void Layout(Visual parent)
+{
+    var rtb = new RichTextBox();
+    parent.Children.Add(rtb);
+    Dock.SetDockType(rtb, DockType.Top);
+
+    rtb.MaxWidth = 500;
+    rtb.MaxHeight = 400;
+    rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    rtb.Padding = D2D_RECT_F.Thickness(10);
+    rtb.Margin = D2D_RECT_F.Thickness(10);
+
+    // Document is a COM IDispatch object. Cf https://docs.microsoft.com/en-us/windows/win32/api/tom/nf-tom-itextdocument-open
+    dynamic doc = rtb.Document;
+
+    // load text from this assembly's resources
+    using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Samples.Gallery.Resources.wice.rtf"))
+    {
+        doc.Open(new ManagedIStream(stream), 0, 1200); // Flags = 0, CodePage = 1200 (unicode)
+    }
+}</sample>
+  <sample namespace="Samples.Text.RichTextBox.SimpleRichTextBoxSample">void Layout(Visual parent)
+{
+    var rtb = new RichTextBox();
+    parent.Children.Add(rtb);
+    Dock.SetDockType(rtb, DockType.Top);
+
+    rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.GreenYellow);
+    rtb.Padding = D2D_RECT_F.Thickness(10);
+    rtb.Margin = D2D_RECT_F.Thickness(10);
+    rtb.Text = "Hello World";
+}</sample>
+  <sample namespace="Samples.Text.TextBox.EditableTextBoxSample">void Layout(Visual parent)
+{
+    var tb = new TextBox();
+    parent.Children.Add(tb);
+    Dock.SetDockType(tb, DockType.Top);
+    tb.IsEditable = true;
+
+    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightSalmon);
+    tb.Padding = D2D_RECT_F.Thickness(10);
+    tb.Margin = D2D_RECT_F.Thickness(10);
+    tb.Text = "Click me and edit!";
+}</sample>
+  <sample namespace="Samples.Text.TextBox.ColorFontTextBoxSample">void Layout(Visual parent)
+{
+    var tb = new TextBox();
+    parent.Children.Add(tb);
+    Dock.SetDockType(tb, DockType.Top);
+
+    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+    tb.Padding = D2D_RECT_F.Thickness(10);
+    tb.Margin = D2D_RECT_F.Thickness(10);
+
+    // note the difference between the source code (created with Windows' emoji editor) and the rendered text.
+    tb.Text = "These are colored emoji: 😝👸🎅👨‍👩‍👧‍👦";
+}</sample>
+  <sample namespace="Samples.Text.TextBox.UnicodeTextBoxSample">void Layout(Visual parent)
+{
+    var sv = new ScrollViewer();
+    sv.Height = 200;
+    sv.Width = 500;
+    parent.Children.Add(sv);
+    Dock.SetDockType(sv, DockType.Top);
+
+    var tb = new TextBox();
+    sv.Viewer.Child = tb;
+    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.CornflowerBlue);
+    tb.Padding = D2D_RECT_F.Thickness(10);
+    tb.Margin = D2D_RECT_F.Thickness(10);
+
+    tb.Text = getLorem();
+
+    string getLorem()
+    {
+        // load text from this assembly's resources
+        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Samples.Gallery.Resources.lorem-cn.txt"))
+        {
+            var br = new StreamReader(stream);
+            return br.ReadToEnd();
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Text.TextBox.SimpleTextBoxSample">void Layout(Visual parent)
+{
+    var tb = new TextBox();
+    parent.Children.Add(tb);
+    Dock.SetDockType(tb, DockType.Top);
+
+    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.GreenYellow);
+    tb.Padding = D2D_RECT_F.Thickness(10);
+    tb.Margin = D2D_RECT_F.Thickness(10);
+    tb.Text = "Hello World";
 }</sample>
   <sample namespace="Samples.Windows.Dialog.DialogBoxSimpleSample">void Layout(Visual parent)
 {

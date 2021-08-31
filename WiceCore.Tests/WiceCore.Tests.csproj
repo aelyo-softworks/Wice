@@ -30,5 +30,6 @@
     <Content Include="..\Wice.Tests\tiger.svg" Link="tiger.svg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="..\Wice.Tests\..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="Samples\Collections\PropertyGrid\SampleModel.cs" />
   </ItemGroup>
 </Project>

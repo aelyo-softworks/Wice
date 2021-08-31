@@ -18,8 +18,10 @@ namespace Wice
                 throw new ArgumentNullException(nameof(context));
 
             var panel = new Dock();
-            panel.HorizontalAlignment = Alignment.Center;
-            panel.VerticalAlignment = Alignment.Center;
+
+            // TODO: check this...
+            //panel.HorizontalAlignment = Alignment.Center;
+            //panel.VerticalAlignment = Alignment.Center;
             panel.IsFocusable = true;
 
             var button = CreateStateButton(context);
