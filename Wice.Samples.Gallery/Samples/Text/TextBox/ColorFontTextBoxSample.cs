@@ -17,7 +17,7 @@ namespace Wice.Samples.Gallery.Samples.Text.TextBox
             tb.Padding = D2D_RECT_F.Thickness(10);
             tb.Margin = D2D_RECT_F.Thickness(10);
 
-            // note the difference between the source code (created with Windows' emoji editor) and the rendered text.
+            // note there can be difference between the source code (created with Windows' emoji editor) and the Wice's rendered text (from DirectWrite)
             tb.Text = "These are colored emoji: 😝👸🎅👨‍👩‍👧‍👦";
         }
     }
