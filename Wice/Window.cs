@@ -2384,13 +2384,13 @@ namespace Wice
 #if DEBUG
         private void CheckVisualsTree()
         {
-            var tree = _visualsTree;
-            if (tree == null)
-                return;
+            //var tree = _visualsTree;
+            //if (tree == null)
+            //    return;
 
-            var invisibles = tree.Where(q => !q.IsActuallyVisible).ToList();
-            if (invisibles.Count > 0)
-                throw new InvalidOperationException();
+            //var invisibles = tree.Where(q => !q.IsActuallyVisible).ToList();
+            //if (invisibles.Count > 0)
+            //    throw new InvalidOperationException();
         }
 #endif
 

@@ -140,6 +140,7 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Text\RichTextBox\DocumentRichTextBoxSample.cs" Link="Samples\Text\RichTextBox\DocumentRichTextBoxSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Text\RichTextBox\RtfRichTextBoxSample.cs" Link="Samples\Text\RichTextBox\RtfRichTextBoxSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Text\TextBox\ColorFontTextBoxSample.cs" Link="Samples\Text\TextBox\ColorFontTextBoxSample.cs" />
+    <EmbeddedResource Include="..\Wice.Samples.Gallery\Resources\lorem-cn.txt" Link="Resources\lorem-cn.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

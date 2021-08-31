@@ -441,13 +441,13 @@ namespace Wice
             }
         }
 
-        private void SetCaretLocation() => DoWhenRendered(() => Window.RunTaskOnMainThread(() => DoSetCaretLocation()));
+        private void SetCaretLocation() => DoWhenRendered(() => Window?.RunTaskOnMainThread(() => DoSetCaretLocation()));
         private void DoSetCaretLocation()
         {
             if (!IsFocused || !IsEditable || !IsEnabled)
                 return;
 
-            var caret = Window.Caret;
+            var caret = Window?.Caret;
             if (caret != null)
             {
                 var padding = Padding;

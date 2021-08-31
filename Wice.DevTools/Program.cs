@@ -229,6 +229,7 @@ namespace Wice.DevTools
                 ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".ico" || ext == ".svg" ||
                 ext == ".manifest" ||
                 ext == ".rtf" ||
+                ext == ".txt" ||
                 ext == ".xml";
         }
 
@@ -246,6 +247,7 @@ namespace Wice.DevTools
                 case ".jpeg":
                 case ".xml":
                 case ".rtf":
+                case ".txt":
                 case ".svg":
                     return "EmbeddedResource";
 

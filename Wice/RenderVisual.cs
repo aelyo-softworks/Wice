@@ -76,10 +76,10 @@ namespace Wice
 
         protected virtual void RenderD2DSurface()
         {
-            if (!CompositionVisual.IsVisible)
+            if (!(CompositionVisual is SpriteVisual visual))
                 return;
 
-            if (!(CompositionVisual is SpriteVisual visual))
+            if (!CompositionVisual.IsVisible)
                 return;
 
             if (SuspendedCompositionParts.HasFlag(CompositionUpdateParts.D2DSurface))
