@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using DirectN;
+﻿using DirectN;
 
 namespace Wice.Samples.Gallery.Samples.Layout.UniformGrid
 {

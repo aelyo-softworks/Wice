@@ -67,10 +67,7 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Text\TextBoxSampleList.cs" Link="Samples\Text\TextBoxSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\DialogSampleList.cs" Link="Samples\Windows\DialogSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\MessageBoxSampleList.cs" Link="Samples\Windows\MessageBoxSampleList.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\PopupWindowSampleList.cs" Link="Samples\Windows\PopupWindowSampleList.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\PopupSampleList.cs" Link="Samples\Windows\PopupSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\WindowSampleList.cs" Link="Samples\Windows\WindowSampleList.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Pages\ScrollingPage.cs" Link="Pages\ScrollingPage.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Pages\MiscPage.cs" Link="Pages\MiscPage.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Collections\StateButtonListBoxSampleList.cs" Link="Samples\Collections\StateButtonListBoxSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Input\StateButtonSampleList.cs" Link="Samples\Input\StateButtonSampleList.cs" />
@@ -86,10 +83,7 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\FocusSampleList.cs" Link="Samples\Misc\FocusSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\TitleBarSampleList.cs" Link="Samples\Misc\TitleBarSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\ApplicationSampleList.cs" Link="Samples\Misc\ApplicationSampleList.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Scrolling\ThumbSampleList.cs" Link="Samples\Scrolling\ThumbSampleList.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Scrolling\ScrollBarSampleList.cs" Link="Samples\Scrolling\ScrollBarSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\Dock\SimpleDockSample.cs" Link="Samples\Layout\Dock\SimpleDockSample.cs" />
-    <Compile Include="..\Wice.Samples.Gallery\Samples\Scrolling\ScrollViewerSampleList.cs" Link="Samples\Scrolling\ScrollViewerSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\VisualsTreeSampleList.cs" Link="Samples\Misc\VisualsTreeSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Input\Button\SimpleButtonSample.cs" Link="Samples\Input\Button\SimpleButtonSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Input\Button\ButtonDockSample.cs" Link="Samples\Input\Button\ButtonDockSample.cs" />
@@ -125,6 +119,13 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Media\Shape\RoundedRectangleShapeSample.cs" Link="Samples\Media\Shape\RoundedRectangleShapeSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Media\Shape\EllipseRectangleShapeSample.cs" Link="Samples\Media\Shape\EllipseRectangleShapeSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Media\Shape\LineShapeSample.cs" Link="Samples\Media\Shape\LineShapeSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Media\Brush\CompositionBrushSample.cs" Link="Samples\Media\Brush\CompositionBrushSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Media\Brush\Direct2DBrushSample.cs" Link="Samples\Media\Brush\Direct2DBrushSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\Dialog\DialogSimpleSample.cs" Link="Samples\Windows\Dialog\DialogSimpleSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\MessageBox\MessageBoxSample.cs" Link="Samples\Windows\MessageBox\MessageBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\Dialog\DialogBoxSimpleSample.cs" Link="Samples\Windows\Dialog\DialogBoxSimpleSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Windows\Window\WindowSample.cs" Link="Samples\Windows\Window\WindowSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Layout\ScrollViewerSampleList.cs" Link="Samples\Layout\ScrollViewerSampleList.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

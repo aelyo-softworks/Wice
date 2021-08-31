@@ -665,6 +665,37 @@
         border.Height = rnd.Next(10, 60);
     }
 }</sample>
+  <sample namespace="Samples.Media.Brush.Direct2DBrushSample">void Layout(Visual parent)
+{
+    var tb = new TextBox();
+    parent.Children.Add(tb);
+    tb.HorizontalAlignment = Alignment.Center;
+    tb.Padding = 5;
+    tb.Text = "This text is white";
+
+    // _D3DCOLORVALUE is the base DirectX color using single/float (0 =&gt; 1) ARGB.
+    // redefined by Wice with .NET
+
+    // to create a composition brush, the visual must be attached to composition
+    // to be able to use the Compositor instance corresponding to its parent Window.
+    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.MediumAquamarine);
+
+    // in contrast, a Direct2D brush can be created off ground.
+    // we need Direct2D colors when we use primitives that Windows composition doesn't support
+    // such as DirectWrite, Images, etc.
+    tb.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White);
+}</sample>
+  <sample namespace="Samples.Media.Brush.CompositionBrushSample">void Layout(Visual parent)
+{
+    var box = new Border();
+    parent.Children.Add(box);
+    box.Width = 100;
+    box.Height = 100;
+
+    // to create a composition brush, the visual must be attached to composition
+    // to be able to use the Compositor instance corresponding to its parent Window.
+    box.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Aquamarine);
+}</sample>
   <sample namespace="Samples.Media.Image.BasicImageSample">void Layout(Visual parent)
 {
     var img = new Image();
@@ -848,6 +879,89 @@
         var vt = new Utilities.VisualsTree();
         vt.SetCurrentWindow(parent.Window);
         vt.Show(NativeWindow.FromHandle(parent.Window.Handle));
+    };
+
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Windows.Dialog.DialogBoxSimpleSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Open a dialog box...";
+    btn.Click += (s, e) =&gt;
+    {
+        var dlg = new DialogBox();
+
+        // a dialog box is a children of a Window, it's not a standalone window
+        parent.Window.Children.Add(dlg);
+        dlg.Width = 300;
+        dlg.Height = 300;
+        dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+
+        // add content to the dialog
+        dlg.DialogContent.Children.Add(new Border { Width = 200, Height = 100 });
+
+        // add standard (localized) buttons
+        dlg.AddCancelButton();
+        dlg.AddOkButton();
+    };
+
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Windows.Dialog.DialogSimpleSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Open a dialog...";
+    btn.Click += (s, e) =&gt;
+    {
+        var dlg = new Dialog();
+
+        // a dialog is a children of a Window, it's not a standalone window
+        parent.Window.Children.Add(dlg);
+        dlg.Width = 300;
+        dlg.Height = 300;
+        dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+
+        var tb = new TextBox();
+        tb.Text = "Press ESC to close";
+        dlg.Content.Children.Add(tb);
+    };
+
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Windows.MessageBox.MessageBoxSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Open a MessageBox...";
+    btn.Click += (s, e) =&gt;
+    {
+        MessageBox.Show(parent.Window, "Hello world!");
+    };
+
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Windows.Window.WindowSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Open a new Window...";
+    btn.Click += (s, e) =&gt;
+    {
+        var window = new Window { Title = "Hello World" };
+        window.RenderBrush = window.Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+        window.ResizeClient(400, 400);
+        window.Center();
+        window.Show();
+
+        window.DoWhenAttachedToComposition(() =&gt;
+        {
+            var close = new Button();
+            close.Text.Text = "Close me";
+            close.Click += (_, __) =&gt;
+            {
+                window.Destroy();
+            };
+
+            window.Children.Add(close);
+        });
     };
 
     parent.Children.Add(btn);

@@ -1,6 +1,6 @@
 ﻿using DirectN;
 
-namespace Wice.Samples.Gallery.Samples.Scrolling
+namespace Wice.Samples.Gallery.Samples.Layout
 {
     public class ScrollViewerSampleList : SampleList
     {

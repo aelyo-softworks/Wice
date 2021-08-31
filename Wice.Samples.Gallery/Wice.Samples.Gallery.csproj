@@ -66,7 +66,6 @@
     <Compile Include="..\DirectN\Properties\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="Pages\ScrollingPage.cs" />
     <Compile Include="Pages\MiscPage.cs" />
     <Compile Include="Pages\CollectionsPage.cs" />
     <Compile Include="Pages\MediaPage.cs" />
@@ -97,6 +96,7 @@
     <Compile Include="Samples\Layout\GridSplitter\SimpleGridSplitterSample.cs" />
     <Compile Include="Samples\Layout\Grid\SimpleGridSample.cs" />
     <Compile Include="Samples\Layout\Dock\SimpleDockSample.cs" />
+    <Compile Include="Samples\Layout\ScrollViewerSampleList.cs" />
     <Compile Include="Samples\Layout\Stack\SimpleHorizontalStackSample.cs" />
     <Compile Include="Samples\Layout\Stack\BoxesStackSample.cs" />
     <Compile Include="Samples\Layout\Stack\SimpleVerticalStackSample.cs" />
@@ -117,6 +117,8 @@
     <Compile Include="Samples\Layout\Canvas\SimpleCanvasSample.cs" />
     <Compile Include="Samples\Layout\Wrap\SimpleWrapSample.cs" />
     <Compile Include="Samples\Media\BrushSampleList.cs" />
+    <Compile Include="Samples\Media\Brush\Direct2DBrushSample.cs" />
+    <Compile Include="Samples\Media\Brush\CompositionBrushSample.cs" />
     <Compile Include="Samples\Media\ImageSampleList.cs" />
     <Compile Include="Samples\Media\Image\BasicImageSample.cs" />
     <Compile Include="Samples\Media\ShapeSampleList.cs" />
@@ -138,16 +140,15 @@
     <Compile Include="Samples\Misc\VisualsTreeSampleList.cs" />
     <Compile Include="Samples\Misc\VisualsTree\VisualsTreeSample.cs" />
     <Compile Include="Samples\Sample.cs" />
-    <Compile Include="Samples\Scrolling\ScrollViewerSampleList.cs" />
-    <Compile Include="Samples\Scrolling\ThumbSampleList.cs" />
-    <Compile Include="Samples\Scrolling\ScrollBarSampleList.cs" />
     <Compile Include="Samples\Text\RichTextBoxSampleList.cs" />
     <Compile Include="Samples\Text\TextBoxSampleList.cs" />
     <Compile Include="Samples\Windows\DialogSampleList.cs" />
+    <Compile Include="Samples\Windows\Dialog\DialogBoxSimpleSample.cs" />
+    <Compile Include="Samples\Windows\Dialog\DialogSimpleSample.cs" />
     <Compile Include="Samples\Windows\MessageBoxSampleList.cs" />
-    <Compile Include="Samples\Windows\PopupWindowSampleList.cs" />
-    <Compile Include="Samples\Windows\PopupSampleList.cs" />
+    <Compile Include="Samples\Windows\MessageBox\MessageBoxSample.cs" />
     <Compile Include="Samples\Windows\WindowSampleList.cs" />
+    <Compile Include="Samples\Windows\Window\WindowSample.cs" />
     <Compile Include="Utilities\CodeBox.cs" />
     <Compile Include="GalleryWindow.cs" />
     <Compile Include="Pages\AboutPage.cs" />
@@ -204,17 +205,9 @@
     <Folder Include="Samples\Collections\ListBox\" />
     <Folder Include="Samples\Collections\PropertyGrid\" />
     <Folder Include="Samples\Collections\StateButtonList\" />
-    <Folder Include="Samples\Media\Brush\" />
-    <Folder Include="Samples\Scrolling\ScrollBar\" />
-    <Folder Include="Samples\Scrolling\ScrollViewer\" />
-    <Folder Include="Samples\Scrolling\Thumb\" />
+    <Folder Include="Samples\Layout\ScrollViewer\" />
     <Folder Include="Samples\Text\RichTextBox\" />
     <Folder Include="Samples\Text\TextBox\" />
-    <Folder Include="Samples\Windows\Dialog\" />
-    <Folder Include="Samples\Windows\MessageBox\" />
-    <Folder Include="Samples\Windows\PopupWindow\" />
-    <Folder Include="Samples\Windows\Popup\" />
-    <Folder Include="Samples\Windows\Window\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">

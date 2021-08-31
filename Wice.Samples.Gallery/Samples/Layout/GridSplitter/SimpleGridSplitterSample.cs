@@ -1,6 +1,4 @@
-﻿using DirectN;
-
-namespace Wice.Samples.Gallery.Samples.Layout.GridSplitter
+﻿namespace Wice.Samples.Gallery.Samples.Layout.GridSplitter
 {
     public class SimpleGridSplitterSample : Sample
     {
