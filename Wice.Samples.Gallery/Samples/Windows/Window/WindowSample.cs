@@ -18,17 +18,14 @@ namespace Wice.Samples.Gallery.Samples.Windows.Window
                 window.Center();
                 window.Show();
 
-                window.DoWhenAttachedToComposition(() =>
+                var close = new Button();
+                close.Text.Text = "Close me";
+                close.Click += (_, __) =>
                 {
-                    var close = new Button();
-                    close.Text.Text = "Close me";
-                    close.Click += (_, __) =>
-                    {
-                        window.Destroy();
-                    };
+                    window.Destroy();
+                };
 
-                    window.Children.Add(close);
-                });
+                window.Children.Add(close);
             };
 
             btn.HorizontalAlignment = Alignment.Near; // remove from display

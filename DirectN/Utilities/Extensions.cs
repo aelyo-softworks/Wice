@@ -309,6 +309,22 @@ namespace DirectN
             }
         }
 
+        public static T[] ToArrayNullify<T>(this IEnumerable<IComObject<T>> enumerable)
+        {
+            if (enumerable == null)
+                return null;
+
+            return enumerable?.Where(e => e != null && e.Object != null)?.Select(e => e.Object)?.ToArray();
+        }
+
+        public static T[] ToArrayNullify<T>(this IEnumerable<T> enumerable)
+        {
+            if (enumerable == null)
+                return null;
+
+            return enumerable?.Where(e => e != null)?.ToArray();
+        }
+
         public static T[] ToArrayOrEmpty<T>(this ICollection<T> collection, bool allowsNull = false)
         {
             if (collection.IsEmpty())
@@ -423,5 +439,7 @@ namespace DirectN
         // we don't want unspecified datetimes
         public static bool IsValid(this DateTime dt) => dt != DateTime.MinValue && dt != DateTime.MaxValue && dt.Kind != DateTimeKind.Unspecified;
         public static bool IsValid(this DateTime? dt) => dt.HasValue && IsValid(dt.Value);
+
+        public static void FinalDispose<T>(this IComObject<T> comObject) => ComObject.FinalDispose(comObject as ComObject);
     }
 }

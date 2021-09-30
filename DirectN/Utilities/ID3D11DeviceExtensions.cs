@@ -130,7 +130,7 @@ namespace DirectN
             }
         }
 
-        public static IComObject<ID3D11ShaderResourceView> CreateShaderResourceView(this IComObject<ID3D11Device> device, IComObject<ID3D11Resource> resource, D3D11_SHADER_RESOURCE_VIEW_DESC? desc = null) => CreateShaderResourceView(device?.Object, resource.Object, desc);
+        public static IComObject<ID3D11ShaderResourceView> CreateShaderResourceView(this IComObject<ID3D11Device> device, IComObject<ID3D11Resource> resource, D3D11_SHADER_RESOURCE_VIEW_DESC? desc = null) => CreateShaderResourceView(device?.Object, resource?.Object, desc);
         public static IComObject<ID3D11ShaderResourceView> CreateShaderResourceView(this ID3D11Device device, ID3D11Resource resource, D3D11_SHADER_RESOURCE_VIEW_DESC? desc = null)
         {
             if (device == null)
@@ -193,6 +193,12 @@ namespace DirectN
             if (inputElements.Length == 0)
                 throw new ArgumentException(null, nameof(inputElements));
 
+            foreach (var element in inputElements)
+            {
+                if (element.SemanticName == null)
+                    throw new ArgumentException(null, nameof(inputElements));
+            }
+
             device.CreateInputLayout(inputElements, inputElements.Length, blob.GetBufferPointer(), blob.GetBufferSize(), out var layout).ThrowOnError();
             return new ComObject<ID3D11InputLayout>(layout);
         }
@@ -208,6 +214,12 @@ namespace DirectN
 
             if (inputElements.Length == 0)
                 throw new ArgumentException(null, nameof(inputElements));
+
+            foreach (var element in inputElements)
+            {
+                if (element.SemanticName == null)
+                    throw new ArgumentException(null, nameof(inputElements));
+            }
 
             device.CreateInputLayout(inputElements, inputElements.Length, shaderBytecodeWithInputSignature, bytecodeLength, out var layout).ThrowOnError();
             return new ComObject<ID3D11InputLayout>(layout);

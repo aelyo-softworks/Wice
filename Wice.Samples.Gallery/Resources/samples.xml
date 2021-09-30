@@ -1195,17 +1195,14 @@
         window.Center();
         window.Show();
 
-        window.DoWhenAttachedToComposition(() =&gt;
+        var close = new Button();
+        close.Text.Text = "Close me";
+        close.Click += (_, __) =&gt;
         {
-            var close = new Button();
-            close.Text.Text = "Close me";
-            close.Click += (_, __) =&gt;
-            {
-                window.Destroy();
-            };
+            window.Destroy();
+        };
 
-            window.Children.Add(close);
-        });
+        window.Children.Add(close);
     };
 
     parent.Children.Add(btn);
