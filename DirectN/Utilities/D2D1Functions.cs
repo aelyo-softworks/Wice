@@ -61,23 +61,23 @@ namespace DirectN
             }
             D2D1CreateFactory(type, typeof(T).GUID, ref op, out object factory).ThrowOnError();
 
-#if DEBUG
-            // this will:
-            // 1) display a message in output
-            // 2) raise a breakpoint
+//#if DEBUG
+//            // this will:
+//            // 1) display a message in output
+//            // 2) raise a breakpoint
 
-            if (IntPtr.Size == 8)
-            {
-                var ptr = GetModuleHandle("d2d1.dll");
+//            if (IntPtr.Size == 8)
+//            {
+//                var ptr = GetModuleHandle("d2d1.dll");
 
-                // d2d1 (00007ffd`d8b00000)
-                // d2d1!g_dimageBreakLevel (00007ffd`d90756ac)‬ => 5756AC
-                // d2d1!g_dimageTraceLevel (00007ffd`d90756b0) => 5756B0
+//                // d2d1 (00007ffd`d8b00000)
+//                // d2d1!g_dimageBreakLevel (00007ffd`d90756ac)‬ => 5756AC
+//                // d2d1!g_dimageTraceLevel (00007ffd`d90756b0) => 5756B0
 
-                Marshal.WriteInt32(ptr + 0x5756AC, -1);
-                Marshal.WriteInt32(ptr + 0x5756B0, -1);
-            }
-#endif
+//                Marshal.WriteInt32(ptr + 0x5756AC, -1);
+//                Marshal.WriteInt32(ptr + 0x5756B0, -1);
+//            }
+//#endif
             return new ComObject<T>((T)factory);
         }
 
