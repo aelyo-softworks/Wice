@@ -432,7 +432,7 @@ namespace Wice.Utilities
             public BoundsVisual()
             {
                 DisableKeyEvents = true;
-                DisableMouseEvents = true;
+                DisablePointerEvents = true;
                 Name = "visualsTreeBounds";
                 Opacity = 0.7f;
                 StrokeThickness = 7;

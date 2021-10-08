@@ -33,6 +33,8 @@ namespace Wice.Tests
                 useWindowsAcrylic: true
                 );
 
+            WindowsFunctions.EnableMouseInPointer();
+
             //AddBordersForVisualOrderCheck1();
             //AddBorders();
 
@@ -64,8 +66,8 @@ namespace Wice.Tests
             //AddSimplePropertyGrid4();
             //AddPropertyGridInDialog();
 
-            AddUniformGridShapes(10);
-            //AddUniformColorGrid(10);
+            //AddUniformGridShapes(10);
+            AddUniformColorGrid(10);
             //AddUniformGridImmersiveColors();
             //AddUniformGridSysColors();
 
@@ -1710,7 +1712,7 @@ namespace Wice.Tests
                 {
                     visual.Columns++;
                 }
-                else
+                else if (e.Key == VirtualKeys.A)
                 {
                     var i = visual.Children.Count / visual.Rows;
                     var j = visual.Children.Count % visual.Columns;

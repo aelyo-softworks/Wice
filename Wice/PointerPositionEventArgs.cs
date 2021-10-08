@@ -1,38 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using DirectN;
 
 namespace Wice
 {
-    public class MouseEventArgs : HandledEventArgs
+    public class PointerPositionEventArgs : PointerEventArgs
     {
         internal readonly List<Visual> _visualsStack = new List<Visual>();
 
-        internal MouseEventArgs(int x, int y, POINTER_MOD vk)
+        internal PointerPositionEventArgs(int pointerId, int x, int y)
+            : base(pointerId)
         {
             X = x;
             Y = y;
-            Keys = vk;
         }
-
-        public POINTER_MOD Keys { get; }
-        public PointerEventArgs PointerEvent { get; internal set; } // will be null if EnableMouseInPointer was not called
 
         // window relative
         public int X { get; }
         public int Y { get; }
-
-        public IReadOnlyList<Visual> VisualsStack
-        {
-            get
-            {
-                if (!(PointerEvent is PointerPositionEventArgs evt))
-                    return _visualsStack;
-
-                return evt._visualsStack;
-            }
-        }
+        public IReadOnlyList<Visual> VisualsStack => _visualsStack;
 
         public D2D_POINT_2F GetPosition(Visual visual)
         {
@@ -54,6 +40,6 @@ namespace Wice
             return new D2D_RECT_F(size).Contains(GetPosition(visual));
         }
 
-        public override string ToString() => "X=" + X + ",Y=" + Y + ",VK=" + Keys;
+        public override string ToString() => base.ToString() + ",X=" + X + ",Y=" + Y;
     }
 }

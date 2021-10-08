@@ -88,6 +88,13 @@
     <Compile Include="EditorMode.cs" />
     <Compile Include="EditorHost.cs" />
     <Compile Include="EventTrigger.cs" />
+    <Compile Include="PointerActivateEventArgs.cs" />
+    <Compile Include="PointerContactChangedEventArgs.cs" />
+    <Compile Include="PointerEnterEventArgs.cs" />
+    <Compile Include="PointerPositionEventArgs.cs" />
+    <Compile Include="PointerLeaveEventArgs.cs" />
+    <Compile Include="PointerWheelEventArgs.cs" />
+    <Compile Include="PointerEventArgs.cs" />
     <Compile Include="Utilities\AssemblyResourceStreamer.cs" />
     <Compile Include="Utilities\FileStreamer.cs" />
     <Compile Include="IBindingDisplayName.cs" />
@@ -330,7 +337,6 @@
     <Compile Include="BaseObjectProperty.cs" />
     <Compile Include="ResourceManager.cs" />
     <Compile Include="WiceException.cs" />
-    <Compile Include="MouseVirtualKeys.cs" />
     <Compile Include="MouseEventArgs.cs" />
     <Compile Include="Utilities\Audit.cs" />
     <Compile Include="Utilities\AuditRecord.cs" />

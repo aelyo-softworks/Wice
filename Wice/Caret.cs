@@ -20,7 +20,7 @@ namespace Wice
         public Caret()
         {
             DisableKeyEvents = true;
-            DisableMouseEvents = true;
+            DisablePointerEvents = true;
             BlinkTime = WindowsFunctions.GetCaretBlinkTime();
             if (BlinkTime == 0 || BlinkTime == int.MaxValue) // we always want to display a caret
             {

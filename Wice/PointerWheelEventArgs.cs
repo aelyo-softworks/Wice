@@ -2,10 +2,10 @@
 
 namespace Wice
 {
-    public class MouseWheelEventArgs : MouseEventArgs
+    public class PointerWheelEventArgs : PointerPositionEventArgs
     {
-        internal MouseWheelEventArgs(int x, int y, POINTER_MOD vk, int delta, Orientation orientation)
-            : base(x, y, vk)
+        internal PointerWheelEventArgs(int pointerId, int x, int y, int delta, Orientation orientation)
+            : base(pointerId, x, y)
         {
             Delta = delta / WindowsConstants.WHEEL_DELTA;
             Orientation = orientation;

@@ -93,6 +93,57 @@ namespace DirectN
             return list.AsReadOnly();
         }
 
+        public static int GetPointerId(IntPtr wParam) => Extensions.LOWORD(wParam);
+        public static POINTER_MESSAGE_FLAGS GetPointerFlags(IntPtr wParam) => (POINTER_MESSAGE_FLAGS)Extensions.HIWORD(wParam);
+        public static int GetWheelDelta(IntPtr wParam) => Extensions.HIWORD(wParam);
+
+        public static bool EnableMouseInPointer() => EnableMouseInPointer(true);
+
+        public static POINTER_INPUT_TYPE GetPointerType(int id)
+        {
+            GetPointerType(id, out var type);
+            return type;
+        }
+
+        public static POINTER_INFO GetPointerInfo(int id)
+        {
+            GetPointerInfo(id, out var info);
+            return info;
+        }
+
+        public static POINTER_TOUCH_INFO GetPointerTouchInfo(int id)
+        {
+            GetPointerTouchInfo(id, out var info);
+            return info;
+        }
+
+        public static POINTER_PEN_INFO GetPointerPenInfo(int id)
+        {
+            GetPointerPenInfo(id, out var info);
+            return info;
+        }
+
+        [DllImport("user32", SetLastError = true)]
+        public static extern bool SkipPointerFrameMessages(int pointerId);
+
+        [DllImport("user32", SetLastError = true)]
+        private static extern bool GetPointerType(int pointerId, out POINTER_INPUT_TYPE pointerType);
+
+        [DllImport("user32", SetLastError = true)]
+        private static extern bool GetPointerInfo(int pointerId, out POINTER_INFO pointerInfo);
+
+        [DllImport("user32", SetLastError = true)]
+        private static extern bool GetPointerTouchInfo(int pointerId, out POINTER_TOUCH_INFO touchInfo);
+
+        [DllImport("user32", SetLastError = true)]
+        private static extern bool GetPointerPenInfo(int pointerId, out POINTER_PEN_INFO penInfo);
+
+        [DllImport("user32")]
+        public static extern bool IsMouseInPointerEnabled();
+        
+        [DllImport("user32", SetLastError = true)]
+        private static extern bool EnableMouseInPointer(bool fEnable);
+
         [DllImport("user32")]
         private static extern bool EnumChildWindows(IntPtr hWndParent, EnumChildProc lpEnumFunc, IntPtr lParam);
 
@@ -339,7 +390,7 @@ namespace DirectN
         [DllImport("kernel32", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern bool SetDllDirectory(string lpPathName);
 
-        [DllImport("kernel32", CharSet = CharSet.Unicode)] 
+        [DllImport("kernel32", CharSet = CharSet.Unicode)]
         public static extern IntPtr GetModuleHandle(string lpModuleName);
 
         [DllImport("kernel32", CharSet = CharSet.Unicode)]

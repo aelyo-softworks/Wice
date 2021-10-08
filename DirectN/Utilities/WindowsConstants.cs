@@ -24,5 +24,7 @@
         public const int PM_NOYIELD = 2;
 
         public const int MONITORINFOF_PRIMARY = 0x00000001;
+
+        public const int WHEEL_DELTA = 120;
     }
 }

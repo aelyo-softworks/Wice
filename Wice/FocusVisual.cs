@@ -9,7 +9,7 @@ namespace Wice
         public FocusVisual()
         {
             DisableKeyEvents = true;
-            DisableMouseEvents = true;
+            DisablePointerEvents = true;
         }
 
         //public virtual bool IsModal => false;
@@ -94,7 +94,7 @@ namespace Wice
             }
 
             Child.DisableKeyEvents = true;
-            Child.DisableMouseEvents = true;
+            Child.DisablePointerEvents = true;
 
 
 #if DEBUG

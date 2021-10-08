@@ -62,6 +62,9 @@ namespace Wice
         private bool _frameExtended;
         private float _frameSize;
         private Timer _tooltipTimer;
+        private long _lastPointerDownTime;
+        private int _lastPointerDownPositionX = int.MinValue;
+        private int _lastPointerDownPositionY = int.MinValue;
         private _D3DCOLORVALUE _frameColor;
         private readonly Lazy<Caret> _caret;
 #if DEBUG
@@ -1810,6 +1813,7 @@ namespace Wice
         }
 
         protected virtual MA OnMouseActivate(IntPtr parentWindowHandle, int mouseMessage, HT hitTest) => MA.MA_DONT_HANDLE;
+        protected virtual PA OnPointerActivate(PointerActivateEventArgs e) => PA.PA_DONT_HANDLE;
 
         private void OnWmNcPaint() => MainTitleBar?.Update();
         private void OnWmActivate(IntPtr hwnd, bool activated)
@@ -1906,7 +1910,7 @@ namespace Wice
             //Application.Trace("visual: " + visual);
         }
 
-        internal new void OnMouseWheelEvent(MouseWheelEventArgs e)
+        private new void OnMouseWheelEvent(MouseWheelEventArgs e)
         {
             base.OnMouseWheelEvent(e);
 
@@ -1919,7 +1923,7 @@ namespace Wice
                 if (visual == this)
                     continue;
 
-                if (visual.DisableMouseEvents)
+                if (visual.DisablePointerEvents)
                     continue;
 
                 visual.OnMouseWheelEvent(e);
@@ -1928,14 +1932,14 @@ namespace Wice
             }
         }
 
-        internal new void OnMouseButtonEvent(int msg, MouseButtonEventArgs e)
+        private new void OnMouseButtonEvent(int msg, MouseButtonEventArgs e)
         {
             RemoveToolTip(e);
             var mcv = _mouseCaptorVisual;
             if (mcv != null)
             {
                 Cursor.Set(mcv.Cursor);
-                if (!mcv.DisableMouseEvents)
+                if (!mcv.DisablePointerEvents)
                 {
                     mcv.OnMouseButtonEvent(msg, e);
                 }
@@ -1950,18 +1954,18 @@ namespace Wice
             CheckVisualsTree();
 #endif
             var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
-//#if DEBUG
-//            var stack = GetIntersectingVisuals(rc);
-//            var i = 0;
-//            foreach (var st in stack)
-//            {
-//                Application.Trace("stack[" + i + "]: " + st.Level + "/" + st.ZIndexOrDefault + " " + st.FullName);
-//                i++;
-//            }
-//#endif
+            //#if DEBUG
+            //            var stack = GetIntersectingVisuals(rc);
+            //            var i = 0;
+            //            foreach (var st in stack)
+            //            {
+            //                Application.Trace("stack[" + i + "]: " + st.Level + "/" + st.ZIndexOrDefault + " " + st.FullName);
+            //                i++;
+            //            }
+            //#endif
             foreach (var visual in GetIntersectingVisuals(rc))
             {
-                if (visual.DisableMouseEvents)
+                if (visual.DisablePointerEvents)
                     continue;
 
                 if (!CanReceiveInput(visual))
@@ -1978,8 +1982,9 @@ namespace Wice
             }
         }
 
-        internal new void OnMouseEvent(int msg, MouseEventArgs e)
+        private new void OnMouseEvent(int msg, MouseEventArgs e)
         {
+            //Application.Trace("msg:" + msg + " e: " + e);
             if (msg == MessageDecoder.WM_MOUSELEAVE)
             {
                 foreach (var visual in _mousedEnteredVisuals)
@@ -2001,7 +2006,7 @@ namespace Wice
                 var mc = _mouseCaptorVisual;
                 if (mc != null)
                 {
-                    if (!mc.DisableMouseEvents)
+                    if (!mc.DisablePointerEvents)
                     {
                         mc.OnMouseEvent(msg, e);
                     }
@@ -2017,7 +2022,7 @@ namespace Wice
                 var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
                 foreach (var visual in GetIntersectingVisuals(rc))
                 {
-                    if (visual.DisableMouseEvents)
+                    if (visual.DisablePointerEvents)
                         continue;
 
                     e._visualsStack.Add(visual);
@@ -2400,7 +2405,7 @@ namespace Wice
             if (win != null && win != this)
                 throw new WiceException("0026: Cannot add a child window to this window.");
 
-            if (!visual.DisableMouseEvents)
+            if (!visual.DisablePointerEvents)
             {
                 var va = visual.IsActuallyVisible;
                 _visualsTree?.Move(visual, renderBounds);
@@ -2773,6 +2778,9 @@ namespace Wice
                 return ret;
 
             tagPOINT pt;
+            Orientation orientation;
+            MA ma;
+            HT ht;
             switch (msg)
             {
                 // I don't know why we must do this, it should be automatic but somehow the nc mouse handling is broken and doesn't always send syscommands...
@@ -2780,7 +2788,7 @@ namespace Wice
                 case MessageDecoder.WM_NCLBUTTONDOWN:
                     if (win.WindowsFrameMode != WindowsFrameMode.Standard)
                     {
-                        var ht = (HT)wParam.ToInt32();
+                        ht = (HT)wParam.ToInt32();
                         switch (ht)
                         {
                             case HT.HTCLOSE:
@@ -2820,23 +2828,178 @@ namespace Wice
                     var button = MessageToButton(msg, wParam, out var cmsg);
                     if (button.HasValue)
                     {
-                        win.OnMouseButtonEvent(cmsg, new MouseButtonEventArgs(lParam.SignedLOWORD(), lParam.SignedHIWORD(), (MouseVirtualKeys)wParam.LOWORD(), button.Value));
+                        win.OnMouseButtonEvent(cmsg, new MouseButtonEventArgs(lParam.SignedLOWORD(), lParam.SignedHIWORD(), (POINTER_MOD)wParam.LOWORD(), button.Value));
                     }
                     break;
 
+                case MessageDecoder.WM_POINTERDOWN:
+                case MessageDecoder.WM_POINTERUP:
+                    pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
+                    pt = win.Native.ScreenToClient(pt);
+                    var pce = new PointerContactChangedEventArgs(WindowsFunctions.GetPointerId(wParam), pt.x, pt.y, msg == MessageDecoder.WM_POINTERUP);
+                    var info = pce.PointerInfo;
+                    var isUp = msg == MessageDecoder.WM_POINTERUP;
+
+                    // determine double click
+                    if (!isUp)
+                    {
+                        var cx = WindowsFunctions.GetSystemMetrics(SM.SM_CXDOUBLECLK);
+                        var cy = WindowsFunctions.GetSystemMetrics(SM.SM_CYDOUBLECLK);
+
+                        pce.IsDoubleClick = ((win._lastPointerDownTime + WindowsFunctions.GetDoubleClickTime() * 10000) > info.PerformanceCount)
+                            && (Math.Abs(win._lastPointerDownPositionX - pt.x) < cx)
+                            && (Math.Abs(win._lastPointerDownPositionY - pt.y) < cy);
+
+                        if (!pce.IsDoubleClick)
+                        {
+                            win._lastPointerDownPositionX = pt.x;
+                            win._lastPointerDownPositionY = pt.y;
+                            win._lastPointerDownTime = info.PerformanceCount;
+                        }
+                    }
+
+                    win.OnPointerContactChangedEvent(pce);
+
+                    // unhandled? send as mouse event
+                    if (!pce.Handled)
+                    {
+                        int buttonMsg;
+                        MouseButton mb;
+
+                        if (info.pointerFlags.HasFlag(POINTER_FLAGS.POINTER_FLAG_FIRSTBUTTON))
+                        {
+                            mb = MouseButton.Left;
+                            if (pce.IsDoubleClick)
+                            {
+                                buttonMsg = MessageDecoder.WM_LBUTTONDBLCLK;
+                            }
+                            else
+                            {
+                                buttonMsg = isUp ? MessageDecoder.WM_LBUTTONUP : MessageDecoder.WM_LBUTTONDOWN;
+                            }
+                        }
+                        else if (info.pointerFlags.HasFlag(POINTER_FLAGS.POINTER_FLAG_SECONDBUTTON))
+                        {
+                            mb = MouseButton.Right;
+                            if (pce.IsDoubleClick)
+                            {
+                                buttonMsg = MessageDecoder.WM_RBUTTONDBLCLK;
+                            }
+                            else
+                            {
+                                buttonMsg = isUp ? MessageDecoder.WM_RBUTTONUP : MessageDecoder.WM_RBUTTONDOWN;
+                            }
+                        }
+                        else if (info.pointerFlags.HasFlag(POINTER_FLAGS.POINTER_FLAG_THIRDBUTTON))
+                        {
+                            mb = MouseButton.Middle;
+                            if (pce.IsDoubleClick)
+                            {
+                                buttonMsg = MessageDecoder.WM_MBUTTONDBLCLK;
+                            }
+                            else
+                            {
+                                buttonMsg = isUp ? MessageDecoder.WM_MBUTTONUP : MessageDecoder.WM_MBUTTONDOWN;
+                            }
+                        }
+                        else if (info.pointerFlags.HasFlag(POINTER_FLAGS.POINTER_FLAG_FOURTHBUTTON))
+                        {
+                            mb = MouseButton.X1;
+                            if (pce.IsDoubleClick)
+                            {
+                                buttonMsg = MessageDecoder.WM_XBUTTONDBLCLK;
+                            }
+                            else
+                            {
+                                buttonMsg = isUp ? MessageDecoder.WM_XBUTTONUP : MessageDecoder.WM_XBUTTONDOWN;
+                            }
+                        }
+                        else if (info.pointerFlags.HasFlag(POINTER_FLAGS.POINTER_FLAG_FIFTHBUTTON))
+                        {
+                            mb = MouseButton.X2;
+                            if (pce.IsDoubleClick)
+                            {
+                                buttonMsg = MessageDecoder.WM_XBUTTONDBLCLK;
+                            }
+                            else
+                            {
+                                buttonMsg = isUp ? MessageDecoder.WM_XBUTTONUP : MessageDecoder.WM_XBUTTONDOWN;
+                            }
+                        }
+                        else
+                        {
+                            // huh? which button then?
+                            break;
+                        }
+
+                        var me = new MouseButtonEventArgs(pt.x, pt.y, info.dwKeyStates, mb);
+                        me.PointerEvent = pce;
+                        win.OnMouseButtonEvent(buttonMsg, me);
+                    }
+                    break;
+
+                case MessageDecoder.WM_MOUSEHWHEEL:
                 case MessageDecoder.WM_MOUSEWHEEL:
                     // wheel is relative to the screen, not the client
                     pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
                     pt = win.Native.ScreenToClient(pt);
-                    win.OnMouseWheelEvent(new MouseWheelEventArgs(pt.x, pt.y, (MouseVirtualKeys)wParam.LOWORD(), wParam.SignedHIWORD()));
+                    orientation = msg == MessageDecoder.WM_MOUSEHWHEEL ? Orientation.Horizontal : Orientation.Vertical;
+                    win.OnMouseWheelEvent(new MouseWheelEventArgs(pt.x, pt.y, (POINTER_MOD)wParam.LOWORD(), wParam.SignedHIWORD(), orientation));
+                    break;
+
+                case MessageDecoder.WM_POINTERHWHEEL:
+                case MessageDecoder.WM_POINTERWHEEL:
+                    pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
+                    pt = win.Native.ScreenToClient(pt);
+                    orientation = msg == MessageDecoder.WM_POINTERHWHEEL ? Orientation.Horizontal : Orientation.Vertical;
+                    var pwe = new PointerWheelEventArgs(WindowsFunctions.GetPointerId(wParam), pt.x, pt.y, wParam.SignedHIWORD(), orientation);
+                    win.OnPointerWheelEvent(pwe);
+
+                    // unhandled? send as mouse event
+                    if (!pwe.Handled)
+                    {
+                        var winfo = pwe.PointerInfo;
+                        var mwe = new MouseWheelEventArgs(pt.x, pt.y, winfo.dwKeyStates, wParam.SignedHIWORD(), orientation);
+                        mwe.PointerEvent = pwe;
+                        win.OnMouseWheelEvent(mwe);
+                    }
                     break;
 
                 case MessageDecoder.WM_MOUSEACTIVATE:
-                    var ma = win.OnMouseActivate(wParam, lParam.HIWORD(), (HT)lParam.LOWORD());
+                    ht = (HT)lParam.SignedLOWORD();
+                    ma = win.OnMouseActivate(wParam, lParam.HIWORD(), ht);
                     if (ma == MA.MA_DONT_HANDLE)
                         return WindowsFunctions.DefWndProc(hwnd, msg, wParam, lParam);
 
                     return (IntPtr)(int)ma;
+
+                case MessageDecoder.WM_POINTERACTIVATE:
+                    ht = (HT)Extensions.SignedHIWORD(wParam);
+                    var ea = new PointerActivateEventArgs(WindowsFunctions.GetPointerId(wParam), lParam, ht);
+                    var pa = win.OnPointerActivate(ea);
+                    if (pa == PA.PA_DONT_HANDLE)
+                    {
+                        // mouse fallback, note we don't have a "mouse message"
+                        ma = win.OnMouseActivate(lParam, 0, ht);
+                        switch (ma)
+                        {
+                            case MA.MA_ACTIVATE:
+                            case MA.MA_ACTIVATEANDEAT:
+                                pa = PA.PA_ACTIVATE;
+                                break;
+
+                            case MA.MA_NOACTIVATE:
+                            case MA.MA_NOACTIVATEANDEAT:
+                                pa = PA.PA_NOACTIVATE;
+                                break;
+
+                            default:
+                                return WindowsFunctions.DefWndProc(hwnd, msg, wParam, lParam);
+
+                        }
+                    }
+
+                    return (IntPtr)(int)pa;
 
                 case MessageDecoder.WM_MOUSEMOVE:
                 case MessageDecoder.WM_MOUSEHOVER:
@@ -2874,8 +3037,15 @@ namespace Wice
                         WindowsFunctions.SetTimer(hwnd, (IntPtr)MOUSE_TRACK_TIMER_ID, 250, IntPtr.Zero);
                     }
 
-                    win.OnMouseEvent(msg, new MouseEventArgs(lParam.SignedLOWORD(), lParam.SignedHIWORD(), (MouseVirtualKeys)wParam.ToInt32()));
+                    win.OnMouseEvent(msg, new MouseEventArgs(lParam.SignedLOWORD(), lParam.SignedHIWORD(), (POINTER_MOD)wParam.ToInt32()));
                     win._mouseTracking = msg == MessageDecoder.WM_MOUSEMOVE; // false when hover
+                    break;
+
+                case MessageDecoder.WM_POINTERUPDATE:
+                    pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
+                    pt = win.Native.ScreenToClient(pt);
+                    win.OnPointerUpdate(new PointerPositionEventArgs(WindowsFunctions.GetPointerId(wParam), pt.x, pt.y));
+                    //Application.Trace("WM_POINTERUPDATE pt: " + pt);
                     break;
 
                 case MessageDecoder.WM_TIMER:
@@ -2915,6 +3085,18 @@ namespace Wice
                         WindowsFunctions.KillTimer(hwnd, (IntPtr)MOUSE_TRACK_TIMER_ID);
                     }
                     return WindowsFunctions.DefWndProc(hwnd, msg, wParam, lParam);
+
+                case MessageDecoder.WM_POINTERENTER:
+                    pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
+                    pt = win.Native.ScreenToClient(pt);
+                    win.OnPointerEnter(new PointerEnterEventArgs(WindowsFunctions.GetPointerId(wParam), pt.x, pt.y));
+                    break;
+
+                case MessageDecoder.WM_POINTERLEAVE:
+                    pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
+                    pt = win.Native.ScreenToClient(pt);
+                    win.OnPointerLeave(new PointerLeaveEventArgs(WindowsFunctions.GetPointerId(wParam), pt.x, pt.y));
+                    break;
 
                 case MessageDecoder.WM_SETFOCUS:
                     win.HasFocus = true;

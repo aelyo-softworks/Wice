@@ -173,6 +173,11 @@ namespace Wice
         public event EventHandler<MouseButtonEventArgs> MouseButtonDown;
         public event EventHandler<MouseButtonEventArgs> MouseButtonUp;
         public event EventHandler<MouseButtonEventArgs> MouseButtonDoubleClick;
+        public event EventHandler<PointerWheelEventArgs> PointerWheel;
+        public event EventHandler<PointerEnterEventArgs> PointerEnter;
+        public event EventHandler<PointerLeaveEventArgs> PointerLeave;
+        public event EventHandler<PointerPositionEventArgs> PointerUpdate;
+        public event EventHandler<PointerContactChangedEventArgs> PointerContactChanged;
         public event EventHandler<KeyEventArgs> KeyDown;
         public event EventHandler<KeyEventArgs> KeyUp;
         public event EventHandler<KeyPressEventArgs> KeyPress;
@@ -287,7 +292,7 @@ namespace Wice
         public CompositionEasingFunction ColorAnimationEasingFunction { get; set; }
 
         [Category(CategoryBehavior)]
-        public virtual bool DisableMouseEvents { get; set; }
+        public virtual bool DisablePointerEvents { get; set; }
 
         [Category(CategoryBehavior)]
         public virtual bool DisableKeyEvents { get; set; }
@@ -1674,6 +1679,12 @@ namespace Wice
         protected virtual void OnKeyUp(object sender, KeyEventArgs e) => KeyUp?.Invoke(sender, e);
         protected virtual void OnKeyPress(object sender, KeyPressEventArgs e) => KeyPress?.Invoke(sender, e);
 
+        internal void OnPointerWheelEvent(PointerWheelEventArgs e) => OnPointerWheel(this, e);
+        internal void OnPointerContactChangedEvent(PointerContactChangedEventArgs e) => OnPointerContactChangedEvent(this, e);
+        internal void OnPointerUpdate(PointerPositionEventArgs e) => OnPointerUpdate(this, e);
+        internal void OnPointerEnter(PointerEnterEventArgs e) => OnPointerEnter(this, e);
+        internal void OnPointerLeave(PointerLeaveEventArgs e) => OnPointerLeave(this, e);
+
         internal void OnMouseWheelEvent(MouseWheelEventArgs e) => OnMouseWheel(this, e);
         internal void OnMouseButtonEvent(int msg, MouseButtonEventArgs e)
         {
@@ -1769,6 +1780,12 @@ namespace Wice
         protected virtual void OnMouseButtonUp(object sender, MouseButtonEventArgs e) => MouseButtonUp?.Invoke(sender, e);
         protected virtual void OnMouseButtonDoubleClick(object sender, MouseButtonEventArgs e) => MouseButtonDoubleClick?.Invoke(sender, e);
         protected virtual void CaptureMouse() => Window?.CaptureMouse(this);
+
+        protected virtual void OnPointerWheel(object sender, PointerWheelEventArgs e) => PointerWheel?.Invoke(sender, e);
+        protected virtual void OnPointerLeave(object sender, PointerLeaveEventArgs e) => PointerLeave?.Invoke(sender, e);
+        protected virtual void OnPointerEnter(object sender, PointerEnterEventArgs e) => PointerEnter?.Invoke(sender, e);
+        protected virtual void OnPointerUpdate(object sender, PointerPositionEventArgs e) => PointerUpdate?.Invoke(sender, e);
+        protected virtual void OnPointerContactChangedEvent(object sender, PointerContactChangedEventArgs e) => PointerContactChanged?.Invoke(sender, e);
 
         protected virtual ContainerVisual CreateCompositionVisual() => Compositor?.CreateSpriteVisual();
         protected virtual BaseObjectCollection<Visual> CreateChildren() => new BaseObjectCollection<Visual>();
@@ -2458,7 +2475,6 @@ namespace Wice
             }
             else
             {
-                Application.Trace(this + " mouse out");
                 SetCompositionBrush(render);
             }
         }

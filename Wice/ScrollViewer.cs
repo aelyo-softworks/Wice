@@ -525,7 +525,7 @@ namespace Wice
         protected override void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
             float offset;
-            if (e.Keys.HasFlag(MouseVirtualKeys.Shift))
+            if (e.Keys.HasFlag(POINTER_MOD.POINTER_MOD_SHIFT))
             {
                 offset = e.Delta * VerticalScrollBar.Thumb.ArrangedRect.Height;
             }
