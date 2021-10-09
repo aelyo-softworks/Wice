@@ -347,9 +347,9 @@ namespace Wice.Utilities
             return batch;
         }
 
-        public static void Clear(this SpriteVisual visual, CompositionGraphicsDevice device, _D3DCOLORVALUE? color = null, SurfaceCreationOptions options = null) => DrawOnSurface(visual, device, (dc) => dc.Clear(color ?? _D3DCOLORVALUE.Transparent), options);
+        public static void Clear(this SpriteVisual visual, CompositionGraphicsDevice device, _D3DCOLORVALUE? color = null, SurfaceCreationOptions options = null, tagRECT? rect = null) => DrawOnSurface(visual, device, (dc) => dc.Clear(color ?? _D3DCOLORVALUE.Transparent), options, rect);
 
-        public static void DrawOnSurface(this SpriteVisual visual, CompositionGraphicsDevice device, Action<IComObject<ID2D1DeviceContext>> drawAction, SurfaceCreationOptions options = null)
+        public static void DrawOnSurface(this SpriteVisual visual, CompositionGraphicsDevice device, Action<IComObject<ID2D1DeviceContext>> drawAction, SurfaceCreationOptions options = null, tagRECT? rect = null)
         {
             if (visual == null)
                 throw new ArgumentNullException(nameof(visual));
@@ -367,7 +367,7 @@ namespace Wice.Utilities
             var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
             using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop))
             {
-                using (var dc = surfaceInterop.BeginDraw())
+                using (var dc = surfaceInterop.BeginDraw(rect))
                 {
                     drawAction(dc);
                 }
@@ -476,7 +476,8 @@ namespace Wice.Utilities
             D2D_RECT_F? rect = null,
             D2D1_DRAW_TEXT_OPTIONS options = D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_NONE,
             DWRITE_MEASURING_MODE measuringMode = DWRITE_MEASURING_MODE.DWRITE_MEASURING_MODE_NATURAL,
-            SurfaceCreationOptions surfaceCreationOtions = null)
+            SurfaceCreationOptions surfaceCreationOtions = null,
+            tagRECT? surfaceRect = null)
         {
             if (visual == null)
                 throw new ArgumentNullException(nameof(visual));
@@ -498,7 +499,7 @@ namespace Wice.Utilities
                     var size = visual.Size;
                     dc.DrawText(text, format, rect ?? new D2D_RECT_F(0, 0, size.X, size.Y), colorBrush, options, measuringMode);
                 }
-            }, surfaceCreationOtions);
+            }, surfaceCreationOtions, surfaceRect);
         }
 
         public static float Ease(this IEasingFunction function, float normalizedTime, EasingMode mode = EasingMode.In)

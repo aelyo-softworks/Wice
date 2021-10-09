@@ -191,14 +191,14 @@ namespace Wice
             base.RenderBackgroundCore(context);
         }
 
-        protected override void RenderD2DSurface()
+        protected override void RenderD2DSurface(SurfaceCreationOptions creationOptions = null, tagRECT? rect = null)
         {
             // using D2D cancels Windows.UI.Composition animations, so avoid when possible...
             // note however that this means we currently don't support animations on borders with cornerradius or borderthickness set
             if (BorderThickness.ToZero() == 0 && CornerRadius.IsZero())
                 return;
 
-            base.RenderD2DSurface();
+            base.RenderD2DSurface(creationOptions, rect);
         }
 
         protected internal override void RenderCore(RenderContext context)

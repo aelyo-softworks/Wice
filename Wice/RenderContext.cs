@@ -8,6 +8,8 @@ namespace Wice
     {
         public bool IsOverChildren { get; internal set; }
         public IComObject<ID2D1DeviceContext> DeviceContext { get; internal set; }
+        public SurfaceCreationOptions SurfaceCreationOptions { get; internal set; }
+        public tagRECT? SurfaceRect { get; internal set; }
 
         public virtual IComObject<ID2D1Brush> CreateSolidColorBrush(_D3DCOLORVALUE? color)
         {

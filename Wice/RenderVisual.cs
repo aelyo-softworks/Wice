@@ -71,10 +71,10 @@ namespace Wice
         protected override void Render()
         {
             base.Render();
-            RenderD2DSurface();
+            RenderD2DSurface(null, null);
         }
 
-        protected virtual void RenderD2DSurface()
+        protected virtual void RenderD2DSurface(SurfaceCreationOptions creationOptions = null, tagRECT? rect = null)
         {
             if (!(CompositionVisual is SpriteVisual visual))
                 return;
@@ -93,6 +93,9 @@ namespace Wice
             {
                 var context = new RenderContext();
                 context.DeviceContext = dc;
+                context.SurfaceCreationOptions = creationOptions;
+                context.SurfaceRect = rect;
+
                 try
                 {
                     RenderCore(context);
@@ -101,7 +104,7 @@ namespace Wice
                 {
                     context.DeviceContext = null;
                 }
-            });
+            }, creationOptions, rect);
         }
 
         protected internal virtual void RenderOverChildren(RenderContext context)

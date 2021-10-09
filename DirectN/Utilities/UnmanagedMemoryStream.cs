@@ -160,7 +160,7 @@ namespace DirectN
             {
                 using (var mem = new ComMemory(Marshal.SizeOf<int>()))
                 {
-                    NativeStream.Read(pv, cb, pcbRead);
+                    NativeStream.Read(pv, cb, mem.Pointer);
                     read = Marshal.ReadInt32(mem.Pointer);
                 }
             }
@@ -180,7 +180,7 @@ namespace DirectN
             {
                 using (var mem = new ComMemory(Marshal.SizeOf<int>()))
                 {
-                    NativeStream.Write(pv, cb, pcbWritten);
+                    NativeStream.Write(pv, cb, mem.Pointer);
                     written = Marshal.ReadInt32(mem.Pointer);
                 }
             }
