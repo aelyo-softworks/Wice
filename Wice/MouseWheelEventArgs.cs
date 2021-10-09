@@ -4,7 +4,7 @@ namespace Wice
 {
     public class MouseWheelEventArgs : MouseEventArgs
     {
-        internal MouseWheelEventArgs(int x, int y, POINTER_MOD vk, int delta, Orientation orientation)
+        public MouseWheelEventArgs(int x, int y, POINTER_MOD vk, int delta, Orientation orientation)
             : base(x, y, vk)
         {
             Delta = delta / WindowsConstants.WHEEL_DELTA;

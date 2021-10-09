@@ -1897,7 +1897,7 @@ namespace Wice
 
         public static void ReleaseMouseCapture()
         {
-            //Application.Trace("visual: " + _mouseCaptorVisual);
+            Application.Trace("visual: " + _mouseCaptorVisual);
             Interlocked.Exchange(ref _mouseCaptorVisual, null);
             NativeWindow.ReleaseMouse();
         }
@@ -1906,8 +1906,33 @@ namespace Wice
         public virtual void CaptureMouse(Visual visual)
         {
             Native.CaptureMouse();
+            if (visual != null && visual.DisablePointerEvents)
+                throw new ArgumentException(nameof(visual));
+
             Interlocked.Exchange(ref _mouseCaptorVisual, visual);
-            //Application.Trace("visual: " + visual);
+            Application.Trace("visual: " + visual);
+        }
+
+        private new void OnPointerWheelEvent(PointerWheelEventArgs e)
+        {
+            base.OnPointerWheelEvent(e);
+
+#if DEBUG
+            CheckVisualsTree();
+#endif
+            var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
+            foreach (var visual in GetIntersectingVisuals(rc))
+            {
+                if (visual == this)
+                    continue;
+
+                if (visual.DisablePointerEvents)
+                    continue;
+
+                visual.OnPointerWheelEvent(e);
+                if (e.Handled)
+                    break;
+            }
         }
 
         private new void OnMouseWheelEvent(MouseWheelEventArgs e)
@@ -1939,10 +1964,7 @@ namespace Wice
             if (mcv != null)
             {
                 Cursor.Set(mcv.Cursor);
-                if (!mcv.DisablePointerEvents)
-                {
-                    mcv.OnMouseButtonEvent(msg, e);
-                }
+                mcv.OnMouseButtonEvent(msg, e);
                 return;
             }
 
@@ -1982,6 +2004,52 @@ namespace Wice
             }
         }
 
+        private new void OnPointerContactChangedEvent(PointerContactChangedEventArgs e)
+        {
+            RemoveToolTip(e);
+            var mcv = _mouseCaptorVisual;
+            if (mcv != null)
+            {
+                Cursor.Set(mcv.Cursor);
+                mcv.OnPointerContactChangedEvent(e);
+                return;
+            }
+
+            base.OnPointerContactChangedEvent(e);
+            if (e.Handled)
+                return;
+
+#if DEBUG
+            CheckVisualsTree();
+#endif
+            var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
+            //#if DEBUG
+            //            var stack = GetIntersectingVisuals(rc);
+            //            var i = 0;
+            //            foreach (var st in stack)
+            //            {
+            //                Application.Trace("stack[" + i + "]: " + st.Level + "/" + st.ZIndexOrDefault + " " + st.FullName);
+            //                i++;
+            //            }
+            //#endif
+            foreach (var visual in GetIntersectingVisuals(rc))
+            {
+                if (visual.DisablePointerEvents)
+                    continue;
+
+                if (!CanReceiveInput(visual))
+                    continue;
+
+                e._visualsStack.Add(visual);
+                if (visual == this)
+                    continue;
+
+                visual.OnPointerContactChangedEvent(e);
+                if (e.Handled)
+                    break;
+            }
+        }
+
         private new void OnMouseEvent(int msg, MouseEventArgs e)
         {
             //Application.Trace("msg:" + msg + " e: " + e);
@@ -1996,6 +2064,9 @@ namespace Wice
                     {
                         RemoveToolTip(e);
                     }
+
+                    if (e.Handled)
+                        break;
                 }
                 _mousedEnteredVisuals.Clear();
                 return;
@@ -2006,14 +2077,13 @@ namespace Wice
                 var mc = _mouseCaptorVisual;
                 if (mc != null)
                 {
-                    if (!mc.DisablePointerEvents)
-                    {
-                        mc.OnMouseEvent(msg, e);
-                    }
+                    mc.OnMouseEvent(msg, e);
                     return;
                 }
 
                 base.OnMouseEvent(msg, e);
+                if (e.Handled)
+                    return;
 
 #if DEBUG
                 CheckVisualsTree();
@@ -2038,6 +2108,8 @@ namespace Wice
                     }
 
                     visual.OnMouseEvent(msg, e);
+                    if (e.Handled)
+                        break;
                 }
 
                 foreach (var visual in _mousedEnteredVisuals)
@@ -2048,6 +2120,9 @@ namespace Wice
                     {
                         RemoveToolTip(e);
                     }
+
+                    if (e.Handled)
+                        break;
                 }
 
                 _mousedEnteredVisuals.Clear();
@@ -2104,6 +2179,67 @@ namespace Wice
 
                     return null;
                 }
+            }
+        }
+
+        internal new void OnPointerUpdate(PointerPositionEventArgs e)
+        {
+            var mc = _mouseCaptorVisual;
+            if (mc != null)
+            {
+                mc.OnPointerUpdate(e);
+                return;
+            }
+
+            base.OnPointerUpdate(e);
+            if (e.Handled)
+                return;
+
+#if DEBUG
+            CheckVisualsTree();
+#endif
+            var cursorSet = false;
+            var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
+            foreach (var visual in GetIntersectingVisuals(rc))
+            {
+                if (visual.DisablePointerEvents)
+                    continue;
+
+                e._visualsStack.Add(visual);
+                if (!_mousedEnteredVisuals.Remove(visual))
+                {
+                    visual.OnPointerEnter(new PointerEnterEventArgs(e.PointerId, e.X, e.Y));
+                }
+
+                if (CanReceiveInput(visual) && visual.Cursor != null)
+                {
+                    Cursor.Set(visual.Cursor);
+                    cursorSet = true;
+                }
+
+                visual.OnPointerUpdate(e);
+                if (e.Handled)
+                    break;
+            }
+
+            foreach (var visual in _mousedEnteredVisuals)
+            {
+                // always send mouse leave event with DisableMouseEvents=true
+                visual.OnPointerLeave(new PointerLeaveEventArgs(e.PointerId, e.X, e.Y));
+                if (visual == CurrentToolTip?.PlacementTarget)
+                {
+                    RemoveToolTip(e);
+                }
+                if (e.Handled)
+                    break;
+            }
+
+            _mousedEnteredVisuals.Clear();
+            _mousedEnteredVisuals = e._visualsStack.ToList();
+
+            if (!cursorSet)
+            {
+                Cursor.Set(null);
             }
         }
 
@@ -2759,10 +2895,11 @@ namespace Wice
                 //Application.Trace("msg: " + MessageDecoder.Decode(hwnd, msg, wParam, lParam));
             }
 
-            if (msg != MessageDecoder.WM_SETCURSOR && msg != MessageDecoder.WM_NCMOUSEMOVE)
-            {
-                //Application.Trace("msg: " + MessageDecoder.Decode(hwnd, msg, wParam, lParam));
-            }
+            //var str = MessageDecoder.MsgToString(msg);
+            //if (str != null && (str.IndexOf("mouse", StringComparison.OrdinalIgnoreCase) >= 0 || str.IndexOf("pointer", StringComparison.OrdinalIgnoreCase) >= 0))
+            //{
+            //    Application.Trace("msg: " + MessageDecoder.Decode(hwnd, msg, wParam, lParam));
+            //}
 #endif
 
             var win = GetWindow(hwnd);
@@ -2864,77 +3001,80 @@ namespace Wice
                     if (!pce.Handled)
                     {
                         int buttonMsg;
-                        MouseButton mb;
+                        var mb = pce.MouseButton;
 
-                        if (info.pointerFlags.HasFlag(POINTER_FLAGS.POINTER_FLAG_FIRSTBUTTON))
-                        {
-                            mb = MouseButton.Left;
-                            if (pce.IsDoubleClick)
-                            {
-                                buttonMsg = MessageDecoder.WM_LBUTTONDBLCLK;
-                            }
-                            else
-                            {
-                                buttonMsg = isUp ? MessageDecoder.WM_LBUTTONUP : MessageDecoder.WM_LBUTTONDOWN;
-                            }
-                        }
-                        else if (info.pointerFlags.HasFlag(POINTER_FLAGS.POINTER_FLAG_SECONDBUTTON))
-                        {
-                            mb = MouseButton.Right;
-                            if (pce.IsDoubleClick)
-                            {
-                                buttonMsg = MessageDecoder.WM_RBUTTONDBLCLK;
-                            }
-                            else
-                            {
-                                buttonMsg = isUp ? MessageDecoder.WM_RBUTTONUP : MessageDecoder.WM_RBUTTONDOWN;
-                            }
-                        }
-                        else if (info.pointerFlags.HasFlag(POINTER_FLAGS.POINTER_FLAG_THIRDBUTTON))
-                        {
-                            mb = MouseButton.Middle;
-                            if (pce.IsDoubleClick)
-                            {
-                                buttonMsg = MessageDecoder.WM_MBUTTONDBLCLK;
-                            }
-                            else
-                            {
-                                buttonMsg = isUp ? MessageDecoder.WM_MBUTTONUP : MessageDecoder.WM_MBUTTONDOWN;
-                            }
-                        }
-                        else if (info.pointerFlags.HasFlag(POINTER_FLAGS.POINTER_FLAG_FOURTHBUTTON))
-                        {
-                            mb = MouseButton.X1;
-                            if (pce.IsDoubleClick)
-                            {
-                                buttonMsg = MessageDecoder.WM_XBUTTONDBLCLK;
-                            }
-                            else
-                            {
-                                buttonMsg = isUp ? MessageDecoder.WM_XBUTTONUP : MessageDecoder.WM_XBUTTONDOWN;
-                            }
-                        }
-                        else if (info.pointerFlags.HasFlag(POINTER_FLAGS.POINTER_FLAG_FIFTHBUTTON))
-                        {
-                            mb = MouseButton.X2;
-                            if (pce.IsDoubleClick)
-                            {
-                                buttonMsg = MessageDecoder.WM_XBUTTONDBLCLK;
-                            }
-                            else
-                            {
-                                buttonMsg = isUp ? MessageDecoder.WM_XBUTTONUP : MessageDecoder.WM_XBUTTONDOWN;
-                            }
-                        }
-                        else
+                        if (!mb.HasValue)
                         {
                             // huh? which button then?
+                            Application.Trace("msg: " + MessageDecoder.MsgToString(msg) + " unhandled");
                             break;
                         }
 
-                        var me = new MouseButtonEventArgs(pt.x, pt.y, info.dwKeyStates, mb);
-                        me.PointerEvent = pce;
+                        switch (mb)
+                        {
+                            default:
+                            case MouseButton.Left:
+                                if (pce.IsDoubleClick)
+                                {
+                                    buttonMsg = MessageDecoder.WM_LBUTTONDBLCLK;
+                                }
+                                else
+                                {
+                                    buttonMsg = isUp ? MessageDecoder.WM_LBUTTONUP : MessageDecoder.WM_LBUTTONDOWN;
+                                }
+                                break;
+
+                            case MouseButton.Right:
+                                if (pce.IsDoubleClick)
+                                {
+                                    buttonMsg = MessageDecoder.WM_RBUTTONDBLCLK;
+                                }
+                                else
+                                {
+                                    buttonMsg = isUp ? MessageDecoder.WM_RBUTTONUP : MessageDecoder.WM_RBUTTONDOWN;
+                                }
+                                break;
+
+                            case MouseButton.Middle:
+                                if (pce.IsDoubleClick)
+                                {
+                                    buttonMsg = MessageDecoder.WM_MBUTTONDBLCLK;
+                                }
+                                else
+                                {
+                                    buttonMsg = isUp ? MessageDecoder.WM_MBUTTONUP : MessageDecoder.WM_MBUTTONDOWN;
+                                }
+                                break;
+
+                            case MouseButton.X1:
+                                if (pce.IsDoubleClick)
+                                {
+                                    buttonMsg = MessageDecoder.WM_XBUTTONDBLCLK;
+                                }
+                                else
+                                {
+                                    buttonMsg = isUp ? MessageDecoder.WM_XBUTTONUP : MessageDecoder.WM_XBUTTONDOWN;
+                                }
+                                break;
+
+                            case MouseButton.X2:
+                                if (pce.IsDoubleClick)
+                                {
+                                    buttonMsg = MessageDecoder.WM_XBUTTONDBLCLK;
+                                }
+                                else
+                                {
+                                    buttonMsg = isUp ? MessageDecoder.WM_XBUTTONUP : MessageDecoder.WM_XBUTTONDOWN;
+                                }
+                                break;
+                        }
+
+                        var me = new MouseButtonEventArgs(pt.x, pt.y, info.dwKeyStates, mb.Value);
+
+                        me.SourcePointerEvent = pce;
                         win.OnMouseButtonEvent(buttonMsg, me);
+
+                        //Application.Trace("msg: " + MessageDecoder.MsgToString(msg) + " btnmsg:" + MessageDecoder.MsgToString(buttonMsg) + " me:" + me);
                     }
                     break;
 
@@ -2960,7 +3100,7 @@ namespace Wice
                     {
                         var winfo = pwe.PointerInfo;
                         var mwe = new MouseWheelEventArgs(pt.x, pt.y, winfo.dwKeyStates, wParam.SignedHIWORD(), orientation);
-                        mwe.PointerEvent = pwe;
+                        mwe.SourcePointerEvent = pwe;
                         win.OnMouseWheelEvent(mwe);
                     }
                     break;

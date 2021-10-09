@@ -167,12 +167,13 @@ namespace Wice
         public event EventHandler<MouseEventArgs> MouseLeave;
         public event EventHandler<MouseEventArgs> MouseHover;
         public event EventHandler<MouseWheelEventArgs> MouseWheel;
-        public event EventHandler<MouseDragEventArgs> MouseDrag;
+        public event EventHandler<DragEventArgs> MouseDrag;
         public event EventHandler<ValueEventArgs<bool>> MouseOverChanged;
         public event EventHandler<ValueEventArgs<bool>> FocusedChanged;
         public event EventHandler<MouseButtonEventArgs> MouseButtonDown;
         public event EventHandler<MouseButtonEventArgs> MouseButtonUp;
         public event EventHandler<MouseButtonEventArgs> MouseButtonDoubleClick;
+        public event EventHandler<PointerDragEventArgs> PointerDrag;
         public event EventHandler<PointerWheelEventArgs> PointerWheel;
         public event EventHandler<PointerEnterEventArgs> PointerEnter;
         public event EventHandler<PointerLeaveEventArgs> PointerLeave;
@@ -1547,6 +1548,16 @@ namespace Wice
 
         protected virtual DragState CreateDragState(MouseButtonEventArgs e) => new DragState(this, e);
 
+        public tagPOINT GetRelativePosition(int left, int top)
+        {
+            var arr = AbsoluteRenderRect;
+            if (arr.IsInvalid)
+                return new tagPOINT();
+
+            var pt = new tagPOINT(left - arr.left, top - arr.top);
+            return pt;
+        }
+
         public D2D_POINT_2F GetRelativePosition(float left, float top)
         {
             var arr = AbsoluteRenderRect;
@@ -1680,10 +1691,62 @@ namespace Wice
         protected virtual void OnKeyPress(object sender, KeyPressEventArgs e) => KeyPress?.Invoke(sender, e);
 
         internal void OnPointerWheelEvent(PointerWheelEventArgs e) => OnPointerWheel(this, e);
-        internal void OnPointerContactChangedEvent(PointerContactChangedEventArgs e) => OnPointerContactChangedEvent(this, e);
-        internal void OnPointerUpdate(PointerPositionEventArgs e) => OnPointerUpdate(this, e);
-        internal void OnPointerEnter(PointerEnterEventArgs e) => OnPointerEnter(this, e);
-        internal void OnPointerLeave(PointerLeaveEventArgs e) => OnPointerLeave(this, e);
+
+        // note WM_*BUTTON* are still called so we don't need to call them
+        internal void OnPointerContactChangedEvent(PointerContactChangedEventArgs e)
+        {
+            if (e.IsDown)
+            {
+                if (e.MouseButton == MouseButton.Left)
+                {
+                    Focus();
+                }
+            }
+            OnPointerContactChangedEvent(this, e);
+
+            if (e.IsUp)
+            {
+                if (DragState != null)
+                {
+                    var button = e.MouseButton; // support for dragmove with X buttons
+                    if (button.HasValue && DragState.Button == button.Value)
+                    {
+                        CancelDragMove(e);
+                    }
+                }
+            }
+        }
+
+        // note WM_MOUSEENTER & WM_MOUSELEAVE are sent too
+        internal void OnPointerEnter(PointerEnterEventArgs e)
+        {
+            IsMouseOver = true;
+            OnPointerEnter(this, e);
+        }
+
+        internal void OnPointerLeave(PointerLeaveEventArgs e)
+        {
+            IsMouseOver = false;
+            OnPointerLeave(this, e);
+        }
+
+        internal void OnPointerUpdate(PointerPositionEventArgs e)
+        {
+            OnPointerUpdate(this, e);
+            IsMouseOver = true;
+
+            if (DragState != null)
+            {
+                DragState.DeltaX = e.X - DragState.StartX;
+                DragState.DeltaY = e.Y - DragState.StartY;
+                var pde = new PointerDragEventArgs(e, DragState);
+                OnPointerDrag(this, pde);
+                if (!pde.Handled)
+                {
+                    OnMouseDrag(this, new DragEventArgs(e.X, e.Y, e.PointerInfo.dwKeyStates, DragState, e));
+                }
+            }
+        }
 
         internal void OnMouseWheelEvent(MouseWheelEventArgs e) => OnMouseWheel(this, e);
         internal void OnMouseButtonEvent(int msg, MouseButtonEventArgs e)
@@ -1741,7 +1804,7 @@ namespace Wice
                     {
                         DragState.DeltaX = e.X - DragState.StartX;
                         DragState.DeltaY = e.Y - DragState.StartY;
-                        OnMouseDrag(this, new MouseDragEventArgs(e, DragState));
+                        OnMouseDrag(this, new DragEventArgs(e.X, e.Y, e.Keys, DragState, e));
                     }
                     break;
 
@@ -1774,13 +1837,14 @@ namespace Wice
         protected virtual void OnMouseLeave(object sender, MouseEventArgs e) => MouseLeave?.Invoke(sender, e);
         protected virtual void OnMouseEnter(object sender, MouseEventArgs e) => MouseEnter?.Invoke(sender, e);
         protected virtual void OnMouseHover(object sender, MouseEventArgs e) => MouseHover?.Invoke(sender, e);
-        protected virtual void OnMouseDrag(object sender, MouseDragEventArgs e) => MouseDrag?.Invoke(sender, e);
+        protected virtual void OnMouseDrag(object sender, DragEventArgs e) => MouseDrag?.Invoke(sender, e);
         protected virtual void OnMouseWheel(object sender, MouseWheelEventArgs e) => MouseWheel?.Invoke(sender, e);
         protected virtual void OnMouseButtonDown(object sender, MouseButtonEventArgs e) => MouseButtonDown?.Invoke(sender, e);
         protected virtual void OnMouseButtonUp(object sender, MouseButtonEventArgs e) => MouseButtonUp?.Invoke(sender, e);
         protected virtual void OnMouseButtonDoubleClick(object sender, MouseButtonEventArgs e) => MouseButtonDoubleClick?.Invoke(sender, e);
         protected virtual void CaptureMouse() => Window?.CaptureMouse(this);
 
+        protected virtual void OnPointerDrag(object sender, PointerDragEventArgs e) => PointerDrag?.Invoke(sender, e);
         protected virtual void OnPointerWheel(object sender, PointerWheelEventArgs e) => PointerWheel?.Invoke(sender, e);
         protected virtual void OnPointerLeave(object sender, PointerLeaveEventArgs e) => PointerLeave?.Invoke(sender, e);
         protected virtual void OnPointerEnter(object sender, PointerEnterEventArgs e) => PointerEnter?.Invoke(sender, e);
@@ -2534,6 +2598,7 @@ namespace Wice
             {
                 disp.Dispose();
             }
+
             DragState = null;
             return state;
         }

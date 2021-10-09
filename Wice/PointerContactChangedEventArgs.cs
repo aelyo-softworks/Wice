@@ -2,7 +2,7 @@
 {
     public class PointerContactChangedEventArgs : PointerPositionEventArgs
     {
-        internal PointerContactChangedEventArgs(int pointerId, int x, int y, bool up)
+        public PointerContactChangedEventArgs(int pointerId, int x, int y, bool up)
             : base(pointerId, x, y)
         {
             IsUp = up;

@@ -42,6 +42,9 @@ namespace Wice.Samples.Gallery
                 useWindowsAcrylic: true
                 );
 
+            // uncomment this to enable Pointer messages
+            WindowsFunctions.EnableMouseInPointer();
+
             AddControls();
         }
 

@@ -172,7 +172,6 @@ namespace DirectN
             WM_NCXBUTTONDOWN = 0x00AB,
             WM_NCXBUTTONUP = 0x00AC,
             WM_NCXBUTTONDBLCLK = 0x00AD,
-            WM_KEYFIRST = 0x0100,
             WM_KEYDOWN = 0x0100,
             WM_KEYUP = 0x0101,
             WM_CHAR = 0x0102,
@@ -182,11 +181,9 @@ namespace DirectN
             WM_SYSKEYUP = 0x0105,
             WM_SYSCHAR = 0x0106,
             WM_SYSDEADCHAR = 0x0107,
-            WM_KEYLAST = 0x0108,
             WM_IME_STARTCOMPOSITION = 0x010D,
             WM_IME_ENDCOMPOSITION = 0x010E,
             WM_IME_COMPOSITION = 0x010F,
-            WM_IME_KEYLAST = 0x010F,
             WM_INITDIALOG = 0x0110,
             WM_COMMAND = 0x0111,
             WM_SYSCOMMAND = 0x0112,
@@ -209,7 +206,6 @@ namespace DirectN
             WM_CTLCOLORDLG = 0x0136,
             WM_CTLCOLORSCROLLBAR = 0x0137,
             WM_CTLCOLORSTATIC = 0x0138,
-            WM_MOUSEFIRST = 0x0200,
             WM_MOUSEMOVE = 0x0200,
             WM_LBUTTONDOWN = 0x0201,
             WM_LBUTTONUP = 0x0202,
@@ -224,7 +220,6 @@ namespace DirectN
             WM_XBUTTONUP = 0x020C,
             WM_XBUTTONDBLCLK = 0x020D,
             WM_MOUSEWHEEL = 0x020A,
-            WM_MOUSELAST = 0x020A,
             WM_MOUSEHWHEEL = 0x020E;
 
         public const int

@@ -4,7 +4,7 @@ namespace Wice
 {
     public class PointerWheelEventArgs : PointerPositionEventArgs
     {
-        internal PointerWheelEventArgs(int pointerId, int x, int y, int delta, Orientation orientation)
+        public PointerWheelEventArgs(int pointerId, int x, int y, int delta, Orientation orientation)
             : base(pointerId, x, y)
         {
             Delta = delta / WindowsConstants.WHEEL_DELTA;

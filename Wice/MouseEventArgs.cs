@@ -9,7 +9,7 @@ namespace Wice
     {
         internal readonly List<Visual> _visualsStack = new List<Visual>();
 
-        internal MouseEventArgs(int x, int y, POINTER_MOD vk)
+        public MouseEventArgs(int x, int y, POINTER_MOD vk)
         {
             X = x;
             Y = y;
@@ -17,7 +17,7 @@ namespace Wice
         }
 
         public POINTER_MOD Keys { get; }
-        public PointerEventArgs PointerEvent { get; internal set; } // will be null if EnableMouseInPointer was not called
+        public PointerEventArgs SourcePointerEvent { get; internal set; } // will be null if EnableMouseInPointer was not called
 
         // window relative
         public int X { get; }
@@ -27,14 +27,14 @@ namespace Wice
         {
             get
             {
-                if (!(PointerEvent is PointerPositionEventArgs evt))
+                if (!(SourcePointerEvent is PointerPositionEventArgs evt))
                     return _visualsStack;
 
                 return evt._visualsStack;
             }
         }
 
-        public D2D_POINT_2F GetPosition(Visual visual)
+        public tagPOINT GetPosition(Visual visual)
         {
             if (visual == null)
                 throw new ArgumentNullException(nameof(visual));

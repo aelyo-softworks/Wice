@@ -257,13 +257,13 @@ namespace Wice
             }
         }
 
-        private void OnVerticalScrollBarThumbDragDelta(object sender, MouseDragEventArgs e)
+        private void OnVerticalScrollBarThumbDragDelta(object sender, DragEventArgs e)
         {
             var ratio = VerticalRatio;
             VerticalOffset = _verticalOffsetStart + ratio * e.State.DeltaY;
         }
 
-        private void OnHorizontalScrollBarThumbDragDelta(object sender, MouseDragEventArgs e)
+        private void OnHorizontalScrollBarThumbDragDelta(object sender, DragEventArgs e)
         {
             var ratio = HorizontalRatio;
             HorizontalOffset = _horizontalOffsetStart + ratio * e.State.DeltaX;

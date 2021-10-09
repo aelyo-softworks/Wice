@@ -87,7 +87,6 @@
     <Compile Include="..\Wice\MessageBox.cs" Link="MessageBox.cs" />
     <Compile Include="..\Wice\MouseButton.cs" Link="MouseButton.cs" />
     <Compile Include="..\Wice\MouseButtonEventArgs.cs" Link="MouseButtonEventArgs.cs" />
-    <Compile Include="..\Wice\MouseDragEventArgs.cs" Link="MouseDragEventArgs.cs" />
     <Compile Include="..\Wice\MouseEventArgs.cs" Link="MouseEventArgs.cs" />
     <Compile Include="..\Wice\MouseWheelEventArgs.cs" Link="MouseWheelEventArgs.cs" />
     <Compile Include="..\Wice\NativeWindow.cs" Link="NativeWindow.cs" />
@@ -318,6 +317,8 @@
     <Compile Include="..\Wice\PointerContactChangedEventArgs.cs" Link="PointerContactChangedEventArgs.cs" />
     <Compile Include="..\Wice\PointerEnterEventArgs.cs" Link="PointerEnterEventArgs.cs" />
     <Compile Include="..\Wice\PointerLeaveEventArgs.cs" Link="PointerLeaveEventArgs.cs" />
+    <Compile Include="..\Wice\PointerDragEventArgs.cs" Link="PointerDragEventArgs.cs" />
+    <Compile Include="..\Wice\DragEventArgs.cs" Link="DragEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />

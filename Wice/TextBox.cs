@@ -1620,7 +1620,7 @@ namespace Wice
             SetSelection(TextBoxSetSelection.RightChar, (uint)text.Length, false);
         }
 
-        private float MirrorXCoordinate(float x)
+        private int MirrorXCoordinate(int x)
         {
             // On RTL builds, coordinates may need to be restored to or converted from Cartesian coordinates, where x increases positively to the right.
             var style = Window.ExtendedStyle;
@@ -1901,8 +1901,8 @@ namespace Wice
             // Remap display coordinates to actual.
             var pos = e.GetPosition(this);
             pos.x = MirrorXCoordinate(pos.x);
-            pos.x -= _origin.x;
-            pos.y -= _origin.y;
+            pos.x -= (int)_origin.x;
+            pos.y -= (int)_origin.y;
 
             _layout.Object.HitTestPoint(
                 pos.x,

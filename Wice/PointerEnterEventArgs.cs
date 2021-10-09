@@ -2,7 +2,7 @@
 {
     public class PointerEnterEventArgs : PointerPositionEventArgs
     {
-        internal PointerEnterEventArgs(int pointerId, int x, int y)
+        public PointerEnterEventArgs(int pointerId, int x, int y)
             : base(pointerId, x, y)
         {
         }

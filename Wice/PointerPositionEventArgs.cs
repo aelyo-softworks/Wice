@@ -8,7 +8,7 @@ namespace Wice
     {
         internal readonly List<Visual> _visualsStack = new List<Visual>();
 
-        internal PointerPositionEventArgs(int pointerId, int x, int y)
+        public PointerPositionEventArgs(int pointerId, int x, int y)
             : base(pointerId)
         {
             X = x;
@@ -20,7 +20,7 @@ namespace Wice
         public int Y { get; }
         public IReadOnlyList<Visual> VisualsStack => _visualsStack;
 
-        public D2D_POINT_2F GetPosition(Visual visual)
+        public tagPOINT GetPosition(Visual visual)
         {
             if (visual == null)
                 throw new ArgumentNullException(nameof(visual));

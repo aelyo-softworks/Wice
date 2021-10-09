@@ -5,7 +5,7 @@ namespace Wice
 {
     public class PointerActivateEventArgs : PointerEventArgs
     {
-        internal PointerActivateEventArgs(int pointerId, IntPtr windowBeingActivated, HT hitTest)
+        public PointerActivateEventArgs(int pointerId, IntPtr windowBeingActivated, HT hitTest)
             : base(pointerId)
         {
             WindowBeingActivated = windowBeingActivated;

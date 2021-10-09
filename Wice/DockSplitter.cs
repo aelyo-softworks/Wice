@@ -46,13 +46,13 @@ namespace Wice
 
         protected override DragState CreateDragState(MouseButtonEventArgs e) => new SplitDragState(this, e);
 
-        protected override void OnMouseDrag(object sender, MouseDragEventArgs e)
+        protected override void OnMouseDrag(object sender, DragEventArgs e)
         {
             OnMouseDrag(e);
             base.OnMouseDrag(sender, e);
         }
 
-        private void OnMouseDrag(MouseDragEventArgs e)
+        private void OnMouseDrag(DragEventArgs e)
         {
             var state = (SplitDragState)e.State;
             if (state._prev == null || state._next == null)

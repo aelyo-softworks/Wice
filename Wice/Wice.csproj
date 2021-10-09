@@ -88,6 +88,7 @@
     <Compile Include="EditorMode.cs" />
     <Compile Include="EditorHost.cs" />
     <Compile Include="EventTrigger.cs" />
+    <Compile Include="PointerDragEventArgs.cs" />
     <Compile Include="PointerActivateEventArgs.cs" />
     <Compile Include="PointerContactChangedEventArgs.cs" />
     <Compile Include="PointerEnterEventArgs.cs" />
@@ -295,7 +296,7 @@
     <Compile Include="KeyPressEventArgs.cs" />
     <Compile Include="MouseButton.cs" />
     <Compile Include="MouseButtonEventArgs.cs" />
-    <Compile Include="MouseDragEventArgs.cs" />
+    <Compile Include="DragEventArgs.cs" />
     <Compile Include="MouseWheelEventArgs.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="GridSplitter.cs" />
