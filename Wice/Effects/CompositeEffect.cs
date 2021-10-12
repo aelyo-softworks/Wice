@@ -7,10 +7,15 @@ namespace Wice.Effects
     [Guid(D2D1Constants.CLSID_D2D1CompositeString)]
     public class CompositeEffect : Effect
     {
-        public static EffectProperty ModeProperty = EffectProperty.Add(typeof(CompositeEffect), nameof(Mode), 0, D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER);
+        public static EffectProperty ModeProperty { get; }
+
+        static CompositeEffect()
+        {
+            ModeProperty = EffectProperty.Add(typeof(CompositeEffect), nameof(Mode), 0, D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER);
+        }
 
         public CompositeEffect()
-            : base(int.MaxValue)
+                : base(int.MaxValue)
         {
         }
 

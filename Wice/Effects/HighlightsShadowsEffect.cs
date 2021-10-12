@@ -7,11 +7,20 @@ namespace Wice.Effects
     [Guid(D2D1Constants.CLSID_D2D1HighlightsShadowsString)]
     public class HighlightsShadowsEffect : EffectWithSource
     {
-        public static EffectProperty HighlightsProperty = EffectProperty.Add(typeof(HighlightsShadowsEffect), nameof(Highlights), 0, 0f);
-        public static EffectProperty ShadowsProperty = EffectProperty.Add(typeof(HighlightsShadowsEffect), nameof(Shadows), 1, 0f);
-        public static EffectProperty ClarityProperty = EffectProperty.Add(typeof(HighlightsShadowsEffect), nameof(Clarity), 2, 0f);
-        public static EffectProperty InputGammaProperty = EffectProperty.Add(typeof(HighlightsShadowsEffect), nameof(InputGamma), 3, D2D1_HIGHLIGHTSANDSHADOWS_INPUT_GAMMA.D2D1_HIGHLIGHTSANDSHADOWS_INPUT_GAMMA_LINEAR);
-        public static EffectProperty MaskBlurRadiusProperty = EffectProperty.Add(typeof(HighlightsShadowsEffect), nameof(MaskBlurRadius), 4, 1.25f);
+        public static EffectProperty HighlightsProperty { get; }
+        public static EffectProperty ShadowsProperty { get; }
+        public static EffectProperty ClarityProperty { get; }
+        public static EffectProperty InputGammaProperty { get; }
+        public static EffectProperty MaskBlurRadiusProperty { get; }
+
+        static HighlightsShadowsEffect()
+        {
+            HighlightsProperty = EffectProperty.Add(typeof(HighlightsShadowsEffect), nameof(Highlights), 0, 0f);
+            ShadowsProperty = EffectProperty.Add(typeof(HighlightsShadowsEffect), nameof(Shadows), 1, 0f);
+            ClarityProperty = EffectProperty.Add(typeof(HighlightsShadowsEffect), nameof(Clarity), 2, 0f);
+            InputGammaProperty = EffectProperty.Add(typeof(HighlightsShadowsEffect), nameof(InputGamma), 3, D2D1_HIGHLIGHTSANDSHADOWS_INPUT_GAMMA.D2D1_HIGHLIGHTSANDSHADOWS_INPUT_GAMMA_LINEAR);
+            MaskBlurRadiusProperty = EffectProperty.Add(typeof(HighlightsShadowsEffect), nameof(MaskBlurRadius), 4, 1.25f);
+        }
 
         public float Highlights { get => (float)GetPropertyValue(HighlightsProperty); set => SetPropertyValue(HighlightsProperty, value.Clamp(-1f, 1f)); }
         public float Shadows { get => (float)GetPropertyValue(ShadowsProperty); set => SetPropertyValue(ShadowsProperty, value.Clamp(-1f, 1f)); }

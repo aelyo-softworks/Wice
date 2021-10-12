@@ -43,7 +43,7 @@ namespace Wice.Samples.Gallery
                 );
 
             // uncomment this to enable Pointer messages
-            WindowsFunctions.EnableMouseInPointer();
+            //WindowsFunctions.EnableMouseInPointer();
 
             AddControls();
         }

@@ -259,6 +259,7 @@ namespace Wice.Effects
                 }
 
                 ptr = IntPtr.Zero;
+                Application.Trace(this + " " + this + " E_NOTIMPL");
                 return HRESULTS.E_NOTIMPL;
             }
         }
@@ -301,6 +302,7 @@ namespace Wice.Effects
             {
                 index = 0;
                 mapping = 0;
+                Application.Trace(this + " name:'" + name + "' E_INVALIDARG");
                 return HRESULTS.E_INVALIDARG;
             }
 
@@ -326,7 +328,7 @@ namespace Wice.Effects
                 if (index >= defs.Count)
                 {
                     value = IntPtr.Zero;
-                    //Application.Trace(this + " E_BOUNDS");
+                    Application.Trace(this + " index:" + index + " E_BOUNDS");
                     return HRESULTS.E_BOUNDS;
                 }
 
@@ -334,6 +336,7 @@ namespace Wice.Effects
             }
             catch
             {
+                Application.Trace(this + " index:" + index + " E_FAIL");
                 value = IntPtr.Zero;
                 return HRESULTS.E_FAIL;
             }
@@ -345,6 +348,7 @@ namespace Wice.Effects
             if (index >= MaximumSourcesCount || index >= _sources.Count)
             {
                 source = null;
+                Application.Trace(this + " index:" + index + " E_BOUNDS");
                 return HRESULTS.E_BOUNDS;
             }
 

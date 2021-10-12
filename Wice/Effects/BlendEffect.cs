@@ -12,10 +12,15 @@ namespace Wice.Effects
     [Guid(D2D1Constants.CLSID_D2D1BlendString)]
     public class BlendEffect : Effect
     {
-        public static EffectProperty ModeProperty = EffectProperty.Add(typeof(BlendEffect), nameof(Mode), 0, D2D1_BLEND_MODE.D2D1_BLEND_MODE_MULTIPLY);
+        public static EffectProperty ModeProperty { get; }
+
+        static BlendEffect()
+        {
+            ModeProperty = EffectProperty.Add(typeof(BlendEffect), nameof(Mode), 0, D2D1_BLEND_MODE.D2D1_BLEND_MODE_MULTIPLY);
+        }
 
         public BlendEffect()
-            : base(2)
+                : base(2)
         {
         }
 

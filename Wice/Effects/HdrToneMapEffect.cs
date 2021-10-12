@@ -7,9 +7,16 @@ namespace Wice.Effects
     [Guid(D2D1Constants.CLSID_D2D1HdrToneMapString)]
     public class HdrToneMapEffect : EffectWithSource
     {
-        public static EffectProperty InputMaxLuminanceProperty = EffectProperty.Add(typeof(HdrToneMapEffect), nameof(InputMaxLuminance), 0, 0f);
-        public static EffectProperty OutputMaxLuminanceProperty = EffectProperty.Add(typeof(HdrToneMapEffect), nameof(OutputMaxLuminance), 1, 0f);
-        public static EffectProperty DisplayModeProperty = EffectProperty.Add(typeof(HdrToneMapEffect), nameof(DisplayMode), 2, D2D1_HDRTONEMAP_DISPLAY_MODE.D2D1_HDRTONEMAP_DISPLAY_MODE_SDR);
+        public static EffectProperty InputMaxLuminanceProperty { get; }
+        public static EffectProperty OutputMaxLuminanceProperty { get; }
+        public static EffectProperty DisplayModeProperty { get; }
+
+        static HdrToneMapEffect()
+        {
+            InputMaxLuminanceProperty = EffectProperty.Add(typeof(HdrToneMapEffect), nameof(InputMaxLuminance), 0, 0f);
+            OutputMaxLuminanceProperty = EffectProperty.Add(typeof(HdrToneMapEffect), nameof(OutputMaxLuminance), 1, 0f);
+            DisplayModeProperty = EffectProperty.Add(typeof(HdrToneMapEffect), nameof(DisplayMode), 2, D2D1_HDRTONEMAP_DISPLAY_MODE.D2D1_HDRTONEMAP_DISPLAY_MODE_SDR);
+        }
 
         public float InputMaxLuminance { get => (float)GetPropertyValue(InputMaxLuminanceProperty); set => SetPropertyValue(InputMaxLuminanceProperty, value); }
         public float OutputMaxLuminance { get => (float)GetPropertyValue(OutputMaxLuminanceProperty); set => SetPropertyValue(OutputMaxLuminanceProperty, value); }

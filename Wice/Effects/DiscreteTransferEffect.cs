@@ -7,15 +7,28 @@ namespace Wice.Effects
     [Guid(D2D1Constants.CLSID_D2D1DiscreteTransferString)]
     public class DiscreteTransferEffect : EffectWithSource
     {
-        public static EffectProperty RedTableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(RedTable), 0, new float[] { 0f, 1f });
-        public static EffectProperty RedDisableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(RedDisable), 1, false);
-        public static EffectProperty GreenTableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(GreenTable), 2, new float[] { 0f, 1f });
-        public static EffectProperty GreenDisableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(GreenDisable), 3, false);
-        public static EffectProperty BlueTableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(BlueTable), 4, new float[] { 0f, 1f });
-        public static EffectProperty BlueDisableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(BlueDisable), 5, false);
-        public static EffectProperty AlphaTableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(AlphaTable), 6, new float[] { 0f, 1f });
-        public static EffectProperty AlphaDisableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(AlphaDisable), 7, false);
-        public static EffectProperty ClampOutputProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(ClampOutput), 8, false);
+        public static EffectProperty RedTableProperty { get; }
+        public static EffectProperty RedDisableProperty { get; }
+        public static EffectProperty GreenTableProperty { get; }
+        public static EffectProperty GreenDisableProperty { get; }
+        public static EffectProperty BlueTableProperty { get; }
+        public static EffectProperty BlueDisableProperty { get; }
+        public static EffectProperty AlphaTableProperty { get; }
+        public static EffectProperty AlphaDisableProperty { get; }
+        public static EffectProperty ClampOutputProperty { get; }
+
+        static DiscreteTransferEffect()
+        {
+            RedTableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(RedTable), 0, new float[] { 0f, 1f });
+            RedDisableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(RedDisable), 1, false);
+            GreenTableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(GreenTable), 2, new float[] { 0f, 1f });
+            GreenDisableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(GreenDisable), 3, false);
+            BlueTableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(BlueTable), 4, new float[] { 0f, 1f });
+            BlueDisableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(BlueDisable), 5, false);
+            AlphaTableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(AlphaTable), 6, new float[] { 0f, 1f });
+            AlphaDisableProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(AlphaDisable), 7, false);
+            ClampOutputProperty = EffectProperty.Add(typeof(DiscreteTransferEffect), nameof(ClampOutput), 8, false);
+        }
 
         public float[] RedTable { get => (float[])GetPropertyValue(RedTableProperty); set => SetPropertyValue(RedTableProperty, value); }
         public bool RedDisable { get => (bool)GetPropertyValue(RedDisableProperty); set => SetPropertyValue(RedDisableProperty, value); }

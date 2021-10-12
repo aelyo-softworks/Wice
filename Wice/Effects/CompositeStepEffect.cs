@@ -12,10 +12,15 @@ namespace Wice.Effects
     [Guid(D2D1Constants.CLSID_D2D1CompositeString)]
     public class CompositeStepEffect : Effect
     {
-        public static EffectProperty ModeProperty = EffectProperty.Add(typeof(CompositeStepEffect), nameof(Mode), 0, D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER);
+        public static EffectProperty ModeProperty { get; }
+
+        static CompositeStepEffect()
+        {
+            ModeProperty = EffectProperty.Add(typeof(CompositeStepEffect), nameof(Mode), 0, D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER);
+        }
 
         public CompositeStepEffect()
-            : base(2)
+                : base(2)
         {
         }
 
