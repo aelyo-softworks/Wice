@@ -292,11 +292,8 @@ namespace Wice
         [Category(CategoryBehavior)]
         public CompositionEasingFunction ColorAnimationEasingFunction { get; set; }
 
-        [Category(CategoryBehavior)]
-        public virtual bool DisablePointerEvents { get; set; }
-
-        [Category(CategoryBehavior)]
-        public virtual bool DisableKeyEvents { get; set; }
+        protected internal bool DisablePointerEvents { get; set; }
+        protected internal virtual bool DisableKeyEvents { get; set; }
 
         protected D2D_SIZE_F? LastMeasureSize => _lastMeasureSize;
         protected D2D_RECT_F? LastArrangeRect => _lastArrangeRect;
