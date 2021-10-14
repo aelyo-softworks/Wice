@@ -1897,7 +1897,7 @@ namespace Wice
 
         public static void ReleaseMouseCapture()
         {
-            Application.Trace("visual: " + _mouseCaptorVisual);
+            //Application.Trace("visual: " + _mouseCaptorVisual);
             Interlocked.Exchange(ref _mouseCaptorVisual, null);
             NativeWindow.ReleaseMouse();
         }
@@ -1910,7 +1910,7 @@ namespace Wice
                 throw new ArgumentException(nameof(visual));
 
             Interlocked.Exchange(ref _mouseCaptorVisual, visual);
-            Application.Trace("visual: " + visual);
+            //Application.Trace("visual: " + visual);
         }
 
         private new void OnPointerWheelEvent(PointerWheelEventArgs e)

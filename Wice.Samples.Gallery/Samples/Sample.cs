@@ -16,9 +16,10 @@ namespace Wice.Samples.Gallery.Samples
         }
 
         protected internal Compositor Compositor { get; internal set; }
+        protected internal Window Window { get; internal set; }
         public virtual bool IsEnabled => true;
         public virtual int SortOrder => 0;
-        public abstract string Description { get; }
+        public virtual string Description { get; }
         public abstract void Layout(Visual parent);
 
         public override string ToString() => Description;

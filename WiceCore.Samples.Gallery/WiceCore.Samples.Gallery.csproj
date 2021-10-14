@@ -141,6 +141,17 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Text\RichTextBox\RtfRichTextBoxSample.cs" Link="Samples\Text\RichTextBox\RtfRichTextBoxSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Text\TextBox\ColorFontTextBoxSample.cs" Link="Samples\Text\TextBox\ColorFontTextBoxSample.cs" />
     <EmbeddedResource Include="..\Wice.Samples.Gallery\Resources\lorem-cn.txt" Link="Resources\lorem-cn.txt" />
+    <Compile Include="..\Wice.Samples.Gallery\Pages\EffectsPage.cs" Link="Pages\EffectsPage.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\Sepia\SepiaSample.cs" Link="Samples\Effects\Sepia\SepiaSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\SepiaSampleList.cs" Link="Samples\Effects\SepiaSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\TemperatureTint\TemperatureTintSample.cs" Link="Samples\Effects\TemperatureTint\TemperatureTintSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\TemperatureTintSampleList.cs" Link="Samples\Effects\TemperatureTintSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\GaussianBlur\GaussianBlurSample.cs" Link="Samples\Effects\GaussianBlur\GaussianBlurSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\GaussianBlurSampleList.cs" Link="Samples\Effects\GaussianBlurSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\GrayscaleSampleList.cs" Link="Samples\Effects\GrayscaleSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\Grayscale\GrayscaleSample.cs" Link="Samples\Effects\Grayscale\GrayscaleSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\Contrast\ContrastSample.cs" Link="Samples\Effects\Contrast\ContrastSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\ContrastSampleList.cs" Link="Samples\Effects\ContrastSampleList.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />
