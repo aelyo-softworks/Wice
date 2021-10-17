@@ -10,7 +10,7 @@ namespace DirectN
         public TOUCH_MASK touchMask;
         public tagRECT rcContact;
         public tagRECT rcContactRaw;
-        public uint orientation;
-        public uint pressure;
+        public int orientation;
+        public int pressure;
     }
 }

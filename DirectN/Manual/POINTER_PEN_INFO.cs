@@ -8,8 +8,8 @@ namespace DirectN
         public POINTER_INFO pointerInfo;
         public PEN_FLAGS penFlags;
         public PEN_MASK penMask;
-        public uint pressure;
-        public uint rotation;
+        public int pressure;
+        public int rotation;
         public int tiltX;
         public int tiltY;
     }

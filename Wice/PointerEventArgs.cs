@@ -16,6 +16,24 @@ namespace Wice
         public POINTER_PEN_INFO PointerPenInfo => WindowsFunctions.GetPointerPenInfo(PointerId);
         public POINTER_TOUCH_INFO PointerTouchInfo => WindowsFunctions.GetPointerTouchInfo(PointerId);
 
+        public int Pressure
+        {
+            get
+            {
+                switch (PointerType)
+                {
+                    case POINTER_INPUT_TYPE.PT_PEN:
+                        return PointerPenInfo.pressure;
+
+                    case POINTER_INPUT_TYPE.PT_TOUCH:
+                        return PointerTouchInfo.pressure;
+
+                    default:
+                        return 0;
+                }
+            }
+        }
+
         public MouseButton? MouseButton
         {
             get
