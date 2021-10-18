@@ -285,7 +285,6 @@ namespace Wice
             IComObject<IDWriteTextFormat> format;
             IComObject<IDWriteInlineObject> io = null;
             var size = GetFontSize(text);
-            //Application.Trace("size:" + size);
             format = CreateTextFormat(family, size, text.FontCollection?.Object, text.FontWeight, text.FontStyle, text.FontStretch);
             if (text.TrimmingGranularity == DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER)
             {
@@ -403,12 +402,12 @@ namespace Wice
             using (var sink = path.Open<ID2D1GeometrySink>())
             {
                 var size = new D2D_SIZE_F(width / 4, height / 2);
-                sink.Object.BeginFigure(new D2D_POINT_2F(margin + width / 4, margin), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_FILLED);
+                sink.BeginFigure(new D2D_POINT_2F(margin + width / 4, margin));
                 sink.AddArc(new D2D_POINT_2F(margin + width / 4, margin + height), size);
                 sink.AddLine(new D2D_POINT_2F(margin + width * 3 / 4, margin + height));
                 sink.AddArc(new D2D_POINT_2F(margin + width * 3 / 4, margin), size);
-                sink.Object.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_CLOSED);
-                sink.Object.Close();
+                sink.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_CLOSED);
+                sink.Close();
             }
             return path;
         }
@@ -421,10 +420,10 @@ namespace Wice
             var path = D2DFactory.CreatePathGeometry();
             using (var sink = path.Open())
             {
-                sink.Object.BeginFigure(new D2D_POINT_2F(width / 8, height / 2), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
+                sink.BeginFigure(new D2D_POINT_2F(width / 8, height / 2), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
                 sink.AddLines(new D2D_POINT_2F(width / 3, height * 3 / 4), new D2D_POINT_2F(7 * width / 8, height / 4));
-                sink.Object.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN);
-                sink.Object.Close();
+                sink.EndFigure();
+                sink.Close();
             }
             return path;
         }
@@ -475,10 +474,10 @@ namespace Wice
                         throw new NotSupportedException();
                 }
 
-                sink.Object.BeginFigure(start, open ? D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW : D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_FILLED);
+                sink.BeginFigure(start, open ? D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW : D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_FILLED);
                 sink.AddLines(arrow, end);
-                sink.Object.EndFigure(open ? D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN : D2D1_FIGURE_END.D2D1_FIGURE_END_CLOSED);
-                sink.Object.Close();
+                sink.EndFigure(open ? D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN : D2D1_FIGURE_END.D2D1_FIGURE_END_CLOSED);
+                sink.Close();
             }
             return path;
         }
@@ -494,19 +493,19 @@ namespace Wice
                 switch (type)
                 {
                     case TitleBarButtonType.Close:
-                        sink.Object.BeginFigure(new D2D_POINT_2F(), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
+                        sink.BeginFigure(new D2D_POINT_2F(), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
                         sink.AddLine(new D2D_POINT_2F(width, width));
-                        sink.Object.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN);
-                        sink.Object.BeginFigure(new D2D_POINT_2F(width, 0), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
+                        sink.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN);
+                        sink.BeginFigure(new D2D_POINT_2F(width, 0), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
                         sink.AddLine(new D2D_POINT_2F(0, width));
-                        sink.Object.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN);
+                        sink.EndFigure();
                         break;
 
                     case TitleBarButtonType.Minimize:
                         const float forceAliasing = 0.5f; // works only if width is integral...
-                        sink.Object.BeginFigure(new D2D_POINT_2F(0, width / 2 + forceAliasing), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
+                        sink.BeginFigure(new D2D_POINT_2F(0, width / 2 + forceAliasing), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
                         sink.AddLine(new D2D_POINT_2F(width, width / 2 + forceAliasing));
-                        sink.Object.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN);
+                        sink.EndFigure();
                         break;
 
                     case TitleBarButtonType.Restore:
@@ -519,22 +518,22 @@ namespace Wice
                         // |         +-+
                         // +---------+
                         const float offset = 2.5f;
-                        sink.Object.BeginFigure(new D2D_POINT_2F(offset, offset), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
+                        sink.BeginFigure(new D2D_POINT_2F(offset, offset), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
                         sink.AddLines(new D2D_POINT_2F(offset, 0), new D2D_POINT_2F(width, 0), new D2D_POINT_2F(width, width - offset), new D2D_POINT_2F(width - offset, width - offset));
-                        sink.Object.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN);
+                        sink.EndFigure();
 
-                        sink.Object.BeginFigure(new D2D_POINT_2F(0, offset), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
+                        sink.BeginFigure(new D2D_POINT_2F(0, offset), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
                         sink.AddLines(new D2D_POINT_2F(width - offset, offset), new D2D_POINT_2F(width - offset, width), new D2D_POINT_2F(0, width));
-                        sink.Object.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_CLOSED);
+                        sink.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_CLOSED);
                         break;
 
                     case TitleBarButtonType.Maximize:
-                        sink.Object.BeginFigure(new D2D_POINT_2F(0, 0), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
+                        sink.BeginFigure(new D2D_POINT_2F(0, 0), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
                         sink.AddLines(new D2D_POINT_2F(width, 0), new D2D_POINT_2F(width, width), new D2D_POINT_2F(0, width));
-                        sink.Object.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_CLOSED);
+                        sink.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_CLOSED);
                         break;
                 }
-                sink.Object.Close();
+                sink.Close();
             }
             return path;
         }

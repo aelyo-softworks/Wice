@@ -55,5 +55,50 @@ namespace DirectN
                 sink.AddLines(new[] { point }, 1);
             }
         }
+
+        public static void BeginFigure(this IComObject<ID2D1SimplifiedGeometrySink> sink, D2D_POINT_2F startPoint, D2D1_FIGURE_BEGIN figureBegin = D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_FILLED) => BeginFigure(sink?.Object, startPoint, figureBegin);
+        public static void BeginFigure(this ID2D1SimplifiedGeometrySink sink, D2D_POINT_2F startPoint, D2D1_FIGURE_BEGIN figureBegin = D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_FILLED)
+        {
+            if (sink == null)
+                throw new ArgumentNullException(nameof(sink));
+
+            sink.BeginFigure(startPoint, figureBegin);
+        }
+
+        public static void EndFigure(this IComObject<ID2D1SimplifiedGeometrySink> sink, D2D1_FIGURE_END figureEnd = D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN) => EndFigure(sink?.Object, figureEnd);
+        public static void EndFigure(this ID2D1SimplifiedGeometrySink sink, D2D1_FIGURE_END figureEnd = D2D1_FIGURE_END.D2D1_FIGURE_END_OPEN)
+        {
+            if (sink == null)
+                throw new ArgumentNullException(nameof(sink));
+
+            sink.EndFigure(figureEnd);
+        }
+
+        public static void Close(this IComObject<ID2D1SimplifiedGeometrySink> sink) => Close(sink?.Object);
+        public static void Close(this ID2D1SimplifiedGeometrySink sink)
+        {
+            if (sink == null)
+                throw new ArgumentNullException(nameof(sink));
+
+            sink.Close().ThrowOnError();
+        }
+
+        public static void SetFillMode(this IComObject<ID2D1SimplifiedGeometrySink> sink, D2D1_FILL_MODE fillMode = D2D1_FILL_MODE.D2D1_FILL_MODE_ALTERNATE) => SetFillMode(sink?.Object, fillMode);
+        public static void SetFillMode(this ID2D1SimplifiedGeometrySink sink, D2D1_FILL_MODE fillMode = D2D1_FILL_MODE.D2D1_FILL_MODE_ALTERNATE)
+        {
+            if (sink == null)
+                throw new ArgumentNullException(nameof(sink));
+
+            sink.SetFillMode(fillMode);
+        }
+
+        public static void SetSegmentFlags(this IComObject<ID2D1SimplifiedGeometrySink> sink, D2D1_PATH_SEGMENT vertexFlags = D2D1_PATH_SEGMENT.D2D1_PATH_SEGMENT_NONE) => SetSegmentFlags(sink?.Object, vertexFlags);
+        public static void SetSegmentFlags(this ID2D1SimplifiedGeometrySink sink, D2D1_PATH_SEGMENT vertexFlags = D2D1_PATH_SEGMENT.D2D1_PATH_SEGMENT_NONE)
+        {
+            if (sink == null)
+                throw new ArgumentNullException(nameof(sink));
+
+            sink.SetSegmentFlags(vertexFlags);
+        }
     }
 }
