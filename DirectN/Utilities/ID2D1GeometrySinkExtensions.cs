@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DirectN
 {
@@ -17,6 +19,32 @@ namespace DirectN
             seg.sweepDirection = sweepDirection;
             seg.arcSize = arcSize;
             sink.AddArc(ref seg);
+        }
+
+        public static void AddQuadraticBeziers(this IComObject<ID2D1GeometrySink> sink, params D2D1_QUADRATIC_BEZIER_SEGMENT[] segments) => AddQuadraticBeziers(sink?.Object, segments);
+        public static void AddQuadraticBeziers(this IComObject<ID2D1GeometrySink> sink, IEnumerable<D2D1_QUADRATIC_BEZIER_SEGMENT> segments) => AddQuadraticBeziers(sink?.Object, segments);
+        public static void AddQuadraticBeziers(this ID2D1GeometrySink sink, IEnumerable<D2D1_QUADRATIC_BEZIER_SEGMENT> segments)
+        {
+            if (sink == null)
+                throw new ArgumentNullException(nameof(sink));
+
+            if (segments == null)
+                throw new ArgumentNullException(nameof(segments));
+
+            var array = segments.ToArray();
+            if (array.Length == 0)
+                throw new ArgumentException(null, nameof(segments));
+
+            sink.AddQuadraticBeziers(array, array.Length);
+        }
+
+        public static void AddQuadraticBezier(this IComObject<ID2D1GeometrySink> sink, D2D1_QUADRATIC_BEZIER_SEGMENT segment) => AddQuadraticBezier(sink?.Object, segment);
+        public static void AddQuadraticBezier(this ID2D1GeometrySink sink, D2D1_QUADRATIC_BEZIER_SEGMENT segment)
+        {
+            if (sink == null)
+                throw new ArgumentNullException(nameof(sink));
+
+            sink.AddQuadraticBezier(ref segment);
         }
     }
 }

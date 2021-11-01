@@ -23,6 +23,22 @@ namespace DirectN
             sink.AddBeziers(array, array.Length);
         }
 
+        public static void AddBezier(this IComObject<ID2D1SimplifiedGeometrySink> sink, D2D1_BEZIER_SEGMENT segment) => AddBezier(sink?.Object, segment);
+        public static void AddBezier(this ID2D1SimplifiedGeometrySink sink, D2D1_BEZIER_SEGMENT segment)
+        {
+            if (sink == null)
+                throw new ArgumentNullException(nameof(sink));
+
+            if (sink is ID2D1GeometrySink gsink)
+            {
+                gsink.AddBezier(ref segment);
+            }
+            else
+            {
+                sink.AddBeziers(new[] { segment }, 1);
+            }
+        }
+
         public static void AddLines(this IComObject<ID2D1SimplifiedGeometrySink> sink, params D2D_POINT_2F[] points) => AddLines(sink?.Object, points);
         public static void AddLines(this IComObject<ID2D1SimplifiedGeometrySink> sink, IEnumerable<D2D_POINT_2F> points) => AddLines(sink?.Object, points);
         public static void AddLines(this ID2D1SimplifiedGeometrySink sink, IEnumerable<D2D_POINT_2F> points)
