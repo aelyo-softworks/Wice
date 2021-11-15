@@ -538,5 +538,24 @@ namespace DirectN
 
             context.PopLayer();
         }
+
+        public static IComObject<ID2D1BitmapRenderTarget> CreateCompatibleRenderTarget(this IComObject<ID2D1DeviceContext> context, D2D_SIZE_F? desiredSize = null, D2D_SIZE_U? desiredPixelSize = null, D2D1_PIXEL_FORMAT? desiredFormat = null, D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS options = D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS.D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_NONE) => CreateCompatibleRenderTarget(context?.Object, desiredSize, desiredPixelSize, desiredFormat, options);
+        public static IComObject<ID2D1BitmapRenderTarget> CreateCompatibleRenderTarget(this ID2D1DeviceContext context, D2D_SIZE_F? desiredSize = null, D2D_SIZE_U? desiredPixelSize = null, D2D1_PIXEL_FORMAT? desiredFormat = null, D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS options = D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS.D2D1_COMPATIBLE_RENDER_TARGET_OPTIONS_NONE)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+
+            using (var desiredSizeMem = new ComMemory(desiredSize))
+            {
+                using (var desiredPixelSizeMem = new ComMemory(desiredPixelSize))
+                {
+                    using (var desiredFormatMem = new ComMemory(desiredFormat))
+                    {
+                        context.CreateCompatibleRenderTarget(desiredSizeMem.Pointer, desiredPixelSizeMem.Pointer, desiredFormatMem.Pointer, options, out var target).ThrowOnError();
+                        return new ComObject<ID2D1BitmapRenderTarget>(target);
+                    }
+                }
+            }
+        }
     }
 }

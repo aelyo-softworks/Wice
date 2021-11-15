@@ -268,6 +268,20 @@ namespace DirectN
         //public static implicit operator T(ComObject<T> value) => value.Object;
     }
 
+    public sealed class NoDisposeComObject<T> : IComObject<T>
+    {
+        public NoDisposeComObject(object comObject)
+        {
+            Object = (T)comObject;
+        }
+
+        public T Object { get; }
+        public bool IsDisposed => false;
+
+        public I As<I>(bool throwOnError = false) where I : class => throwOnError ? (I)(object)Object : Object as I;
+        public void Dispose() { }
+    }
+
     public interface IComObject<out T> : IDisposable
     {
         T Object { get; }
