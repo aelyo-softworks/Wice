@@ -252,18 +252,23 @@ namespace DirectN
 
             var point = new D2D_POINT_2F();
             var unitTangentVector = new D2D_POINT_2F();
-            if (worldTransform.HasValue)
+            using (var pointMem = new ComMemory(point))
+            using (var unitTangentVectorMem = new ComMemory(unitTangentVector))
             {
-                using (var mem = new ComMemory(worldTransform.Value))
+                if (worldTransform.HasValue)
                 {
-                    geometry.ComputePointAtLength(length, mem.Pointer, flatteningTolerance, ref point, ref unitTangentVector).ThrowOnError();
+                    using (var mem = new ComMemory(worldTransform.Value))
+                    {
+                        geometry.ComputePointAtLength(length, mem.Pointer, flatteningTolerance, pointMem.Pointer, unitTangentVectorMem.Pointer).ThrowOnError();
+                    }
                 }
+                else
+                {
+                    geometry.ComputePointAtLength(length, IntPtr.Zero, flatteningTolerance, pointMem.Pointer, unitTangentVectorMem.Pointer).ThrowOnError();
+                }
+
+                return new Tuple<D2D_POINT_2F, D2D_POINT_2F>(pointMem.ToStructure<D2D_POINT_2F>(), unitTangentVectorMem.ToStructure<D2D_POINT_2F>());
             }
-            else
-            {
-                geometry.ComputePointAtLength(length, IntPtr.Zero, flatteningTolerance, ref point, ref unitTangentVector).ThrowOnError();
-            }
-            return new Tuple<D2D_POINT_2F, D2D_POINT_2F>(point, unitTangentVector);
         }
 
         public static void Widen(this IComObject<ID2D1Geometry> geometry, IComObject<ID2D1SimplifiedGeometrySink> geometrySink, float strokeWidth, IComObject<ID2D1StrokeStyle> strokeStyle = null, D2D_MATRIX_3X2_F? worldTransform = null, float flatteningTolerance = D2D1_DEFAULT_FLATTENING_TOLERANCE) => Widen(geometry?.Object, geometrySink?.Object, strokeWidth, strokeStyle?.Object, worldTransform, flatteningTolerance);
