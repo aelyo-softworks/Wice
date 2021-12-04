@@ -965,5 +965,7 @@
     <Compile Include="..\DirectN\Utilities\ID2D1GeometryExtensions.cs" Link="Utilities\ID2D1GeometryExtensions.cs" />
     <Compile Include="..\DirectN\Utilities\IWICBitmapFrameDecodeExtensions.cs" Link="Utilities\IWICBitmapFrameDecodeExtensions.cs" />
     <Compile Include="..\DirectN\Utilities\IWICColorContextExtensions.cs" Link="Utilities\IWICColorContextExtensions.cs" />
+    <Compile Include="..\DirectN\Utilities\ColorProfile.cs" Link="Utilities\ColorProfile.cs" />
+    <Compile Include="..\DirectN\Manual\CIEXYZ.cs" Link="Manual\CIEXYZ.cs" />
   </ItemGroup>
 </Project>
