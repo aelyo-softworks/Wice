@@ -7,7 +7,7 @@ namespace Wice.Resources
 {
     public static class ResourcesUtilities
     {
-        public static ComObject<IWICBitmapSource> GetWicBitmapSource(Assembly assembly, string name, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
+        public static IComObject<IWICBitmapSource> GetWicBitmapSource(Assembly assembly, string name, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
@@ -20,7 +20,7 @@ namespace Wice.Resources
             return WICFunctions.LoadBitmapSource(stream, metadataOptions);
         }
 
-        public static ComObject<IWICBitmapSource> GetWicBitmapSource(Assembly assembly, Func<string, bool> predicate, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
+        public static IComObject<IWICBitmapSource> GetWicBitmapSource(Assembly assembly, Func<string, bool> predicate, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
         {
             if (predicate == null)
                 throw new ArgumentNullException(nameof(predicate));

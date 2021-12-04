@@ -15,7 +15,7 @@ namespace Wice
         public static VisualProperty SourceRectangleProperty = VisualProperty.Add<D2D_RECT_F?>(typeof(Image), nameof(SourceRectangle), VisualPropertyInvalidateModes.Measure);
 
         private bool _disposedValue;
-        private ComObject<ID2D1Bitmap> _bitmap;
+        private IComObject<ID2D1Bitmap> _bitmap;
 
         public Image()
         {

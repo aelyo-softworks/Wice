@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace DirectN
 {
     public static partial class WICFunctions
     {
-        public static ComObject<IWICBitmapSource> LoadBitmapSource(string filePath, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
+        public static IComObject<IWICBitmapSource> LoadBitmapSource(string filePath, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
         {
             if (filePath == null)
                 throw new ArgumentNullException(nameof(filePath));
@@ -32,7 +31,7 @@ namespace DirectN
             }
         }
 
-        public static ComObject<IWICBitmapSource> LoadBitmapSource(Stream stream, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
+        public static IComObject<IWICBitmapSource> LoadBitmapSource(Stream stream, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
         {
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
@@ -56,6 +55,37 @@ namespace DirectN
                 ComObject.Release(decoder);
                 ComObject.Release(wfac);
             }
+        }
+
+        public static IComObject<IWICColorContext> CreateColorContext()
+        {
+            var wfac = (IWICImagingFactory)new WICImagingFactory();
+            try
+            {
+                wfac.CreateColorContext(out var context).ThrowOnError();
+                return new ComObject<IWICColorContext>(context);
+            }
+            finally
+            {
+                ComObject.Release(wfac);
+            }
+        }
+
+        public static IComObject<IWICColorContext> CreateColorContext(uint exifColorSpace)
+        {
+            var context = CreateColorContext();
+            context.Object.InitializeFromExifColorSpace(exifColorSpace).ThrowOnError();
+            return context;
+        }
+
+        public static IComObject<IWICColorContext> CreateColorContext(string fileName)
+        {
+            if (fileName == null)
+                throw new ArgumentNullException(nameof(fileName));
+
+            var context = CreateColorContext();
+            context.Object.InitializeFromFilename(fileName).ThrowOnError();
+            return context;
         }
 
         [Flags]

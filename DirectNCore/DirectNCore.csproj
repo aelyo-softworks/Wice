@@ -963,5 +963,7 @@
     <Compile Include="..\DirectN\Manual\TOUCH_MASK.cs" Link="Manual\TOUCH_MASK.cs" />
     <Compile Include="..\DirectN\Manual\PA.cs" Link="Manual\PA.cs" />
     <Compile Include="..\DirectN\Utilities\ID2D1GeometryExtensions.cs" Link="Utilities\ID2D1GeometryExtensions.cs" />
+    <Compile Include="..\DirectN\Utilities\IWICBitmapFrameDecodeExtensions.cs" Link="Utilities\IWICBitmapFrameDecodeExtensions.cs" />
+    <Compile Include="..\DirectN\Utilities\IWICColorContextExtensions.cs" Link="Utilities\IWICColorContextExtensions.cs" />
   </ItemGroup>
 </Project>

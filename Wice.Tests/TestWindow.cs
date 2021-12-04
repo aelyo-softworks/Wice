@@ -67,13 +67,13 @@ namespace Wice.Tests
             //AddPropertyGridInDialog();
 
             //AddUniformGridShapes(10);
-            AddUniformColorGrid(10);
+            //AddUniformColorGrid(10);
             //AddUniformGridImmersiveColors();
             //AddUniformGridSysColors();
 
             //AddScrollViewImage();
             //AddScrollViewSmall();
-            //AddFillImage();
+            AddFillImage();
 
             //AddDock();
             //AddOneDockChild();
@@ -1683,7 +1683,8 @@ namespace Wice.Tests
             //img.HoverBackgroundColor = _D3DCOLORVALUE.Wheat;
             //img.Margin = 10;
             //img.InterpolationMode = D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC;
-            img.Source = Application.Current.ResourceManager.GetWicBitmapSource(@"Resources\rainier.jpg");
+            //img.Source = Application.Current.ResourceManager.GetWicBitmapSource(@"Resources\rainier.jpg");
+            img.Source = Application.Current.ResourceManager.GetWicBitmapSource(@"d:\downloads\foot.jpg");
         }
 
         public void AddUniformColorGrid(int size)
