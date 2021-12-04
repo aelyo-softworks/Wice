@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -94,14 +93,36 @@ namespace DirectN
                                     var n = getInt32();
                                     if (n > 0)
                                     {
-                                        Description = getAscii(n);
+                                        switch (tag)
+                                        {
+                                            case 0x64657363:
+                                                Description = getAscii(n);
+                                                break;
+
+                                            case 0x646d6e64:
+                                                ManufacturerDescription = getAscii(n);
+                                                break;
+
+                                            case 0x646d6464:
+                                                ModelDescription = getAscii(n);
+                                                break;
+                                        }
                                     }
 
                                     UnicodeLanguageCode = getInt32();
                                     var m = getInt32();
                                     if (m > 0)
                                     {
-                                        Description = getUnicode(m);
+                                        switch (tag)
+                                        {
+                                            case 0x64657363:
+                                                Description = getUnicode(n);
+                                                break;
+
+                                            case 0x646d6464:
+                                                ModelDescription = getUnicode(n);
+                                                break;
+                                        }
                                     }
                                     break;
 
@@ -206,6 +227,8 @@ namespace DirectN
 
         public int UnicodeLanguageCode { get; }
         public string Description { get; }
+        public string ManufacturerDescription { get; }
+        public string ModelDescription { get; }
         public IReadOnlyDictionary<string, IReadOnlyList<string>> LocalizedStrings { get; }
         public string Copyright { get; }
         public string RegisteredCharacterization { get; }
