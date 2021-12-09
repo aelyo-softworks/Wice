@@ -102,6 +102,28 @@ namespace DirectN
             return new ComObject<T>((T)target);
         }
 
+        public static IComObject<ID2D1StrokeStyle1> CreateStrokeStyle(this IComObject<ID2D1Factory1> factory, D2D1_STROKE_STYLE_PROPERTIES1 properties, IEnumerable<float> dashes = null) => CreateStrokeStyle<ID2D1StrokeStyle1>(factory?.Object, properties, dashes);
+        public static IComObject<T> CreateStrokeStyle<T>(this IComObject<ID2D1Factory1> factory, D2D1_STROKE_STYLE_PROPERTIES1 properties, IEnumerable<float> dashes = null) where T : ID2D1StrokeStyle1 => CreateStrokeStyle<T>(factory?.Object, properties, dashes);
+        public static IComObject<T> CreateStrokeStyle<T>(this ID2D1Factory1 factory, D2D1_STROKE_STYLE_PROPERTIES1 properties, IEnumerable<float> dashes = null) where T : ID2D1StrokeStyle1
+        {
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
+
+            factory.CreateStrokeStyle(ref properties, dashes?.ToArray(), (dashes?.Count()).GetValueOrDefault(), out var style).ThrowOnError();
+            return new ComObject<T>((T)style);
+        }
+
+        public static IComObject<ID2D1StrokeStyle> CreateStrokeStyle(this IComObject<ID2D1Factory1> factory, D2D1_STROKE_STYLE_PROPERTIES properties, IEnumerable<float> dashes = null) => CreateStrokeStyle<ID2D1StrokeStyle>(factory?.Object, properties, dashes);
+        public static IComObject<T> CreateStrokeStyle<T>(this IComObject<ID2D1Factory1> factory, D2D1_STROKE_STYLE_PROPERTIES properties, IEnumerable<float> dashes = null) where T : ID2D1StrokeStyle => CreateStrokeStyle<T>(factory?.Object, properties, dashes);
+        public static IComObject<T> CreateStrokeStyle<T>(this ID2D1Factory1 factory, D2D1_STROKE_STYLE_PROPERTIES properties, IEnumerable<float> dashes = null) where T : ID2D1StrokeStyle
+        {
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
+
+            factory.CreateStrokeStyle(ref properties, dashes?.ToArray(), (dashes?.Count()).GetValueOrDefault(), out var style).ThrowOnError();
+            return new ComObject<T>((T)style);
+        }
+
         public static Guid[] GetRegisteredEffects(this IComObject<ID2D1Factory1> factory) => GetRegisteredEffects(factory?.Object);
         public static Guid[] GetRegisteredEffects(this ID2D1Factory1 factory)
         {
