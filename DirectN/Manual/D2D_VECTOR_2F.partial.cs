@@ -13,12 +13,49 @@ namespace DirectN
             this.y = y;
         }
 
+        public D2D_VECTOR_2F(double x, double y)
+        {
+            this.x = (float)x;
+            this.y = (float)y;
+        }
+
+        public D2D_VECTOR_2F(D2D_POINT_2F point0, D2D_POINT_2F point1)
+        {
+            x = point1.x - point0.x;
+            y = point1.y - point0.y;
+        }
+
         public override string ToString() => "X: " + x + " Y: " + y;
 
         public bool IsValid => !IsInvalid;
         public bool IsInvalid => x.IsInvalid() || y.IsInvalid();
         public bool IsSet => x.IsSet() && y.IsSet();
         public bool IsNotSet => x.IsNotSet() || y.IsNotSet();
+        public float Length => (float)Math.Sqrt(x * x + y * y);
+
+        public D2D_VECTOR_2F Normalize()
+        {
+            var len = Length;
+            if (len == 0)
+                return new D2D_VECTOR_2F();
+
+            return new D2D_VECTOR_2F(x / len, y / len);
+        }
+
+        public D2D_VECTOR_2F RotateDegree(double angle) => RotateRadian(angle * Math.PI / 180);
+        public D2D_VECTOR_2F RotateRadian(double angle)
+        {
+            var xr = x * Math.Cos(angle) - y * Math.Sin(angle);
+            var yr = x * Math.Sin(angle) + y * Math.Cos(angle);
+            return new D2D_VECTOR_2F(xr, yr);
+        }
+
+        public D2D_VECTOR_2F Rotate90() => new D2D_VECTOR_2F(-y, x);
+        public D2D_VECTOR_2F Rotate180() => new D2D_VECTOR_2F(-x, -y);
+        public D2D_VECTOR_2F Rotate270() => new D2D_VECTOR_2F(y, -x);
+
+        public D2D_POINT_2F TranslatePoint(D2D_POINT_2F point, float length = 1) => new D2D_POINT_2F(point.x + x * length, point.y + y * length);
+
         public bool Equals(D2D_VECTOR_2F other) => x.Equals(other.x) && y.Equals(other.y);
         public float[] ToArray() => new[] { x, y };
         public override bool Equals(object obj) => obj is D2D_VECTOR_2F sz && Equals(sz);
