@@ -86,10 +86,14 @@ namespace DirectN
 
         public D2D_VECTOR_2F Add(D2D_VECTOR_2F other) => new D2D_VECTOR_2F(x + other.x, y + other.y);
         public D2D_VECTOR_2F Remove(D2D_VECTOR_2F other) => new D2D_VECTOR_2F(x - other.x, y - other.y);
-        public float Dot(D2D_VECTOR_2F other) => x * other.x + y * other.y;
+        public float Dot(D2D_VECTOR_2F other) => x * other.x + y * other.y; // = Scalar
         public float Cross(D2D_VECTOR_2F other) => x * other.y - y * other.x;
         public float AngleRadian(D2D_VECTOR_2F other) => (float)Math.Atan2(Cross(other), Dot(other));
         public float AngleDegree(D2D_VECTOR_2F other) => (float)(Math.Atan2(Cross(other), Dot(other)) * 180 / Math.PI);
+
+        public bool IsColinear(D2D_VECTOR_2F other) => Cross(other) == 0;
+        public bool IsParallel(D2D_VECTOR_2F other) => Dot(other) == Length * other.Length;
+        public bool IsAntiParallel(D2D_VECTOR_2F other) => Dot(other) == -Length * other.Length;
 
         public D2D_POINT_2F TranslatePoint(D2D_POINT_2F point, float length = 1) => new D2D_POINT_2F(point.x + x * length, point.y + y * length);
 
