@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace DirectN
@@ -64,6 +66,55 @@ namespace DirectN
                 context.CreateSolidColorBrush(ref color, props.Pointer, out var brush).ThrowOnError();
                 return new ComObject<T>((T)brush);
             }
+        }
+
+        public static IComObject<ID2D1RadialGradientBrush> CreateRadialGradientBrush(this IComObject<ID2D1DeviceContext> context, D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES gradientBrushProperties, IComObject<ID2D1GradientStopCollection> stops, D2D1_BRUSH_PROPERTIES? brushProperties = null) => CreateRadialGradientBrush(context?.Object, gradientBrushProperties, stops?.Object, brushProperties);
+        public static IComObject<ID2D1RadialGradientBrush> CreateRadialGradientBrush(this ID2D1DeviceContext context, D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES gradientBrushProperties, ID2D1GradientStopCollection stops, D2D1_BRUSH_PROPERTIES? brushProperties = null)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+
+            if (stops == null)
+                throw new ArgumentNullException(nameof(stops));
+
+            using (var props = brushProperties.StructureToMemory())
+            {
+                context.CreateRadialGradientBrush(gradientBrushProperties, props.Pointer, stops, out var brush).ThrowOnError();
+                return new ComObject<ID2D1RadialGradientBrush>(brush);
+            }
+        }
+
+        public static IComObject<ID2D1LinearGradientBrush> CreateLinearGradientBrush(this IComObject<ID2D1DeviceContext> context, D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES gradientBrushProperties, IComObject<ID2D1GradientStopCollection> stops, D2D1_BRUSH_PROPERTIES? brushProperties = null) => CreateLinearGradientBrush(context?.Object, gradientBrushProperties, stops?.Object, brushProperties);
+        public static IComObject<ID2D1LinearGradientBrush> CreateLinearGradientBrush(this ID2D1DeviceContext context, D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES gradientBrushProperties, ID2D1GradientStopCollection stops, D2D1_BRUSH_PROPERTIES? brushProperties = null)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+
+            if (stops == null)
+                throw new ArgumentNullException(nameof(stops));
+
+            using (var props = brushProperties.StructureToMemory())
+            {
+                context.CreateLinearGradientBrush(gradientBrushProperties, props.Pointer, stops, out var brush).ThrowOnError();
+                return new ComObject<ID2D1LinearGradientBrush>(brush);
+            }
+        }
+
+        public static IComObject<ID2D1GradientStopCollection> CreateGradientStopCollection(this IComObject<ID2D1DeviceContext> context, IEnumerable<D2D1_GRADIENT_STOP> stops, D2D1_GAMMA gamma = D2D1_GAMMA.D2D1_GAMMA_2_2, D2D1_EXTEND_MODE extendMode = D2D1_EXTEND_MODE.D2D1_EXTEND_MODE_CLAMP) => CreateGradientStopCollection(context?.Object, stops, gamma, extendMode);
+        public static IComObject<ID2D1GradientStopCollection> CreateGradientStopCollection(this ID2D1DeviceContext context, IEnumerable<D2D1_GRADIENT_STOP> stops, D2D1_GAMMA gamma = D2D1_GAMMA.D2D1_GAMMA_2_2, D2D1_EXTEND_MODE extendMode = D2D1_EXTEND_MODE.D2D1_EXTEND_MODE_CLAMP)
+        {
+            if (context == null)
+                throw new ArgumentNullException(nameof(context));
+
+            if (stops == null)
+                throw new ArgumentNullException(nameof(stops));
+
+            var finalStops = stops.ToArray();
+            if (finalStops.Length == 0)
+                throw new ArgumentException(null, nameof(stops));
+
+            context.CreateGradientStopCollection(finalStops, finalStops.Length, gamma, extendMode, out var stps).ThrowOnError();
+            return new ComObject<ID2D1GradientStopCollection>(stps);
         }
 
         public static void WithAntialiasMode(this IComObject<ID2D1DeviceContext> context, D2D1_ANTIALIAS_MODE mode, Action action) => WithAntialiasMode(context?.Object, mode, action);
