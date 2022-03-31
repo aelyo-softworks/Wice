@@ -89,22 +89,7 @@ namespace Wice
             if (win == null || !ShouldRender)
                 return;
 
-            visual.DrawOnSurface(win.CompositionDevice, (dc) =>
-            {
-                var context = new RenderContext();
-                context.DeviceContext = dc;
-                context.SurfaceCreationOptions = creationOptions;
-                context.SurfaceRect = rect;
-
-                try
-                {
-                    RenderCore(context);
-                }
-                finally
-                {
-                    context.DeviceContext = null;
-                }
-            }, creationOptions, rect);
+            visual.DrawOnSurface(win.CompositionDevice, dc => RenderContext.WithRenderContext(dc, rc => RenderCore(rc), creationOptions, rect), creationOptions, rect);
         }
 
         protected internal virtual void RenderOverChildren(RenderContext context)

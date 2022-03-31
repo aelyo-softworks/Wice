@@ -6,10 +6,35 @@ namespace Wice
 {
     public class RenderContext
     {
-        public bool IsOverChildren { get; internal set; }
-        public IComObject<ID2D1DeviceContext> DeviceContext { get; internal set; }
-        public SurfaceCreationOptions SurfaceCreationOptions { get; internal set; }
-        public tagRECT? SurfaceRect { get; internal set; }
+        private RenderContext(IComObject<ID2D1DeviceContext> deviceContext, SurfaceCreationOptions creationOptions = null, tagRECT? rect = null)
+        {
+            DeviceContext = deviceContext;
+            SurfaceRect = rect;
+            SurfaceCreationOptions = creationOptions;
+        }
+
+        public IComObject<ID2D1DeviceContext> DeviceContext { get; private set; }
+        public SurfaceCreationOptions SurfaceCreationOptions { get; }
+        public tagRECT? SurfaceRect { get; }
+
+        public static void WithRenderContext(IComObject<ID2D1DeviceContext> deviceContext, Action<RenderContext> action, SurfaceCreationOptions creationOptions = null, tagRECT? rect = null)
+        {
+            if (deviceContext == null)
+                throw new ArgumentNullException(nameof(deviceContext));
+
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+
+            var rc = new RenderContext(deviceContext, creationOptions, rect);
+            try
+            {
+                action(rc);
+            }
+            finally
+            {
+                rc.DeviceContext = null;
+            }
+        }
 
         public virtual IComObject<ID2D1Brush> CreateSolidColorBrush(_D3DCOLORVALUE? color)
         {

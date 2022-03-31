@@ -1096,16 +1096,17 @@ namespace Wice
                 using (var dc = surfaceInterop.BeginDraw())
                 {
                     var rc = cr.ToD2D_RECT_F();
-                    var context = new RenderContext { DeviceContext = dc };
-
-                    // depending on context, this can be removed
-                    dc.Clear(_D3DCOLORVALUE.Transparent);
-
-                    if (fs > 0)
+                    RenderContext.WithRenderContext(dc, context =>
                     {
-                        //Application.Trace("rc:" + rc + " wr:" + WindowRect + " size:" + sprite.Size + " cs: " + cs.ToSize() + " fs:" + FrameVisual.Size);
-                        dc.Object.DrawRectangle(ref rc, context.CreateSolidColorBrush(FrameColor).Object, fs * 2, null);
-                    }
+                        // depending on context, this can be removed
+                        dc.Clear(_D3DCOLORVALUE.Transparent);
+
+                        if (fs > 0)
+                        {
+                            //Application.Trace("rc:" + rc + " wr:" + WindowRect + " size:" + sprite.Size + " cs: " + cs.ToSize() + " fs:" + FrameVisual.Size);
+                            dc.Object.DrawRectangle(ref rc, context.CreateSolidColorBrush(FrameColor).Object, fs * 2, null);
+                        }
+                    });
                 }
                 surfaceInterop.EndDraw();
 
