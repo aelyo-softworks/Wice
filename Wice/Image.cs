@@ -22,6 +22,11 @@ namespace Wice
             BackgroundColor = _D3DCOLORVALUE.Transparent;
         }
 
+        public event EventHandler<EventArgs> BitmapCreated;
+        public event EventHandler<EventArgs> BitmapDisposed;
+
+        public IComObject<ID2D1Bitmap> Bitmap => _bitmap;
+
         [Category(CategoryBehavior)]
         public IComObject<IWICBitmapSource> Source { get => (IComObject<IWICBitmapSource>)GetPropertyValue(SourceProperty); set => SetPropertyValue(SourceProperty, value); }
 
@@ -49,7 +54,7 @@ namespace Wice
 
             if (property == SourceProperty)
             {
-                Interlocked.Exchange(ref _bitmap, null)?.Dispose();
+                DisposeBitmap();
             }
             return true;
         }
@@ -154,6 +159,7 @@ namespace Wice
                     context.DeviceContext.Object.CreateBitmapFromWicBitmap(Source.Object, IntPtr.Zero, out ID2D1Bitmap bitmap).ThrowOnError();
                     bmp = new ComObject<ID2D1Bitmap>(bitmap);
                     _bitmap = bmp;
+                    OnBitmapCreated(this, EventArgs.Empty);
                 }
 
                 if (bmp != null && !bmp.IsDisposed)
@@ -171,6 +177,19 @@ namespace Wice
             }
         }
 
+        protected void DisposeBitmap()
+        {
+            var bmp = Interlocked.Exchange(ref _bitmap, null);
+            if (bmp != null)
+            {
+                bmp.Dispose();
+                OnBitmapDisposed(this, EventArgs.Empty);
+            }
+        }
+
+        protected virtual void OnBitmapDisposed(object sender, EventArgs args) => BitmapDisposed?.Invoke(sender, args);
+        protected virtual void OnBitmapCreated(object sender, EventArgs args) => BitmapCreated?.Invoke(sender, args);
+
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)
@@ -178,7 +197,7 @@ namespace Wice
                 if (disposing)
                 {
                     // dispose managed state (managed objects)
-                    Interlocked.Exchange(ref _bitmap, null)?.Dispose();
+                    DisposeBitmap();
                 }
 
                 // free unmanaged resources (unmanaged objects) and override finalizer
