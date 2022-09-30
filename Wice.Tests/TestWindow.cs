@@ -25,15 +25,15 @@ namespace Wice.Tests
             //WindowsFrameMode = WindowsFrameMode.Merged;
             Style |= WS.WS_THICKFRAME | WS.WS_CAPTION | WS.WS_SYSMENU | WS.WS_MAXIMIZEBOX | WS.WS_MINIMIZEBOX;
             //SizeToContent = DimensionOptions.WidthAndHeight;
-            Native.EnableBlurBehind();
-            RenderBrush = AcrylicBrush.CreateAcrylicBrush(
-                CompositionDevice,
-                _D3DCOLORVALUE.White,
-                0.2f,
-                useWindowsAcrylic: true
-                );
+            //Native.EnableBlurBehind();
+            //RenderBrush = AcrylicBrush.CreateAcrylicBrush(
+            //    CompositionDevice,
+            //    _D3DCOLORVALUE.White,
+            //    0.2f,
+            //    useWindowsAcrylic: false
+            //    );
 
-            WindowsFunctions.EnableMouseInPointer();
+            //WindowsFunctions.EnableMouseInPointer();
 
             //AddBordersForVisualOrderCheck1();
             //AddBorders();
@@ -1678,13 +1678,13 @@ namespace Wice.Tests
 
             var img = new Image();
             border.Children.Add(img);
-            //img.BackgroundColor = _D3DCOLORVALUE.Transparent;
+            img.BackgroundColor = _D3DCOLORVALUE.Transparent;
             //img.Opacity = 0.4f;
             //img.HoverBackgroundColor = _D3DCOLORVALUE.Wheat;
             //img.Margin = 10;
             //img.InterpolationMode = D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC;
             //img.Source = Application.Current.ResourceManager.GetWicBitmapSource(@"Resources\rainier.jpg");
-            img.Source = Application.Current.ResourceManager.GetWicBitmapSource(@"d:\downloads\foot.jpg");
+            img.Source = Application.Current.ResourceManager.GetWicBitmapSource(@"d:\downloads\dog.jpg");
         }
 
         public void AddUniformColorGrid(int size)
