@@ -105,8 +105,12 @@ namespace Wice
         {
             base.OnRendered(sender, e);
             var parameters = CreatePlacementParameters();
-            var pt = Place(parameters).TotagPOINT();
-            Move(pt.x, pt.y);
+            var pt = Place(parameters);
+            if (pt.IsSet)
+            {
+                var tp = pt.TotagPOINT();
+                Move(tp.x, tp.y);
+            }
         }
 
         public static D2D_POINT_2F Place(PlacementParameters parameters)
