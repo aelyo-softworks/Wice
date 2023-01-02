@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Windows Interface Composition Engine")]
 [assembly: AssemblyCompany("Aelyo Softworks")]
 [assembly: AssemblyProduct("Wice")]
-[assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks 2020-2022. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks 2020-2023. All rights reserved.")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("ef67ab82-0abc-4054-aada-293600d276d6")]
