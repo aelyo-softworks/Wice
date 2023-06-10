@@ -21,7 +21,7 @@ But... why Wice?
 * It's more modern than Winforms (GDI/GDI+) and WPF (still based on DirectX 9).
 * It has no sandbox like UWP, and doesn't require the Win2D crap.
 * It compiles much faster than UWP or WinUI projects because the tooling is the standard .NET tooling.
-* It has no external dependencies, so it's free from deployment pain (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" my apps at all?`</rant>`). Using .NET 5, you can even publish your app as a single zero-dependency .exe.
+* It has no external dependencies, so it's free from deployment pain (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" my apps at all?`</rant>`). Using .NET 5/6/7+, you can even publish your app as a single zero-dependency .exe.
 * It has the real Windows Acrylic (no hack!) brush w/o the need for UWP.
 * It ships with an integrated in-process (Snoop-like for people familiar with WPF) visual Spy utility (just press F9 in debug mode).
 
