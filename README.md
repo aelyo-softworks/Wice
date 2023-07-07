@@ -43,3 +43,40 @@ Please post an issue if you have a problem or a question, using sample reproduci
 * **WiceCore**: this is the same as Wice but compiled for .NET 6. All sources are linked to Wice.
 * **WiceCore.Samples.Gallery**: this is the same as Wice.Samples.Gallery but compiled for .NET 6. All sources are linked to Wice.Samples.Gallery.
 * WiceCore.Tests: this is the same as Wice.Tests but compiled for .NET 6 All sources are linked to Wice.Tests. 
+
+# Screenshots
+
+Here are some screenshots of the Samples Galley app.
+
+Wice has **acrylic brush** (Windows 10+) to integrate with background nicely, here over the **RTF Textbox** visual:
+
+![Wice](Assets/wice_acrylic_brush.jpg)
+
+A useful and extensible **Property Grid** visual to easily create editor interfaces like settings, etc.:
+
+![Wice](Assets/wice_property_grid.jpg)
+
+You can build a **Multi-Windows** application:
+
+![Wice](Assets/wice_secondary_windows.jpg)
+
+You can show **Dialog Boxe**s. They are part of the application so can be clicked through and center automatically when the app resizes:
+
+![Wice](Assets/wice_dialog_box.jpg)
+
+An **SVG image** visual:
+
+![Wice](Assets/wice_svg_image.jpg)
+
+You can add **Direct2D** effects on a visual:
+
+![Wice](Assets/wice_direct2d_effects.jpg)
+
+A mouse controlled **Dock Splitter** visual:
+
+![Wice](Assets/wice_dock_splitter.jpg)
+
+An automatic [Flags] enum to **Checkable List Box** visual
+
+![Wice](Assets/wice_flags_enum_listbox.jpg)
+
