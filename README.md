@@ -46,9 +46,9 @@ Please post an issue if you have a problem or a question, using sample reproduci
 
 # Screenshots
 
-Here are some screenshots of the Samples Galley app.
+Here are some screenshots of the Samples Gallery app.
 
-Wice has **acrylic brush** (Windows 10+) to integrate with background nicely, here over the **RTF Textbox** visual:
+Wice has **acrylic brush** to integrate with background nicely, here over the **RTF Textbox** visual:
 
 ![Wice](Assets/wice_acrylic_brush.jpg)
 
@@ -60,7 +60,7 @@ You can build a **Multi-Windows** application:
 
 ![Wice](Assets/wice_secondary_windows.jpg)
 
-You can show **Dialog Boxe**s. They are part of the application so can be clicked through and center automatically when the app resizes:
+You can show **Dialog Boxes**. They are part of the current window visual so can be clicked through and are centered automatically when the app is resized:
 
 ![Wice](Assets/wice_dialog_box.jpg)
 
@@ -72,11 +72,11 @@ You can add **Direct2D** effects on a visual:
 
 ![Wice](Assets/wice_direct2d_effects.jpg)
 
-A mouse controlled **Dock Splitter** visual:
+A mouse-controlled **Dock Splitter** visual:
 
 ![Wice](Assets/wice_dock_splitter.jpg)
 
-An automatic [Flags] enum to **Checkable List Box** visual
+An automatic [Flags] enum to **Checkable List Box** visual, very useful when combined with the property grid:
 
 ![Wice](Assets/wice_flags_enum_listbox.jpg)
 
