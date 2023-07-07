@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using DirectN;
 using Wice.Effects;
-using Wice.PropertyGrid;
 using Wice.Utilities;
 using Windows.UI.Composition;
-using Windows.UI.Composition.Diagnostics;
 
 namespace Wice.Tests
 {
@@ -25,13 +19,13 @@ namespace Wice.Tests
             //WindowsFrameMode = WindowsFrameMode.Merged;
             Style |= WS.WS_THICKFRAME | WS.WS_CAPTION | WS.WS_SYSMENU | WS.WS_MAXIMIZEBOX | WS.WS_MINIMIZEBOX;
             //SizeToContent = DimensionOptions.WidthAndHeight;
-            //Native.EnableBlurBehind();
-            //RenderBrush = AcrylicBrush.CreateAcrylicBrush(
-            //    CompositionDevice,
-            //    _D3DCOLORVALUE.White,
-            //    0.2f,
-            //    useWindowsAcrylic: false
-            //    );
+            Native.EnableBlurBehind();
+            RenderBrush = AcrylicBrush.CreateAcrylicBrush(
+                CompositionDevice,
+                _D3DCOLORVALUE.White,
+                0.2f,
+                useWindowsAcrylic: false
+                );
 
             //WindowsFunctions.EnableMouseInPointer();
 
@@ -60,7 +54,7 @@ namespace Wice.Tests
 
             //AddSimpleGrid();
             //AddSimpleGrid2();
-            //AddSimplePropertyGrid();
+            AddSimplePropertyGrid();
             //AddSimplePropertyGrid2();
             //AddSimplePropertyGrid3();
             //AddSimplePropertyGrid4();
@@ -73,7 +67,7 @@ namespace Wice.Tests
 
             //AddScrollViewImage();
             //AddScrollViewSmall();
-            AddFillImage();
+            //AddFillImage();
 
             //AddDock();
             //AddOneDockChild();
@@ -801,7 +795,7 @@ namespace Wice.Tests
 
             //pg.Padding = D2D_RECT_F.Thickness(5);
             //TextBox.AntiAliasingModeProperty.SetValue(pg, D2D1_TEXT_ANTIALIAS_MODE.D2D1_TEXT_ANTIALIAS_MODE_ALIASED);
-            //TextBox.FontFamilyNameProperty.SetValue(pg, "ProggyCleanTTF");
+            TextBox.FontFamilyNameProperty.SetValue(pg, "ProggyCleanTTF");
             //TextBox.ForegroundBrushProperty.SetValue(pg, new SolidColorBrush(_D3DCOLORVALUE.White));
             //pg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.AliceBlue);
             sv.Viewer.Child = pg;

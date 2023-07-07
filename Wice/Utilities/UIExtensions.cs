@@ -436,10 +436,14 @@ namespace Wice.Utilities
             {
                 // we must test this or BeginDraw will fail
                 var isize = new SizeInt32 { Width = (int)size.X, Height = (int)size.Y };
+                var max = Window.MaximumBitmapSize;
+                if (isize.Width > max || isize.Width > max)
+                    return surface;
+
                 if (isize.Width == 0 || isize.Height == 0)
                     return surface;
 
-                surface.Resize(isize);
+                surface?.Resize(isize);
             }
             return surface;
         }
