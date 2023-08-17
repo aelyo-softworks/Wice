@@ -46,5 +46,18 @@ namespace DirectN
             geometry.GetFigureCount(out var count).ThrowOnError();
             return count;
         }
+
+        public static D2D1_POINT_DESCRIPTION ComputePointAndSegmentAtLength(this IComObject<ID2D1PathGeometry1> geometry, float length, uint startSegment, float flatteningTolerance, D2D_MATRIX_3X2_F? worldTransform = null) => ComputePointAndSegmentAtLength(geometry?.Object, length, startSegment, flatteningTolerance, worldTransform);
+        public static D2D1_POINT_DESCRIPTION ComputePointAndSegmentAtLength(this ID2D1PathGeometry1 geometry, float length, uint startSegment, float flatteningTolerance, D2D_MATRIX_3X2_F? worldTransform = null)
+        {
+            if (geometry == null)
+                throw new ArgumentNullException(nameof(geometry));
+
+            using (var mem = new ComMemory(worldTransform))
+            {
+                geometry.ComputePointAndSegmentAtLength(length, startSegment, mem.Pointer, flatteningTolerance, out var desc).ThrowOnError();
+                return desc;
+            }
+        }
     }
 }

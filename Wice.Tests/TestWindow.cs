@@ -51,10 +51,11 @@ namespace Wice.Tests
             //AddScrollableRtbRtfFile();
 
             //AddSvg();
+            DrawCurve();
 
             //AddSimpleGrid();
             //AddSimpleGrid2();
-            AddSimplePropertyGrid();
+            //AddSimplePropertyGrid();
             //AddSimplePropertyGrid2();
             //AddSimplePropertyGrid3();
             //AddSimplePropertyGrid4();
@@ -1108,6 +1109,75 @@ namespace Wice.Tests
                 //text.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_JUSTIFIED;
                 //text.WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD;
             }
+        }
+
+        private static bool _first = true;
+        public static Visual CreateCurveVisual()
+        {
+            var canvas = new Canvas();
+
+            var path = new Path
+            {
+                StrokeThickness = Application.CurrentTheme.BorderSize / 2,
+            };
+
+            canvas.Arranged += (s, e) =>
+            {
+                if (_first)
+                {
+                    _first = false;
+                    var geo = Application.Current.ResourceManager.D2DFactory.CreatePathGeometry();
+
+                    float margin = 10;
+                    float width = canvas.ArrangedRect.Width - 2 * margin;
+                    float height = canvas.ArrangedRect.Height - 2 * margin;
+                    using (var sink = geo.Open<ID2D1GeometrySink>())
+                    {
+                        var size = new D2D_SIZE_F(width / 4, height / 2);
+                        sink.BeginFigure(new D2D_POINT_2F(margin + width / 4, margin));
+                        sink.AddArc(new D2D_POINT_2F(margin + width / 4, margin + height), size);
+                        sink.AddLine(new D2D_POINT_2F(margin + width * 3 / 4, margin + height));
+                        sink.AddArc(new D2D_POINT_2F(margin + width * 3 / 4, margin), size);
+                        sink.EndFigure(D2D1_FIGURE_END.D2D1_FIGURE_END_CLOSED);
+                        sink.Close();
+                    }
+
+                    var geoSource = new GeometrySource2D(Guid.NewGuid().ToString());
+                    geoSource.Geometry = geo.Object;
+                    path.GeometrySource2D = geoSource.GetIGeometrySource2();
+
+                    // draw points
+                    var i = 0;
+                    do
+                    {
+                        var desc = geo.ComputePointAndSegmentAtLength(i * 30, 0, 0);
+                        i++;
+                        if (desc.endFigure != 0)
+                            break;
+
+                        var rw = 4;
+                        var pt = new Rectangle() { Width = rw * 2, Height = rw * 2, FillBrush = canvas.Compositor.CreateColorBrush(_D3DCOLORVALUE.Red) };
+                        SetLeft(pt, desc.point.x - rw);
+                        SetTop(pt, desc.point.y - rw);
+                        canvas.Children.Add(pt);
+                    }
+                    while (true);
+                }
+            };
+
+            canvas.AttachedToComposition += (s, e) =>
+            {
+                canvas.RenderBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor);
+                path.StrokeBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor);
+            };
+
+            canvas.Children.Add(path);
+            return canvas;
+        }
+
+        public void DrawCurve()
+        {
+            Children.Add(CreateCurveVisual());
         }
 
         public void AddSvg()
