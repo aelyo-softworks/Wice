@@ -9,6 +9,12 @@ using Wice.Effects;
 using Wice.Utilities;
 using Windows.UI.Composition;
 
+#if NET
+using IGraphicsEffectSource = DirectN.IGraphicsEffectSourceWinRT;
+#else
+using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
+#endif
+
 namespace Wice.Tests
 {
     // this is a test bench!
@@ -27,6 +33,7 @@ namespace Wice.Tests
                 useWindowsAcrylic: false
                 );
 
+            TestEffect();
             //WindowsFunctions.EnableMouseInPointer();
 
             //AddBordersForVisualOrderCheck1();
@@ -51,7 +58,7 @@ namespace Wice.Tests
             //AddScrollableRtbRtfFile();
 
             //AddSvg();
-            DrawCurve();
+            //DrawCurve();
 
             //AddSimpleGrid();
             //AddSimpleGrid2();
@@ -128,6 +135,33 @@ namespace Wice.Tests
             //        }, true);
             //    }
             //};
+        }
+
+        public void TestEffect()
+        {
+            var source = new CompositionEffectSourceParameter("source");
+
+            //var fx = new ContrastEffect();
+            //fx.ClampInput = true;
+            //fx.Contrast = 1;
+            //fx.Source = source.ComCast<IGraphicsEffectSource>();
+
+            //// build an effect graph
+            //var fac = Compositor.CreateEffectFactory(fx.GetIGraphicsEffect());
+
+            var light = new PointSpecularEffect()
+            {
+                Source = source.ComCast<IGraphicsEffectSource>(),
+                LightPosition = new D2D_VECTOR_3F(0, 0, 0),
+                SpecularExponent = 1,
+                SpecularConstant = 1,
+                SurfaceScale = 1,
+                Color = new D2D_VECTOR_3F(1, 1, 1),
+                KernelUnitLength = new D2D_VECTOR_2F(1, 1),
+                ScaleMode = D2D1_POINTSPECULAR_SCALE_MODE.D2D1_POINTSPECULAR_SCALE_MODE_HIGH_QUALITY_CUBIC
+            };
+
+            var lightFactory = Compositor.CreateEffectFactory(light.GetIGraphicsEffect());
         }
 
         public void AddDialog()
@@ -1155,7 +1189,7 @@ namespace Wice.Tests
                         if (desc.endFigure != 0)
                             break;
 
-                        var rw = 4;
+                        var rw = 1;
                         var pt = new Rectangle() { Width = rw * 2, Height = rw * 2, FillBrush = canvas.Compositor.CreateColorBrush(_D3DCOLORVALUE.Red) };
                         SetLeft(pt, desc.point.x - rw);
                         SetTop(pt, desc.point.y - rw);

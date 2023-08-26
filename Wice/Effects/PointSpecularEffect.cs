@@ -23,7 +23,7 @@ namespace Wice.Effects
             SurfaceScaleProperty = EffectProperty.Add(typeof(PointSpecularEffect), nameof(SurfaceScale), 3, 1f);
             ColorProperty = EffectProperty.Add(typeof(PointSpecularEffect), nameof(Color), 4, GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_COLOR_TO_VECTOR3, new D2D_VECTOR_3F(1f, 1f, 1f));
             KernelUnitLengthProperty = EffectProperty.Add(typeof(PointSpecularEffect), nameof(KernelUnitLength), 5, new D2D_VECTOR_2F(1f, 1f));
-            ScaleModeProperty = EffectProperty.Add(typeof(PointSpecularEffect), nameof(ScaleMode), 6, D2D1_POINTDIFFUSE_SCALE_MODE.D2D1_POINTDIFFUSE_SCALE_MODE_LINEAR);
+            ScaleModeProperty = EffectProperty.Add(typeof(PointSpecularEffect), nameof(ScaleMode), 6, D2D1_POINTSPECULAR_SCALE_MODE.D2D1_POINTSPECULAR_SCALE_MODE_LINEAR);
         }
 
         public D2D_VECTOR_3F LightPosition { get => (D2D_VECTOR_3F)GetPropertyValue(LightPositionProperty); set => SetPropertyValue(LightPositionProperty, value); }
@@ -32,6 +32,6 @@ namespace Wice.Effects
         public float SurfaceScale { get => (float)GetPropertyValue(SurfaceScaleProperty); set => SetPropertyValue(SurfaceScaleProperty, value.Clamp(0f, 10000f)); }
         public D2D_VECTOR_3F Color { get => (D2D_VECTOR_3F)GetPropertyValue(ColorProperty); set => SetPropertyValue(ColorProperty, value); }
         public D2D_VECTOR_2F KernelUnitLength { get => (D2D_VECTOR_2F)GetPropertyValue(KernelUnitLengthProperty); set => SetPropertyValue(KernelUnitLengthProperty, value); }
-        public D2D1_POINTDIFFUSE_SCALE_MODE ScaleMode { get => (D2D1_POINTDIFFUSE_SCALE_MODE)GetPropertyValue(ScaleModeProperty); set => SetPropertyValue(ScaleModeProperty, value); }
+        public D2D1_POINTSPECULAR_SCALE_MODE ScaleMode { get => (D2D1_POINTSPECULAR_SCALE_MODE)GetPropertyValue(ScaleModeProperty); set => SetPropertyValue(ScaleModeProperty, value); }
     }
 }
