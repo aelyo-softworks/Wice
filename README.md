@@ -50,7 +50,7 @@ Here are some screenshots of the Samples Gallery app.
 
 Wice has **acrylic brush** to integrate with background nicely, here over the **RTF Textbox** visual:
 
-![Wice](Assets/wice_acrylic_brush.jpg)
+![Wice](Assets/wice_with_acrylic.jpg)
 
 A useful and extensible **Property Grid** visual to easily create editor interfaces like settings, etc.:
 
