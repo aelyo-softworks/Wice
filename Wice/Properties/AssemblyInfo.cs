@@ -11,8 +11,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Wice")]
 [assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks 2020-2023. All rights reserved.")]
 [assembly: AssemblyCulture("")]
+
 [assembly: ComVisible(false)]
-[assembly: Guid("ef67ab82-0abc-4054-aada-293600d276d6")]
+
+[assembly: Guid("896d181f-1ad4-4c1b-b59d-0b07cffef070")]
 
 #if NET
 [assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.17763.0")]
