@@ -14,7 +14,7 @@ namespace Wice
             var ar = ArrangedRect;
             if (ar.IsValid)
             {
-                Geometry.Size = (ar.Size - Margin).ToVector2();
+                Geometry.Size = Utilities.Extensions.ToVector2(ar.Size - Margin);
             }
         }
     }

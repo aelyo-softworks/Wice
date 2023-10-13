@@ -88,6 +88,11 @@
     <Compile Include="EditorMode.cs" />
     <Compile Include="EditorHost.cs" />
     <Compile Include="EventTrigger.cs" />
+    <Compile Include="Interop\ICompositionTarget.cs" />
+    <Compile Include="Interop\ICompositorInterop.cs" />
+    <Compile Include="Interop\IGeometrySource2DWinRT.cs" />
+    <Compile Include="Interop\IGraphicsEffectSourceWinRT.cs" />
+    <Compile Include="Interop\IGraphicsEffectWinRT.cs" />
     <Compile Include="PointerDragEventArgs.cs" />
     <Compile Include="PointerActivateEventArgs.cs" />
     <Compile Include="PointerContactChangedEventArgs.cs" />
@@ -97,6 +102,7 @@
     <Compile Include="PointerWheelEventArgs.cs" />
     <Compile Include="PointerEventArgs.cs" />
     <Compile Include="Utilities\AssemblyResourceStreamer.cs" />
+    <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\FileStreamer.cs" />
     <Compile Include="IBindingDisplayName.cs" />
     <Compile Include="IPasswordCapable.cs" />
@@ -120,6 +126,9 @@
     <Compile Include="PropertyGrid\PasswordEditorCreator.cs" />
     <Compile Include="PropertyInvalidateReason.cs" />
     <Compile Include="RichTextBox.cs" />
+    <Compile Include="Interop\IPropertyValueStatics.cs" />
+    <Compile Include="Interop\IPropertyValueStaticsExtensions.cs" />
+    <Compile Include="Utilities\ICompositionDrawingSurfaceInteropExtensions.cs" />
     <Compile Include="Utilities\StreamStreamer.cs" />
     <Compile Include="SvgImage.cs" />
     <Compile Include="TextBoxSetSelection.cs" />
@@ -131,6 +140,7 @@
     <Compile Include="Utilities\VisualsTree.Designer.cs">
       <DependentUpon>VisualsTree.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\WinRTUtilities.cs" />
     <Compile Include="Utilities\ZeroDepJson.cs" />
     <Compile Include="VisualDoOptions.cs" />
     <Compile Include="VisualPropertyInvalidateModes.cs" />
@@ -364,14 +374,14 @@
     <Compile Include="Wrap.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DirectN\DirectN.csproj">
-      <Project>{102f5846-3322-494d-ba37-9ca23450e145}</Project>
-      <Name>DirectN</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
+    <PackageReference Include="DirectN">
+      <Version>1.15.0.2</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
       <Version>10.0.22621.755</Version>
+    </PackageReference>
+    <PackageReference Include="System.Numerics.Vectors">
+      <Version>4.5.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

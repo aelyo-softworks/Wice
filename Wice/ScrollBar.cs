@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Numerics;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -124,16 +125,16 @@ namespace Wice
 
             if (IsOverlay)
             {
-                RenderBrush = compositor.CreateColorBrush(_D3DCOLORVALUE.Transparent);
-                Thumb.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarOverlayThumbColor);
+                RenderBrush = compositor.CreateColorBrush(_D3DCOLORVALUE.Transparent.ToColor());
+                Thumb.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarOverlayThumbColor.ToColor());
                 Thumb.CornerRadius = new Vector2(Application.CurrentTheme.ScrollBarOverlayCornerRadius);
                 SmallDecrease.IsVisible = false;
                 SmallIncrease.IsVisible = false;
             }
             else
             {
-                RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarBackgroundColor);
-                Thumb.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarThumbColor);
+                RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarBackgroundColor.ToColor());
+                Thumb.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarThumbColor.ToColor());
                 Thumb.CornerRadius = new Vector2(0);
                 SmallDecrease.IsVisible = true;
                 SmallIncrease.IsVisible = true;

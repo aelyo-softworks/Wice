@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {

@@ -53,14 +53,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DirectN\DirectN.csproj">
-      <Project>{6fee4e3c-02e2-421a-b473-78381601e6a8}</Project>
-      <Name>DirectN</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Wice\Wice.csproj">
       <Project>{ef67ab82-0abc-4054-aada-293600d276d6}</Project>
       <Name>Wice</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DirectN">
+      <Version>1.15.0.2</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

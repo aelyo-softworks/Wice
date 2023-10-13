@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using DirectN;
 using Wice.Utilities;
+using Windows.UI;
 using Windows.UI.Composition;
 
 namespace Wice
@@ -163,7 +164,7 @@ namespace Wice
 
             var shadow = compositor.CreateDropShadow();
             shadow.BlurRadius = Application.CurrentTheme.DialogShadowBlurRadius;
-            shadow.Color = Application.CurrentTheme.DialogShadowColor;
+            shadow.Color = Application.CurrentTheme.DialogShadowColor.ToColor();
             return shadow;
         }
 
@@ -181,7 +182,17 @@ namespace Wice
                     overlay.Name = "dialogOverlay";
 #endif
                     overlay.Opacity = opacity;
-                    overlay.RenderBrush = Compositor.CreateColorBrush(WindowOverlayColor ?? Application.CurrentTheme.DialogWindowOverlayColor);
+
+                    Color color;
+                    if (WindowOverlayColor != null)
+                    {
+                        color = WindowOverlayColor.Value.ToColor();
+                    }
+                    else
+                    {
+                        color = Application.CurrentTheme.DialogWindowOverlayColor.ToColor();
+                    }
+                    overlay.RenderBrush = Compositor.CreateColorBrush(color);
                     Parent.Children.InsertBefore(this, overlay);
                     _overlay = overlay;
                 }

@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Text.TextBox
 {
@@ -13,7 +14,7 @@ namespace Wice.Samples.Gallery.Samples.Text.TextBox
             parent.Children.Add(tb);
             Dock.SetDockType(tb, DockType.Top);
 
-            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
             tb.Padding = D2D_RECT_F.Thickness(10);
             tb.Margin = D2D_RECT_F.Thickness(10);
 

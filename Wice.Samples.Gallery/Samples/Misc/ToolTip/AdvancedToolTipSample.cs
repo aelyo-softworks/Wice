@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Misc.ToolTip
 {
@@ -26,7 +27,7 @@ namespace Wice.Samples.Gallery.Samples.Misc.ToolTip
 
                 // note we must use the tooltip's compositor, not our window's compositor
                 // as the tooltip has its own window
-                tt.Content.RenderBrush = tt.Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+                tt.Content.RenderBrush = tt.Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
 
                 var tb = new TextBox();
                 tb.Margin = 4;

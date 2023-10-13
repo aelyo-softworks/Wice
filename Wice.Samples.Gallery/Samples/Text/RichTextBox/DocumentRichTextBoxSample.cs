@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Text.RichTextBox
 {
@@ -16,7 +17,7 @@ namespace Wice.Samples.Gallery.Samples.Text.RichTextBox
 
             rtb.MaxWidth = 500;
             rtb.MaxHeight = 400;
-            rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
             rtb.Padding = D2D_RECT_F.Thickness(10);
             rtb.Margin = D2D_RECT_F.Thickness(10);
 

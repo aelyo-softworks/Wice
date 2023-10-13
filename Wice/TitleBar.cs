@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -142,11 +143,11 @@ namespace Wice
 
             CloseButton.Height = bounds.Height;
             CloseButton.Width = width;
-            CloseButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            CloseButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
 
             MinButton.Height = bounds.Height;
             MinButton.Width = width;
-            MinButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray);
+            MinButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray.ToColor());
 
             var zoomed = false;
             if (Parent is ITitleBarParent tbp)
@@ -163,7 +164,7 @@ namespace Wice
             MaxButton.Height = bounds.Height;
             MaxButton.Width = width;
             MaxButton.ButtonType = zoomed ? TitleBarButtonType.Restore : TitleBarButtonType.Maximize;
-            MaxButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray);
+            MaxButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray.ToColor());
         }
 
         protected override void OnAttachedToComposition(object sender, EventArgs e)

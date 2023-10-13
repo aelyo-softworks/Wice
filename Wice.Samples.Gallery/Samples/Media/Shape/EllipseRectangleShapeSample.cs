@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Media.Shape
 {
@@ -13,7 +14,7 @@ namespace Wice.Samples.Gallery.Samples.Media.Shape
             ellipse.Width = 300;
             ellipse.Height = 100;
             ellipse.Radius = new System.Numerics.Vector2(150, 50);
-            ellipse.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+            ellipse.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
             ellipse.StrokeThickness = 2;
             ellipse.StrokeDashArray = new float[] { 1, 2, 3 };
             parent.Children.Add(ellipse);

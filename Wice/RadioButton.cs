@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Numerics;
+using Wice.Utilities;
 using Windows.UI.Composition;
 
 namespace Wice
@@ -31,7 +32,7 @@ namespace Wice
 
             var ellipse = new Ellipse
             {
-                StrokeBrush = compositor.CreateColorBrush(Application.CurrentTheme.BorderColor),
+                StrokeBrush = compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor()),
                 StrokeThickness = Application.CurrentTheme.BorderSize / 2,
             };
 
@@ -39,7 +40,7 @@ namespace Wice
 
             var disk = new Ellipse
             {
-                FillBrush = compositor.CreateColorBrush(Application.CurrentTheme.BorderColor),
+                FillBrush = compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor()),
                 RadiusOffset = new Vector2(-Application.CurrentTheme.BorderSize * 1.2f, -Application.CurrentTheme.BorderSize * 1.2f),
             };
 
@@ -57,7 +58,7 @@ namespace Wice
 
             var ellipse = new Ellipse
             {
-                StrokeBrush = compositor.CreateColorBrush(Application.CurrentTheme.BorderColor),
+                StrokeBrush = compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor()),
                 StrokeThickness = Application.CurrentTheme.BorderSize / 2,
             };
 

@@ -11,10 +11,6 @@ namespace Wice
         private TextHost _host;
         private bool _disposedValue;
 
-#if DEBUG
-        public static ILogger Logger { get => TextHost.Logger; set => TextHost.Logger = value; }
-#endif
-
         public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
         {
             Generator = generator;

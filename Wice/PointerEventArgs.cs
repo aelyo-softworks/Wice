@@ -23,10 +23,10 @@ namespace Wice
                 switch (PointerType)
                 {
                     case POINTER_INPUT_TYPE.PT_PEN:
-                        return PointerPenInfo.pressure;
+                        return (int)PointerPenInfo.pressure;
 
                     case POINTER_INPUT_TYPE.PT_TOUCH:
-                        return PointerTouchInfo.pressure;
+                        return (int)PointerTouchInfo.pressure;
 
                     default:
                         return 0;

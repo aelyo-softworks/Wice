@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DirectN;
+using Wice.Interop;
 using Wice.Utilities;
 using Windows.Foundation;
 using Windows.Graphics.DirectX;
@@ -719,7 +720,7 @@ namespace Wice
 
             var rr = new RoundedRectangle();
             rr.CornerRadius = new Vector2(Application.CurrentTheme.ToolTipCornerRadius);
-            rr.RenderBrush = parent.Compositor.CreateColorBrush(Application.CurrentTheme.ToolTipColor);
+            rr.RenderBrush = parent.Compositor.CreateColorBrush(Application.CurrentTheme.ToolTipColor.ToColor());
             parent.Content.Children.Add(rr);
 
             var tb = new TextBox();
@@ -1089,7 +1090,7 @@ namespace Wice
             }
 
             var fs = FrameSize;
-            var surface = CompositionDevice.CreateDrawingSurface(cs.ToSize(), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            var surface = CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(cs), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
             var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
             using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop))
             {
@@ -3115,7 +3116,7 @@ namespace Wice
                     return (IntPtr)(int)ma;
 
                 case MessageDecoder.WM_POINTERACTIVATE:
-                    ht = (HT)Extensions.SignedHIWORD(wParam);
+                    ht = (HT)DirectN.Extensions.SignedHIWORD(wParam);
                     var ea = new PointerActivateEventArgs(WindowsFunctions.GetPointerId(wParam), lParam, ht);
                     var pa = win.OnPointerActivate(ea);
                     if (pa == PA.PA_DONT_HANDLE)

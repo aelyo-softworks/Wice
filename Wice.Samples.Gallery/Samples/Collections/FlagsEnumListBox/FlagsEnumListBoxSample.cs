@@ -1,5 +1,6 @@
 ﻿using System;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Collections.FlagsEnumListBox
 {
@@ -17,7 +18,7 @@ namespace Wice.Samples.Gallery.Samples.Collections.FlagsEnumListBox
             // WeekDays is a combination of other flags so if you select it, it will select other corresponding values as well.
             // Also NoDay (0) is not displayed since it correspond to no selection.
 
-            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
             parent.Children.Add(lb);
             Dock.SetDockType(lb, DockType.Top); // remove from display
 

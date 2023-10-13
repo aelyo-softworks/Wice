@@ -1,17 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31410.357
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wice", "Wice\Wice.csproj", "{EF67AB82-0ABC-4054-AADA-293600D276D6}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DirectN", "DirectN\DirectN.csproj", "{6FEE4E3C-02E2-421A-B473-78381601E6A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wice.Tests", "Wice.Tests\Wice.Tests.csproj", "{047DB52B-DB07-4CF6-BE90-C24819629C7E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wice.DevTools", "Wice.DevTools\Wice.DevTools.csproj", "{03E6C1C8-3567-41F1-9208-C6D5EFA61B5C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DirectNCore", "DirectNCore\DirectNCore.csproj", "{45D488E5-C53A-4C22-B313-B630B0A5A552}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WiceCore", "WiceCore\WiceCore.csproj", "{35F104D4-1C27-4B4C-A9F4-F43D6EBD32EB}"
 EndProject
@@ -19,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WiceCore.Tests", "WiceCore.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wice.Samples.Gallery", "Wice.Samples.Gallery\Wice.Samples.Gallery.csproj", "{40474E94-07D8-42C1-8BAD-2366A0B635D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiceCore.Samples.Gallery", "WiceCore.Samples.Gallery\WiceCore.Samples.Gallery.csproj", "{F1A912E3-9EA0-4C7E-9EF1-E3FAB1D48A3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WiceCore.Samples.Gallery", "WiceCore.Samples.Gallery\WiceCore.Samples.Gallery.csproj", "{F1A912E3-9EA0-4C7E-9EF1-E3FAB1D48A3D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +27,6 @@ Global
 		{EF67AB82-0ABC-4054-AADA-293600D276D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF67AB82-0ABC-4054-AADA-293600D276D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF67AB82-0ABC-4054-AADA-293600D276D6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6FEE4E3C-02E2-421A-B473-78381601E6A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6FEE4E3C-02E2-421A-B473-78381601E6A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6FEE4E3C-02E2-421A-B473-78381601E6A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6FEE4E3C-02E2-421A-B473-78381601E6A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{047DB52B-DB07-4CF6-BE90-C24819629C7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{047DB52B-DB07-4CF6-BE90-C24819629C7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{047DB52B-DB07-4CF6-BE90-C24819629C7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -43,10 +35,6 @@ Global
 		{03E6C1C8-3567-41F1-9208-C6D5EFA61B5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03E6C1C8-3567-41F1-9208-C6D5EFA61B5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03E6C1C8-3567-41F1-9208-C6D5EFA61B5C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{45D488E5-C53A-4C22-B313-B630B0A5A552}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{45D488E5-C53A-4C22-B313-B630B0A5A552}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{45D488E5-C53A-4C22-B313-B630B0A5A552}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{45D488E5-C53A-4C22-B313-B630B0A5A552}.Release|Any CPU.Build.0 = Release|Any CPU
 		{35F104D4-1C27-4B4C-A9F4-F43D6EBD32EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{35F104D4-1C27-4B4C-A9F4-F43D6EBD32EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35F104D4-1C27-4B4C-A9F4-F43D6EBD32EB}.Release|Any CPU.ActiveCfg = Release|Any CPU

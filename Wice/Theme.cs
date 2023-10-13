@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -18,7 +19,7 @@ namespace Wice
 
             ToolTipBaseSize = 8;
             ToolTipVerticalOffset = 20; // don't know any API where to get that info from (that would support system cursor size change by end-user)
-            ToolTipColor = _D3DCOLORVALUE.FromColor(SystemColors.Info);
+            ToolTipColor = SystemColors.Info.ToColor();
             ToolTipShadowBlurRadius = 4;
             ToolTipCornerRadius = 3;
 

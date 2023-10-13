@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -191,9 +192,9 @@ namespace Wice
 
         protected override void OnAttachedToComposition(object sender, EventArgs e)
         {
-            List.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            List.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
             base.OnAttachedToComposition(sender, e);
-            _popup.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            _popup.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
         }
     }
 }

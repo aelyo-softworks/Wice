@@ -28,7 +28,7 @@ namespace Wice.Samples.Gallery.Pages
             tb.WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD;
             var asm = typeof(Application).Assembly;
             var url = "https://github.com/aelyo-softworks/Wice";
-            tb.Text = "Wice v" + asm.GetInformationalVersion() + Environment.NewLine
+            tb.Text = "Wice v" + asm.GetInformationalVersion() + " based on DirectN v" + typeof(ComObject).Assembly.GetInformationalVersion() + Environment.NewLine
                 + System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription + " - " + DiagnosticsInformation.GetBitness() + Environment.NewLine
                 + asm.GetCopyright() + Environment.NewLine
                 + "Source code: " + url;
@@ -53,7 +53,7 @@ namespace Wice.Samples.Gallery.Pages
             {
                 if (open)
                     return;
-                
+
                 open = true;
                 var dlg = new DialogBox();
                 dlg.Closed += (s2, e2) => open = false;

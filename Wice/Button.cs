@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -68,7 +69,7 @@ namespace Wice
             var compositor = Compositor;
             if (compositor != null)
             {
-                RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ButtonColor);
+                RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ButtonColor.ToColor());
             }
         }
 

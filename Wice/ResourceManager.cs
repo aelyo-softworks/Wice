@@ -398,7 +398,7 @@ namespace Wice
         public virtual IComObject<ID2D1PathGeometry1> GetToggleSwitchGeometry(float width, float height, float margin) => Get(null, Domain.ToggleSwitchGeometry, width + "\0" + height + "\0" + margin, () => CreateToggleSwitchGeometry(width, height, margin));
         public virtual IComObject<ID2D1PathGeometry1> CreateToggleSwitchGeometry(float width, float height, float margin)
         {
-            var path = D2DFactory.CreatePathGeometry();
+            var path = D2DFactory.CreatePathGeometry<ID2D1PathGeometry1>();
             using (var sink = path.Open<ID2D1GeometrySink>())
             {
                 var size = new D2D_SIZE_F(width / 4, height / 2);
@@ -417,7 +417,7 @@ namespace Wice
         public virtual IComObject<ID2D1PathGeometry1> GetCheckButtonGeometry(float width, float height) => Get(null, Domain.CheckButtonGeometry, width + "\0" + height, () => CreateCheckButtonGeometry(width, height));
         public virtual IComObject<ID2D1PathGeometry1> CreateCheckButtonGeometry(float width, float height)
         {
-            var path = D2DFactory.CreatePathGeometry();
+            var path = D2DFactory.CreatePathGeometry<ID2D1PathGeometry1>();
             using (var sink = path.Open())
             {
                 sink.BeginFigure(new D2D_POINT_2F(width / 8, height / 2), D2D1_FIGURE_BEGIN.D2D1_FIGURE_BEGIN_HOLLOW);
@@ -438,7 +438,7 @@ namespace Wice
                 ratio = open ? 0.5f : 0.7f;
             }
 
-            var path = D2DFactory.CreatePathGeometry();
+            var path = D2DFactory.CreatePathGeometry<ID2D1PathGeometry1>();
             using (var sink = path.Open())
             {
                 D2D_POINT_2F start;
@@ -487,7 +487,7 @@ namespace Wice
         public virtual IComObject<ID2D1PathGeometry1> GetTitleBarButtonGeometry(TitleBarButtonType type, float width) => Get(null, Domain.TitleBarButtonTypeGeometry, ((int)type) + "\0" + width, () => CreateTitleBarButtonGeometry(type, width));
         public virtual IComObject<ID2D1PathGeometry1> CreateTitleBarButtonGeometry(TitleBarButtonType type, float width)
         {
-            var path = D2DFactory.CreatePathGeometry();
+            var path = D2DFactory.CreatePathGeometry<ID2D1PathGeometry1>();
             using (var sink = path.Open())
             {
                 switch (type)

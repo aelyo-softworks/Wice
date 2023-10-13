@@ -1,5 +1,6 @@
 ﻿using System;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Layout.Border
 {
@@ -20,7 +21,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.Border
             {
                 var box = new Wice.Border();
                 // use composition brush
-                box.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)));
+                box.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)).ToColor());
                 box.Width = rnd.Next(10, 200);
                 box.Height = rnd.Next(10, 150);
                 canvas.Children.Add(box);
@@ -28,7 +29,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.Border
                 Wice.Canvas.SetTop(box, rnd.Next(0, 100));
 
                 // if you hover the mouse on a box, it's color will change
-                box.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)));
+                box.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)).ToColor());
             }
         }
     }

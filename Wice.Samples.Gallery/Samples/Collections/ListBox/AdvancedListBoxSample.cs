@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Collections.ListBox
 {
@@ -9,7 +10,7 @@ namespace Wice.Samples.Gallery.Samples.Collections.ListBox
         public override void Layout(Visual parent)
         {
             var lb = new Wice.ListBox();
-            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
             parent.Children.Add(lb);
             Dock.SetDockType(lb, DockType.Top); // remove from display
 

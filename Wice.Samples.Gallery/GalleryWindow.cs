@@ -65,7 +65,7 @@ namespace Wice.Samples.Gallery
 
             var menuBack = new Border();
             menuBack.Width = 250;
-            menuBack.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFE6E6E6));
+            menuBack.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFE6E6E6).ToColor());
             menuBack.Opacity = 0.5f;
             SetLeft(menuBack, 0);
             Children.Add(menuBack);
@@ -120,7 +120,7 @@ namespace Wice.Samples.Gallery
             header.Height = 40;
             header.Icon.Text = page.IconText;
             header.Text.Text = page.HeaderText;
-            header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0));
+            header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0).ToColor());
             ConfigureHeaderText(header.Text);
             header.SelectedButton.IsVisible = false;
             header.ToolTipContentCreator = tt => CreateDefaultToolTipContent(tt, page.ToolTipText);

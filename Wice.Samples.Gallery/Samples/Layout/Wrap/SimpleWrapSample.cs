@@ -1,5 +1,6 @@
 ﻿using System;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Layout.Wrap
 {
@@ -21,7 +22,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.Wrap
                 var border = new Wice.Border();
                 wrap.Children.Add(border);
                 var color = _D3DCOLORVALUE.FromArgb(rnd.NextByte(), rnd.NextByte(), rnd.NextByte());
-                border.RenderBrush = Compositor.CreateColorBrush(color);
+                border.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
                 border.Width = rnd.Next(10, 60);
                 border.Height = rnd.Next(10, 60);
             }

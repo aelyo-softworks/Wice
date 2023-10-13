@@ -10,7 +10,7 @@ using Wice.Utilities;
 using Windows.UI.Composition;
 
 #if NET
-using IGraphicsEffectSource = DirectN.IGraphicsEffectSourceWinRT;
+using IGraphicsEffectSource = Wice.Interop.IGraphicsEffectSourceWinRT;
 #else
 using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
 #endif
@@ -189,7 +189,7 @@ namespace Wice.Tests
                     resize();
                     Resized += (s2, e2) => resize();
 
-                    dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightPink);
+                    dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightPink.ToColor());
                     Children.Add(dlg);
                 }
 
@@ -216,7 +216,7 @@ namespace Wice.Tests
             var rr = new RoundedRectangle();
             //rr.Margin = 30;
             rr.CornerRadius = new Vector2(10, 10);
-            rr.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightPink);
+            rr.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightPink.ToColor());
             b.Children.Add(rr);
 
             rr.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello world!");
@@ -236,7 +236,7 @@ namespace Wice.Tests
             var menuBack = new Border();
             menuBack.Name = nameof(menuBack);
             menuBack.Width = 300;
-            menuBack.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFE6E6E6));
+            menuBack.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFE6E6E6).ToColor());
             menuBack.Opacity = 0.5f;
             SetLeft(menuBack, 0);
             Children.Add(menuBack);
@@ -264,11 +264,11 @@ namespace Wice.Tests
             var header = CreateHeader("Compos", MDL2GlyphResource.PrintCustomRange);
             stack.Children.Add(header);
             //header.Child = CreateMeasureUniformGrid(10);
-            header.Child = new Border { Height = 100, RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue) };
+            header.Child = new Border { Height = 100, RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor()) };
 
             header = CreateHeader("Inputs", MDL2GlyphResource.VideoCapture);
             stack.Children.Add(header);
-            header.Child = new Border { Height = 10, RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red) };
+            header.Child = new Border { Height = 10, RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor()) };
 
             KeyDown += (s, e) =>
             {
@@ -301,7 +301,7 @@ namespace Wice.Tests
             var typo = Typography.WithLigatures;
             header.Header.Text.SetTypography(typo.DWriteTypography.Object);
 
-            header.Header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0));
+            header.Header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0).ToColor());
             header.HorizontalAlignment = Alignment.Center;
             header.VerticalAlignment = Alignment.Center;
             header.Viewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
@@ -324,7 +324,7 @@ namespace Wice.Tests
             var border = new Border();
             border.Height = 100;
             border.Width = 200;
-            border.RenderBrush = popup.Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            border.RenderBrush = popup.Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
             popup.Children.Add(border);
         }
 
@@ -334,7 +334,7 @@ namespace Wice.Tests
             Children.Add(border);
             border.Height = 100;
             border.Width = 100;
-            border.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            border.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
             border.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello red world");
 
             var border2 = new Border();
@@ -342,7 +342,7 @@ namespace Wice.Tests
             Children.Add(border2);
             border2.Height = 100;
             border2.Width = 100;
-            border2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            border2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
             border2.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello blue world");
 
             PopupWindow popup = null;
@@ -385,7 +385,7 @@ namespace Wice.Tests
                         pborder.Width = 50;
                         pborder.DoWhenAttachedToComposition(() =>
                         {
-                            pborder.RenderBrush = popup.Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+                            pborder.RenderBrush = popup.Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
                         });
                         popup.Children.Add(pborder);
                     }
@@ -415,7 +415,7 @@ namespace Wice.Tests
             cb.Value = "tutu";
             cb.Width = 100;
             cb.Height = 100;
-            cb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray);
+            cb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray.ToColor());
             cb.Click += (s, e) =>
             {
                 //MessageBox.Show("click!");
@@ -468,7 +468,7 @@ namespace Wice.Tests
         public void AddButtonInCanvas()
         {
             var canvas = new Canvas();
-            canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
             var btn = new Button();
             //btn.Width = 100;
             //btn.Height = 30;
@@ -500,7 +500,7 @@ namespace Wice.Tests
         {
             var dock = new Dock();
             dock.LastChildFill = false;
-            dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
             var btn = new Button();
             //btn.Width = 100;
             //btn.Height = 30;
@@ -594,7 +594,7 @@ namespace Wice.Tests
             //lb.HorizontalAlignment = Alignment.Stretch;
 
             //lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
-            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
             var i = 0;
             var words = File.ReadAllText("lorem.txt").
                 ToLowerInvariant().
@@ -629,7 +629,7 @@ namespace Wice.Tests
             lb.Value = UriHostNameType.Basic;
             //var lb = new ListBox();
             //lb.DataSource = new object[] { "titi", 123, DateTime.Now, "hello world" };
-            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
             Children.Add(lb);
 
             KeyDown += (s, e) =>
@@ -661,7 +661,7 @@ namespace Wice.Tests
             //lb.Value = MyFlagsEnum.Value0 | MyFlagsEnum.Value2 | MyFlagsEnum.Value4_x;
             //lb.Value = MyFlagsEnum.Value0;
             lb.Value = Samples.Gallery.Samples.Collections.PropertyGrid.SampleDaysOfWeek.WeekDays;
-            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
             Children.Add(lb);
 
             KeyDown += (s, e) =>
@@ -679,7 +679,7 @@ namespace Wice.Tests
         public void AddCheckBoxList()
         {
             var lb = new CheckBoxList();
-            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
             Children.Add(lb);
             //lb.DataSource = new List<string> { "hello", "world" };
             var i = 0;
@@ -695,7 +695,7 @@ namespace Wice.Tests
         public void AddResizableListBox()
         {
             var b = new Border();
-            b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
             b.HorizontalAlignment = Alignment.Center;
             b.VerticalAlignment = Alignment.Center;
             //b.Height = 200;
@@ -765,7 +765,7 @@ namespace Wice.Tests
                 }
             };
 
-            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
             Children.Add(lb);
             //lb.DataSource = new List<string> { "hello", "world" };
             var i = 0;
@@ -877,7 +877,7 @@ namespace Wice.Tests
 
             var b = new Border();
             //b.VerticalAlignment = Alignment.Near;
-            b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightSalmon);
+            b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightSalmon.ToColor());
             b.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello world!");
             Children.Add(b);
 
@@ -890,7 +890,7 @@ namespace Wice.Tests
             Dock.SetDockType(border, DockType.Top);
             //border.VerticalAlignment = Alignment.Near;
             border.Height = 50;
-            border.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            border.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
             dock.Children.Add(border);
 
             var pg = new PropertyGrid.PropertyGrid();
@@ -917,12 +917,12 @@ namespace Wice.Tests
             canvas.Name = nameof(canvas);
             canvas.Width = 300;
             canvas.Height = 300;
-            canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
             Children.Add(canvas);
 
             var tb = new TextBox();
             tb.Name = nameof(tb);
-            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
             tb.HorizontalAlignment = Alignment.Center;
             tb.VerticalAlignment = Alignment.Center;
             tb.Width = 200;
@@ -967,21 +967,21 @@ namespace Wice.Tests
         {
             var stack = new Stack();
             Children.Add(stack);
-            stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+            stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
             stack.Width = 300;
             stack.Height = 300;
 
             var b0 = new Border();
             stack.Children.Add(b0);
             b0.Name = nameof(b0);
-            b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
             b0.Width = 100;
             b0.Height = 100;
 
             var b1 = new Border();
             stack.Children.Add(b1);
             b1.Name = nameof(b1);
-            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
             b1.Width = 100;
             b1.Height = 100;
 
@@ -1005,7 +1005,7 @@ namespace Wice.Tests
             b1.Padding = 10;
             b1.Width = 150;
             b1.Height = 150;
-            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
             Children.Add(b1);
 
             //var image = new Image();
@@ -1027,8 +1027,8 @@ namespace Wice.Tests
             //b2.Margin = 5;
             //b2.Width = 140;
             //b2.Height = 140;
-            b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
-            b2.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
+            b2.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
             b1.Children.Add(b2);
 
             //var b3 = new Border();
@@ -1044,19 +1044,19 @@ namespace Wice.Tests
         {
             var b1 = new Border();
             b1.Name = nameof(b1);
-            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
             Children.Add(b1);
 
             var b2 = new Border();
             b2.Name = nameof(b2);
             b2.Width = 100;
-            b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
             Children.Add(b2);
 
             var b3 = new Border();
             b3.Name = nameof(b3);
             b3.Height = 60;
-            b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+            b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
             b2.Children.Add(b3);
 
             KeyDown += (s, e) =>
@@ -1066,18 +1066,18 @@ namespace Wice.Tests
                     var b4 = new Border();
                     b4.Name = nameof(b4);
                     b4.Height = 40;
-                    b4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+                    b4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
 
                     var b5 = new Border();
                     b5.Name = nameof(b5);
                     b5.Height = 30;
-                    b5.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black);
+                    b5.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ToColor());
                     b4.Children.Add(b5);
 
                     var b6 = new Border();
                     b6.Name = nameof(b6);
                     b6.Height = 25;
-                    b6.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightCoral);
+                    b6.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightCoral.ToColor());
                     b5.Children.Add(b6);
 
                     b1.Children.Add(b4);
@@ -1114,7 +1114,7 @@ namespace Wice.Tests
             //stack.Orientation = Orientation.Vertical;
             //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
             //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
-            stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LemonChiffon);
+            stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LemonChiffon.ToColor());
             //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
 
             //stack.LastChildFill = false;
@@ -1129,7 +1129,7 @@ namespace Wice.Tests
                 text.IsEditable = true;
 
                 //text.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
-                text.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.GreenYellow);
+                text.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.GreenYellow.ToColor());
                 text.Name = "text#" + i;
                 stack.Children.Add(text);
                 text.Padding = D2D_RECT_F.Thickness(10);
@@ -1160,7 +1160,7 @@ namespace Wice.Tests
                 if (_first)
                 {
                     _first = false;
-                    var geo = Application.Current.ResourceManager.D2DFactory.CreatePathGeometry();
+                    var geo = Application.Current.ResourceManager.D2DFactory.CreatePathGeometry<ID2D1PathGeometry1>();
 
                     float margin = 10;
                     float width = canvas.ArrangedRect.Width - 2 * margin;
@@ -1190,7 +1190,7 @@ namespace Wice.Tests
                             break;
 
                         var rw = 1;
-                        var pt = new Rectangle() { Width = rw * 2, Height = rw * 2, FillBrush = canvas.Compositor.CreateColorBrush(_D3DCOLORVALUE.Red) };
+                        var pt = new Rectangle() { Width = rw * 2, Height = rw * 2, FillBrush = canvas.Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor()) };
                         SetLeft(pt, desc.point.x - rw);
                         SetTop(pt, desc.point.y - rw);
                         canvas.Children.Add(pt);
@@ -1201,8 +1201,8 @@ namespace Wice.Tests
 
             canvas.AttachedToComposition += (s, e) =>
             {
-                canvas.RenderBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor);
-                path.StrokeBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor);
+                canvas.RenderBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
+                path.StrokeBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor.ToColor());
             };
 
             canvas.Children.Add(path);
@@ -1223,9 +1223,6 @@ namespace Wice.Tests
 
         public void AddRtb()
         {
-#if DEBUG
-            RichTextBox.Logger = UILogger.Instance;
-#endif
             var rtf = new RichTextBox();
             Children.Add(rtf);
 
@@ -1241,9 +1238,6 @@ namespace Wice.Tests
 
         public void AddRtbDoc()
         {
-#if DEBUG
-            RichTextBox.Logger = UILogger.Instance;
-#endif
             var rtf = new RichTextBox();
             Children.Add(rtf);
 
@@ -1253,9 +1247,6 @@ namespace Wice.Tests
 
         public void AddRtbHtml()
         {
-#if DEBUG
-            RichTextBox.Logger = UILogger.Instance;
-#endif
             // as of today, html can only work with Office's riched20.dll
             var rtf = new RichTextBox(TextServicesGenerator.Office);
             Children.Add(rtf);
@@ -1270,9 +1261,6 @@ namespace Wice.Tests
 
         public void AddRtbVertical()
         {
-#if DEBUG
-            RichTextBox.Logger = UILogger.Instance;
-#endif
             var rtf = new RichTextBox();
             Children.Add(rtf);
 
@@ -1282,9 +1270,6 @@ namespace Wice.Tests
 
         public void AddRtbRtfFile()
         {
-#if DEBUG
-            RichTextBox.Logger = UILogger.Instance;
-#endif
             var rtf = new RichTextBox();
             Children.Add(rtf);
 
@@ -1293,9 +1278,6 @@ namespace Wice.Tests
 
         public void AddScrollableRtbRtfFile()
         {
-#if DEBUG
-            RichTextBox.Logger = UILogger.Instance;
-#endif
             var sv = new ScrollViewer();
             sv.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
             Children.Add(sv);
@@ -1454,7 +1436,7 @@ namespace Wice.Tests
 
                 var border = new Border();
                 grid.Children.Add(border);
-                border.RenderBrush = Compositor.CreateColorBrush(color.Item2);
+                border.RenderBrush = Compositor.CreateColorBrush(color.Item2.ToColor());
             }
         }
 
@@ -1489,7 +1471,7 @@ namespace Wice.Tests
 
                 var border = new Border();
                 grid.Children.Add(border);
-                border.RenderBrush = Compositor.CreateColorBrush(color.Value.Color);
+                border.RenderBrush = Compositor.CreateColorBrush(color.Value.Color.ToColor());
                 i++;
                 if (i == max)
                     break;
@@ -1549,7 +1531,7 @@ namespace Wice.Tests
         {
             var dlgPanel = new Stack();
             dlgPanel.Name = "panel";
-            dlgPanel.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            dlgPanel.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
             dlgPanel.LastChildFill = false;
             dlgPanel.Orientation = Orientation.Horizontal;
             Children.Add(dlgPanel);
@@ -1653,8 +1635,8 @@ namespace Wice.Tests
                 var shape = new Ellipse();
                 visual.Children.Add(shape);
                 var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
-                shape.RenderBrush = Compositor.CreateColorBrush(color);
-                shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color);
+                shape.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
+                shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
                 shape.Shape.StrokeThickness = 0.5f;
             }
 
@@ -1663,8 +1645,8 @@ namespace Wice.Tests
                 var shape = new Line();
                 visual.Children.Add(shape);
                 var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
-                shape.RenderBrush = Compositor.CreateColorBrush(color);
-                shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color);
+                shape.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
+                shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
                 shape.Shape.StrokeThickness = 0.5f;
                 shape.Arranged += (s, e) =>
                 {
@@ -1678,8 +1660,8 @@ namespace Wice.Tests
                 visual.Children.Add(shape);
                 var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
                 shape.Geometry.CornerRadius = new Vector2(10);
-                shape.RenderBrush = Compositor.CreateColorBrush(color);
-                shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color);
+                shape.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
+                shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
                 shape.Shape.StrokeThickness = 0.5f;
             }
         }
@@ -1702,7 +1684,7 @@ namespace Wice.Tests
             cell0.Name = nameof(cell0);
             grid.Children.Add(cell0);
             cell0.Margin = 10;
-            cell0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Purple);
+            cell0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Purple.ToColor());
 
             var cell1 = new Border();
             cell0.Name = nameof(cell1);
@@ -1710,17 +1692,17 @@ namespace Wice.Tests
             cell1.Margin = 10;
             Grid.SetColumn(cell1, 2);
             Grid.SetRow(cell1, 2);
-            cell1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            cell1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
 
             var vsplitter = new GridSplitter();
             vsplitter.Name = nameof(vsplitter);
-            vsplitter.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+            vsplitter.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
             grid.Children.Add(vsplitter);
             Grid.SetColumn(vsplitter, 1);
 
             var hsplitter = new GridSplitter();
             hsplitter.Name = nameof(hsplitter);
-            hsplitter.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+            hsplitter.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
             grid.Children.Add(hsplitter);
             Grid.SetRow(hsplitter, 1);
         }
@@ -1743,7 +1725,7 @@ namespace Wice.Tests
             cell0.Height = 20;
             grid.Children.Add(cell0);
             cell0.Margin = 10;
-            cell0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Purple);
+            cell0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Purple.ToColor());
 
             var cell1 = new Border();
             cell1.Name = nameof(cell1);
@@ -1752,17 +1734,17 @@ namespace Wice.Tests
             cell1.Margin = 10;
             Grid.SetColumn(cell1, 2);
             Grid.SetRow(cell1, 2);
-            cell1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            cell1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
 
             var vsplitter = new GridSplitter();
             vsplitter.Name = nameof(vsplitter);
-            vsplitter.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+            vsplitter.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
             grid.Children.Add(vsplitter);
             Grid.SetColumn(vsplitter, 1);
 
             var hsplitter = new GridSplitter();
             hsplitter.Name = nameof(hsplitter);
-            hsplitter.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+            hsplitter.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
             grid.Children.Add(hsplitter);
             Grid.SetRow(hsplitter, 1);
         }
@@ -1825,7 +1807,7 @@ namespace Wice.Tests
                 cell.Name = "cell " + i + "x" + j;
                 visual.Children.Add(cell);
                 var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
-                cell.RenderBrush = Compositor.CreateColorBrush(color);
+                cell.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
             }
         }
 
@@ -1835,7 +1817,7 @@ namespace Wice.Tests
             doc.Height = 50;
             doc.Name = nameof(doc);
             doc.LastChildFill = false;
-            doc.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFF0F0F0));
+            doc.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFF0F0F0).ToColor());
             Children.Add(doc);
 
             var okButton = new Button();
@@ -1865,7 +1847,7 @@ namespace Wice.Tests
             doc.Width = 150;
             doc.Name = nameof(doc);
             doc.LastChildFill = false;
-            doc.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFF0F0F0));
+            doc.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFF0F0F0).ToColor());
             Children.Add(doc);
 
             var okButton = new Button();
@@ -1898,9 +1880,9 @@ namespace Wice.Tests
                 var b = new Border();
                 b.Name = "border" + i;
                 wrap.Children.Add(b);
-                b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+                b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
                 var color = new _D3DCOLORVALUE(0, 1 - (i / (float)max), 1 - (i / (float)max));
-                b.RenderBrush = Compositor.CreateColorBrush(color);
+                b.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
                 b.Width = r.Next(10, 60);
                 b.Height = r.Next(10, 60);
             }
@@ -1925,13 +1907,13 @@ namespace Wice.Tests
         {
             var stack = new Stack();
             Children.Add(stack);
-            stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+            stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
             //stack.Width = 200;
 
             var b0 = new Border();
             stack.Children.Add(b0);
             b0.Name = nameof(b0);
-            b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
             //border.HorizontalAlignment = DuiAlignment.Far;
             b0.Width = 100;
             b0.Height = 100;
@@ -1940,21 +1922,21 @@ namespace Wice.Tests
             var b1 = new Stack();
             stack.Children.Add(b1);
             b1.Name = "b1";
-            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
             //border.HorizontalAlignment = DuiAlignment.Far;
             b1.Width = 200;
             //b1.Height = 200;
 
             var b2 = new Border();
             b2.Name = "b2";
-            b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+            b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
             b2.Width = 50;
             b2.Height = 60;
             b1.Children.Add(b2);
 
             var b3 = new Border();
             b3.Name = "b3";
-            b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+            b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
             b3.Width = 70;
             //b3.Height = 20;
             b1.Children.Add(b3);
@@ -1985,21 +1967,21 @@ namespace Wice.Tests
         {
             var stack = new Stack();
             Children.Add(stack);
-            stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+            stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
             stack.HorizontalAlignment = Alignment.Center;
             stack.VerticalAlignment = Alignment.Center;
 
             var b0 = new Border();
             stack.Children.Add(b0);
             b0.Name = nameof(b0);
-            b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
             b0.Width = 100;
             b0.Height = 100;
 
             var b1 = new Border();
             stack.Children.Add(b1);
             b1.Name = nameof(b1);
-            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
             b1.Width = 100;
             b1.Height = 100;
         }
@@ -2009,21 +1991,21 @@ namespace Wice.Tests
             var stack = new Stack();
             Children.Add(stack);
             stack.Name = nameof(stack);
-            stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+            stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
             stack.Width = 300;
             stack.Height = 300;
 
             var b0 = new Border();
             stack.Children.Add(b0);
             b0.Name = nameof(b0);
-            b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
             b0.Width = 100;
             b0.Height = 100;
 
             var b1 = new Border();
             stack.Children.Add(b1);
             b1.Name = nameof(b1);
-            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
             //b1.Width = 100;
             //b1.Height = 100;
 
@@ -2044,7 +2026,7 @@ namespace Wice.Tests
         {
             var doc = new Dock();
             doc.LastChildFill = false;
-            doc.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange);
+            doc.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange.ToColor());
             Children.Add(doc);
 
             var border = new Border();
@@ -2052,7 +2034,7 @@ namespace Wice.Tests
             border.Height = 100;
             doc.Children.Add(border);
             Dock.SetDockType(border, DockType.Right);
-            border.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            border.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
         }
 
         public void AddDockAbout()
@@ -2072,7 +2054,7 @@ namespace Wice.Tests
                 tb.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
                 tb.FontSize = 30;
                 tb.Text = i.ToString();
-                tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ChangeAlpha(i / 10f));
+                tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ChangeAlpha(i / 10f).ToColor());
                 tb.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White.ChangeAlpha((10 - i) / 10f));
                 border.Children.Add(tb);
             }
@@ -2093,7 +2075,7 @@ namespace Wice.Tests
         {
             var doc = new Dock();
             doc.LastChildFill = false;
-            doc.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange);
+            doc.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange.ToColor());
             Children.Add(doc);
 
             for (var i = 0; i < 10; i++)
@@ -2108,7 +2090,7 @@ namespace Wice.Tests
                 tb.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
                 tb.FontSize = 30;
                 tb.Text = i.ToString();
-                tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ChangeAlpha(i / 10f));
+                tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ChangeAlpha(i / 10f).ToColor());
                 tb.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White.ChangeAlpha((10 - i) / 10f));
                 border.Children.Add(tb);
             }
@@ -2120,55 +2102,55 @@ namespace Wice.Tests
             Children.Add(dock);
             dock.Name = "D#" + nameof(dock);
             dock.Margin = 50;
-            dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black);
+            dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ToColor());
 
             var b1 = new Border();
             dock.Children.Add(b1);
             Dock.SetDockType(b1, DockType.Top);
             b1.Name = "D#top";
             b1.MinHeight = 20;
-            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
 
             var splitter1 = new DockSplitter();
             splitter1.Name = nameof(splitter1);
             dock.Children.Add(splitter1);
-            splitter1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+            splitter1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
 
             var b2 = new Border();
             dock.Children.Add(b2);
             b2.Name = "D#bottom";
             b2.MinHeight = 20;
             Dock.SetDockType(b2, DockType.Bottom);
-            b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+            b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
 
             var splitter2 = new DockSplitter();
             splitter2.Name = nameof(splitter2);
             dock.Children.Add(splitter2);
-            splitter2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+            splitter2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
 
             var b3 = new Border();
             dock.Children.Add(b3);
             b3.Name = "D#left";
             b3.MinWidth = 20;
             Dock.SetDockType(b3, DockType.Left);
-            b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
 
             var splitter3 = new DockSplitter();
             splitter3.Name = nameof(splitter3);
             dock.Children.Add(splitter3);
-            splitter3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+            splitter3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
 
             var b4 = new Border();
             dock.Children.Add(b4);
             b4.Name = "D#right";
             b4.MinWidth = 20;
             Dock.SetDockType(b4, DockType.Right);
-            b4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange);
+            b4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange.ToColor());
 
             var splitter4 = new DockSplitter();
             splitter4.Name = nameof(splitter4);
             dock.Children.Add(splitter4);
-            splitter4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+            splitter4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
 
             var b5 = new Border();
             dock.Children.Add(b5);
@@ -2176,7 +2158,7 @@ namespace Wice.Tests
             Dock.SetDockType(b5, DockType.Left);
             b5.MinWidth = 10;
             b5.MinHeight = 10;
-            b5.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Violet);
+            b5.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Violet.ToColor());
         }
     }
 }

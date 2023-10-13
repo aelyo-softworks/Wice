@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "WiceCore.Samples.Gallery": {
+      "commandName": "Project",
+      "nativeDebugging": false,
+      "hotReloadEnabled": false
+    }
+  }
+}

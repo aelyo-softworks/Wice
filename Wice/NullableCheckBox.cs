@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -44,8 +45,8 @@ namespace Wice
 
             canvas.AttachedToComposition += (s, e) =>
             {
-                rect.StrokeBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor);
-                b.RenderBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.BorderColor);
+                rect.StrokeBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
+                b.RenderBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor());
             };
             return canvas;
         }

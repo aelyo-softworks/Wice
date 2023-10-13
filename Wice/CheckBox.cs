@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -33,8 +34,8 @@ namespace Wice
 
             border.AttachedToComposition += (s, e) =>
             {
-                border.RenderBrush = border.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor);
-                path.StrokeBrush = border.Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor);
+                border.RenderBrush = border.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
+                path.StrokeBrush = border.Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor.ToColor());
             };
 
             border.Children.Add(path);
@@ -53,7 +54,7 @@ namespace Wice
 
             rect.AttachedToComposition += (s, e) =>
             {
-                rect.StrokeBrush = rect.Compositor.CreateColorBrush(Application.CurrentTheme.BorderColor);
+                rect.StrokeBrush = rect.Compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor());
             };
 #if DEBUG
             rect.Name = nameof(CheckBox) + ".false";

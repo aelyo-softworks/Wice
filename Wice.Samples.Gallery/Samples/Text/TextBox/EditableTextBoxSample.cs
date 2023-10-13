@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Text.TextBox
 {
@@ -14,7 +15,7 @@ namespace Wice.Samples.Gallery.Samples.Text.TextBox
             Dock.SetDockType(tb, DockType.Top);
             tb.IsEditable = true;
 
-            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightSalmon);
+            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightSalmon.ToColor());
             tb.Padding = D2D_RECT_F.Thickness(10);
             tb.Margin = D2D_RECT_F.Thickness(10);
             tb.Text = "Click me and edit!";

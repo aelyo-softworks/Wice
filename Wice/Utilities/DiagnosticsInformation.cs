@@ -127,8 +127,8 @@ namespace Wice.Utilities
             var dd = DISPLAY_DEVICE.All.ToList();
             foreach (var path in DisplayConfig.Query())
             {
-                var tar = DisplayConfig.GetDeviceInfoTargetName(path);
-                var src = DisplayConfig.GetDeviceInfoSourceName(path);
+                var tar = DisplayConfig.GetTargetName(path);
+                var src = DisplayConfig.GetSourceName(path);
                 var display = dd.FirstOrDefault(m => m.DeviceName.EqualsIgnoreCase(src.viewGdiDeviceName));
                 if (display.DeviceName == null)
                     yield return tar + " " + src.viewGdiDeviceName;

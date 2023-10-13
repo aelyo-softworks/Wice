@@ -7,7 +7,7 @@ namespace Wice
         public PointerWheelEventArgs(int pointerId, int x, int y, int delta, Orientation orientation)
             : base(pointerId, x, y)
         {
-            Delta = delta / WindowsConstants.WHEEL_DELTA;
+            Delta = delta / Constants.WHEEL_DELTA;
             Orientation = orientation;
         }
 

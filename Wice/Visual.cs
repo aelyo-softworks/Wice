@@ -1586,8 +1586,18 @@ namespace Wice
             if (from != null && fromBrush == null)
                 return false;
 
-            toColor = toBrush?.Color;
-            fromColor = fromBrush?.Color;
+            if (toBrush?.Color != null)
+            {
+                toColor = toBrush.Color.ToColor();
+            }
+
+            //toColor = toBrush?.Color;
+
+            if (fromBrush?.Color != null)
+            {
+                fromColor = fromBrush.Color.ToColor();
+            }
+            //fromColor = fromBrush?.Color;
             return true;
         }
 
@@ -1606,14 +1616,23 @@ namespace Wice
                 if (!(sv.Brush is CompositionColorBrush cb))
                 {
                     // no clone since we create it
-                    sv.Brush = compositor.CreateColorBrush(from ?? _D3DCOLORVALUE.Transparent);
+                    Windows.UI.Color color;
+                    if (from != null)
+                    {
+                        color = from.Value.ToColor();
+                    }
+                    else
+                    {
+                        color = _D3DCOLORVALUE.Transparent.ToColor();
+                    }
+                    sv.Brush = compositor.CreateColorBrush(color);
                 }
                 else
                 {
                     var clone = (CompositionColorBrush)cb.Clone();
                     if (from != null)
                     {
-                        clone.Color = from.Value;
+                        clone.Color = from.Value.ToColor();
                     }
                     // else we keep the current color
 
@@ -1631,7 +1650,7 @@ namespace Wice
 
             var animation = compositor.CreateColorKeyFrameAnimation();
             animation.Duration = ColorAnimationDuration ?? Application.CurrentTheme.BrushAnimationDuration;
-            animation.InsertKeyFrame(1f, to, ColorAnimationEasingFunction ?? compositor.CreateLinearEasingFunction());
+            animation.InsertKeyFrame(1f, to.ToColor(), ColorAnimationEasingFunction ?? compositor.CreateLinearEasingFunction());
             foreach (var brush in brushes)
             {
                 brush.StartAnimation(nameof(CompositionColorBrush.Color), animation);
@@ -2345,7 +2364,7 @@ namespace Wice
 
             if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Size))
             {
-                cv.Size = rr.Size;
+                cv.Size = rr.Size.ToVector2();
             }
 
             if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Clip) && FinalClipFromParent)

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -15,7 +16,7 @@ namespace Wice
         {
             _rr = new RoundedRectangle();
             _rr.CornerRadius = new Vector2(Application.CurrentTheme.RoundedButtonCornerRadius);
-            _rr.DoWhenAttachedToComposition(() => _rr.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White));
+            _rr.DoWhenAttachedToComposition(() => _rr.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor()));
             Content.Children.Add(_rr);
 
             BackPanel = CreateBackPanel();

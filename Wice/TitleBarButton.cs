@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -56,7 +57,7 @@ namespace Wice
         {
             base.OnAttachedToComposition(sender, e);
             Path.Shape.StrokeThickness = 1f;
-            Path.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black);
+            Path.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ToColor());
         }
     }
 }

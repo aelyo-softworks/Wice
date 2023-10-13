@@ -2,10 +2,11 @@
 using DirectN;
 using Wice.Effects;
 using Wice.Resources;
+using Wice.Utilities;
 using Windows.Graphics.DirectX;
 using Windows.UI.Composition;
 #if NET
-using IGraphicsEffectSource = DirectN.IGraphicsEffectSourceWinRT;
+using IGraphicsEffectSource = Wice.Interop.IGraphicsEffectSourceWinRT;
 #else
 using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
 #endif
@@ -71,7 +72,7 @@ namespace Wice.Samples.Gallery.Samples.Effects.Contrast
                     visual.Height = visual.Width * size.height / size.width;
 
                     // create a drawing (D2D1) surface
-                    var surface = Window.CompositionDevice.CreateDrawingSurface(size, DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+                    var surface = Window.CompositionDevice.CreateDrawingSurface(Wice.Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
                     using (var dc = surface.BeginDraw())
                     {
                         // we don't need to clear the surface as we redraw it completely

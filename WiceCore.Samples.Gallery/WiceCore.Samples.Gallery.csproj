@@ -10,6 +10,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <NoWarn>1701;1702;WFAC010</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;WFAC010</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="README.md" />
@@ -154,7 +158,9 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\ContrastSampleList.cs" Link="Samples\Effects\ContrastSampleList.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />
+    <PackageReference Include="DirectNCore" Version="1.15.0.2" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\WiceCore\WiceCore.csproj" />
   </ItemGroup>
 </Project>

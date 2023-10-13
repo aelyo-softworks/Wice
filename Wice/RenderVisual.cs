@@ -35,7 +35,7 @@ namespace Wice
                 return rv.BackgroundColor.Value;
 
             if (visual.RenderBrush is CompositionColorBrush colorBrush)
-                return colorBrush.Color;
+                return colorBrush.Color.ToColor();
 
             if (visual.RenderBrush is CompositionEffectBrush effectBrush)
             {
@@ -60,7 +60,7 @@ namespace Wice
                     if (!(value is CompositionColorBrush colorBrush))
                         throw new NotSupportedException();
 
-                    BackgroundColor = colorBrush.Color;
+                    BackgroundColor = colorBrush.Color.ToColor();
                     return base.SetPropertyValue(property, value, options);
                 } // else continue
             }

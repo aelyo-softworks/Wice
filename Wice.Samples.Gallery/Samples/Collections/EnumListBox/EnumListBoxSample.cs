@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Collections.EnumListBox
 {
@@ -10,7 +11,7 @@ namespace Wice.Samples.Gallery.Samples.Collections.EnumListBox
         {
             var lb = new Wice.EnumListBox();
             lb.Value = States.State1;
-            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
             parent.Children.Add(lb);
             Dock.SetDockType(lb, DockType.Top); // remove from display
 

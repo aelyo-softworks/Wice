@@ -1,4 +1,5 @@
 ﻿using System;
+using Wice.Utilities;
 using Windows.UI.Composition;
 
 namespace Wice
@@ -145,7 +146,7 @@ namespace Wice
 
             if (Child is SingleShape singleShape)
             {
-                singleShape.StrokeBrush = Compositor.CreateColorBrush(Application.CurrentTheme.FocusColor);
+                singleShape.StrokeBrush = Compositor.CreateColorBrush(Application.CurrentTheme.FocusColor.ToColor());
                 singleShape.StrokeThickness = Application.CurrentTheme.FocusThickness;
                 singleShape.StrokeDashArray = Application.CurrentTheme.FocusDashArray;
             }

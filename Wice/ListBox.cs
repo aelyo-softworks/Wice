@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -277,7 +278,7 @@ namespace Wice
             {
                 visual.DoWhenAttachedToComposition(() =>
                 {
-                    visual.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor);
+                    visual.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
                 });
             }
             else
@@ -285,7 +286,7 @@ namespace Wice
                 var compositor = Compositor;
                 if (compositor != null)
                 {
-                    visual.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor);
+                    visual.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor.ToColor());
                 }
             }
 
@@ -541,11 +542,11 @@ namespace Wice
 
             item.DataBinder = DataBinder;
             item.ColorAnimationDuration = Application.CurrentTheme.SelectionBrushAnimationDuration;
-            item.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor);
+            item.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor.ToColor());
 
             void updateHover()
             {
-                item.HoverRenderBrush = item.IsSelected || !IsEnabled ? null : Compositor?.CreateColorBrush(Application.CurrentTheme.ListBoxHoverColor);
+                item.HoverRenderBrush = item.IsSelected || !IsEnabled ? null : Compositor?.CreateColorBrush(Application.CurrentTheme.ListBoxHoverColor.ToColor());
             }
 
             //item.SelectionChanged += (s, e) => updateHover();

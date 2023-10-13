@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Input.StateButton
 {
@@ -17,7 +18,7 @@ namespace Wice.Samples.Gallery.Samples.Input.StateButton
 
             // add state button
             var btn = new Wice.StateButton();
-            btn.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+            btn.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
 
             // add "true" / checked state
             btn.AddState(new StateButtonState(true, (button, args, state) => new TextBox

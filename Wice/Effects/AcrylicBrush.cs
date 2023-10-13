@@ -4,11 +4,11 @@ using System.Globalization;
 using System.Reflection;
 using DirectN;
 using Wice.Resources;
+using Wice.Utilities;
 using Windows.Graphics.DirectX;
-using Windows.Graphics.Effects;
 using Windows.UI.Composition;
 #if NET
-using IGraphicsEffectSource = DirectN.IGraphicsEffectSourceWinRT;
+using IGraphicsEffectSource = Wice.Interop.IGraphicsEffectSourceWinRT;
 #else
 using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
 #endif
@@ -174,7 +174,7 @@ namespace Wice.Effects
                 if (im == null)
                     throw new WiceException("0025: Cannot find embedded noise resource '" + name + "'.");
 
-                var noiseDrawingSurface = device.CreateDrawingSurface(im.GetSizeF(), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+                var noiseDrawingSurface = device.CreateDrawingSurface(im.GetWinSize(), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
                 using (var dc = noiseDrawingSurface.BeginDraw())
                 {
                     dc.Clear(_D3DCOLORVALUE.Transparent);
@@ -210,11 +210,11 @@ namespace Wice.Effects
             var acrylicBrush = CreateAcrylicBrushWorker(device.Compositor, effectiveTintColor, luminosityColor, useLegacyEffect, useWindowsAcrylic);
 
             acrylicBrush.SetSourceParameter("Noise", CreateNoiseBrush(device));
-            acrylicBrush.Properties.InsertColor("TintColor.Color", effectiveTintColor);
+            acrylicBrush.Properties.InsertColor("TintColor.Color", effectiveTintColor.ToColor());
 
             if (!useLegacyEffect && WinRTUtilities.Is19H1OrHigher)
             {
-                acrylicBrush.Properties.InsertColor("LuminosityColor.Color", luminosityColor);
+                acrylicBrush.Properties.InsertColor("LuminosityColor.Color", luminosityColor.ToColor());
             }
 
             // we use Comment as key, see CompositionObjectEqualityComparer
@@ -234,9 +234,8 @@ namespace Wice.Effects
             var pos = htmlString.IndexOf('\0');
             if (pos > 0)
             {
-                var color = _D3DCOLORVALUE.FromName(htmlString.Substring(0, pos));
-                if (color.HasValue)
-                    return color.Value;
+                if (_D3DCOLORVALUE.TryParseFromName(htmlString.Substring(0, pos), out var colorValue))
+                    return colorValue;
             }
             return null;
         }

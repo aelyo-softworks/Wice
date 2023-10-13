@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Layout.UniformGrid
 {
@@ -25,8 +26,8 @@ namespace Wice.Samples.Gallery.Samples.Layout.UniformGrid
                     var shape = new Ellipse();
                     grid.Children.Add(shape);
                     var color = new _D3DCOLORVALUE(0, i / (float)grid.Rows, j / (float)grid.Columns);
-                    shape.RenderBrush = Compositor.CreateColorBrush(color);
-                    shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color);
+                    shape.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
+                    shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
                     shape.Shape.StrokeThickness = 0.5f;
                 }
             }

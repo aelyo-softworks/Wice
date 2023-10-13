@@ -117,8 +117,8 @@ namespace Wice
             if (Value)
             {
                 _path.StrokeBrush = null;
-                _path.FillBrush = OnPathBrush ?? Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor);
-                _button.FillBrush = OnButtonBrush ?? Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor);
+                _path.FillBrush = OnPathBrush ?? Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
+                _button.FillBrush = OnButtonBrush ?? Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor.ToColor());
             }
             else
             {
@@ -128,7 +128,7 @@ namespace Wice
                 {
                     if (button == null)
                     {
-                        button = Compositor.CreateColorBrush(Application.CurrentTheme.BorderColor);
+                        button = Compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor());
                     }
                     path = button;
                 }

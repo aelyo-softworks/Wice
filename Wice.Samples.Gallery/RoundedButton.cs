@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery
 {
@@ -39,7 +40,7 @@ namespace Wice.Samples.Gallery
             if (Compositor == null)
                 return;
 
-            _roundedRectangle.RenderBrush = Compositor.CreateColorBrush(GalleryWindow.ButtonColor);
+            _roundedRectangle.RenderBrush = Compositor.CreateColorBrush(GalleryWindow.ButtonColor.ToColor());
             RenderBrush = null;
             Text.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White);
             Icon.ForegroundBrush = Text.ForegroundBrush;
@@ -48,7 +49,7 @@ namespace Wice.Samples.Gallery
             {
                 var shadow = Compositor.CreateDropShadow();
                 shadow.BlurRadius = 8;
-                shadow.Color = GalleryWindow.ButtonShadowColor;
+                shadow.Color = GalleryWindow.ButtonShadowColor.ToColor();
                 shadow.Offset = new Vector3(0, 3, 0);
                 _canvas.RenderShadow = shadow;
             }

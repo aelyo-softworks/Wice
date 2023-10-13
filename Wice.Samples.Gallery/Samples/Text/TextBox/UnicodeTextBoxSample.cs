@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Text.TextBox
 {
@@ -19,7 +20,7 @@ namespace Wice.Samples.Gallery.Samples.Text.TextBox
 
             var tb = new Wice.TextBox();
             sv.Viewer.Child = tb;
-            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.CornflowerBlue);
+            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.CornflowerBlue.ToColor());
             tb.Padding = D2D_RECT_F.Thickness(10);
             tb.Margin = D2D_RECT_F.Thickness(10);
 

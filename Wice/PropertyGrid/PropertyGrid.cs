@@ -128,7 +128,7 @@ namespace Wice.PropertyGrid
         protected override void OnAttachedToComposition(object sender, EventArgs e)
         {
             base.OnAttachedToComposition(sender, e);
-            Splitter.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.SplitterColor);
+            Splitter.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.SplitterColor.ToColor());
         }
 
         protected virtual void OnSelectedObjectPropertyChanged(object sender, PropertyChangedEventArgs e) => GetVisuals(e.PropertyName)?.ValueVisual?.UpdateEditor();

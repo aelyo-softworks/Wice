@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading;
 using DirectN;
+using Wice.Utilities;
 using Windows.UI.Composition;
 
 namespace Wice
@@ -21,7 +22,7 @@ namespace Wice
         {
             DisableKeyEvents = true;
             DisablePointerEvents = true;
-            BlinkTime = WindowsFunctions.GetCaretBlinkTime();
+            BlinkTime = (int)WindowsFunctions.GetCaretBlinkTime();
             if (BlinkTime == 0 || BlinkTime == int.MaxValue) // we always want to display a caret
             {
                 // default seems 530
@@ -34,7 +35,7 @@ namespace Wice
             //Opacity = 0.5f;
             //Width = 5;
 
-            DoWhenAttachedToComposition(() => RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.CaretColor));
+            DoWhenAttachedToComposition(() => RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.CaretColor.ToColor()));
         }
 
         // no key/mouse at all for caret

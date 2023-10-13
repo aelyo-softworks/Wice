@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.InteropServices;
 using DirectN;
 
 namespace Wice.Samples.Gallery.Pages
@@ -9,10 +10,6 @@ namespace Wice.Samples.Gallery.Pages
         {
             // home has no title
             Title.IsVisible = false;
-
-//#if DEBUG
-//            RichTextBox.Logger = Wice.Utilities.UILogger.Instance;
-//#endif
 
             // add a rich text box in a scroll viewer
             var sv = new ScrollViewer();
@@ -31,8 +28,14 @@ namespace Wice.Samples.Gallery.Pages
                 // Document is an ITextDocument(2) and supports IDispatch (usable with C#'s dynamic)
                 // https://docs.microsoft.com/en-us/windows/win32/api/tom/nn-tom-itextdocument
 
-                // ITextDocument.Open supports a VARIANT of type IStream, we use Wice's ManagedIStream to handle this
-                desc.Document.Open(new ManagedIStream(stream), 0, 1200);
+                // ITextDocument.Open supports a VARIANT of type IStream, we use ManagedIStream to handle this
+                const int CP_UNICODE = 1200;
+
+                // we must force wrap it as IUnknown because for some reason with .NET Core+, if it's in an outside assembly (DirectN.dll here)
+                // ManagedIStream is wrapped as IDispatch and this causes failure in dynamic DLR code
+                // "COMException: Cannot marshal 'parameter #1': Invalid managed/unmanaged type combination"
+                var unk = new UnknownWrapper(new ManagedIStream(stream));
+                desc.Document.Open(unk, 0, CP_UNICODE);
             }
 
             sv.Viewer.Child = desc;

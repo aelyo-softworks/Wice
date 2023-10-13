@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Media.Brush
 {
@@ -21,7 +22,7 @@ namespace Wice.Samples.Gallery.Samples.Media.Brush
 
             // to create a composition brush, the visual must be attached to composition
             // to be able to use the Compositor instance corresponding to its parent Window.
-            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.MediumAquamarine);
+            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.MediumAquamarine.ToColor());
 
             // in contrast, a Direct2D brush can be created off ground.
             // we need Direct2D colors when we use primitives that Windows composition doesn't support

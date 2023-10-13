@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Windows.Dialog
 {
@@ -18,7 +19,7 @@ namespace Wice.Samples.Gallery.Samples.Windows.Dialog
                 parent.Window.Children.Add(dlg);
                 dlg.Width = 300;
                 dlg.Height = 300;
-                dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+                dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
 
                 var tb = new TextBox();
                 tb.Text = "Press ESC to close";

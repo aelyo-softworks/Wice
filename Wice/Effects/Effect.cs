@@ -6,9 +6,11 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using DirectN;
 using Windows.Foundation;
+using Wice.Interop;
+using Wice.Utilities;
 #if NET
-using IGraphicsEffectSource = DirectN.IGraphicsEffectSourceWinRT;
-using IGraphicsEffect = DirectN.IGraphicsEffectWinRT;
+using IGraphicsEffectSource = Wice.Interop.IGraphicsEffectSourceWinRT;
+using IGraphicsEffect = Wice.Interop.IGraphicsEffectWinRT;
 #else
 using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
 using IGraphicsEffect = Windows.Graphics.Effects.IGraphicsEffect;
@@ -342,17 +344,19 @@ namespace Wice.Effects
             }
         }
 
-        HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource source)
+        HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out /*IGraphicsEffectSource*/ IntPtr source)
         {
             //Application.Trace(this + " index:" + index);
             if (index >= MaximumSourcesCount || index >= _sources.Count)
             {
-                source = null;
+                source = IntPtr.Zero;
                 Application.Trace(this + " index:" + index + " E_BOUNDS");
                 return HRESULTS.E_BOUNDS;
             }
 
-            source = _sources[(int)index];
+            var src = _sources[(int)index];
+
+            source = Marshal.GetComInterfaceForObject(src, typeof(IGraphicsEffectSource));
             return HRESULTS.S_OK;
         }
 

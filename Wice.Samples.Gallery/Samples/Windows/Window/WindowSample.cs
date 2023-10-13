@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Windows.Window
 {
@@ -13,7 +14,7 @@ namespace Wice.Samples.Gallery.Samples.Windows.Window
             btn.Click += (s, e) =>
             {
                 var window = new Wice.Window { Title = "Hello World" };
-                window.RenderBrush = window.Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+                window.RenderBrush = window.Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
                 window.ResizeClient(400, 400);
                 window.Center();
                 window.Show();

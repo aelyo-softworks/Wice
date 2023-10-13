@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using DirectN;
 #if NET
-using IGeometrySource2D = DirectN.IGeometrySource2DWinRT;
+using IGeometrySource2D = Wice.Interop.IGeometrySource2DWinRT;
 #else
 using IGeometrySource2D = Windows.Graphics.IGeometrySource2D;
 #endif

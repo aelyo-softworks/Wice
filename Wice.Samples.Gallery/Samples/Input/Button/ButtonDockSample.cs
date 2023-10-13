@@ -1,4 +1,5 @@
 ﻿using DirectN;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Input.Button
 {
@@ -12,7 +13,7 @@ namespace Wice.Samples.Gallery.Samples.Input.Button
             var dock = new Dock();
             dock.Height = 50;
             dock.LastChildFill = false;
-            dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Olive);
+            dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Olive.ToColor());
             parent.Children.Add(dock);
             Wice.Dock.SetDockType(dock, DockType.Top); // remove from display
 

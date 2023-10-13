@@ -2,6 +2,7 @@
 using DirectN;
 using Wice.Samples.Gallery.Samples;
 using Wice.Samples.Gallery.Utilities;
+using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Pages
 {
@@ -45,7 +46,7 @@ namespace Wice.Samples.Gallery.Pages
                 {
                     code = new CodeBox();
                     code.Margin = D2D_RECT_F.Thickness(0, 10, 0, 0);
-                    code.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+                    code.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
                     code.Options |= TextHostOptions.WordWrap;
                     code.Padding = 5;
                     code.CodeLanguage = WiceLanguage.Default.Id; // init & put in repo

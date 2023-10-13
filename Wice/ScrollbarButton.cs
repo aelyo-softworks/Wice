@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Wice.Utilities;
 using Windows.UI.Composition;
 
 namespace Wice
@@ -48,7 +49,7 @@ namespace Wice
         {
             base.OnAttachedToComposition(sender, e);
             Child.Shape.StrokeThickness = Application.CurrentTheme.ScrollBarButtonStrokeThickness;
-            Child.StrokeBrush = Compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarButtonStrokeColor);
+            Child.StrokeBrush = Compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarButtonStrokeColor.ToColor());
             Child.RenderBrush = Child.StrokeBrush;
         }
     }

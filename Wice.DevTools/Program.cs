@@ -52,21 +52,6 @@ namespace Wice.DevTools
 
             switch (type)
             {
-                case CommandType.UpdateDirectN:
-                    var directNPath = CommandLine.GetNullifiedArgument(1);
-                    if (directNPath == null)
-                    {
-                        Help();
-                        return;
-                    }
-
-                    UpdateDirectN(directNPath);
-                    break;
-
-                case CommandType.UpdateDirectNCore:
-                    UpdateDirectNCore();
-                    break;
-
                 case CommandType.UpdateWiceCore:
                     UpdateWiceCore();
                     break;
@@ -178,33 +163,11 @@ namespace Wice.DevTools
             samplesFile.Save(resourcesPath);
         }
 
-        static void UpdateDirectN(string directNPath)
-        {
-            var target = new CSharpProject(@"..\..\..\DirectN\DirectN.csproj");
-            foreach (var file in target.ImplicitIncludedFilePaths)
-            {
-                if (!file.StartsWith(@"Generated\", StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                var sourcePath = IOPath.Combine(directNPath, file);
-                var destinationPath = IOPath.Combine(target.ProjectDirectoryPath, file);
-                IOUtilities.FileOverwrite(sourcePath, destinationPath);
-                Console.WriteLine("Copied " + sourcePath + " => " + destinationPath);
-            }
-        }
-
         static void UpdateWiceCore()
         {
             var source = new CSharpProject(@"..\..\..\Wice\Wice.csproj");
             var target = new CSharpProject(@"..\..\..\WiceCore\WiceCore.csproj");
             UpdateCoreProject(source, target, @"..\Wice\", false);
-        }
-
-        static void UpdateDirectNCore()
-        {
-            var source = new CSharpProject(@"..\..\..\DirectN\DirectN.csproj");
-            var target = new CSharpProject(@"..\..\..\DirectNCore\DirectNCore.csproj");
-            UpdateCoreProject(source, target, @"..\DirectN\", true); // netstandard => implicit
         }
 
         static void UpdateWiceCoreTests()
@@ -336,8 +299,6 @@ namespace Wice.DevTools
             Console.WriteLine("    This tool is used to run a specific Wice Development command.");
             Console.WriteLine();
             Console.WriteLine("Commands:");
-            Console.WriteLine("    UpdateDirectN <path>           Update the Wice DirectN project from the public github DirectN project.");
-            Console.WriteLine("    UpdateDirectNCore              Update the DirectNCore project from the DirectN project.");
             Console.WriteLine("    UpdateWiceCore                 Update the WiceCore project from the Wice project.");
             Console.WriteLine("    UpdateWiceCoreTests            Update the WiceCore.Tests project from the Wice.Tests project.");
             Console.WriteLine("    UpdateWiceCoreSamplesGallery   Update the WiceCore.Samples.Gallery project from the Wice.Samples.Gallery project.");

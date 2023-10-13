@@ -33,7 +33,7 @@ namespace Wice
 #endif
             Children.Add(Selection);
             Selection.IsVisible = false;
-            Selection.DoWhenAttachedToComposition(() => Selection.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor));
+            Selection.DoWhenAttachedToComposition(() => Selection.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor()));
 
             Panel = CreatePanel();
             Panel.Margin = 10;

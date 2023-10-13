@@ -67,7 +67,7 @@ namespace Wice
             var src = Source;
             if (src != null && !src.IsDisposed)
             {
-                var size = src.GetSize();
+                var size = src.GetSizeF();
                 width = size.width;
                 height = size.height;
                 var stretch = Stretch;

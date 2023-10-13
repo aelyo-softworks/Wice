@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Numerics;
+using Wice.Utilities;
 using Windows.UI.Composition;
 
 namespace Wice
@@ -21,7 +22,7 @@ namespace Wice
             var ar = ArrangedRect;
             if (ar.IsValid)
             {
-                Geometry.Size = (ar.Size - Margin).ToVector2();
+                Geometry.Size = Extensions.ToVector2(ar.Size - Margin);
                 Geometry.Offset = new Vector2(Margin.left, Margin.top);
                 Geometry.CornerRadius = CornerRadius;
             }

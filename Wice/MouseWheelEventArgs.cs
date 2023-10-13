@@ -7,7 +7,7 @@ namespace Wice
         public MouseWheelEventArgs(int x, int y, POINTER_MOD vk, int delta, Orientation orientation)
             : base(x, y, vk)
         {
-            Delta = delta / WindowsConstants.WHEEL_DELTA;
+            Delta = delta / Constants.WHEEL_DELTA;
             Orientation = orientation;
         }
 

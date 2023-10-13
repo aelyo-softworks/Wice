@@ -40,7 +40,7 @@ namespace Wice.Utilities
             SetThreadUILanguage((ushort)lcid);
 
             var ret = LoadString(h, id, out var ptr, 0);
-            
+
             SetThreadUILanguage(oldLcid);
 
             if (ret == 0)

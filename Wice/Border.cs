@@ -161,7 +161,7 @@ namespace Wice
                     // while rendering is done by D2D and both do not 100% agree on what's a radius
                     var geometry = Compositor.CreateRoundedRectangleGeometry();
                     geometry.CornerRadius = radius;
-                    geometry.Size = RenderSize;
+                    geometry.Size = Wice.Utilities.Extensions.ToVector2(RenderSize);
                     CompositionVisual.Clip = Compositor.CreateGeometricClip(geometry);
                 }
             }

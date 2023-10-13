@@ -1,5 +1,6 @@
 ﻿using System;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -31,7 +32,7 @@ namespace Wice
                         dlg.ShowWindowOverlay = false;
                     }
 
-                    dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightPink);
+                    dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightPink.ToColor());
                     dlg.PlacementMode = PlacementMode.OuterBottomRight;
                     dlg.PlacementTarget = this;
                     Window.Children.Add(dlg);

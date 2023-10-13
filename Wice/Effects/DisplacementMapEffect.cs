@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using DirectN;
 #if NET
-using IGraphicsEffectSource = DirectN.IGraphicsEffectSourceWinRT;
+using IGraphicsEffectSource = Wice.Interop.IGraphicsEffectSourceWinRT;
 #else
 using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
 #endif

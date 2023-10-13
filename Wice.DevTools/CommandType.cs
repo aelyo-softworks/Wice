@@ -3,8 +3,6 @@
     public enum CommandType
     {
         Unknown,
-        UpdateDirectN,
-        UpdateDirectNCore,
         UpdateWiceCore,
         UpdateWiceCoreTests,
         UpdateWiceCoreSamplesGallery,

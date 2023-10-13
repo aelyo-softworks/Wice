@@ -49,6 +49,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -61,10 +62,6 @@
     <Compile Include="TestWindow.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DirectN\DirectN.csproj">
-      <Project>{102f5846-3322-494d-ba37-9ca23450e145}</Project>
-      <Name>DirectN</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Wice\Wice.csproj">
       <Project>{ef67ab82-0abc-4054-aada-293600d276d6}</Project>
       <Name>Wice</Name>
@@ -98,6 +95,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="DirectN">
+      <Version>1.15.0.2</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
       <Version>10.0.22621.755</Version>
     </PackageReference>

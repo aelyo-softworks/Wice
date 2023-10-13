@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using DirectN;
+using Wice.Utilities;
 using Windows.UI.Composition;
 
 namespace Wice.Utilities
@@ -212,7 +213,7 @@ namespace Wice.Utilities
             base.OnMouseMove(e);
             foreach (var window in Windows)
             {
-                var visual = window.GetIntersectingVisuals(window.ScreenToClient(PointToScreen(e.Location))).FirstOrDefault();
+                var visual = window.GetIntersectingVisuals(window.ScreenToClient(PointToScreen(e.Location).TotagPOINT())).FirstOrDefault();
                 if (visual != null)
                 {
                     var node = EnsureVisible(visual);
@@ -438,7 +439,7 @@ namespace Wice.Utilities
                 StrokeThickness = 7;
                 ZIndex = int.MaxValue;
 
-                DoWhenAttachedToComposition(() => StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow));
+                DoWhenAttachedToComposition(() => StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor()));
             }
 
             [Browsable(false)]
@@ -884,7 +885,7 @@ namespace Wice.Utilities
             public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => base.CanConvertFrom(context, sourceType) || sourceType == typeof(string);
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object input)
             {
-                if (input is string s && D2D_RECT_F.TryParse(s, culture, out var value))
+                if (input is string s && Extensions.TryParseD2D_RECT_F(s, culture, out var value))
                     return value;
 
                 return base.ConvertFrom(context, culture, input);

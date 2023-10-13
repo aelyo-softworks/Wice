@@ -14,7 +14,6 @@
     <None Remove="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />
     <ProjectReference Include="..\WiceCore\WiceCore.csproj" />
   </ItemGroup>
   <ItemGroup>
@@ -31,5 +30,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="..\Wice.Tests\..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="Samples\Collections\PropertyGrid\SampleModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DirectNCore" Version="1.15.0.2" />
   </ItemGroup>
 </Project>

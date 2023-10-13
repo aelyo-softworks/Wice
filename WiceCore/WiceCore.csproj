@@ -319,8 +319,18 @@
     <Compile Include="..\Wice\PointerLeaveEventArgs.cs" Link="PointerLeaveEventArgs.cs" />
     <Compile Include="..\Wice\PointerDragEventArgs.cs" Link="PointerDragEventArgs.cs" />
     <Compile Include="..\Wice\DragEventArgs.cs" Link="DragEventArgs.cs" />
+    <Compile Include="..\Wice\Interop\ICompositionTarget.cs" Link="Interop\ICompositionTarget.cs" />
+    <Compile Include="..\Wice\Interop\ICompositorInterop.cs" Link="Interop\ICompositorInterop.cs" />
+    <Compile Include="..\Wice\Utilities\Extensions.cs" Link="Utilities\Extensions.cs" />
+    <Compile Include="..\Wice\Interop\IPropertyValueStatics.cs" Link="Interop\IPropertyValueStatics.cs" />
+    <Compile Include="..\Wice\Interop\IPropertyValueStaticsExtensions.cs" Link="Interop\IPropertyValueStaticsExtensions.cs" />
+    <Compile Include="..\Wice\Utilities\ICompositionDrawingSurfaceInteropExtensions.cs" Link="Utilities\ICompositionDrawingSurfaceInteropExtensions.cs" />
+    <Compile Include="..\Wice\Utilities\WinRTUtilities.cs" Link="Utilities\WinRTUtilities.cs" />
+    <Compile Include="..\Wice\Interop\IGeometrySource2DWinRT.cs" Link="Interop\IGeometrySource2DWinRT.cs" />
+    <Compile Include="..\Wice\Interop\IGraphicsEffectSourceWinRT.cs" Link="Interop\IGraphicsEffectSourceWinRT.cs" />
+    <Compile Include="..\Wice\Interop\IGraphicsEffectWinRT.cs" Link="Interop\IGraphicsEffectWinRT.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DirectNCore\DirectNCore.csproj" />
+    <PackageReference Include="DirectNCore" Version="1.15.0.2" />
   </ItemGroup>
 </Project>
