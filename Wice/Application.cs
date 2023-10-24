@@ -141,7 +141,7 @@ namespace Wice
                 Current.ResourceManager.RemoveWindow(window);
                 WindowRemoved?.Invoke(Current, new ValueEventArgs<Window>(window));
 
-                if (!_exiting && _windows.Count(w => !w.IsBackground) == 0)
+                if (QuitOnLastWindowRemoved && !_exiting && _windows.Count(w => !w.IsBackground) == 0)
                 {
                     _exiting = true;
                     var backgroundWindows = _windows.Where(w => w.IsBackground).ToArray();
@@ -160,18 +160,29 @@ namespace Wice
         private static bool _useDebugLayer;
 #endif
 
-        public static Application Current => _current;
+        public static Application Current
+        {
+            get
+            {
+                if (_current == null)
+                {
+                    _ = new Application();
+                }
+                return _current;
+            }
+        }
         public static Theme CurrentTheme => Current.ResourceManager.Theme;
         public static bool UseDebugLayer { get => _useDebugLayer && DXGIFunctions.IsDebugLayerAvailable; set => _useDebugLayer = true; }
         public static IEnumerable<Window> Windows => _windows;
         public static IntPtr ModuleHandle => WindowsFunctions.GetModuleHandle(null);
         public static bool IsFatalErrorShowing { get; private set; }
+        public static bool QuitOnLastWindowRemoved { get; set; } = true;
         public static ILogger Logger { get; set; }
 
         public static int MainThreadId { get; private set; }
         public static bool IsRunningAsMainThread => MainThreadId == Thread.CurrentThread.ManagedThreadId;
         public static void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0008: This method must be called on the render thread."); }
-        
+
         public static void Exit()
         {
             ApplicationExit?.Invoke(Current, EventArgs.Empty);
