@@ -253,7 +253,14 @@ namespace Wice
                 if (disposing)
                 {
                     // dispose managed state (managed objects)
-                    Interlocked.Exchange(ref _host, null)?.Dispose();
+                    try
+                    {
+                        Interlocked.Exchange(ref _host, null)?.Dispose();
+                    }
+                    catch
+                    {
+                        // continue. should be removed when DirectN is upgraded
+                    }
                 }
 
                 // free unmanaged resources (unmanaged objects) and override finalizer

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.InteropServices;
 using DirectN;
 using Wice.Utilities;
 
@@ -27,7 +28,11 @@ namespace Wice.Samples.Gallery.Samples.Text.RichTextBox
             // load text from this assembly's resources
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Wice.Samples.Gallery.Resources.wice.rtf"))
             {
-                doc.Open(new ManagedIStream(stream), 0, 1200); // Flags = 0, CodePage = 1200 (unicode)
+                // we must force wrap it as IUnknown because for some reason with .NET Core+, if it's in an outside assembly (DirectN.dll here)
+                // ManagedIStream is wrapped as IDispatch and this causes failure in dynamic DLR code
+                // "COMException: Cannot marshal 'parameter #1': Invalid managed/unmanaged type combination"
+                var unk = new UnknownWrapper(new ManagedIStream(stream));
+                doc.Open(unk, 0, 1200); // Flags = 0, CodePage = 1200 (unicode)
             }
         }
     }

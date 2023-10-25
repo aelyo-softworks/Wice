@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DirectN;
 using Wice.Effects;
@@ -7,7 +8,7 @@ using Wice.Utilities;
 
 namespace Wice.Samples.Gallery
 {
-    public class GalleryWindow : Window
+    public class GalleryWindow : Window, IDisposable
     {
         public static _D3DCOLORVALUE ButtonColor;
         public static _D3DCOLORVALUE ButtonShadowColor;
@@ -15,6 +16,7 @@ namespace Wice.Samples.Gallery
         private const int _headersMargin = 10;
         private Border _pageHolder;
         private readonly List<SymbolHeader> _headers = new List<SymbolHeader>();
+        private readonly List<Page> _pages = new List<Page>();
 
         static GalleryWindow()
         {
@@ -29,12 +31,12 @@ namespace Wice.Samples.Gallery
             WindowsFrameMode = WindowsFrameMode.None;
 
             // resize to 66% of the screen
-            var monitor = Monitor.Primary.Bounds;
+            var monitor = GetMonitor().Bounds;
             ResizeClient(monitor.Width * 2 / 3, monitor.Height * 2 / 3);
 
-            // the EnableBlurBehind call is necessary when using the Windows' acrylic
+            // the EnableBlurBehind call may be necessary when using the Windows' acrylic depending on Windows version
             // otherwise the window will be (almost) black
-            //Native.EnableBlurBehind();
+            // Native.EnableBlurBehind();
             RenderBrush = AcrylicBrush.CreateAcrylicBrush(
                 CompositionDevice,
                 _D3DCOLORVALUE.White,
@@ -46,6 +48,18 @@ namespace Wice.Samples.Gallery
             //WindowsFunctions.EnableMouseInPointer();
 
             AddControls();
+        }
+
+        // create on the monitor where the mouse is at startup
+        // remove this if you always want to create on primary monitor
+        public override tagRECT CreateRect
+        {
+            get
+            {
+                var cursor = NativeWindow.GetCursorPosition();
+                var area = Monitor.All.First(m => m.Handle == Monitor.GetNearestFromPoint(cursor.x, cursor.y)).WorkingArea;
+                return area;
+            }
         }
 
         public void ShowPage(Visual page)
@@ -97,7 +111,8 @@ namespace Wice.Samples.Gallery
         // add headers & pages & selection logic
         private void AddHeaderAndPages(Dock menu)
         {
-            foreach (var page in Page.GetPages())
+            _pages.AddRange(Page.GetPages());
+            foreach (var page in _pages)
             {
                 var header = AddPageHeader(page);
                 Dock.SetDockType(header, page.DockType);
@@ -142,6 +157,11 @@ namespace Wice.Samples.Gallery
 
             var typo = Typography.WithLigatures;
             text.SetTypography(typo.DWriteTypography.Object);
+        }
+
+        public void Dispose()
+        {
+            _pages.Dispose();
         }
     }
 }

@@ -418,7 +418,7 @@ namespace Wice
                 // center within appropriate monitor coordinates
                 if (hwndCenter == IntPtr.Zero)
                 {
-                    var hwDefault = ActiveHandle;
+                    var hwDefault = Handle;
                     WindowsFunctions.GetMonitorInfo(WindowsFunctions.MonitorFromWindow(hwDefault, MONITOR_FLAGS.MONITOR_DEFAULTTOPRIMARY), ref mi);
                     center = mi.rcWork;
                     area = mi.rcWork;
