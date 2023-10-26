@@ -3,7 +3,7 @@
 {
     var lb = new EnumListBox();
     lb.Value = States.State1;
-    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
     parent.Children.Add(lb);
 
     // States is defined like this
@@ -19,7 +19,7 @@
   <sample namespace="Samples.Collections.CheckBoxList.CheckBoxListSample">void Layout(Visual parent)
 {
     var lb = new CheckBoxList();
-    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
     parent.Children.Add(lb);
 
     // set the list box's data source
@@ -35,7 +35,7 @@
     // WeekDays is a combination of other flags so if you select it, it will select other corresponding values as well.
     // Also NoDay (0) is not displayed since it correspond to no selection.
 
-    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
     parent.Children.Add(lb);
 
     // SampleDaysOfWeek is defined like this
@@ -56,7 +56,7 @@
   <sample namespace="Samples.Collections.ListBox.AdvancedListBoxSample">void Layout(Visual parent)
 {
     var lb = new ListBox();
-    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
     parent.Children.Add(lb);
 
     // set the list box's data source
@@ -65,7 +65,7 @@
   <sample namespace="Samples.Collections.ListBox.ListBoxSample">void Layout(Visual parent)
 {
     var lb = new ListBox();
-    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+    lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
     parent.Children.Add(lb);
 
     lb.DataBinder = new DataBinder
@@ -83,7 +83,7 @@
             var tb = (TextBox)ctx.DataVisual;
             var data = (Tuple&lt;string, string&gt;)ctx.Data;
             tb.Text = data.Item1;
-            tb.SetSolidColor(_D3DCOLORVALUE.FromName(data.Item1).Value);
+            tb.SetSolidColor(_D3DCOLORVALUE.FromName(data.Item1));
             tb.BackgroundColor = _D3DCOLORVALUE.FromName(data.Item2);
         }
     };
@@ -166,7 +166,7 @@
             visual.Height = visual.Width * size.height / size.width;
 
             // create a drawing (D2D1) surface
-            var surface = Window.CompositionDevice.CreateDrawingSurface(size, DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            var surface = Window.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
             using (var dc = surface.BeginDraw())
             {
                 // we don't need to clear the surface as we redraw it completely
@@ -213,7 +213,7 @@
             visual.Height = visual.Width * size.height / size.width;
 
             // create a drawing (D2D1) surface
-            var surface = Window.CompositionDevice.CreateDrawingSurface(size, DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            var surface = Window.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
             using (var dc = surface.BeginDraw())
             {
                 // we don't need to clear the surface as we redraw it completely
@@ -262,7 +262,7 @@
             visual.Height = visual.Width * size.height / size.width;
 
             // create a drawing (D2D1) surface
-            var surface = Window.CompositionDevice.CreateDrawingSurface(size, DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            var surface = Window.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
             using (var dc = surface.BeginDraw())
             {
                 // we don't need to clear the surface as we redraw it completely
@@ -310,7 +310,7 @@
             visual.Height = visual.Width * size.height / size.width;
 
             // create a drawing (D2D1) surface
-            var surface = Window.CompositionDevice.CreateDrawingSurface(size, DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            var surface = Window.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
             using (var dc = surface.BeginDraw())
             {
                 // we don't need to clear the surface as we redraw it completely
@@ -358,7 +358,7 @@
             visual.Height = visual.Width * size.height / size.width;
 
             // create a drawing (D2D1) surface
-            var surface = Window.CompositionDevice.CreateDrawingSurface(size, DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            var surface = Window.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
             using (var dc = surface.BeginDraw())
             {
                 // we don't need to clear the surface as we redraw it completely
@@ -379,7 +379,7 @@
     var dock = new Dock();
     dock.Height = 50;
     dock.LastChildFill = false;
-    dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Olive);
+    dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Olive.ToColor());
     parent.Children.Add(dock);
 
     var okButton = new Button();
@@ -526,7 +526,7 @@
 
     // add state button
     var btn = new StateButton();
-    btn.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    btn.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
 
     // add "true" / checked state
     btn.AddState(new StateButtonState(true, (button, args, state) =&gt; new TextBox
@@ -581,7 +581,7 @@
 
     // select one value
     btn.Value = "state 0";
-    btn.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.OldLace);
+    btn.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.OldLace.ToColor());
     stack.Children.Add(btn);
 
     // add results textbox
@@ -663,52 +663,52 @@
     dock.Children.Add(b1);
     Dock.SetDockType(b1, DockType.Top);
     b1.MinHeight = 20;
-    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
 
     var splitter1 = new DockSplitter();
     splitter1.Name = nameof(splitter1);
     dock.Children.Add(splitter1);
-    splitter1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+    splitter1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
 
     var b2 = new Border();
     dock.Children.Add(b2);
     b2.MinHeight = 20;
     Dock.SetDockType(b2, DockType.Bottom);
-    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
 
     var splitter2 = new DockSplitter();
     splitter2.Name = nameof(splitter2);
     dock.Children.Add(splitter2);
-    splitter2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+    splitter2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
 
     var b3 = new Border();
     dock.Children.Add(b3);
     b3.MinWidth = 20;
     Dock.SetDockType(b3, DockType.Left);
-    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
 
     var splitter3 = new DockSplitter();
     splitter3.Name = nameof(splitter3);
     dock.Children.Add(splitter3);
-    splitter3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+    splitter3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
 
     var b4 = new Border();
     dock.Children.Add(b4);
     b4.MinWidth = 20;
     Dock.SetDockType(b4, DockType.Right);
-    b4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange);
+    b4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange.ToColor());
 
     var splitter4 = new DockSplitter();
     splitter4.Name = nameof(splitter4);
     dock.Children.Add(splitter4);
-    splitter4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+    splitter4.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
 
     var b5 = new Border();
     dock.Children.Add(b5);
     Dock.SetDockType(b5, DockType.Left);
     b5.MinWidth = 10;
     b5.MinHeight = 10;
-    b5.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Violet);
+    b5.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Violet.ToColor());
 }</sample>
   <sample namespace="Samples.Layout.GridSplitter.SimpleGridSplitterSample">void Layout(Visual parent)
 {
@@ -729,12 +729,12 @@
     var cell0 = new Border();
     grid.Children.Add(cell0);
     cell0.Margin = 10;
-    cell0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Purple);
+    cell0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Purple.ToColor());
 
     var cell1 = new Border();
     grid.Children.Add(cell1);
     cell1.Margin = 10;
-    cell1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+    cell1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
 
     Grid.SetColumn(cell1, 2);
     Grid.SetRow(cell1, 2);
@@ -744,37 +744,37 @@
     var canvas = new Canvas();
     canvas.Width = 120;
     canvas.Height = 120;
-    canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray);
+    canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray.ToColor());
     parent.Children.Add(canvas);
 
     var b0 = new Border();
-    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
-    b0.Width= 40;
-    b0.Height= 40;
+    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
+    b0.Width = 40;
+    b0.Height = 40;
     Canvas.SetLeft(b0, 0);
     Canvas.SetTop(b0, 0);
     canvas.Children.Add(b0);
 
     var b1 = new Border();
-    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
-    b1.Width= 40;
-    b1.Height= 40;
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
+    b1.Width = 40;
+    b1.Height = 40;
     Canvas.SetLeft(b1, 0);
     Canvas.SetBottom(b1, 0);
     canvas.Children.Add(b1);
 
     var b2 = new Border();
-    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
-    b2.Width= 40;
-    b2.Height= 40;
+    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
+    b2.Width = 40;
+    b2.Height = 40;
     Canvas.SetRight(b2, 0);
     Canvas.SetTop(b2, 0);
     canvas.Children.Add(b2);
 
     var b3 = new Border();
-    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
-    b3.Width= 40;
-    b3.Height= 40;
+    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
+    b3.Width = 40;
+    b3.Height = 40;
     Canvas.SetRight(b3, 0);
     Canvas.SetBottom(b3, 0);
     canvas.Children.Add(b3);
@@ -802,17 +802,17 @@
     var stack = new Stack();
     parent.Children.Add(stack);
     stack.Orientation = Orientation.Horizontal;
-    stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+    stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
 
     var b0 = new Border();
     stack.Children.Add(b0);
-    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
     b0.Width = 100;
     b0.Height = 100;
 
     var b1 = new Border();
     stack.Children.Add(b1);
-    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
     b1.Width = 50;
     b1.Height = 50;
 }</sample>
@@ -822,17 +822,17 @@
     parent.Children.Add(stack);
     stack.Width = 150;
     stack.Width = 150;
-    stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+    stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
 
     var b0 = new Border();
     stack.Children.Add(b0);
-    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
     b0.Width = 100;
     b0.Height = 100;
 
     var b1 = new Border();
     stack.Children.Add(b1);
-    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
     b1.Width = 50;
     b1.Height = 50;
 }</sample>
@@ -840,17 +840,17 @@
 {
     var stack = new Stack();
     parent.Children.Add(stack);
-    stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+    stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
 
     var b0 = new Border();
     stack.Children.Add(b0);
-    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
     b0.Width = 100;
     b0.Height = 100;
 
     var b1 = new Border();
     stack.Children.Add(b1);
-    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
     b1.Width = 50;
     b1.Height = 50;
 }</sample>
@@ -871,8 +871,8 @@
             var shape = new Ellipse();
             grid.Children.Add(shape);
             var color = new _D3DCOLORVALUE(0, i / (float)grid.Rows, j / (float)grid.Columns);
-            shape.RenderBrush = Compositor.CreateColorBrush(color);
-            shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color);
+            shape.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
+            shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
             shape.Shape.StrokeThickness = 0.5f;
         }
     }
@@ -885,29 +885,29 @@
     grid.Rows = 2;
     grid.Width = 300;
     grid.Height = 300;
-    grid.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+    grid.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
 
     var b0 = new Border();
     grid.Children.Add(b0);
-    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
     b0.Width = 100;
     b0.Height = 100;
 
     var b1 = new Border();
     grid.Children.Add(b1);
-    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
     b1.Width = 50;
     b1.Height = 50;
 
     var b2 = new Border();
     grid.Children.Add(b2);
-    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
     b2.Width = 50;
     b2.Height = 50;
 
     var b3 = new Border();
     grid.Children.Add(b3);
-    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
     b3.Width = 100;
     b3.Height = 100;
 }</sample>
@@ -921,7 +921,7 @@
     {
         var box = new Border();
         // use composition brush
-        box.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)));
+        box.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)).ToColor());
         box.Width = rnd.Next(10, 200);
         box.Height = rnd.Next(10, 150);
         canvas.Children.Add(box);
@@ -929,7 +929,7 @@
         Canvas.SetTop(box, rnd.Next(0, 100));
 
         // if you hover the mouse on a box, it's color will change
-        box.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)));
+        box.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)).ToColor());
     }
 }</sample>
   <sample namespace="Samples.Layout.Border.RoundBorderSample">void Layout(Visual parent)
@@ -965,37 +965,37 @@
     var canvas = new Canvas();
     canvas.Width = 120;
     canvas.Height = 120;
-    canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray);
+    canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray.ToColor());
     parent.Children.Add(canvas);
 
     var b0 = new Border();
-    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
-    b0.Width= 40;
-    b0.Height= 40;
+    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
+    b0.Width = 40;
+    b0.Height = 40;
     Canvas.SetLeft(b0, 0);
     Canvas.SetTop(b0, 0);
     canvas.Children.Add(b0);
 
     var b1 = new Border();
-    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
-    b1.Width= 40;
-    b1.Height= 40;
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
+    b1.Width = 40;
+    b1.Height = 40;
     Canvas.SetLeft(b1, 0);
     Canvas.SetBottom(b1, 0);
     canvas.Children.Add(b1);
 
     var b2 = new Border();
-    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
-    b2.Width= 40;
-    b2.Height= 40;
+    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
+    b2.Width = 40;
+    b2.Height = 40;
     Canvas.SetRight(b2, 0);
     Canvas.SetTop(b2, 0);
     canvas.Children.Add(b2);
 
     var b3 = new Border();
-    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
-    b3.Width= 40;
-    b3.Height= 40;
+    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
+    b3.Width = 40;
+    b3.Height = 40;
     Canvas.SetRight(b3, 0);
     Canvas.SetBottom(b3, 0);
     canvas.Children.Add(b3);
@@ -1005,11 +1005,11 @@
     var canvas = new Canvas();
     canvas.Width = 120;
     canvas.Height = 120;
-    canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray);
+    canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray.ToColor());
     parent.Children.Add(canvas);
 
     var b0 = new Border();
-    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
     b0.Width = 40;
     b0.Height = 40;
     Canvas.SetLeft(b0, 0);
@@ -1017,7 +1017,7 @@
     canvas.Children.Add(b0);
 
     var b1 = new Border();
-    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
     b1.Width = 40;
     b1.Height = 40;
     Canvas.SetLeft(b1, 20);
@@ -1025,7 +1025,7 @@
     canvas.Children.Add(b1);
 
     var b2 = new Border();
-    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+    b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
     b2.Width = 40;
     b2.Height = 40;
     Canvas.SetLeft(b2, 40);
@@ -1033,7 +1033,7 @@
     canvas.Children.Add(b2);
 
     var b3 = new Border();
-    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow);
+    b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
     b3.Width = 40;
     b3.Height = 40;
     Canvas.SetLeft(b3, 60);
@@ -1053,7 +1053,7 @@
         var border = new Border();
         wrap.Children.Add(border);
         var color = _D3DCOLORVALUE.FromArgb(rnd.NextByte(), rnd.NextByte(), rnd.NextByte());
-        border.RenderBrush = Compositor.CreateColorBrush(color);
+        border.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
         border.Width = rnd.Next(10, 60);
         border.Height = rnd.Next(10, 60);
     }
@@ -1071,7 +1071,7 @@
 
     // to create a composition brush, the visual must be attached to composition
     // to be able to use the Compositor instance corresponding to its parent Window.
-    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.MediumAquamarine);
+    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.MediumAquamarine.ToColor());
 
     // in contrast, a Direct2D brush can be created off ground.
     // we need Direct2D colors when we use primitives that Windows composition doesn't support
@@ -1087,7 +1087,7 @@
 
     // to create a composition brush, the visual must be attached to composition
     // to be able to use the Compositor instance corresponding to its parent Window.
-    box.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Aquamarine);
+    box.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Aquamarine.ToColor());
 }</sample>
   <sample namespace="Samples.Media.Image.BasicImageSample">void Layout(Visual parent)
 {
@@ -1105,24 +1105,24 @@
     var line1 = new Line();
     line1.Width = 200;
     line1.Height = 100;
-    line1.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Maroon);
+    line1.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Maroon.ToColor());
     line1.StrokeThickness = 1;
     parent.Children.Add(line1);
     line1.Arranged += (s, e) =&gt;
     {
-        line1.Geometry.End = line1.ArrangedRect.Size;
+        line1.Geometry.End = Utilities.Extensions.ToVector2(line1.ArrangedRect.Size);
     };
 
     var line2 = new Line();
     line2.Width = 200;
     line2.Height = 100;
-    line2.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.BlueViolet);
+    line2.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.BlueViolet.ToColor());
     line2.StrokeThickness = 4;
     parent.Children.Add(line2);
     line2.Arranged += (s, e) =&gt;
     {
         var ar = line2.ArrangedRect.Size;
-        line2.Geometry.Start= new Vector2(0, ar.height);
+        line2.Geometry.Start = new Vector2(0, ar.height);
         line2.Geometry.End = new Vector2(ar.width, 0);
     };
     Dock.SetDockType(line2, DockType.Top);
@@ -1133,7 +1133,7 @@
     ellipse.Width = 300;
     ellipse.Height = 100;
     ellipse.Radius = new System.Numerics.Vector2(150, 50);
-    ellipse.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+    ellipse.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
     ellipse.StrokeThickness = 2;
     ellipse.StrokeDashArray = new float[] { 1, 2, 3 };
     parent.Children.Add(ellipse);
@@ -1144,7 +1144,7 @@
     rectangle.CornerRadius = new System.Numerics.Vector2(50);
     rectangle.Width = 100;
     rectangle.Height = 100;
-    rectangle.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+    rectangle.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
     rectangle.StrokeThickness = 20;
     parent.Children.Add(rectangle);
 }</sample>
@@ -1153,7 +1153,7 @@
     var rectangle = new Rectangle();
     rectangle.Width = 200;
     rectangle.Height = 100;
-    rectangle.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+    rectangle.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
     rectangle.StrokeThickness = 10;
     parent.Children.Add(rectangle);
 }</sample>
@@ -1242,7 +1242,7 @@
 
         // note we must use the tooltip's compositor, not our window's compositor
         // as the tooltip has its own window
-        tt.Content.RenderBrush = tt.Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+        tt.Content.RenderBrush = tt.Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
 
         var tb = new TextBox();
         tb.Margin = 4;
@@ -1278,16 +1278,15 @@
 }</sample>
   <sample namespace="Samples.Text.RichTextBox.RtfRichTextBoxSample">void Layout(Visual parent)
 {
-    var rtb = new RichTextBox();
-    parent.Children.Add(rtb);
-    Dock.SetDockType(rtb, DockType.Top);
+    parent.Children.Add(Rtb);
+    Dock.SetDockType(Rtb, DockType.Top);
 
-    rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
-    rtb.Padding = D2D_RECT_F.Thickness(10);
-    rtb.Margin = D2D_RECT_F.Thickness(10);
+    Rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
+    Rtb.Padding = D2D_RECT_F.Thickness(10);
+    Rtb.Margin = D2D_RECT_F.Thickness(10);
 
-    rtb.RtfText = @"{\rtf1\ansi\deff0
-        {\colortbl;\red0\green0\blue0;\red255\green0\blue0;}
+    Rtb.RtfText = @"{\rtf1\ansi\deff0
+        {\coloRtbl;\red0\green0\blue0;\red255\green0\blue0;}
         This line is the default color\line
         \cf2
         This line is red with special characters: éèà 😱 \line
@@ -1297,35 +1296,37 @@
 }</sample>
   <sample namespace="Samples.Text.RichTextBox.DocumentRichTextBoxSample">void Layout(Visual parent)
 {
-    var rtb = new RichTextBox();
-    parent.Children.Add(rtb);
-    Dock.SetDockType(rtb, DockType.Top);
+    parent.Children.Add(Rtb);
+    Dock.SetDockType(Rtb, DockType.Top);
 
-    rtb.MaxWidth = 500;
-    rtb.MaxHeight = 400;
-    rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
-    rtb.Padding = D2D_RECT_F.Thickness(10);
-    rtb.Margin = D2D_RECT_F.Thickness(10);
+    Rtb.MaxWidth = 500;
+    Rtb.MaxHeight = 400;
+    Rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
+    Rtb.Padding = D2D_RECT_F.Thickness(10);
+    Rtb.Margin = D2D_RECT_F.Thickness(10);
 
     // Document is a COM IDispatch object. Cf https://docs.microsoft.com/en-us/windows/win32/api/tom/nf-tom-itextdocument-open
-    dynamic doc = rtb.Document;
+    dynamic doc = Rtb.Document;
 
     // load text from this assembly's resources
     using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Samples.Gallery.Resources.wice.rtf"))
     {
-        doc.Open(new ManagedIStream(stream), 0, 1200); // Flags = 0, CodePage = 1200 (unicode)
+        // we must force wrap it as IUnknown because for some reason, if it's in an outside assembly (DirectN.dll here)
+        // ManagedIStream is wrapped as IDispatch and this causes failure in dynamic DLR code
+        // "COMException: Cannot marshal 'parameter #1': Invalid managed/unmanaged type combination"
+        var unk = new UnknownWrapper(new ManagedIStream(stream));
+        doc.Open(unk, 0, 1200); // Flags = 0, CodePage = 1200 (unicode)
     }
 }</sample>
   <sample namespace="Samples.Text.RichTextBox.SimpleRichTextBoxSample">void Layout(Visual parent)
 {
-    var rtb = new RichTextBox();
-    parent.Children.Add(rtb);
-    Dock.SetDockType(rtb, DockType.Top);
+    parent.Children.Add(Rtb);
+    Dock.SetDockType(Rtb, DockType.Top);
 
-    rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.GreenYellow);
-    rtb.Padding = D2D_RECT_F.Thickness(10);
-    rtb.Margin = D2D_RECT_F.Thickness(10);
-    rtb.Text = "Hello World";
+    Rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.GreenYellow.ToColor());
+    Rtb.Padding = D2D_RECT_F.Thickness(10);
+    Rtb.Margin = D2D_RECT_F.Thickness(10);
+    Rtb.Text = "Hello World";
 }</sample>
   <sample namespace="Samples.Text.TextBox.EditableTextBoxSample">void Layout(Visual parent)
 {
@@ -1334,7 +1335,7 @@
     Dock.SetDockType(tb, DockType.Top);
     tb.IsEditable = true;
 
-    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightSalmon);
+    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightSalmon.ToColor());
     tb.Padding = D2D_RECT_F.Thickness(10);
     tb.Margin = D2D_RECT_F.Thickness(10);
     tb.Text = "Click me and edit!";
@@ -1345,7 +1346,7 @@
     parent.Children.Add(tb);
     Dock.SetDockType(tb, DockType.Top);
 
-    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
+    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
     tb.Padding = D2D_RECT_F.Thickness(10);
     tb.Margin = D2D_RECT_F.Thickness(10);
 
@@ -1362,7 +1363,7 @@
 
     var tb = new TextBox();
     sv.Viewer.Child = tb;
-    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.CornflowerBlue);
+    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.CornflowerBlue.ToColor());
     tb.Padding = D2D_RECT_F.Thickness(10);
     tb.Margin = D2D_RECT_F.Thickness(10);
 
@@ -1384,7 +1385,7 @@
     parent.Children.Add(tb);
     Dock.SetDockType(tb, DockType.Top);
 
-    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.GreenYellow);
+    tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.GreenYellow.ToColor());
     tb.Padding = D2D_RECT_F.Thickness(10);
     tb.Margin = D2D_RECT_F.Thickness(10);
     tb.Text = "Hello World";
@@ -1401,7 +1402,7 @@
         parent.Window.Children.Add(dlg);
         dlg.Width = 300;
         dlg.Height = 300;
-        dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+        dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
 
         // add content to the dialog
         dlg.DialogContent.Children.Add(new Border { Width = 200, Height = 100 });
@@ -1425,7 +1426,7 @@
         parent.Window.Children.Add(dlg);
         dlg.Width = 300;
         dlg.Height = 300;
-        dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+        dlg.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
 
         var tb = new TextBox();
         tb.Text = "Press ESC to close";
@@ -1452,7 +1453,7 @@
     btn.Click += (s, e) =&gt;
     {
         var window = new Window { Title = "Hello World" };
-        window.RenderBrush = window.Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
+        window.RenderBrush = window.Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
         window.ResizeClient(400, 400);
         window.Center();
         window.Show();

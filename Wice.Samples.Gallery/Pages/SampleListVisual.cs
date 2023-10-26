@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using DirectN;
 using Wice.Samples.Gallery.Samples;
 
 namespace Wice.Samples.Gallery.Pages
 {
-    public class SampleListVisual : Titled
+    public class SampleListVisual : Titled, IDisposable
     {
+        private readonly List<Sample> _samples = new List<Sample>();
+
         public SampleListVisual(SampleList sampleList)
         {
             if (sampleList == null)
@@ -34,13 +38,19 @@ namespace Wice.Samples.Gallery.Pages
             dock.VerticalAlignment = Alignment.Near;
             sv.Child = dock;
 
-            foreach (var sample in sampleList.Samples)
+            _samples = sampleList.Samples.ToList();
+            foreach (var sample in _samples)
             {
                 var visual = new SampleVisual(sample);
                 visual.Margin = D2D_RECT_F.Thickness(0, 0, 0, 10);
                 SetDockType(visual, DockType.Top);
                 dock.Children.Add(visual);
             }
+        }
+
+        public void Dispose()
+        {
+            _samples.Dispose();
         }
     }
 }

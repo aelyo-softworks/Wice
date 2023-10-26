@@ -1,11 +1,14 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using DirectN;
 
 namespace Wice.Samples.Gallery.Pages
 {
-    public class HomePage : Page
+    public class HomePage : Page, IDisposable
     {
+        private readonly RichTextBox _rtb = new RichTextBox();
+
         public HomePage()
         {
             // home has no title
@@ -17,10 +20,10 @@ namespace Wice.Samples.Gallery.Pages
             sv.Viewer.IsWidthUnconstrained = false;
             Children.Add(sv);
 
-            var desc = new RichTextBox();
-            desc.VerticalAlignment = Alignment.Near;
-            desc.Options |= TextHostOptions.WordWrap;
-            SetDockType(desc, DockType.Top);
+            _rtb = new RichTextBox();
+            _rtb.VerticalAlignment = Alignment.Near;
+            _rtb.Options |= TextHostOptions.WordWrap;
+            SetDockType(_rtb, DockType.Top);
 
             // load from this assembly's resource
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(Program).Namespace + ".Resources.wice.rtf"))
@@ -31,17 +34,19 @@ namespace Wice.Samples.Gallery.Pages
                 // ITextDocument.Open supports a VARIANT of type IStream, we use ManagedIStream to handle this
                 const int CP_UNICODE = 1200;
 
-                // we must force wrap it as IUnknown because for some reason with .NET Core+, if it's in an outside assembly (DirectN.dll here)
+                // we must force wrap it as IUnknown because for some reason, if it's in an outside assembly (DirectN.dll here)
                 // ManagedIStream is wrapped as IDispatch and this causes failure in dynamic DLR code
                 // "COMException: Cannot marshal 'parameter #1': Invalid managed/unmanaged type combination"
                 var unk = new UnknownWrapper(new ManagedIStream(stream));
-                desc.Document.Open(unk, 0, CP_UNICODE);
+                _rtb.Document.Open(unk, 0, CP_UNICODE);
             }
 
-            sv.Viewer.Child = desc;
+            sv.Viewer.Child = _rtb;
         }
 
         public override string IconText => MDL2GlyphResource.Home;
         public override int SortOrder => 0;
+
+        public void Dispose() => _rtb?.Dispose();
     }
 }

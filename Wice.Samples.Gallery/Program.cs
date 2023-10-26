@@ -10,7 +10,7 @@ namespace Wice.Samples.Gallery
         private static readonly string _storageDirectoryPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), typeof(Program).Namespace);
         public static string StorageDirectoryPath => _storageDirectoryPath;
 
-        // [STAThread] // wice doesn't require this
+        [STAThread] // wice doesn't require this
         static void Main()
         {
 

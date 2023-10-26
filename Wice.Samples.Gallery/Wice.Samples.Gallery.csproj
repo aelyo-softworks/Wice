@@ -160,6 +160,7 @@
     <Compile Include="Samples\Misc\VisualsTree\VisualsTreeSample.cs" />
     <Compile Include="Samples\Sample.cs" />
     <Compile Include="Samples\Text\RichTextBoxSampleList.cs" />
+    <Compile Include="Samples\Text\RichTextBox\RichTextBoxSample.cs" />
     <Compile Include="Samples\Text\RichTextBox\RtfRichTextBoxSample.cs" />
     <Compile Include="Samples\Text\RichTextBox\DocumentRichTextBoxSample.cs" />
     <Compile Include="Samples\Text\RichTextBox\SimpleRichTextBoxSample.cs" />

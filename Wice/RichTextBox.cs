@@ -6,6 +6,7 @@ using DirectN;
 namespace Wice
 {
     // this currently is only read-only
+    // note this visual sits on a COM object so we must dispose it on the same thread that created it
     public class RichTextBox : RenderVisual, IDisposable
     {
         private TextHost _host;

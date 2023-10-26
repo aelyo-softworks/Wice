@@ -23,7 +23,6 @@
     <Compile Include="..\Wice.Samples.Gallery\GalleryWindow.cs" Link="GalleryWindow.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Program.cs" Link="Program.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\Wice\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
     <Content Include="..\Wice.Samples.Gallery\..\Assets\wice_color.ico" Link="wice_color.ico" />
     <EmbeddedResource Include="..\Wice.Samples.Gallery\Resources\aelyo_flat.png" Link="Resources\aelyo_flat.png" />
     <EmbeddedResource Include="..\Wice.Samples.Gallery\Resources\wice.rtf" Link="Resources\wice.rtf" />
@@ -156,6 +155,8 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\Grayscale\GrayscaleSample.cs" Link="Samples\Effects\Grayscale\GrayscaleSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\Contrast\ContrastSample.cs" Link="Samples\Effects\Contrast\ContrastSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\ContrastSampleList.cs" Link="Samples\Effects\ContrastSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\..\Wice\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Text\RichTextBox\RichTextBoxSample.cs" Link="Samples\Text\RichTextBox\RichTextBoxSample.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.15.0.2" />
