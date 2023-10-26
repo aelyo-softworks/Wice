@@ -4,10 +4,8 @@ using Wice.Samples.Gallery.Samples;
 
 namespace Wice.Samples.Gallery.Pages
 {
-    public abstract class SampleListPage : Page, IDisposable
+    public abstract class SampleListPage : Page
     {
-        private SampleListVisual _sampleListVisual;
-
         protected SampleListPage()
         {
             // load all sample lists in this assembly and folder, using reflection
@@ -26,19 +24,14 @@ namespace Wice.Samples.Gallery.Pages
                 var btn = new SampleButton(list);
                 btn.Click += (s, e) =>
                 {
-                    _sampleListVisual = new SampleListVisual(list);
-                    var page = _sampleListVisual;
+                    var sampleListVisual = new SampleListVisual(list);
+                    var page = sampleListVisual;
                     ((GalleryWindow)Window).ShowPage(page);
                 };
                 wrap.Children.Add(btn);
             }
 
             Children.Add(wrap);
-        }
-
-        public void Dispose()
-        {
-            _sampleListVisual?.Dispose();
         }
     }
 }

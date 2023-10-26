@@ -20,7 +20,6 @@ namespace Wice.Samples.Gallery.Pages
             sv.Viewer.IsWidthUnconstrained = false;
             Children.Add(sv);
 
-            _rtb = new RichTextBox();
             _rtb.VerticalAlignment = Alignment.Near;
             _rtb.Options |= TextHostOptions.WordWrap;
             SetDockType(_rtb, DockType.Top);

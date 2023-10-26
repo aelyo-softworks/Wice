@@ -8,11 +8,15 @@ namespace Wice.Samples.Gallery.Pages
 {
     public class SampleVisual : Dock
     {
+        private readonly Sample _sample;
+        private CodeBox _codeBox;
+
         public SampleVisual(Sample sample)
         {
             if (sample == null)
                 throw new ArgumentNullException(nameof(sample));
 
+            _sample = sample;
             var desc = sample.Description.Nullify();
             if (desc != null)
             {
@@ -41,20 +45,29 @@ namespace Wice.Samples.Gallery.Pages
                 sample.Layout(dock);
 
                 var text = sample.GetSampleText();
-                CodeBox code = null;
                 if (text != null)
                 {
-                    code = new CodeBox();
-                    code.Margin = D2D_RECT_F.Thickness(0, 10, 0, 0);
-                    code.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
-                    code.Options |= TextHostOptions.WordWrap;
-                    code.Padding = 5;
-                    code.CodeLanguage = WiceLanguage.Default.Id; // init & put in repo
-                    SetDockType(code, DockType.Top);
-                    code.CodeText = text;
-                    dock.Children.Add(code);
+                    _codeBox = new CodeBox();
+                    _codeBox.Margin = D2D_RECT_F.Thickness(0, 10, 0, 0);
+                    _codeBox.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
+                    _codeBox.Options |= TextHostOptions.WordWrap;
+                    _codeBox.Padding = 5;
+                    _codeBox.CodeLanguage = WiceLanguage.Default.Id; // init & put in repo
+                    SetDockType(_codeBox, DockType.Top);
+                    _codeBox.CodeText = text;
+                    dock.Children.Add(_codeBox);
                 }
             });
+        }
+
+        protected override void OnDetachedFromComposition(object sender, EventArgs e)
+        {
+            base.OnDetachedFromComposition(sender, e);
+            _codeBox?.Dispose();
+            if (_sample is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
         }
     }
 }
