@@ -226,6 +226,27 @@ namespace Wice
                 return;
 
             var rc = GetRect(ArrangedRect);
+            D2D_SIZE_U dpi;
+            if (Window?.Handle != IntPtr.Zero)
+            {
+                dpi = DpiUtilities.GetDpiForWindow(Window.Handle);
+            }
+            else
+            {
+                dpi = DpiUtilities.GetDpiForDesktop();
+            }
+
+            if (dpi.width != 96)
+            {
+                rc.Width = (int)(rc.Width * dpi.width / 96);
+            }
+
+            if (dpi.height != 96)
+            {
+                rc.Height = (int)(rc.Height * dpi.height / 96);
+            }
+
+            context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_PIXELS);
             _host.Draw(context.DeviceContext.Object, rc);
         }
 
