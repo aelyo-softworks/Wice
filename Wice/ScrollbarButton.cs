@@ -7,6 +7,8 @@ namespace Wice
 {
     public class ScrollBarButton : ButtonBase
     {
+        private GeometrySource2D _lastGeometrySource2D;
+
         public static VisualProperty IsArrowOpenProperty = VisualProperty.Add(typeof(Visual), nameof(IsArrowOpen), VisualPropertyInvalidateModes.Render, true);
         public static VisualProperty ArrowRatioProperty = VisualProperty.Add(typeof(Visual), nameof(ArrowRatio), VisualPropertyInvalidateModes.Render, float.NaN);
 
@@ -36,13 +38,15 @@ namespace Wice
         protected override void OnArranged(object sender, EventArgs e)
         {
             base.OnArranged(sender, e);
-
             var size = (Child.ArrangedRect - Child.Margin).Size;
-
             var open = IsArrowOpen;
             var type = Dock.GetDockType(this);
             var geoSource = Application.Current.ResourceManager.GetScrollBarButtonGeometrySource(type, size.width, ArrowRatio, open);
+            if (geoSource.Equals(_lastGeometrySource2D))
+                return;
+
             Child.GeometrySource2D = geoSource.GetIGeometrySource2();
+            _lastGeometrySource2D = geoSource;
         }
 
         protected override void OnAttachedToComposition(object sender, EventArgs e)

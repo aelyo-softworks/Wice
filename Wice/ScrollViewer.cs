@@ -315,8 +315,9 @@ namespace Wice
 
             if (viewerSize.IsZero)
             {
-                IsVerticalScrollBarVisible = false;
-                IsHorizontalScrollBarVisible = false;
+                // this causes oscillation
+                //IsVerticalScrollBarVisible = false;
+                //IsHorizontalScrollBarVisible = false;
                 return;
             }
 

@@ -8,6 +8,7 @@ namespace Wice
     public class TitleBarButton : ButtonBase
     {
         private TitleBarButtonType _buttonType;
+        private GeometrySource2D _lastGeometrySource2D;
 
         public TitleBarButton()
         {
@@ -50,7 +51,11 @@ namespace Wice
             var size = (Path.ArrangedRect - Path.Margin).Size;
             var geoSize = size.height;
             var geoSource = Application.Current.ResourceManager.GetTitleBarButtonGeometrySource(ButtonType, geoSize);
+            if (geoSource.Equals(_lastGeometrySource2D))
+                return;
+
             Path.GeometrySource2D = geoSource.GetIGeometrySource2();
+            _lastGeometrySource2D = geoSource;
         }
 
         protected override void OnAttachedToComposition(object sender, EventArgs e)
