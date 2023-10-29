@@ -131,9 +131,9 @@ namespace Wice.Utilities
                 var src = DisplayConfig.GetSourceName(path);
                 var display = dd.FirstOrDefault(m => m.DeviceName.EqualsIgnoreCase(src.viewGdiDeviceName));
                 if (display.DeviceName == null)
-                    yield return tar + " " + src.viewGdiDeviceName;
+                    yield return tar.monitorFriendlyDeviceName + " " + src.viewGdiDeviceName;
 
-                yield return tar + " " + display.CurrentSettings;
+                yield return tar.monitorFriendlyDeviceName + " " + display.CurrentSettings;
             }
         }
 
