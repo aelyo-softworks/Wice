@@ -36,12 +36,12 @@ namespace Wice.Samples.Gallery
 
             // the EnableBlurBehind call may be necessary when using the Windows' acrylic depending on Windows version
             // otherwise the window will be (almost) black
-            // Native.EnableBlurBehind();
+            Native.EnableBlurBehind();
             RenderBrush = AcrylicBrush.CreateAcrylicBrush(
                 CompositionDevice,
                 _D3DCOLORVALUE.White,
                 0.2f,
-                useWindowsAcrylic: false
+                useWindowsAcrylic: true
                 );
 
             // uncomment this to enable Pointer messages
