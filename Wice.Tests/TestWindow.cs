@@ -33,8 +33,8 @@ namespace Wice.Tests
                 useWindowsAcrylic: false
                 );
 
-            TestEffect();
-            //WindowsFunctions.EnableMouseInPointer();
+            //TestEffect();
+            WindowsFunctions.EnableMouseInPointer();
 
             //AddBordersForVisualOrderCheck1();
             //AddBorders();
@@ -47,7 +47,7 @@ namespace Wice.Tests
             //AddDrawText(this);
             //AddReadOnlyText();
             //AddReadOnlyTexts();
-            //AddEditableTexts();
+            AddEditableTexts();
             //AddTextWithSpaces(this);
 
             //AddRtb();
@@ -1131,6 +1131,7 @@ namespace Wice.Tests
                 //text.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
                 text.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.GreenYellow.ToColor());
                 text.Name = "text#" + i;
+                text.SelectionBrush = new SolidColorBrush(_D3DCOLORVALUE.Red);
                 stack.Children.Add(text);
                 text.Padding = D2D_RECT_F.Thickness(10);
                 text.Margin = D2D_RECT_F.Thickness(10);

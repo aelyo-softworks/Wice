@@ -15,7 +15,7 @@ namespace Wice.Samples.Gallery.Samples.Input.RadioButton
             // dock radio button and textbox
             var dock = new Dock();
             parent.Children.Add(dock);
-            Wice.Dock.SetDockType(dock, DockType.Top); // remove from display
+            Dock.SetDockType(dock, DockType.Top); // remove from display
 
             // add radio buttons with texts
             var rb0 = new Wice.RadioButton();
@@ -34,7 +34,7 @@ namespace Wice.Samples.Gallery.Samples.Input.RadioButton
             dock.Children.Add(rb2);
 
             // add results textbox
-            var results = new Wice.TextBox();
+            var results = new TextBox();
             results.Margin = D2D_RECT_F.Thickness(10, 0);
             dock.Children.Add(results);
 

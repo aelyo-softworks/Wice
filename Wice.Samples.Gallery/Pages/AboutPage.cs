@@ -43,7 +43,33 @@ namespace Wice.Samples.Gallery.Pages
             SetDockType(disc, DockType.Top);
             Children.Add(disc);
 
+            var settings = new Stack();
+            settings.Orientation = Orientation.Horizontal;
+            SetDockType(settings, DockType.Top);
+            Children.Add(settings);
+
+            var mipEnabled = WindowsFunctions.IsMouseInPointerEnabled();
+            var cb = new CheckBox();
+            cb.IsEnabled = !mipEnabled;
+            cb.Value = mipEnabled;
+            cb.VerticalAlignment = Alignment.Near;
+            cb.Click += (s, e) =>
+            {
+                WindowsFunctions.EnableMouseInPointer();
+                cb.IsEnabled = false;
+            };
+            settings.Children.Add(cb);
+
+            var txt = new TextBox();
+            txt.Padding = D2D_RECT_F.Thickness(10, 0);
+            txt.Text = "Is Mouse In Pointer Enabled";
+            txt.ToolTipContentCreator = (tt) => Window.CreateDefaultToolTipContent(tt,
+                "Enables the mouse to act as a pointer input device and send WM_POINTER messages." + Environment.NewLine +
+                "Can only be set once in the context of a process lifetime.");
+            settings.Children.Add(txt);
+
             var btn = new RoundedButton();
+            btn.Margin = D2D_RECT_F.Thickness(0, 10);
             btn.VerticalAlignment = Alignment.Near;
             btn.HorizontalAlignment = Alignment.Near;
             btn.Text.Text = "System Info ...";
@@ -74,6 +100,11 @@ namespace Wice.Samples.Gallery.Pages
             };
             SetDockType(btn, DockType.Top);
             Children.Add(btn);
+        }
+
+        private void Cb_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         public override string HeaderText => base.HeaderText + " Wice";

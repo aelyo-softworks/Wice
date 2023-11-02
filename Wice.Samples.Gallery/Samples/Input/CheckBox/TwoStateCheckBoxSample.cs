@@ -12,14 +12,14 @@ namespace Wice.Samples.Gallery.Samples.Input.CheckBox
             var stack = new Stack();
             stack.Orientation = Orientation.Horizontal;
             parent.Children.Add(stack);
-            Wice.Dock.SetDockType(stack, DockType.Top); // remove from display
+            Dock.SetDockType(stack, DockType.Top); // remove from display
 
             // add checkbox
             var cb = new Wice.CheckBox();
             stack.Children.Add(cb);
 
             // add results textbox
-            var results = new Wice.TextBox();
+            var results = new TextBox();
             results.Margin = D2D_RECT_F.Thickness(10, 0);
             stack.Children.Add(results);
 

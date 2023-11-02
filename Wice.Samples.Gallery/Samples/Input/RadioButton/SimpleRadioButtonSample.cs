@@ -12,14 +12,14 @@ namespace Wice.Samples.Gallery.Samples.Input.RadioButton
             var stack = new Stack();
             stack.Orientation = Orientation.Horizontal;
             parent.Children.Add(stack);
-            Wice.Dock.SetDockType(stack, DockType.Top); // remove from display
+            Dock.SetDockType(stack, DockType.Top); // remove from display
 
             // add radio button
             var btn = new Wice.RadioButton();
             stack.Children.Add(btn);
 
             // add results textbox
-            var results = new Wice.TextBox();
+            var results = new TextBox();
             results.Margin = D2D_RECT_F.Thickness(10, 0);
             stack.Children.Add(results);
 

@@ -3,9 +3,9 @@ using DirectN;
 
 namespace Wice
 {
-    public class PointerEventArgs : HandledEventArgs
+    public abstract class PointerEventArgs : HandledEventArgs
     {
-        public PointerEventArgs(int pointerId)
+        protected PointerEventArgs(int pointerId)
         {
             PointerId = pointerId;
         }

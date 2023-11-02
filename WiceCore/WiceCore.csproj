@@ -329,6 +329,7 @@
     <Compile Include="..\Wice\Interop\IGeometrySource2DWinRT.cs" Link="Interop\IGeometrySource2DWinRT.cs" />
     <Compile Include="..\Wice\Interop\IGraphicsEffectSourceWinRT.cs" Link="Interop\IGraphicsEffectSourceWinRT.cs" />
     <Compile Include="..\Wice\Interop\IGraphicsEffectWinRT.cs" Link="Interop\IGraphicsEffectWinRT.cs" />
+    <Compile Include="..\Wice\PointerUpdateEventArgs.cs" Link="PointerUpdateEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.15.0.2" />

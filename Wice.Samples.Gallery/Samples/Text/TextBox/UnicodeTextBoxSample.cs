@@ -20,6 +20,7 @@ namespace Wice.Samples.Gallery.Samples.Text.TextBox
 
             var tb = new Wice.TextBox();
             sv.Viewer.Child = tb;
+            tb.SelectionBrush = new SolidColorBrush(_D3DCOLORVALUE.Coral);
             tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.CornflowerBlue.ToColor());
             tb.Padding = D2D_RECT_F.Thickness(10);
             tb.Margin = D2D_RECT_F.Thickness(10);

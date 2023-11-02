@@ -1,9 +1,11 @@
-﻿namespace Wice
+﻿using DirectN;
+
+namespace Wice
 {
-    public class PointerContactChangedEventArgs : PointerPositionEventArgs
+    public class PointerContactChangedEventArgs : PointerUpdateEventArgs
     {
-        public PointerContactChangedEventArgs(int pointerId, int x, int y, bool up)
-            : base(pointerId, x, y)
+        public PointerContactChangedEventArgs(int pointerId, int x, int y, POINTER_MESSAGE_FLAGS flags, bool up)
+            : base(pointerId, x, y, flags)
         {
             IsUp = up;
         }

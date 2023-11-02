@@ -4,11 +4,11 @@ using DirectN;
 
 namespace Wice
 {
-    public class PointerPositionEventArgs : PointerEventArgs
+    public abstract class PointerPositionEventArgs : PointerEventArgs
     {
         internal readonly List<Visual> _visualsStack = new List<Visual>();
 
-        public PointerPositionEventArgs(int pointerId, int x, int y)
+        protected PointerPositionEventArgs(int pointerId, int x, int y)
             : base(pointerId)
         {
             X = x;

@@ -12,14 +12,14 @@ namespace Wice.Samples.Gallery.Samples.Input.ToggleSwitch
             var stack = new Stack();
             stack.Orientation = Orientation.Horizontal;
             parent.Children.Add(stack);
-            Wice.Dock.SetDockType(stack, DockType.Top); // remove from display
+            Dock.SetDockType(stack, DockType.Top); // remove from display
 
             // add toggle switch button
             var toggle = new Wice.ToggleSwitch();
             stack.Children.Add(toggle);
 
             // add results textbox
-            var results = new Wice.TextBox();
+            var results = new TextBox();
             results.Margin = D2D_RECT_F.Thickness(10, 0);
             results.HorizontalAlignment = Alignment.Center;
             results.VerticalAlignment = Alignment.Center;

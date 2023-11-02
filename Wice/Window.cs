@@ -2184,7 +2184,7 @@ namespace Wice
             }
         }
 
-        internal new void OnPointerUpdate(PointerPositionEventArgs e)
+        internal new void OnPointerUpdate(PointerUpdateEventArgs e)
         {
             var mc = _mouseCaptorVisual;
             if (mc != null)
@@ -2210,7 +2210,7 @@ namespace Wice
                 e._visualsStack.Add(visual);
                 if (!_mousedEnteredVisuals.Remove(visual))
                 {
-                    visual.OnPointerEnter(new PointerEnterEventArgs(e.PointerId, e.X, e.Y));
+                    visual.OnPointerEnter(new PointerEnterEventArgs(e.PointerId, e.X, e.Y, e.Flags));
                 }
 
                 if (CanReceiveInput(visual) && visual.Cursor != null)
@@ -2227,7 +2227,7 @@ namespace Wice
             foreach (var visual in _mousedEnteredVisuals)
             {
                 // always send mouse leave event with DisableMouseEvents=true
-                visual.OnPointerLeave(new PointerLeaveEventArgs(e.PointerId, e.X, e.Y));
+                visual.OnPointerLeave(new PointerLeaveEventArgs(e.PointerId, e.X, e.Y, e.Flags));
                 if (visual == CurrentToolTip?.PlacementTarget)
                 {
                     RemoveToolTip(e);
@@ -2975,7 +2975,12 @@ namespace Wice
                 case MessageDecoder.WM_POINTERUP:
                     pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
                     pt = win.Native.ScreenToClient(pt);
-                    var pce = new PointerContactChangedEventArgs(WindowsFunctions.GetPointerId(wParam), pt.x, pt.y, msg == MessageDecoder.WM_POINTERUP);
+                    var pce = new PointerContactChangedEventArgs(
+                        WindowsFunctions.GetPointerId(wParam),
+                        pt.x,
+                        pt.y,
+                        WindowsFunctions.GetPointerFlags(wParam),
+                        msg == MessageDecoder.WM_POINTERUP);
                     var info = pce.PointerInfo;
                     var isUp = msg == MessageDecoder.WM_POINTERUP;
 
@@ -3071,9 +3076,7 @@ namespace Wice
                                 break;
                         }
 
-                        var me = new MouseButtonEventArgs(pt.x, pt.y, info.dwKeyStates, mb.Value);
-
-                        me.SourcePointerEvent = pce;
+                        var me = new MouseButtonEventArgs(pt.x, pt.y, info.dwKeyStates, mb.Value) { SourcePointerEvent = pce };
                         win.OnMouseButtonEvent(buttonMsg, me);
 
                         //Application.Trace("msg: " + MessageDecoder.MsgToString(msg) + " btnmsg:" + MessageDecoder.MsgToString(buttonMsg) + " me:" + me);
@@ -3101,8 +3104,7 @@ namespace Wice
                     if (!pwe.Handled)
                     {
                         var winfo = pwe.PointerInfo;
-                        var mwe = new MouseWheelEventArgs(pt.x, pt.y, winfo.dwKeyStates, wParam.SignedHIWORD(), orientation);
-                        mwe.SourcePointerEvent = pwe;
+                        var mwe = new MouseWheelEventArgs(pt.x, pt.y, winfo.dwKeyStates, wParam.SignedHIWORD(), orientation) { SourcePointerEvent = pwe }; win.OnMouseWheelEvent(mwe);
                         win.OnMouseWheelEvent(mwe);
                     }
                     break;
@@ -3186,8 +3188,20 @@ namespace Wice
                 case MessageDecoder.WM_POINTERUPDATE:
                     pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
                     pt = win.Native.ScreenToClient(pt);
-                    win.OnPointerUpdate(new PointerPositionEventArgs(WindowsFunctions.GetPointerId(wParam), pt.x, pt.y));
-                    //Application.Trace("WM_POINTERUPDATE pt: " + pt);
+                    var ppe = new PointerUpdateEventArgs(
+                        WindowsFunctions.GetPointerId(wParam),
+                        pt.x,
+                        pt.y,
+                        WindowsFunctions.GetPointerFlags(wParam)
+                        );
+                    win.OnPointerUpdate(ppe);
+
+                    // unhandled? send as mouse event
+                    if (!ppe.Handled)
+                    {
+                        win.OnMouseEvent(ppe.IsInContact ? MessageDecoder.WM_MOUSEMOVE : MessageDecoder.WM_MOUSEHOVER, new MouseEventArgs(ppe.X, ppe.Y, 0) { SourcePointerEvent = ppe });
+                    }
+                    //Application.Trace("WM_POINTERUPDATE pt: " + ppe);
                     break;
 
                 case MessageDecoder.WM_TIMER:
@@ -3231,14 +3245,21 @@ namespace Wice
                 case MessageDecoder.WM_POINTERENTER:
                     pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
                     pt = win.Native.ScreenToClient(pt);
-                    win.OnPointerEnter(new PointerEnterEventArgs(WindowsFunctions.GetPointerId(wParam), pt.x, pt.y));
+                    win.OnPointerEnter(new PointerEnterEventArgs(
+                        WindowsFunctions.GetPointerId(wParam),
+                        pt.x,
+                        pt.y,
+                        WindowsFunctions.GetPointerFlags(wParam)));
                     break;
 
                 case MessageDecoder.WM_POINTERLEAVE:
                     pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
                     pt = win.Native.ScreenToClient(pt);
-                    win.OnPointerLeave(new PointerLeaveEventArgs(WindowsFunctions.GetPointerId(wParam), pt.x, pt.y));
-                    break;
+                    win.OnPointerLeave(new PointerLeaveEventArgs(
+                        WindowsFunctions.GetPointerId(wParam),
+                        pt.x,
+                        pt.y,
+                        WindowsFunctions.GetPointerFlags(wParam))); break;
 
                 case MessageDecoder.WM_SETFOCUS:
                     win.HasFocus = true;

@@ -13,7 +13,7 @@ namespace Wice.Samples.Gallery.Samples.Input.StateButton
             var stack = new Stack();
             stack.Orientation = Orientation.Horizontal;
             parent.Children.Add(stack);
-            Wice.Dock.SetDockType(stack, DockType.Top); // remove from display
+            Dock.SetDockType(stack, DockType.Top); // remove from display
 
             // add state button
             var btn = new Wice.StateButton();
@@ -38,7 +38,7 @@ namespace Wice.Samples.Gallery.Samples.Input.StateButton
             stack.Children.Add(btn);
 
             // add results textbox
-            var results = new Wice.TextBox();
+            var results = new TextBox();
             results.Margin = D2D_RECT_F.Thickness(10, 0);
             results.HorizontalAlignment = Alignment.Center;
             results.VerticalAlignment = Alignment.Center;

@@ -15,7 +15,7 @@ namespace Wice.Samples.Gallery.Samples.Input.Button
             dock.LastChildFill = false;
             dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Olive.ToColor());
             parent.Children.Add(dock);
-            Wice.Dock.SetDockType(dock, DockType.Top); // remove from display
+            Dock.SetDockType(dock, DockType.Top); // remove from display
 
             var okButton = new Wice.Button();
             okButton.Margin = 10;

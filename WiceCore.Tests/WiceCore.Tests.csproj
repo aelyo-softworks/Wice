@@ -29,6 +29,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="..\Wice.Tests\..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="Samples\Collections\PropertyGrid\SampleModel.cs" />
+    <Compile Include="..\Wice.Tests\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="..\Wice.Tests\long1.txt" Link="long1.txt" />
+    <EmbeddedResource Include="..\Wice.Tests\long2.txt" Link="long2.txt" />
+    <EmbeddedResource Include="..\Wice.Tests\lorem-cn.txt" Link="lorem-cn.txt" />
+    <EmbeddedResource Include="..\Wice.Tests\lorem.txt" Link="lorem.txt" />
+    <EmbeddedResource Include="..\Wice.Tests\pg61797.txt" Link="pg61797.txt" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.15.0.2" />

@@ -9,7 +9,7 @@ namespace Wice.Samples.Gallery.Samples.Media.Brush
 
         public override void Layout(Visual parent)
         {
-            var box = new Wice.Border();
+            var box = new Border();
             parent.Children.Add(box);
             Dock.SetDockType(box, DockType.Top); // remove from display
             box.Width = 100;

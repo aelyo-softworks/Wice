@@ -39,10 +39,6 @@
     <Reference Include="System.Management" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="tom">
-      <HintPath>..\..\..\..\temp\tom.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessKey.cs" />
@@ -94,6 +90,7 @@
     <Compile Include="PointerActivateEventArgs.cs" />
     <Compile Include="PointerContactChangedEventArgs.cs" />
     <Compile Include="PointerEnterEventArgs.cs" />
+    <Compile Include="PointerUpdateEventArgs.cs" />
     <Compile Include="PointerPositionEventArgs.cs" />
     <Compile Include="PointerLeaveEventArgs.cs" />
     <Compile Include="PointerWheelEventArgs.cs" />

@@ -35,11 +35,6 @@ namespace Wice
             if (property == IsEnabledProperty)
             {
                 IsFocusable = (bool)value;
-                return true;
-            }
-
-            if (property == IsEnabledProperty)
-            {
                 UpdateStyle();
                 return true;
             }

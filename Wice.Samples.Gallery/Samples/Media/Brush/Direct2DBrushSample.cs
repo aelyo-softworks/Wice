@@ -10,7 +10,7 @@ namespace Wice.Samples.Gallery.Samples.Media.Brush
 
         public override void Layout(Visual parent)
         {
-            var tb = new Wice.TextBox();
+            var tb = new TextBox();
             parent.Children.Add(tb);
             Dock.SetDockType(tb, DockType.Top); // remove from display
             tb.HorizontalAlignment = Alignment.Center;

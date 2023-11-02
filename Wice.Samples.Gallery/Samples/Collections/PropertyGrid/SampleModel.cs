@@ -23,7 +23,7 @@ namespace Wice.Samples.Gallery.Samples.Collections.PropertyGrid
             if (!_values.TryGetValue(name, out var value))
                 return default;
 
-            return Conversions.ChangeType<T>(value, defaultValue);
+            return Conversions.ChangeType(value, defaultValue);
         }
 
         protected virtual bool SetPropertyValue(object value, [CallerMemberName] string name = null)

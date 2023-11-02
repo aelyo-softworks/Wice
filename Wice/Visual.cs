@@ -1746,7 +1746,7 @@ namespace Wice
             OnPointerLeave(this, e);
         }
 
-        internal void OnPointerUpdate(PointerPositionEventArgs e)
+        internal void OnPointerUpdate(PointerUpdateEventArgs e)
         {
             OnPointerUpdate(this, e);
             IsMouseOver = true;
