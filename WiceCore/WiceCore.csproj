@@ -320,7 +320,6 @@
     <Compile Include="..\Wice\PointerDragEventArgs.cs" Link="PointerDragEventArgs.cs" />
     <Compile Include="..\Wice\DragEventArgs.cs" Link="DragEventArgs.cs" />
     <Compile Include="..\Wice\Interop\ICompositionTarget.cs" Link="Interop\ICompositionTarget.cs" />
-    <Compile Include="..\Wice\Interop\ICompositorInterop.cs" Link="Interop\ICompositorInterop.cs" />
     <Compile Include="..\Wice\Utilities\Extensions.cs" Link="Utilities\Extensions.cs" />
     <Compile Include="..\Wice\Interop\IPropertyValueStatics.cs" Link="Interop\IPropertyValueStatics.cs" />
     <Compile Include="..\Wice\Interop\IPropertyValueStaticsExtensions.cs" Link="Interop\IPropertyValueStaticsExtensions.cs" />
@@ -332,6 +331,6 @@
     <Compile Include="..\Wice\PointerUpdateEventArgs.cs" Link="PointerUpdateEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DirectNCore" Version="1.15.0.2" />
+    <PackageReference Include="DirectNCore" Version="1.16.0" />
   </ItemGroup>
 </Project>

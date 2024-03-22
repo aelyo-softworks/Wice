@@ -37,6 +37,6 @@
     <EmbeddedResource Include="..\Wice.Tests\pg61797.txt" Link="pg61797.txt" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DirectNCore" Version="1.15.0.2" />
+    <PackageReference Include="DirectNCore" Version="1.16.0" />
   </ItemGroup>
 </Project>

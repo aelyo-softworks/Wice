@@ -1007,8 +1007,8 @@ namespace Wice
         {
             var interop = CompositorController.Compositor.ComCast<ICompositorInterop>();
             var d2d1 = _d2D1Device.Value;
-            var hr = interop.CreateGraphicsDevice(d2d1.Object, out var obj);
-            var dev = obj.WinRTCast<CompositionGraphicsDevice>();
+            var hr = interop.CreateGraphicsDevice(d2d1.Object, out var unk);
+            var dev = unk.WinRTCast<CompositionGraphicsDevice>();
             if (hr.Value < 0)
             {
                 try

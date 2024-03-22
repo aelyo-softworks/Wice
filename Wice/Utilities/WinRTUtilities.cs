@@ -73,6 +73,24 @@ namespace Wice.Utilities
 #endif
         }
 
+        public static T WinRTCast<T>(this IntPtr unk, bool throwOnError = true) where T : class
+        {
+            if (unk == IntPtr.Zero)
+                return default;
+
+            if (throwOnError)
+                return WinRTCast<T>(Marshal.GetObjectForIUnknown(unk), throwOnError);
+
+            try
+            {
+                return WinRTCast<T>(Marshal.GetObjectForIUnknown(unk), false);
+            }
+            catch
+            {
+                return default;
+            }
+        }
+
         public static T ComCast<T>(this object obj, bool throwOnError = true) where T : class
         {
             if (obj == null)
