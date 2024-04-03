@@ -12,6 +12,7 @@ namespace Wice
             PlacementMode = PlacementMode.Mouse;
             MeasureToContent = DimensionOptions.WidthAndHeight;
             FrameSize = 0;
+            ClickThrough = true;
 
             // this should be transparent too
             Content = CreateContent();
@@ -29,7 +30,7 @@ namespace Wice
 
         [Browsable(false)]
         public Visual Content { get; }
-        
+
         protected override int MaxChildrenCount => 1;
         protected override bool HasCaret => false;
 

@@ -10,9 +10,11 @@ namespace Wice
         public static VisualProperty HorizontalOffsetProperty = VisualProperty.Add(typeof(PopupWindow), nameof(HorizontalOffset), VisualPropertyInvalidateModes.Measure, 0f);
         public static VisualProperty VerticalOffsetProperty = VisualProperty.Add(typeof(PopupWindow), nameof(VerticalOffset), VisualPropertyInvalidateModes.Measure, 0f);
         public static VisualProperty CustomPlacementFuncProperty = VisualProperty.Add<Func<PlacementParameters, D2D_POINT_2F>>(typeof(PopupWindow), nameof(CustomPlacementFunc), VisualPropertyInvalidateModes.Arrange);
-        public static VisualProperty FollowPlacementTargetProperty = VisualProperty.Add<bool>(typeof(PopupWindow), nameof(FollowPlacementTarget), VisualPropertyInvalidateModes.Measure, false);
+        public static VisualProperty FollowPlacementTargetProperty = VisualProperty.Add(typeof(PopupWindow), nameof(FollowPlacementTarget), VisualPropertyInvalidateModes.Measure, false);
+        public static VisualProperty ClickThroughProperty = VisualProperty.Add(typeof(PopupWindow), nameof(ClickThrough), VisualPropertyInvalidateModes.None, false);
 
         public bool FollowPlacementTarget { get => (bool)GetPropertyValue(FollowPlacementTargetProperty); set => SetPropertyValue(FollowPlacementTargetProperty, value); }
+        public bool ClickThrough { get => (bool)GetPropertyValue(ClickThroughProperty); set => SetPropertyValue(ClickThroughProperty, value); }
         public Visual PlacementTarget { get => (Visual)GetPropertyValue(PlacementTargetProperty); set => SetPropertyValue(PlacementTargetProperty, value); }
         public PlacementMode PlacementMode { get => (PlacementMode)GetPropertyValue(PlacementModeProperty); set => SetPropertyValue(PlacementModeProperty, value); }
         public float HorizontalOffset { get => (float)GetPropertyValue(HorizontalOffsetProperty); set => SetPropertyValue(HorizontalOffsetProperty, value); }
@@ -26,6 +28,22 @@ namespace Wice
             Style = WS.WS_POPUP;
             IsResizable = false;
             ExtendedStyle |= WS_EX.WS_EX_NOACTIVATE | WS_EX.WS_EX_NOREDIRECTIONBITMAP;
+        }
+
+        internal override void OnMouseButtonEvent(int msg, MouseButtonEventArgs e)
+        {
+            base.OnMouseButtonEvent(msg, e);
+            if (ClickThrough)
+            {
+                var win = PlacementTarget?.Window;
+                if (win != null)
+                {
+                    var winRect = win.WindowRect;
+                    var thisRect = WindowRect;
+                    var winEvt = new MouseButtonEventArgs(e.X + (thisRect.left - winRect.left), e.Y + (thisRect.top - winRect.top), e.Keys, e.Button);
+                    win.OnMouseButtonEvent(msg, winEvt);
+                }
+            }
         }
 
         public override bool Show(SW command = SW.SW_SHOW)
@@ -139,13 +157,6 @@ namespace Wice
                 D2D_POINT_2F leftTop;
                 D2D_POINT_2F rightBottom;
                 var tr = target.AbsoluteRenderRect;
-                //if (tr.IsNotSet)
-                //{
-                //    var clone = parameters.Clone();
-                //    target.DoWhenArranged(() => Place(clone), VisualDoOptions.DeferredOnly);
-                //    return new D2D_POINT_2F(float.NaN, float.NaN);
-                //}
-
                 if (parameters.UseScreenCoordinates)
                 {
                     leftTop = target.Window.ClientToScreen(tr.LeftTop.TotagPOINT()).ToD2D_POINT_2F();

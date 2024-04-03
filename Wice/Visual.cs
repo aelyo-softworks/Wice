@@ -1562,15 +1562,6 @@ namespace Wice
                 return new D2D_POINT_2F();
 
             var pt = new D2D_POINT_2F(left - arr.left, top - arr.top);
-            //var tx = RenderTransform;
-            //if (tx.HasValue)
-            //{
-            //    var inv = tx.Value.Inverse();
-            //    if (inv.HasValue)
-            //    {
-            //        pt = inv.Value.Multiply(pt);
-            //    }
-            //}
             return pt;
         }
 
@@ -1591,13 +1582,11 @@ namespace Wice
                 toColor = toBrush.Color.ToColor();
             }
 
-            //toColor = toBrush?.Color;
-
             if (fromBrush?.Color != null)
             {
                 fromColor = fromBrush.Color.ToColor();
             }
-            //fromColor = fromBrush?.Color;
+
             return true;
         }
 

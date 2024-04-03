@@ -1707,7 +1707,7 @@ namespace Wice
 
         protected virtual void DestroyCore()
         {
-            Application.Trace("'" + this + "'");
+            //Application.Trace("'" + this + "'");
             var children = (WindowBaseObjectCollection)Children;
             foreach (var child in children.ToArray())
             {
@@ -1959,7 +1959,7 @@ namespace Wice
             }
         }
 
-        private new void OnMouseButtonEvent(int msg, MouseButtonEventArgs e)
+        internal virtual new void OnMouseButtonEvent(int msg, MouseButtonEventArgs e)
         {
             RemoveToolTip(e);
             var mcv = _mouseCaptorVisual;
