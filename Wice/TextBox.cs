@@ -48,7 +48,7 @@ namespace Wice
         private string _text;
         private bool _rendered;
 
-        // many edit code here is taken from the PadWrite sample https://github.com/pauldotknopf/WindowsSDK7-Samples/tree/master/multimedia/DirectWrite/PadWrite
+        // many edit code here is taken from the PadWrite sample https://github.com/microsoft/Windows-classic-samples/tree/main/Samples/Win7Samples/multimedia/DirectWrite/PadWrite
         private uint _charAnchor;
         private uint _charPosition;
         private uint _charPositionOffset;
@@ -873,36 +873,7 @@ namespace Wice
                 size.height = finalSize.height;
             }
 
-            // when resized, make sure we display the maximum we can, so adjust the origin
-            //if ((size.height - _origin.y) >= metrics.height)
-            //{
-            //    SetOriginY(size.height - metrics.height);
-            //}
-
-            //if ((size.width - _origin.x) >= metrics.width)
-            //{
-            //    SetOriginX(size.width - metrics.width);
-            //}
             SetCaretLocation();
-        }
-
-        private void EnsureCaretWidthVisible(ref D2D_RECT_F rc, float viewWidth)
-        {
-            Application.Trace("crc: " + rc + " w:" + viewWidth);
-
-            // if caret is on far right, make sure it's displayed with its width
-            if (rc.right > viewWidth)
-            {
-                Application.Trace("crc: " + rc + " w:" + viewWidth);
-                rc.Move(new D2D_VECTOR_2F(viewWidth - rc.right, 0));
-                Application.Trace("=> crc: " + rc);
-            }
-
-            // if caret is on far left, make sure it's displayed with its width
-            if (rc.left < 0)
-            {
-                rc.Move(new D2D_VECTOR_2F(-rc.left, 0));
-            }
         }
 
         private IComObject<ID2D1Brush> GetSelectionBrush(RenderContext context, IComObject<ID2D1Brush> brush)
@@ -1439,16 +1410,9 @@ namespace Wice
                 {
                     e.Handled = true;
                     FontSize = size;
-                    //if (Parent is IScrollView)
-                    //{
-                    //    Invalidate(VisualPropertyInvalidateModes.Measure, new InvalidateReason(GetType()));
-                    //}
                 }
                 return;
             }
-
-            //if (Parent is IScrollView)
-            //    return;
 
             var offset = e.Delta * GetFontSize();
             e.Handled = true;
@@ -1620,17 +1584,17 @@ namespace Wice
             SetSelection(TextBoxSetSelection.RightChar, (uint)text.Length, false);
         }
 
-        private int MirrorXCoordinate(int x)
-        {
-            // On RTL builds, coordinates may need to be restored to or converted from Cartesian coordinates, where x increases positively to the right.
-            var style = Window.ExtendedStyle;
-            if (style.HasFlag(WS_EX.WS_EX_LAYOUTRTL))
-            {
-                var rect = Window.ClientRect;
-                return rect.right - x - 1;
-            }
-            return x;
-        }
+        //private int MirrorXCoordinate(int x, float paddingRight)
+        //{
+        //    // On RTL builds, coordinates may need to be restored to or converted from Cartesian coordinates, where x increases positively to the right.
+        //    var style = Window.ExtendedStyle;
+        //    if (style.HasFlag(WS_EX.WS_EX_LAYOUTRTL))
+        //    {
+        //        var rect = Window.ClientRect;
+        //        return rect.right - x - 1;
+        //    }
+        //    return x;
+        //}
 
         private void InsertTextAt(uint position, string textToInsert, CaretFormat caretFormat = null)
         {
@@ -1900,7 +1864,23 @@ namespace Wice
 
             // Remap display coordinates to actual.
             var pos = e.GetPosition(this);
-            pos.x = MirrorXCoordinate(pos.x);
+
+            var padding = Padding;
+            pos.y -= (int)padding.top;
+
+            // MirrorXCoordinate
+            // On RTL builds, coordinates may need to be restored to or converted from Cartesian coordinates, where x increases positively to the right.
+            var style = Window.ExtendedStyle;
+            if (style.HasFlag(WS_EX.WS_EX_LAYOUTRTL))
+            {
+                var rect = Window.ClientRect;
+                pos.x = (int)(rect.right - pos.x - 1 - padding.right);
+            }
+            else
+            {
+                pos.x -= (int)padding.left;
+            }
+
             pos.x -= (int)_origin.x;
             pos.y -= (int)_origin.y;
 
@@ -2226,51 +2206,24 @@ namespace Wice
             var rightPadding = padding.right.IsSet() && padding.right > 0;
             var bottomPadding = padding.bottom.IsSet() && padding.bottom > 0;
 
-            //EnsureCaretWidthVisible(ref caretRc, rr.width);
-
-            //if (Parent is IScrollView scrollView)
-            //{
-            //    var margin = Margin;
-            //    var view = scrollView.ViewSize;
-            //    if (caretRc.bottom + margin.top > (scrollView.VerticalOffset + view.height))
-            //    {
-            //        scrollView.VerticalOffset = caretRc.bottom + margin.top - view.height;
-            //    }
-            //    else if ((caretRc.top + margin.top) < scrollView.VerticalOffset)
-            //    {
-            //        scrollView.VerticalOffset = caretRc.top + margin.top;
-            //    }
-
-            //    if ((caretRc.right + margin.left) >= (scrollView.HorizontalOffset + view.width))
-            //    {
-            //        scrollView.HorizontalOffset = caretRc.right + margin.left - view.width;
-            //    }
-            //    else if ((caretRc.left + margin.left) < scrollView.HorizontalOffset)
-            //    {
-            //        scrollView.HorizontalOffset = caretRc.left + margin.left;
-            //    }
-            //}
-            //else
+            if (caretRc.bottom > (rr.height - _origin.y - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0)))
             {
-                if (caretRc.bottom > (rr.height - _origin.y - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0)))
-                {
-                    SetOriginY(rr.height - caretRc.bottom - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0));
-                }
+                SetOriginY(rr.height - caretRc.bottom - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0));
+            }
 
-                if (caretRc.top < (-_origin.y + (topPadding ? padding.top : 0)))
-                {
-                    SetOriginY(-caretRc.top + (topPadding ? padding.top : 0));
-                }
+            if (caretRc.top < (-_origin.y + (topPadding ? padding.top : 0)))
+            {
+                SetOriginY(-caretRc.top + (topPadding ? padding.top : 0));
+            }
 
-                if (caretRc.right > (rr.width - _origin.x - (rightPadding ? padding.right : 0) - (leftPadding ? padding.left : 0)))
-                {
-                    SetOriginX(rr.width - caretRc.right - (rightPadding ? padding.right : 0) - (leftPadding ? padding.left : 0));
-                }
+            if (caretRc.right > (rr.width - _origin.x - (rightPadding ? padding.right : 0) - (leftPadding ? padding.left : 0)))
+            {
+                SetOriginX(rr.width - caretRc.right - (rightPadding ? padding.right : 0) - (leftPadding ? padding.left : 0));
+            }
 
-                if (caretRc.left < (-_origin.x + (leftPadding ? padding.left : 0)))
-                {
-                    SetOriginX(-caretRc.left + (leftPadding ? padding.left : 0));
-                }
+            if (caretRc.left < (-_origin.x + (leftPadding ? padding.left : 0)))
+            {
+                SetOriginX(-caretRc.left + (leftPadding ? padding.left : 0));
             }
         }
 
