@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
+using System.Threading;
 using DirectN;
 using Wice.Effects;
 using Wice.Utilities;
@@ -25,7 +26,7 @@ namespace Wice.Tests
             //WindowsFrameMode = WindowsFrameMode.Merged;
             Style |= WS.WS_THICKFRAME | WS.WS_CAPTION | WS.WS_SYSMENU | WS.WS_MAXIMIZEBOX | WS.WS_MINIMIZEBOX;
             //SizeToContent = DimensionOptions.WidthAndHeight;
-            Native.EnableBlurBehind();
+            //Native.EnableBlurBehind();
             RenderBrush = AcrylicBrush.CreateAcrylicBrush(
                 CompositionDevice,
                 _D3DCOLORVALUE.White,
@@ -48,6 +49,7 @@ namespace Wice.Tests
             //AddReadOnlyText();
             //AddReadOnlyTexts();
             AddEditableTexts();
+            DisplayTime();
             //AddTextWithSpaces(this);
 
             //AddRtb();
@@ -135,6 +137,23 @@ namespace Wice.Tests
             //        }, true);
             //    }
             //};
+        }
+
+        private Timer _timer;
+        private void DisplayTime()
+        {
+            var label = new TextBox();
+
+            SetRight(label, 15);
+            SetBottom(label, 15);
+            Children.Add(label);
+            _timer = new Timer(state =>
+            {
+                RunTaskOnMainThread(() =>
+                {
+                    label.Text = DateTime.Now.ToString();
+                });
+            }, null, 0, 1000);
         }
 
         public void TestEffect()
