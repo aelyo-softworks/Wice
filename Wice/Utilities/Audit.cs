@@ -16,8 +16,7 @@ namespace Wice.Utilities
 
         public const string AuditingFileFormat = "{1}_{0:yyyy}_{0:MM}_{0:dd}.log";
         public static int AuditingFlushPeriodInMilliseconds = 1000 * 60; // 1 min
-        public const string FileNameToken = "AUDIT_";
-        public const string FileNamePrefix = "FCO" + FileNameToken;
+        public const string FileNamePrefix = "WICE_";
 
         private static Timer _monitoringTimer;
         private static int _inTimerCallback;

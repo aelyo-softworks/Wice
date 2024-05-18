@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wice.Samples.Gallery", "Wic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WiceCore.Samples.Gallery", "WiceCore.Samples.Gallery\WiceCore.Samples.Gallery.csproj", "{F1A912E3-9EA0-4C7E-9EF1-E3FAB1D48A3D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiceAot", "WiceAot\WiceAot.csproj", "{E8053E72-9031-4B37-AE57-40FE4C2B33B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WiceAot.Tests", "WiceAot.Tests\WiceAot.Tests.csproj", "{B2EB0DEC-C3D6-4C0C-AE4D-8964F08BEAEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,14 @@ Global
 		{F1A912E3-9EA0-4C7E-9EF1-E3FAB1D48A3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1A912E3-9EA0-4C7E-9EF1-E3FAB1D48A3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1A912E3-9EA0-4C7E-9EF1-E3FAB1D48A3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8053E72-9031-4B37-AE57-40FE4C2B33B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8053E72-9031-4B37-AE57-40FE4C2B33B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8053E72-9031-4B37-AE57-40FE4C2B33B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8053E72-9031-4B37-AE57-40FE4C2B33B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2EB0DEC-C3D6-4C0C-AE4D-8964F08BEAEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2EB0DEC-C3D6-4C0C-AE4D-8964F08BEAEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2EB0DEC-C3D6-4C0C-AE4D-8964F08BEAEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2EB0DEC-C3D6-4C0C-AE4D-8964F08BEAEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

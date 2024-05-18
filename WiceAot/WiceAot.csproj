@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Wice</RootNamespace>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<PublishAot>true</PublishAot>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Using Include="DirectN" />
+		<Using Include="DirectNAot.Extensions" />
+		<Using Include="DirectNAot.Extensions.Com" />
+		<Using Include="DirectNAot.Extensions.Utilities" />
+		<Using Include="Microsoft.Win32" />
+		<Using Include="System.ComponentModel" />
+		<Using Include="System.Collections" />
+		<Using Include="System.Collections.Concurrent" />
+		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Collections.Specialized" />
+		<Using Include="System.Diagnostics" />
+		<Using Include="System.Diagnostics.CodeAnalysis" />
+		<Using Include="System.Globalization" />
+		<Using Include="System.Numerics" />
+		<Using Include="System.Reflection" />
+		<Using Include="System.Runtime.CompilerServices" />
+		<Using Include="System.Runtime.InteropServices" />
+		<Using Include="System.Runtime.InteropServices.Marshalling" />
+		<Using Include="System.Runtime.Serialization" />
+		<Using Include="System.Runtime.Versioning" />
+		<Using Include="System.Text" />
+		<Using Include="Wice.Effects" />
+		<Using Include="Wice.Utilities" />
+		<Using Include="Windows.Foundation" />
+		<Using Include="Windows.Graphics.DirectX" />
+		<Using Include="Windows.Graphics.Effects" />
+		<Using Include="Windows.UI.Composition" />
+		<Using Include="Windows.UI.Composition.Core" />
+		<Using Include="ZeroDep" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="External\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="DirectNAot">
+	    <HintPath>External\DirectNAot.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DirectNAot.Extensions">
+	    <HintPath>External\DirectNAot.Extensions.dll</HintPath>
+	  </Reference>
+	</ItemGroup>
+
+</Project>
