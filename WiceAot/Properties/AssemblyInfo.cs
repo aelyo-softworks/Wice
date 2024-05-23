@@ -10,4 +10,5 @@
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("fe0b95cf-3e69-4592-9a0f-b2c1925a1ce9")]
+[assembly: DisableRuntimeMarshalling]
 [assembly: SupportedOSPlatform("Windows10.0.17763.0")]

@@ -2,8 +2,8 @@
 
 public interface ITextFormat
 {
-    string FontFamilyName { get; set; }
-    IComObject<IDWriteFontCollection> FontCollection { get; set; }
+    string? FontFamilyName { get; set; }
+    IComObject<IDWriteFontCollection>? FontCollection { get; set; }
     float? FontSize { get; set; }
     DWRITE_FONT_WEIGHT FontWeight { get; set; }
     DWRITE_FONT_STYLE FontStyle { get; set; }

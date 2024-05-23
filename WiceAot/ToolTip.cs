@@ -1,6 +1,4 @@
-﻿using Windows.UI.Composition;
-
-namespace Wice;
+﻿namespace Wice;
 
 public class ToolTip : PopupWindow, IContentParent
 {
@@ -33,14 +31,16 @@ public class ToolTip : PopupWindow, IContentParent
 
     protected virtual Visual CreateContent()
     {
-        var canvas = new Canvas();
-        canvas.MeasureToContent = DimensionOptions.WidthAndHeight;
+        var canvas = new Canvas
+        {
+            MeasureToContent = DimensionOptions.WidthAndHeight
+        };
         return canvas;
     }
 
-    public override bool Show(SW command = SW.SW_SHOWNOACTIVATE) => base.Show(command);
-    protected override MA OnMouseActivate(IntPtr parentWindowHandle, int mouseMessage, HT hitTest) => MA.MA_NOACTIVATE;
-    protected override void ExtendFrame(IntPtr handle)
+    public override bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOWNOACTIVATE) => base.Show(command);
+    protected override MA OnMouseActivate(HWND parentWindowHandle, int mouseMessage, HT hitTest) => MA.MA_NOACTIVATE;
+    protected override void ExtendFrame(HWND handle)
     {
         // don't extend frame
         //base.ExtendFrame(handle);

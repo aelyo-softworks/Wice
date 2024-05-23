@@ -2,7 +2,7 @@
 
 public class MouseEventArgs : HandledEventArgs
 {
-    internal readonly List<Visual> _visualsStack = new();
+    internal readonly List<Visual> _visualsStack = [];
 
     public MouseEventArgs(int x, int y, POINTER_MOD vk)
     {
@@ -22,7 +22,7 @@ public class MouseEventArgs : HandledEventArgs
     {
         get
         {
-            if (!(SourcePointerEvent is PointerPositionEventArgs evt))
+            if (SourcePointerEvent is not PointerPositionEventArgs evt)
                 return _visualsStack;
 
             return evt._visualsStack;

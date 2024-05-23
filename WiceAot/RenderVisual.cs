@@ -50,7 +50,7 @@ public abstract class RenderVisual : Visual
 
             if (value != null)
             {
-                if (!(value is CompositionColorBrush colorBrush))
+                if (value is not CompositionColorBrush colorBrush)
                     throw new NotSupportedException();
 
                 BackgroundColor = colorBrush.Color.ToColor();

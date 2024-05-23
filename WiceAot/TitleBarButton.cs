@@ -3,7 +3,7 @@
 public class TitleBarButton : ButtonBase
 {
     private TitleBarButtonType _buttonType;
-    private GeometrySource2D _lastGeometrySource2D;
+    private GeometrySource2D? _lastGeometrySource2D;
 
     public TitleBarButton()
     {
@@ -38,9 +38,9 @@ public class TitleBarButton : ButtonBase
         }
     }
 
-    protected virtual Path CreatePath() => new Path();
+    protected virtual Path CreatePath() => new();
 
-    protected override void OnArranged(object sender, EventArgs e)
+    protected override void OnArranged(object? sender, EventArgs e)
     {
         base.OnArranged(sender, e);
         var size = (Path.ArrangedRect - Path.Margin).Size;
@@ -53,11 +53,11 @@ public class TitleBarButton : ButtonBase
         _lastGeometrySource2D = geoSource;
     }
 
-    protected override void OnAttachedToComposition(object sender, EventArgs e)
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
         Path.Shape.StrokeThickness = 1f;
-        Path.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ToColor());
+        Path.StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Black.ToColor());
     }
 }
 

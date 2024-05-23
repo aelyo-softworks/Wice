@@ -2,7 +2,7 @@
 
 public class EffectProperty : VisualProperty
 {
-    public static EffectProperty Define<T>(Type declaringType, string name, int index, GRAPHICS_EFFECT_PROPERTY_MAPPING mapping = GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_DIRECT, T defaultValue = default, VisualPropertyInvalidateModes mode = VisualPropertyInvalidateModes.Render, ConvertDelegate converter = null) => new EffectProperty(declaringType, name, typeof(T), index, mapping, defaultValue, mode, converter);
+    public static EffectProperty Define<T>(Type declaringType, string name, int index, GRAPHICS_EFFECT_PROPERTY_MAPPING mapping = GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_DIRECT, T defaultValue = default, VisualPropertyInvalidateModes mode = VisualPropertyInvalidateModes.Render, ConvertDelegate converter = null) => new(declaringType, name, typeof(T), index, mapping, defaultValue, mode, converter);
 
     public static EffectProperty Add<T>(Type declaringType, string name, int index, GRAPHICS_EFFECT_PROPERTY_MAPPING mapping = GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_DIRECT, T defaultValue = default, VisualPropertyInvalidateModes mode = VisualPropertyInvalidateModes.Render, ConvertDelegate converter = null) => Add(declaringType, name, typeof(T), index, mapping, defaultValue, mode, converter);
     public static EffectProperty Add(Type declaringType, string name, Type type, int index, GRAPHICS_EFFECT_PROPERTY_MAPPING mapping = GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_DIRECT, object defaultValue = default, VisualPropertyInvalidateModes mode = VisualPropertyInvalidateModes.Render, ConvertDelegate converter = null) => Add(new EffectProperty(declaringType, name, type, index, mapping, defaultValue, mode, converter));
@@ -15,8 +15,7 @@ public class EffectProperty : VisualProperty
     public EffectProperty(Type declaringType, string name, Type type, int index, GRAPHICS_EFFECT_PROPERTY_MAPPING mapping = GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_DIRECT, object defaultValue = null, VisualPropertyInvalidateModes mode = VisualPropertyInvalidateModes.Render, ConvertDelegate converter = null)
         : base(declaringType, name, type, mode, defaultValue, converter)
     {
-        if (declaringType == null)
-            throw new ArgumentNullException(nameof(declaringType));
+        ArgumentNullException.ThrowIfNull(declaringType);
 
         Index = index;
         Mapping = mapping;

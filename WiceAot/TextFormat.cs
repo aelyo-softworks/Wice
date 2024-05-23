@@ -22,7 +22,7 @@ public class TextFormat : ITextFormat
     public virtual DWRITE_WORD_WRAPPING WordWrapping { get; set; }
     public virtual DWRITE_TRIMMING_GRANULARITY TrimmingGranularity { get; set; }
 
-    internal static string? GetCacheKey(IDWriteFontCollection fonts)
+    internal static string? GetCacheKey(IDWriteFontCollection? fonts)
     {
         if (fonts == null)
             return null;
@@ -31,19 +31,19 @@ public class TextFormat : ITextFormat
         if (families.Count == 0)
             return null;
 
-        var s = families.Count.ToString() + "\0";
+        var str = families.Count.ToString() + "\0";
         foreach (var family in fonts.GetFamilies())
         {
             var names = family.GetNames();
             if (names.Count == 0)
                 continue;
 
-            s += string.Join("\0", names.Select(n => n.LocaleName + "\0" + n.String));
+            str += string.Join("\0", names.Select(n => n.LocaleName + "\0" + n.String));
         }
-        return s;
+        return str;
     }
 
-    internal static string GetCacheKey(ITextFormat text, string family, float size) => family + "\0" + size + "\0" +
+    internal static string GetCacheKey(ITextFormat text, string? family, float size) => family + "\0" + size + "\0" +
             GetCacheKey(text.FontCollection?.Object) + "\0" +
             (int)text.FontWeight + "\0" +
             (int)text.FontStyle + "\0" +

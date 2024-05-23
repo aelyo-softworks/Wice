@@ -105,7 +105,7 @@ public partial class TitleBar : Dock
         if (_isMain)
         {
             window.MainTitleBar = this;
-            window.Style |= WS.WS_THICKFRAME | WS.WS_CAPTION | WS.WS_SYSMENU | WS.WS_MAXIMIZEBOX | WS.WS_MINIMIZEBOX;
+            window.Style |= WINDOW_STYLE.WS_THICKFRAME | WINDOW_STYLE.WS_CAPTION | WINDOW_STYLE.WS_SYSMENU | WINDOW_STYLE.WS_MAXIMIZEBOX | WINDOW_STYLE.WS_MINIMIZEBOX;
         }
         else
         {
@@ -117,10 +117,10 @@ public partial class TitleBar : Dock
     }
 
     protected virtual TextBox CreateTitle() => new TextBox();
-    protected virtual Visual CreatePadding() => new Visual();
-    protected virtual TitleBarButton CreateMinButton() => new TitleBarButton();
-    protected virtual TitleBarButton CreateMaxButton() => new TitleBarButton();
-    protected virtual TitleBarButton CreateCloseButton() => new TitleBarButton();
+    protected virtual Visual CreatePadding() => new();
+    protected virtual TitleBarButton CreateMinButton() => new();
+    protected virtual TitleBarButton CreateMaxButton() => new();
+    protected virtual TitleBarButton CreateCloseButton() => new();
 
     protected virtual internal void Update()
     {
@@ -128,8 +128,11 @@ public partial class TitleBar : Dock
         if (native == null)
             return;
 
-        var bounds = new tagRECT();
-        WindowsFunctions.DwmGetWindowAttribute(native.Handle, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, ref bounds, Marshal.SizeOf<tagRECT>());
+        var bounds = new RECT();
+        unsafe
+        {
+            Functions.DwmGetWindowAttribute(native.Handle, (uint)DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, (nint)(&bounds), (uint)sizeof(RECT));
+        }
         Height = bounds.Height;
 
         // we have 3 buttons. not sure this is always ok...
@@ -137,11 +140,11 @@ public partial class TitleBar : Dock
 
         CloseButton.Height = bounds.Height;
         CloseButton.Width = width;
-        CloseButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
+        CloseButton.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
 
         MinButton.Height = bounds.Height;
         MinButton.Width = width;
-        MinButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray.ToColor());
+        MinButton.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
 
         var zoomed = false;
         if (Parent is ITitleBarParent tbp)
@@ -158,10 +161,10 @@ public partial class TitleBar : Dock
         MaxButton.Height = bounds.Height;
         MaxButton.Width = width;
         MaxButton.ButtonType = zoomed ? TitleBarButtonType.Restore : TitleBarButtonType.Maximize;
-        MaxButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray.ToColor());
+        MaxButton.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
     }
 
-    protected override void OnAttachedToComposition(object sender, EventArgs e)
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
         Update();

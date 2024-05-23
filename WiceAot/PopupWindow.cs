@@ -22,12 +22,12 @@ public class PopupWindow : Window
     {
         IsBackground = true;
         WindowsFrameMode = WindowsFrameMode.None;
-        Style = WS.WS_POPUP;
+        Style = WINDOW_STYLE.WS_POPUP;
         IsResizable = false;
-        ExtendedStyle |= WS_EX.WS_EX_NOACTIVATE | WS_EX.WS_EX_NOREDIRECTIONBITMAP;
+        ExtendedStyle |= WINDOW_EX_STYLE.WS_EX_NOACTIVATE | WINDOW_EX_STYLE.WS_EX_NOREDIRECTIONBITMAP;
     }
 
-    internal override void OnMouseButtonEvent(int msg, MouseButtonEventArgs e)
+    internal override void OnMouseButtonEvent(uint msg, MouseButtonEventArgs e)
     {
         base.OnMouseButtonEvent(msg, e);
         if (ClickThrough)
@@ -43,11 +43,11 @@ public class PopupWindow : Window
         }
     }
 
-    public override bool Show(SW command = SW.SW_SHOW)
+    public override bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOW)
     {
-        if (ExtendedStyle.HasFlag(WS_EX.WS_EX_NOACTIVATE) && command == SW.SW_SHOW)
+        if (ExtendedStyle.HasFlag(WINDOW_EX_STYLE.WS_EX_NOACTIVATE) && command == SHOW_WINDOW_CMD.SW_SHOW)
         {
-            command = SW.SW_SHOWNOACTIVATE;
+            command = SHOW_WINDOW_CMD.SW_SHOWNOACTIVATE;
         }
         return base.Show(command);
     }
@@ -106,13 +106,15 @@ public class PopupWindow : Window
 
     protected virtual PlacementParameters CreatePlacementParameters()
     {
-        var parameters = new PlacementParameters(this);
-        parameters.UseScreenCoordinates = true;
-        parameters.CustomFunc = CustomPlacementFunc;
-        parameters.HorizontalOffset = HorizontalOffset;
-        parameters.VerticalOffset = VerticalOffset;
-        parameters.Mode = PlacementMode;
-        parameters.Target = PlacementTarget;
+        var parameters = new PlacementParameters(this)
+        {
+            UseScreenCoordinates = true,
+            CustomFunc = CustomPlacementFunc,
+            HorizontalOffset = HorizontalOffset,
+            VerticalOffset = VerticalOffset,
+            Mode = PlacementMode,
+            Target = PlacementTarget
+        };
         return parameters;
     }
 
@@ -123,7 +125,7 @@ public class PopupWindow : Window
         var pt = Place(parameters);
         if (pt.IsSet)
         {
-            var tp = pt.TotagPOINT();
+            var tp = pt.ToPOINT();
             Move(tp.x, tp.y);
         }
     }
@@ -154,8 +156,8 @@ public class PopupWindow : Window
             var tr = target.AbsoluteRenderRect;
             if (parameters.UseScreenCoordinates)
             {
-                leftTop = target.Window.ClientToScreen(tr.LeftTop.TotagPOINT()).ToD2D_POINT_2F();
-                rightBottom = target.Window.ClientToScreen(tr.RightBottom.TotagPOINT()).ToD2D_POINT_2F();
+                leftTop = target.Window.ClientToScreen(tr.LeftTop.ToPOINT()).ToD2D_POINT_2F();
+                rightBottom = target.Window.ClientToScreen(tr.RightBottom.ToPOINT()).ToD2D_POINT_2F();
             }
             else
             {

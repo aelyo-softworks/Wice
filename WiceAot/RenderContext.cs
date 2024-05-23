@@ -28,6 +28,7 @@ public class RenderContext
         }
     }
 
+    [return: NotNullIfNotNull(nameof(color))]
     public virtual IComObject<ID2D1Brush>? CreateSolidColorBrush(D3DCOLORVALUE? color)
     {
         if (DeviceContext == null)
@@ -47,9 +48,7 @@ public class RenderContext
         if (DeviceContext == null)
             throw new InvalidOperationException();
 
-        using var bprops = new ComMemory(bitmapBrushProperties);
-        using var props = new ComMemory(brushProperties);
-        DeviceContext.Object.CreateBitmapBrush(bitmap, bprops.Pointer, props.Pointer, out ID2D1BitmapBrush brush).ThrowOnError();
+        DeviceContext.Object.CreateBitmapBrush(bitmap, bitmapBrushProperties.CopyToPointer(), brushProperties.CopyToPointer(), out ID2D1BitmapBrush brush).ThrowOnError();
         return new ComObject<T>((T)brush);
     }
 
@@ -70,10 +69,7 @@ public class RenderContext
         }
         finally
         {
-            if (coll != null)
-            {
-                Marshal.ReleaseComObject(coll);
-            }
+            coll.FinalRelease();
         }
     }
 
@@ -94,10 +90,7 @@ public class RenderContext
         }
         finally
         {
-            if (coll != null)
-            {
-                Marshal.ReleaseComObject(coll);
-            }
+            coll.FinalRelease();
         }
     }
 }

@@ -84,15 +84,14 @@ public class ResourceManager
 
     private string GetKey(Domain domain, string name)
     {
+        ArgumentNullException.ThrowIfNull(name);
         if (domain == Domain.Undefined)
             throw new ArgumentException(null, nameof(name));
-
-        ArgumentNullException.ThrowIfNull(name);
 
         return name + "\0" + (int)domain;
     }
 
-    private T? Get<T>(Window window, Domain domain, string name, T? defaultValue = default, bool propertiesUseConversions = false)
+    private T? Get<T>(Window? window, Domain domain, string name, T? defaultValue = default, bool propertiesUseConversions = false)
     {
         var resources = window != null ? _windowsResources[window]._resources : _resources;
         if (!resources.TryGetValue(GetKey(domain, name), out var resource))
@@ -105,7 +104,7 @@ public class ResourceManager
         return (T)resource.Object;
     }
 
-    private T? Get<T>(Window window, Domain domain, string name, Func<T>? factory = null, bool propertiesUseConversions = false)
+    private T Get<T>(Window? window, Domain domain, string name, Func<T>? factory = null, bool propertiesUseConversions = false)
     {
         if (factory == null)
             return Get(window, domain, name, default(T));
@@ -136,7 +135,6 @@ public class ResourceManager
     public virtual IComObject<IDWriteTypography> GetTypography(Typography typography)
     {
         ArgumentNullException.ThrowIfNull(typography);
-
         var key = typography.CacheKey;
         return Get(null, Domain.Typography, key, () => CreateTypography(typography));
     }
@@ -144,7 +142,6 @@ public class ResourceManager
     public virtual IComObject<IDWriteTypography> CreateTypography(Typography typography)
     {
         ArgumentNullException.ThrowIfNull(typography);
-
         var tg = DWriteFactory.CreateTypography();
         foreach (var feature in typography.Features)
         {
@@ -181,7 +178,7 @@ public class ResourceManager
                 dashOffset = 0
             };
 
-            D2DFactory.Object.CreateStrokeStyle(ref strokeProps, dashes, (dashes?.Length).GetValueOrDefault(), out var stroke).ThrowOnError();
+            D2DFactory.Object.CreateStrokeStyle(strokeProps, dashes.AsPointer(), dashes.Length(), out var stroke).ThrowOnError();
             return new ComObject<ID2D1StrokeStyle>(stroke);
         });
     }
@@ -189,7 +186,6 @@ public class ResourceManager
     public virtual IComObject<IWICBitmapSource> GetWicBitmapSource(string filePath, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
         ArgumentNullException.ThrowIfNull(filePath);
-
         filePath = System.IO.Path.GetFullPath(filePath);
         var key = filePath.ToLowerInvariant();
         return Get(null, Domain.WICBitmapSource, key, () => WICFunctions.LoadBitmapSource(filePath, options));
@@ -198,9 +194,7 @@ public class ResourceManager
     public virtual IComObject<IWICBitmapSource> GetWicBitmapSource(Assembly assembly, string name, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
         ArgumentNullException.ThrowIfNull(assembly);
-
         ArgumentNullException.ThrowIfNull(name);
-
         var stream = assembly.GetManifestResourceStream(name);
         if (stream == null)
             throw new WiceException("0016: cannot find stream '" + name + "' from assembly '" + assembly.FullName + "'.");
@@ -213,19 +207,17 @@ public class ResourceManager
     public virtual IComObject<IWICBitmapSource> GetWicBitmapSource(Stream stream, string uniqueKey, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
         ArgumentNullException.ThrowIfNull(stream);
-
         ArgumentNullException.ThrowIfNull(uniqueKey);
-
         return Get(null, Domain.WICBitmapSource, uniqueKey, () => WICFunctions.LoadBitmapSource(stream, options));
     }
 
     public virtual IComObject<IDWriteTextFormat> GetSymbolFormat(float fontSize = 0) => GetTextFormat(Theme.SymbolFontName, fontSize);
     public virtual IComObject<IDWriteTextFormat> GetTextFormat(
-        string fontFamilyName = null,
+        string? fontFamilyName = null,
         float fontSize = 0,
         DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
         DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
-        IComObject<IDWriteFontCollection> fontCollection = null
+        IComObject<IDWriteFontCollection>? fontCollection = null
         )
     {
         var text = new TextFormat
@@ -239,10 +231,9 @@ public class ResourceManager
         return GetTextFormat(text);
     }
 
-    public virtual IComObject<IDWriteTextFormat> GetTextFormat(ITextFormat text)
+    public virtual IComObject<IDWriteTextFormat>? GetTextFormat(ITextFormat text)
     {
         ArgumentNullException.ThrowIfNull(text);
-
         var family = text.FontFamilyName.Nullify() ?? Theme.DefaultFontFamilyName;
         var size = GetFontSize(text);
         var key = TextFormat.GetCacheKey(text, family, size);
@@ -264,10 +255,9 @@ public class ResourceManager
     public virtual IComObject<IDWriteTextFormat> CreateTextFormat(ITextFormat text)
     {
         ArgumentNullException.ThrowIfNull(text);
-
         var family = text.FontFamilyName.Nullify() ?? Theme.DefaultFontFamilyName;
         IComObject<IDWriteTextFormat> format;
-        IComObject<IDWriteInlineObject> io = null;
+        IComObject<IDWriteInlineObject>? io = null;
         var size = GetFontSize(text);
         format = CreateTextFormat(family, size, text.FontCollection?.Object, text.FontWeight, text.FontStyle, text.FontStretch);
         if (text.TrimmingGranularity == DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER)
@@ -287,7 +277,7 @@ public class ResourceManager
             {
                 granularity = text.TrimmingGranularity
             };
-            format.Object.SetTrimming(ref to, io?.Object);
+            format.Object.SetTrimming(to, io?.Object);
             return format;
         }
         finally
@@ -297,9 +287,9 @@ public class ResourceManager
     }
 
     public virtual IComObject<IDWriteTextFormat> GetTextFormat(
-        string fontFamilyName = null,
+        string? fontFamilyName = null,
         float? fontSize = null,
-        IDWriteFontCollection fonts = null,
+        IDWriteFontCollection? fonts = null,
         DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_NORMAL,
         DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE.DWRITE_FONT_STYLE_NORMAL,
         DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_NORMAL)
@@ -311,9 +301,9 @@ public class ResourceManager
     }
 
     public virtual IComObject<IDWriteTextFormat> CreateTextFormat(
-        string fontFamilyName = null,
+        string? fontFamilyName = null,
         float? fontSize = null,
-        IDWriteFontCollection fonts = null,
+        IDWriteFontCollection? fonts = null,
         DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_NORMAL,
         DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE.DWRITE_FONT_STYLE_NORMAL,
         DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_NORMAL)
@@ -321,19 +311,20 @@ public class ResourceManager
         var family = fontFamilyName.Nullify() ?? Theme.DefaultFontFamilyName;
         var size = GetFontSize(fontSize);
         var key = family + "\0" + size + "\0" + TextFormat.GetCacheKey(fonts);
-        DWriteFactory.Object.CreateTextFormat(family, fonts, fontWeight, fontStyle, fontStretch, size, string.Empty, out var format).ThrowOnError();
+        using var p = new Pwstr(family);
+        using var pe = new Pwstr(string.Empty);
+        DWriteFactory.Object.CreateTextFormat(p, fonts, fontWeight, fontStyle, fontStretch, size, pe, out var format).ThrowOnError();
         return new KeyComObject<IDWriteTextFormat>(format, key);
     }
 
-    public IComObject<IDWriteTextLayout> GetTextLayout(IComObject<IDWriteTextFormat> format, string text, int textLength = 0, float maxWidth = float.MaxValue, float maxHeight = float.MaxValue) => GetTextLayout(format?.Object, text, textLength, maxWidth, maxHeight);
-    public virtual IComObject<IDWriteTextLayout> GetTextLayout(IDWriteTextFormat format, string text, int textLength = 0, float maxWidth = float.MaxValue, float maxHeight = float.MaxValue)
+    public IComObject<IDWriteTextLayout>? GetTextLayout(IComObject<IDWriteTextFormat> format, string? text, int textLength = 0, float maxWidth = float.MaxValue, float maxHeight = float.MaxValue) => GetTextLayout(format?.Object!, text, textLength, maxWidth, maxHeight);
+    public virtual IComObject<IDWriteTextLayout>? GetTextLayout(IDWriteTextFormat format, string? text, int textLength = 0, float maxWidth = float.MaxValue, float maxHeight = float.MaxValue)
     {
+        ArgumentNullException.ThrowIfNull(format);
         if (text == null)
             return null;
 
-        ArgumentNullException.ThrowIfNull(format);
-
-        if (!(format is IKeyable kf))
+        if (format is not IKeyable kf)
             return CreateTextLayout<IDWriteTextLayout>(format, text, textLength, maxWidth, maxHeight);
 
         var key = textLength + "\0" + maxWidth + "\0" + maxHeight + "\0" + kf.Key + "\0" + text;
@@ -346,9 +337,7 @@ public class ResourceManager
     public virtual IComObject<IDWriteTextLayout> CreateTextLayout(IComObject<IDWriteTextFormat> format, string text, int textLength = 0, float maxWidth = float.MaxValue, float maxHeight = float.MaxValue)
     {
         ArgumentNullException.ThrowIfNull(text);
-
         ArgumentNullException.ThrowIfNull(format);
-
         if (maxWidth.IsNotSet())
         {
             maxWidth = float.MaxValue;

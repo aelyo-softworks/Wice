@@ -4,7 +4,7 @@ public class ButtonBase : Border, IAccessKeyParent
 {
     public event EventHandler<EventArgs>? Click;
 
-    private readonly List<AccessKey> _accessKeys = new List<AccessKey>();
+    private readonly List<AccessKey> _accessKeys = [];
 
     public ButtonBase()
     {

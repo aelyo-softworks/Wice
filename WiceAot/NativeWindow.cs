@@ -148,17 +148,18 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
         get
         {
             var dic = new Dictionary<PROPERTYKEY, object?>();
-            Functions.SHGetPropertyStoreForWindow(Handle, typeof(IPropertyStore).GUID, out var obj);
-            if (obj is IPropertyStore ps)
+            Functions.SHGetPropertyStoreForWindow(Handle, typeof(IPropertyStore).GUID, out var unk);
+            using var ps = ComObject.FromPointer<IPropertyStore>(unk);
+            if (ps != null)
             {
-                ps.GetCount(out var count);
+                ps.Object.GetCount(out var count);
                 for (uint i = 0; i < count; i++)
                 {
-                    var hr = ps.GetAt(i, out var pk);
+                    var hr = ps.Object.GetAt(i, out var pk);
                     if (hr.IsError)
                         continue;
 
-                    hr = ps.GetValue(pk, out var pv);
+                    hr = ps.Object.GetValue(pk, out var pv);
                     if (hr == 0)
                     {
                         using var managed = PropVariant.Attach(ref pv);
@@ -197,7 +198,7 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
     public POINT ScreenToClient(POINT pt) { Functions.ScreenToClient(Handle, ref pt); return pt; }
     public POINT ClientToScreen(POINT pt) { Functions.ClientToScreen(Handle, ref pt); return pt; }
     public POINT GetClientCursorPosition() => ScreenToClient(GetCursorPosition());
-    public DirectNAot.Extensions.Utilities.Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => DirectNAot.Extensions.Utilities.Monitor.FromWindow(Handle, flags);
+    public DirectN.Extensions.Utilities.Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => DirectN.Extensions.Utilities.Monitor.FromWindow(Handle, flags);
     public bool IsChild(HWND parentHandle) => Functions.IsChild(parentHandle, Handle);
 
     public int ShellAbout(string? text = null, string? otherStuff = null)
@@ -381,14 +382,14 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
     internal static string GetWindowText(HWND hwnd)
     {
         using var p = new AllocPwstr(1024);
-        Functions.GetWindowTextW(hwnd, p, p.SizeInChars);
+        Functions.GetWindowTextW(hwnd, p, (int)p.SizeInChars);
         return p.ToString() ?? string.Empty;
     }
 
     internal static string? GetClassName(HWND hwnd)
     {
         using var p = new AllocPwstr(1024);
-        Functions.GetClassNameW(hwnd, p, p.SizeInChars);
+        Functions.GetClassNameW(hwnd, p, (int)p.SizeInChars);
         return p.ToString();
     }
 

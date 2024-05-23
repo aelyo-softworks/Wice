@@ -10,38 +10,38 @@ public class Visual : BaseObject
     public const string CategoryDebug = "Debug";
 #endif
 
-    public static VisualProperty CursorProperty = VisualProperty.Add<Cursor>(typeof(Visual), nameof(Cursor), VisualPropertyInvalidateModes.None);
-    public static VisualProperty DataProperty = VisualProperty.Add<object>(typeof(Visual), nameof(Data), VisualPropertyInvalidateModes.Measure);
-    public static VisualProperty OpacityProperty = VisualProperty.Add(typeof(Visual), nameof(Opacity), VisualPropertyInvalidateModes.Render, 1f);
-    public static VisualProperty ClipChildrenProperty = VisualProperty.Add(typeof(Visual), nameof(ClipChildren), VisualPropertyInvalidateModes.Render, true);
-    public static VisualProperty ClipFromParentProperty = VisualProperty.Add(typeof(Visual), nameof(ClipFromParent), VisualPropertyInvalidateModes.Render, true);
-    public static VisualProperty WidthProperty = VisualProperty.Add(typeof(Visual), nameof(Width), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
-    public static VisualProperty MinWidthProperty = VisualProperty.Add(typeof(Visual), nameof(MinWidth), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
-    public static VisualProperty MaxWidthProperty = VisualProperty.Add(typeof(Visual), nameof(MaxWidth), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
-    public static VisualProperty HeightProperty = VisualProperty.Add(typeof(Visual), nameof(Height), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
-    public static VisualProperty MinHeightProperty = VisualProperty.Add(typeof(Visual), nameof(MinHeight), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
-    public static VisualProperty MaxHeightProperty = VisualProperty.Add(typeof(Visual), nameof(MaxHeight), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
-    public static VisualProperty IsVisibleProperty = VisualProperty.Add(typeof(Visual), nameof(IsVisible), VisualPropertyInvalidateModes.ParentMeasure, true);
-    public static VisualProperty IsFocusableProperty = VisualProperty.Add(typeof(Visual), nameof(IsFocusable), VisualPropertyInvalidateModes.Measure, false);
-    public static VisualProperty IsEnabledProperty = VisualProperty.Add(typeof(Visual), nameof(IsEnabled), VisualPropertyInvalidateModes.Render, true);
-    public static VisualProperty UseLayoutRoundingProperty = VisualProperty.Add(typeof(Visual), nameof(UseLayoutRounding), VisualPropertyInvalidateModes.Measure, false);
-    public static VisualProperty IsMouseOverProperty = VisualProperty.Add(typeof(Visual), nameof(IsMouseOver), VisualPropertyInvalidateModes.None, false, changed: IsMouseOverChanged); // is none ok,
-    public static VisualProperty MarginProperty = VisualProperty.Add(typeof(Visual), nameof(Margin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
-    public static VisualProperty PaddingProperty = VisualProperty.Add(typeof(Visual), nameof(Padding), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
-    public static VisualProperty VerticalAlignmentProperty = VisualProperty.Add(typeof(Visual), nameof(VerticalAlignment), VisualPropertyInvalidateModes.ParentMeasure, Alignment.Stretch);
-    public static VisualProperty HorizontalAlignmentProperty = VisualProperty.Add(typeof(Visual), nameof(HorizontalAlignment), VisualPropertyInvalidateModes.ParentMeasure, Alignment.Stretch);
-    public static VisualProperty RenderRotationAngleProperty = VisualProperty.Add(typeof(Visual), nameof(RenderRotationAngle), VisualPropertyInvalidateModes.Render, 0f);
-    public static VisualProperty RenderRotationAxisProperty = VisualProperty.Add(typeof(Visual), nameof(RenderRotationAxis), VisualPropertyInvalidateModes.Render, new Vector3(0f, 0f, 1f));
-    public static VisualProperty RenderScaleProperty = VisualProperty.Add(typeof(Visual), nameof(RenderScale), VisualPropertyInvalidateModes.Render, new Vector3(1f, 1f, 1f));
-    public static VisualProperty RenderOffsetProperty = VisualProperty.Add(typeof(Visual), nameof(RenderOffset), VisualPropertyInvalidateModes.Render, new Vector3());
-    public static VisualProperty RenderBrushProperty = VisualProperty.Add<CompositionBrush>(typeof(Visual), nameof(RenderBrush), VisualPropertyInvalidateModes.Render);
-    public static VisualProperty HoverRenderBrushProperty = VisualProperty.Add<CompositionBrush>(typeof(Visual), nameof(HoverRenderBrush), VisualPropertyInvalidateModes.Render);
-    public static VisualProperty RenderShadowProperty = VisualProperty.Add<CompositionShadow>(typeof(Visual), nameof(RenderShadow), VisualPropertyInvalidateModes.Render);
-    public static VisualProperty RenderCompositeModeProperty = VisualProperty.Add<CompositionCompositeMode>(typeof(Visual), nameof(RenderCompositeMode), VisualPropertyInvalidateModes.Render);
-    public static VisualProperty RenderTransformMatrixProperty = VisualProperty.Add<Matrix4x4?>(typeof(Visual), nameof(RenderTransformMatrix), VisualPropertyInvalidateModes.Render);
-    public static VisualProperty ZIndexProperty = VisualProperty.Add<int?>(typeof(Visual), nameof(ZIndex), VisualPropertyInvalidateModes.Render);
-    public static VisualProperty FocusIndexProperty = VisualProperty.Add<int?>(typeof(Visual), nameof(FocusIndex), VisualPropertyInvalidateModes.Render);
-    public static VisualProperty ToolTipContentCreatorProperty = VisualProperty.Add<Action<ToolTip>>(typeof(Visual), nameof(ToolTipContentCreator), VisualPropertyInvalidateModes.None);
+    public static VisualProperty CursorProperty { get; } = VisualProperty.Add<Cursor>(typeof(Visual), nameof(Cursor), VisualPropertyInvalidateModes.None);
+    public static VisualProperty DataProperty { get; } = VisualProperty.Add<object>(typeof(Visual), nameof(Data), VisualPropertyInvalidateModes.Measure);
+    public static VisualProperty OpacityProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(Opacity), VisualPropertyInvalidateModes.Render, 1f);
+    public static VisualProperty ClipChildrenProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(ClipChildren), VisualPropertyInvalidateModes.Render, true);
+    public static VisualProperty ClipFromParentProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(ClipFromParent), VisualPropertyInvalidateModes.Render, true);
+    public static VisualProperty WidthProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(Width), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
+    public static VisualProperty MinWidthProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(MinWidth), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
+    public static VisualProperty MaxWidthProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(MaxWidth), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
+    public static VisualProperty HeightProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(Height), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
+    public static VisualProperty MinHeightProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(MinHeight), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
+    public static VisualProperty MaxHeightProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(MaxHeight), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
+    public static VisualProperty IsVisibleProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(IsVisible), VisualPropertyInvalidateModes.ParentMeasure, true);
+    public static VisualProperty IsFocusableProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(IsFocusable), VisualPropertyInvalidateModes.Measure, false);
+    public static VisualProperty IsEnabledProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(IsEnabled), VisualPropertyInvalidateModes.Render, true);
+    public static VisualProperty UseLayoutRoundingProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(UseLayoutRounding), VisualPropertyInvalidateModes.Measure, false);
+    public static VisualProperty IsMouseOverProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(IsMouseOver), VisualPropertyInvalidateModes.None, false, changed: IsMouseOverChanged); // is none ok,
+    public static VisualProperty MarginProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(Margin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
+    public static VisualProperty PaddingProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(Padding), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
+    public static VisualProperty VerticalAlignmentProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(VerticalAlignment), VisualPropertyInvalidateModes.ParentMeasure, Alignment.Stretch);
+    public static VisualProperty HorizontalAlignmentProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(HorizontalAlignment), VisualPropertyInvalidateModes.ParentMeasure, Alignment.Stretch);
+    public static VisualProperty RenderRotationAngleProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(RenderRotationAngle), VisualPropertyInvalidateModes.Render, 0f);
+    public static VisualProperty RenderRotationAxisProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(RenderRotationAxis), VisualPropertyInvalidateModes.Render, new Vector3(0f, 0f, 1f));
+    public static VisualProperty RenderScaleProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(RenderScale), VisualPropertyInvalidateModes.Render, new Vector3(1f, 1f, 1f));
+    public static VisualProperty RenderOffsetProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(RenderOffset), VisualPropertyInvalidateModes.Render, new Vector3());
+    public static VisualProperty RenderBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(Visual), nameof(RenderBrush), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty HoverRenderBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(Visual), nameof(HoverRenderBrush), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty RenderShadowProperty { get; } = VisualProperty.Add<CompositionShadow>(typeof(Visual), nameof(RenderShadow), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty RenderCompositeModeProperty { get; } = VisualProperty.Add<CompositionCompositeMode>(typeof(Visual), nameof(RenderCompositeMode), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty RenderTransformMatrixProperty { get; } = VisualProperty.Add<Matrix4x4?>(typeof(Visual), nameof(RenderTransformMatrix), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty ZIndexProperty { get; } = VisualProperty.Add<int?>(typeof(Visual), nameof(ZIndex), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty FocusIndexProperty { get; } = VisualProperty.Add<int?>(typeof(Visual), nameof(FocusIndex), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty ToolTipContentCreatorProperty { get; } = VisualProperty.Add<Action<ToolTip>>(typeof(Visual), nameof(ToolTipContentCreator), VisualPropertyInvalidateModes.None);
 
     protected static object? NullifyString(BaseObject obj, object value) => ((string)value).Nullify();
 
@@ -1302,7 +1302,7 @@ public class Visual : BaseObject
 
     public virtual Visual? GetFocusable(FocusDirection direction)
     {
-        Visual focusable;
+        Visual? focusable;
         switch (direction)
         {
             case FocusDirection.Previous:
@@ -1336,7 +1336,7 @@ public class Visual : BaseObject
             {
                 case FocusDirection.Previous:
                     if (index < 0)
-                        return all[all.Count - 1];
+                        return all[^1];
 
                     if ((index - 1) >= 0)
                         return all[index - 1];
@@ -1372,7 +1372,7 @@ public class Visual : BaseObject
             {
                 case FocusDirection.Previous:
                     if (index == 0 && all.Count > 1)
-                        return all[all.Count - 1];
+                        return all[^1];
 
                     break;
 
@@ -1554,7 +1554,7 @@ public class Visual : BaseObject
         var brushes = new List<CompositionBrush>();
         if (CompositionVisual is SpriteVisual sv)
         {
-            if (!(sv.Brush is CompositionColorBrush cb))
+            if (sv.Brush is not CompositionColorBrush cb)
             {
                 // no clone since we create it
                 Windows.UI.Color color;
@@ -1643,9 +1643,9 @@ public class Visual : BaseObject
         OnKeyUp(this, e);
     }
 
-    protected virtual void OnKeyDown(object sender, KeyEventArgs e) => KeyDown?.Invoke(sender, e);
-    protected virtual void OnKeyUp(object sender, KeyEventArgs e) => KeyUp?.Invoke(sender, e);
-    protected virtual void OnKeyPress(object sender, KeyPressEventArgs e) => KeyPress?.Invoke(sender, e);
+    protected virtual void OnKeyDown(object? sender, KeyEventArgs e) => KeyDown?.Invoke(sender, e);
+    protected virtual void OnKeyUp(object? sender, KeyEventArgs e) => KeyUp?.Invoke(sender, e);
+    protected virtual void OnKeyPress(object? sender, KeyPressEventArgs e) => KeyPress?.Invoke(sender, e);
 
     internal void OnPointerWheelEvent(PointerWheelEventArgs e) => OnPointerWheel(this, e);
 
@@ -1700,7 +1700,7 @@ public class Visual : BaseObject
             OnPointerDrag(this, pde);
             if (!pde.Handled)
             {
-                OnMouseDrag(this, new DragEventArgs(e.X, e.Y, e.PointerInfo.dwKeyStates, DragState, e));
+                OnMouseDrag(this, new DragEventArgs(e.X, e.Y, (POINTER_MOD)e.PointerInfo.dwKeyStates, DragState, e));
             }
         }
     }
@@ -1788,28 +1788,28 @@ public class Visual : BaseObject
     protected virtual void OnMeasured(object? sender, EventArgs e) => Measured?.Invoke(sender, e);
     protected virtual void OnArranged(object? sender, EventArgs e) => Arranged?.Invoke(sender, e);
     protected virtual void OnRendered(object? sender, EventArgs e) => Rendered?.Invoke(sender, e);
-    protected virtual void OnMouseOverChanged(object sender, ValueEventArgs<bool> e) => MouseOverChanged?.Invoke(sender, e);
-    protected virtual void OnFocusedChanged(object sender, ValueEventArgs<bool> e) => FocusedChanged?.Invoke(sender, e);
-    protected virtual void OnMouseMove(object sender, MouseEventArgs e) => MouseMove?.Invoke(sender, e);
-    protected virtual void OnMouseLeave(object sender, MouseEventArgs e) => MouseLeave?.Invoke(sender, e);
-    protected virtual void OnMouseEnter(object sender, MouseEventArgs e) => MouseEnter?.Invoke(sender, e);
-    protected virtual void OnMouseHover(object sender, MouseEventArgs e) => MouseHover?.Invoke(sender, e);
-    protected virtual void OnMouseDrag(object sender, DragEventArgs e) => MouseDrag?.Invoke(sender, e);
-    protected virtual void OnMouseWheel(object sender, MouseWheelEventArgs e) => MouseWheel?.Invoke(sender, e);
-    protected virtual void OnMouseButtonDown(object sender, MouseButtonEventArgs e) => MouseButtonDown?.Invoke(sender, e);
-    protected virtual void OnMouseButtonUp(object sender, MouseButtonEventArgs e) => MouseButtonUp?.Invoke(sender, e);
-    protected virtual void OnMouseButtonDoubleClick(object sender, MouseButtonEventArgs e) => MouseButtonDoubleClick?.Invoke(sender, e);
+    protected virtual void OnMouseOverChanged(object? sender, ValueEventArgs<bool> e) => MouseOverChanged?.Invoke(sender, e);
+    protected virtual void OnFocusedChanged(object? sender, ValueEventArgs<bool> e) => FocusedChanged?.Invoke(sender, e);
+    protected virtual void OnMouseMove(object? sender, MouseEventArgs e) => MouseMove?.Invoke(sender, e);
+    protected virtual void OnMouseLeave(object? sender, MouseEventArgs e) => MouseLeave?.Invoke(sender, e);
+    protected virtual void OnMouseEnter(object? sender, MouseEventArgs e) => MouseEnter?.Invoke(sender, e);
+    protected virtual void OnMouseHover(object? sender, MouseEventArgs e) => MouseHover?.Invoke(sender, e);
+    protected virtual void OnMouseDrag(object? sender, DragEventArgs e) => MouseDrag?.Invoke(sender, e);
+    protected virtual void OnMouseWheel(object? sender, MouseWheelEventArgs e) => MouseWheel?.Invoke(sender, e);
+    protected virtual void OnMouseButtonDown(object? sender, MouseButtonEventArgs e) => MouseButtonDown?.Invoke(sender, e);
+    protected virtual void OnMouseButtonUp(object? sender, MouseButtonEventArgs e) => MouseButtonUp?.Invoke(sender, e);
+    protected virtual void OnMouseButtonDoubleClick(object? sender, MouseButtonEventArgs e) => MouseButtonDoubleClick?.Invoke(sender, e);
     protected virtual void CaptureMouse() => Window?.CaptureMouse(this);
 
-    protected virtual void OnPointerDrag(object sender, PointerDragEventArgs e) => PointerDrag?.Invoke(sender, e);
-    protected virtual void OnPointerWheel(object sender, PointerWheelEventArgs e) => PointerWheel?.Invoke(sender, e);
-    protected virtual void OnPointerLeave(object sender, PointerLeaveEventArgs e) => PointerLeave?.Invoke(sender, e);
-    protected virtual void OnPointerEnter(object sender, PointerEnterEventArgs e) => PointerEnter?.Invoke(sender, e);
-    protected virtual void OnPointerUpdate(object sender, PointerPositionEventArgs e) => PointerUpdate?.Invoke(sender, e);
-    protected virtual void OnPointerContactChangedEvent(object sender, PointerContactChangedEventArgs e) => PointerContactChanged?.Invoke(sender, e);
+    protected virtual void OnPointerDrag(object? sender, PointerDragEventArgs e) => PointerDrag?.Invoke(sender, e);
+    protected virtual void OnPointerWheel(object? sender, PointerWheelEventArgs e) => PointerWheel?.Invoke(sender, e);
+    protected virtual void OnPointerLeave(object? sender, PointerLeaveEventArgs e) => PointerLeave?.Invoke(sender, e);
+    protected virtual void OnPointerEnter(object? sender, PointerEnterEventArgs e) => PointerEnter?.Invoke(sender, e);
+    protected virtual void OnPointerUpdate(object? sender, PointerPositionEventArgs e) => PointerUpdate?.Invoke(sender, e);
+    protected virtual void OnPointerContactChangedEvent(object? sender, PointerContactChangedEventArgs e) => PointerContactChanged?.Invoke(sender, e);
 
     protected virtual ContainerVisual? CreateCompositionVisual() => Compositor?.CreateSpriteVisual();
-    protected virtual BaseObjectCollection<Visual> CreateChildren() => new();
+    protected virtual BaseObjectCollection<Visual> CreateChildren() => [];
 
     protected override bool AreValuesEqual(object? value1, object? value2)
     {
@@ -1878,8 +1878,8 @@ public class Visual : BaseObject
     protected virtual void OnAttachedToParent(object? sender, EventArgs e) => AttachedToParent?.Invoke(sender, e);
     protected virtual void OnAttachedToComposition(object? sender, EventArgs e) => AttachedToComposition?.Invoke(sender, e);
 
-    protected virtual void OnChildAdded(object sender, ValueEventArgs<Visual> e) => ChildAdded?.Invoke(sender, e);
-    protected virtual void OnChildRemoved(object sender, ValueEventArgs<Visual> e) => ChildRemoved?.Invoke(sender, e);
+    protected virtual void OnChildAdded(object? sender, ValueEventArgs<Visual> e) => ChildAdded?.Invoke(sender, e);
+    protected virtual void OnChildRemoved(object? sender, ValueEventArgs<Visual> e) => ChildRemoved?.Invoke(sender, e);
 
     private void OnChildrenCollectionChanged(NotifyCollectionChangedEventArgs e)
     {
@@ -1888,6 +1888,9 @@ public class Visual : BaseObject
         {
             case NotifyCollectionChangedAction.Remove:
             case NotifyCollectionChangedAction.Replace:
+                if (e.OldItems == null)
+                    break;
+
                 foreach (var item in e.OldItems.OfType<Visual>())
                 {
                     if (item == null)
@@ -1915,6 +1918,9 @@ public class Visual : BaseObject
 
         void add()
         {
+            if (e.NewItems == null)
+                return;
+
             foreach (var item in e.NewItems.OfType<Visual>())
             {
                 if (item == null)
@@ -1942,7 +1948,7 @@ public class Visual : BaseObject
         {
             var children = Parent?.Children;
             if (children == null)
-                return Enumerable.Empty<Visual>();
+                return [];
 
             return children.Where(c => c != this && c.CompositionVisual != null).OrderBy(c => c.ZIndexOrDefault);
         }
@@ -2311,7 +2317,7 @@ public class Visual : BaseObject
 
             // note the Window (root parent of all) implicitely clips
             var parent = Parent;
-            if (parent != null && parent.ClipChildren)
+            if (parent != null && parent.CompositionVisual != null && parent.ClipChildren)
             {
                 var newWidth = cv.Size.X;
                 var newHeight = cv.Size.Y;
@@ -2351,11 +2357,11 @@ public class Visual : BaseObject
 
                 if (deltax != 0 || deltay != 0)
                 {
-                    clip = Compositor.CreateInsetClip(0, 0, deltax, deltay);
+                    clip = Compositor?.CreateInsetClip(0, 0, deltax, deltay);
                 }
             }
 
-            cv.Clip = clip ?? Compositor.CreateInsetClip(); // 0,0,0,0
+            cv.Clip = clip ?? Compositor?.CreateInsetClip(); // 0,0,0,0
         }
 
         if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.ZIndex))
@@ -2542,7 +2548,7 @@ public class Visual : BaseObject
         return DragState;
     }
 
-    protected virtual DragState CancelDragMove(EventArgs e)
+    protected virtual DragState? CancelDragMove(EventArgs e)
     {
         var state = DragState;
         Window.ReleaseMouseCapture();

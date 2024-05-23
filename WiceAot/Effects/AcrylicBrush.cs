@@ -9,22 +9,30 @@ public static class AcrylicBrush
 
     private static IGraphicsEffectSource CombineNoiseWithTintEffectLegacy(IGraphicsEffectSource blurredSource, IGraphicsEffectSource tintColorEffect)
     {
-        var saturationEffect = new SaturationEffect();
-        saturationEffect.Saturation = _saturation;
-        saturationEffect.Source = blurredSource;
+        var saturationEffect = new SaturationEffect
+        {
+            Saturation = _saturation,
+            Source = blurredSource
+        };
 
-        var exclusionColorEffect = new FloodEffect();
-        exclusionColorEffect.Color = _exclusionColor;
+        var exclusionColorEffect = new FloodEffect
+        {
+            Color = _exclusionColor
+        };
 
-        var blendEffectInner = new BlendEffect();
-        blendEffectInner.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_EXCLUSION;
-        blendEffectInner.Foreground = exclusionColorEffect;
-        blendEffectInner.Background = saturationEffect;
+        var blendEffectInner = new BlendEffect
+        {
+            Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_EXCLUSION,
+            Foreground = exclusionColorEffect,
+            Background = saturationEffect
+        };
 
-        var compositeEffect = new CompositeStepEffect();
-        compositeEffect.Mode = D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER;
-        compositeEffect.Destination = blendEffectInner;
-        compositeEffect.Source = tintColorEffect;
+        var compositeEffect = new CompositeStepEffect
+        {
+            Mode = D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER,
+            Destination = blendEffectInner,
+            Source = tintColorEffect
+        };
 
         return compositeEffect;
     }
@@ -38,24 +46,30 @@ public static class AcrylicBrush
     {
         animatedProperties.Add("LuminosityColor.Color");
 
-        var luminosityColorEffect = new FloodEffect();
-        luminosityColorEffect.Name = "LuminosityColor";
-        luminosityColorEffect.Color = initialLuminosityColor;
+        var luminosityColorEffect = new FloodEffect
+        {
+            Name = "LuminosityColor",
+            Color = initialLuminosityColor
+        };
 
         // same as in https://github.com/microsoft/microsoft-ui-xaml/blob/master/dev/Materials/Acrylic/AcrylicBrush.cpp
         // seems there's some bugs around here...
 
-        var luminosityBlendEffect = new BlendEffect();
-        //luminosityBlendEffect.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_LUMINOSITY;
-        luminosityBlendEffect.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_COLOR;
-        luminosityBlendEffect.Background = blurredSource;
-        luminosityBlendEffect.Foreground = luminosityColorEffect;
+        var luminosityBlendEffect = new BlendEffect
+        {
+            //luminosityBlendEffect.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_LUMINOSITY;
+            Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_COLOR,
+            Background = blurredSource,
+            Foreground = luminosityColorEffect
+        };
 
-        var colorBlendEffect = new BlendEffect();
-        colorBlendEffect.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_LUMINOSITY;
-        //colorBlendEffect.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_COLOR;
-        colorBlendEffect.Background = luminosityBlendEffect;
-        colorBlendEffect.Foreground = tintColorEffect;
+        var colorBlendEffect = new BlendEffect
+        {
+            Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_LUMINOSITY,
+            //colorBlendEffect.Mode = D2D1_BLEND_MODE.D2D1_BLEND_MODE_COLOR;
+            Background = luminosityBlendEffect,
+            Foreground = tintColorEffect
+        };
 
         return colorBlendEffect;
     }
@@ -150,8 +164,7 @@ public static class AcrylicBrush
 
     private static CompositionSurfaceBrush CreateNoiseBrush(CompositionGraphicsDevice device)
     {
-        if (device == null)
-            throw new ArgumentNullException(nameof(device));
+        ArgumentNullException.ThrowIfNull(device);
 
         const string name = "NoiseAsset_256X256.png";
 
@@ -183,8 +196,7 @@ public static class AcrylicBrush
         bool useLegacyEffect = false,
         bool useWindowsAcrylic = true)
     {
-        if (device == null)
-            throw new ArgumentNullException(nameof(device));
+        ArgumentNullException.ThrowIfNull(device);
 
         var effectiveTintColor = GetEffectiveTintColor(tintColor, tintOpacity, tintLuminosityOpacity);
         var luminosityColor = GetEffectiveLuminosityColor(tintColor, tintOpacity, tintLuminosityOpacity);
@@ -230,8 +242,7 @@ public static class AcrylicBrush
         bool useWindowsAcrylic = true
         )
     {
-        if (compositor == null)
-            throw new ArgumentNullException(nameof(compositor));
+        ArgumentNullException.ThrowIfNull(compositor);
 
         var effectFactory = CreateAcrylicBrushCompositionEffectFactory(compositor, initialTintColor, initialLuminosityColor, useLegacyEffect, useWindowsAcrylic);
         var acrylicBrush = effectFactory.CreateBrush();
@@ -259,15 +270,18 @@ public static class AcrylicBrush
                 bool useWindowsAcrylic = true
                 )
     {
-        if (compositor == null)
-            throw new ArgumentNullException(nameof(compositor));
+        ArgumentNullException.ThrowIfNull(compositor);
 
-        var tintColorEffect = new FloodEffect();
-        tintColorEffect.Name = "TintColor";
-        tintColorEffect.Color = initialTintColor;
+        var tintColorEffect = new FloodEffect
+        {
+            Name = "TintColor",
+            Color = initialTintColor
+        };
 
-        var animatedProperties = new List<string>();
-        animatedProperties.Add("TintColor.Color");
+        var animatedProperties = new List<string>
+        {
+            "TintColor.Color"
+        };
 
         var backdropEffectSourceParameter = new CompositionEffectSourceParameter("Backdrop");
 
@@ -278,11 +292,13 @@ public static class AcrylicBrush
         }
         else
         {
-            var gaussianBlurEffect = new GaussianBlurEffect();
-            gaussianBlurEffect.Name = "Blur";
-            gaussianBlurEffect.BorderMode = D2D1_BORDER_MODE.D2D1_BORDER_MODE_HARD;
-            gaussianBlurEffect.StandardDeviation = _blurRadius;
-            gaussianBlurEffect.Source = backdropEffectSourceParameter.ComCast<IGraphicsEffectSource>();
+            var gaussianBlurEffect = new GaussianBlurEffect
+            {
+                Name = "Blur",
+                BorderMode = D2D1_BORDER_MODE.D2D1_BORDER_MODE_HARD,
+                StandardDeviation = _blurRadius,
+                Source = backdropEffectSourceParameter.ComCast<IGraphicsEffectSource>()
+            };
             blurredSource = gaussianBlurEffect;
         }
 
@@ -296,20 +312,26 @@ public static class AcrylicBrush
             CombineNoiseWithTintEffectLuminosity(blurredSource, tintColorEffect, initialLuminosityColor, animatedProperties);
 
         // this is to make sure noise covers all surface
-        var noiseBorderEffect = new BorderEffect();
-        noiseBorderEffect.EdgeModeX = D2D1_BORDER_EDGE_MODE.D2D1_BORDER_EDGE_MODE_WRAP;
-        noiseBorderEffect.EdgeModeY = D2D1_BORDER_EDGE_MODE.D2D1_BORDER_EDGE_MODE_WRAP;
-        noiseBorderEffect.Source = new CompositionEffectSourceParameter("Noise").ComCast<IGraphicsEffectSource>();
+        var noiseBorderEffect = new BorderEffect
+        {
+            EdgeModeX = D2D1_BORDER_EDGE_MODE.D2D1_BORDER_EDGE_MODE_WRAP,
+            EdgeModeY = D2D1_BORDER_EDGE_MODE.D2D1_BORDER_EDGE_MODE_WRAP,
+            Source = new CompositionEffectSourceParameter("Noise").ComCast<IGraphicsEffectSource>()
+        };
 
-        var noiseOpacityEffect = new OpacityEffect();
-        noiseOpacityEffect.Name = "NoiseOpacity";
-        noiseOpacityEffect.Opacity = _noiseOpacity;
-        noiseOpacityEffect.Source = noiseBorderEffect;
+        var noiseOpacityEffect = new OpacityEffect
+        {
+            Name = "NoiseOpacity",
+            Opacity = _noiseOpacity,
+            Source = noiseBorderEffect
+        };
 
-        var blendEffectOuter = new CompositeStepEffect();
-        blendEffectOuter.Mode = D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER;
-        blendEffectOuter.Destination = tintOutput;
-        blendEffectOuter.Source = noiseOpacityEffect;
+        var blendEffectOuter = new CompositeStepEffect
+        {
+            Mode = D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER,
+            Destination = tintOutput,
+            Source = noiseOpacityEffect
+        };
 
         return compositor.CreateEffectFactory(blendEffectOuter.GetIGraphicsEffect(), animatedProperties);
     }

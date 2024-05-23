@@ -8,13 +8,14 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<PublishAot>true</PublishAot>
+		<IsAotCompatible>true</IsAotCompatible>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<Using Include="DirectN" />
-		<Using Include="DirectNAot.Extensions" />
-		<Using Include="DirectNAot.Extensions.Com" />
-		<Using Include="DirectNAot.Extensions.Utilities" />
+		<Using Include="DirectN.Extensions" />
+		<Using Include="DirectN.Extensions.Com" />
+		<Using Include="DirectN.Extensions.Utilities" />
 		<Using Include="Microsoft.Win32" />
 		<Using Include="System.ComponentModel" />
 		<Using Include="System.Collections" />
@@ -28,13 +29,15 @@
 		<Using Include="System.Reflection" />
 		<Using Include="System.Runtime.CompilerServices" />
 		<Using Include="System.Runtime.InteropServices" />
-		<Using Include="System.Runtime.InteropServices.Marshalling" />
 		<Using Include="System.Runtime.Serialization" />
 		<Using Include="System.Runtime.Versioning" />
 		<Using Include="System.Text" />
+		<Using Include="Wice.Animation" />
 		<Using Include="Wice.Effects" />
+		<Using Include="Wice.Interop" />
 		<Using Include="Wice.Utilities" />
 		<Using Include="Windows.Foundation" />
+		<Using Include="Windows.Graphics" />
 		<Using Include="Windows.Graphics.DirectX" />
 		<Using Include="Windows.Graphics.Effects" />
 		<Using Include="Windows.UI.Composition" />
@@ -47,11 +50,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="DirectNAot">
-	    <HintPath>External\DirectNAot.dll</HintPath>
+	  <Reference Include="DirectN">
+	    <HintPath>External\DirectN.dll</HintPath>
 	  </Reference>
-	  <Reference Include="DirectNAot.Extensions">
-	    <HintPath>External\DirectNAot.Extensions.dll</HintPath>
+	  <Reference Include="DirectN.Extensions">
+	    <HintPath>External\DirectN.Extensions.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 

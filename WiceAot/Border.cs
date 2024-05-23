@@ -3,21 +3,21 @@
 // note for border (thickness) rendering, it can be better (try the magnify tool) to use two composited borders than a border with BorderThickness not 0
 public class Border : RenderVisual, IOneChildParent
 {
-    public static VisualProperty BorderBrushProperty = VisualProperty.Add<Brush>(typeof(Border), nameof(BorderBrush), VisualPropertyInvalidateModes.Render);
-    public static VisualProperty BorderThicknessProperty = VisualProperty.Add(typeof(Border), nameof(BorderThickness), VisualPropertyInvalidateModes.Measure, 0f);
-    public static VisualProperty CornerRadiusProperty = VisualProperty.Add(typeof(RoundedRectangle), nameof(CornerRadius), VisualPropertyInvalidateModes.Render, new Vector2());
+    public static VisualProperty BorderBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(Border), nameof(BorderBrush), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty BorderThicknessProperty { get; } = VisualProperty.Add(typeof(Border), nameof(BorderThickness), VisualPropertyInvalidateModes.Measure, 0f);
+    public static VisualProperty CornerRadiusProperty { get; } = VisualProperty.Add(typeof(RoundedRectangle), nameof(CornerRadius), VisualPropertyInvalidateModes.Render, new Vector2());
 
     protected override bool FallbackToTransparentBackground => true;
 
     // note this is quite different than WPF's one, it's the composition one
     [Category(CategoryRender)]
-    public Vector2 CornerRadius { get => (Vector2)GetPropertyValue(CornerRadiusProperty); set => SetPropertyValue(CornerRadiusProperty, value); }
+    public Vector2 CornerRadius { get => (Vector2)GetPropertyValue(CornerRadiusProperty)!; set => SetPropertyValue(CornerRadiusProperty, value); }
 
     [Category(CategoryRender)]
-    public Brush BorderBrush { get => (Brush)GetPropertyValue(BorderBrushProperty); set => SetPropertyValue(BorderBrushProperty, value); }
+    public Brush BorderBrush { get => (Brush)GetPropertyValue(BorderBrushProperty)!; set => SetPropertyValue(BorderBrushProperty, value); }
 
     [Category(CategoryRender)]
-    public float BorderThickness { get => (float)GetPropertyValue(BorderThicknessProperty); set => SetPropertyValue(BorderThicknessProperty, value); }
+    public float BorderThickness { get => (float)GetPropertyValue(BorderThicknessProperty)!; set => SetPropertyValue(BorderThicknessProperty, value); }
 
     [Browsable(false)]
     public Visual Child
@@ -37,7 +37,7 @@ public class Border : RenderVisual, IOneChildParent
         }
     }
 
-    protected override BaseObjectCollection<Visual> CreateChildren() => new BaseObjectCollection<Visual>(1);
+    protected override BaseObjectCollection<Visual> CreateChildren() => new(1);
 
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
@@ -155,7 +155,7 @@ public class Border : RenderVisual, IOneChildParent
                 // while rendering is done by D2D and both do not 100% agree on what's a radius
                 var geometry = Compositor.CreateRoundedRectangleGeometry();
                 geometry.CornerRadius = radius;
-                geometry.Size = Wice.Utilities.Extensions.ToVector2(RenderSize);
+                geometry.Size = RenderSize.ToVector2();
                 CompositionVisual.Clip = Compositor.CreateGeometricClip(geometry);
             }
         }
@@ -167,17 +167,19 @@ public class Border : RenderVisual, IOneChildParent
         if (radius.IsNotZero())
         {
             // draw rounded background
-            context.DeviceContext.Clear(_D3DCOLORVALUE.Transparent);
+            context.DeviceContext.Clear(D3DCOLORVALUE.Transparent);
             var bg = BackgroundColor;
             if (bg.HasValue)
             {
                 var borderThickness = BorderThickness.ToZero();
                 var rc = new D2D_RECT_F(RenderSize);
                 rc = rc.Deflate(borderThickness / 2);
-                var rr = new D2D1_ROUNDED_RECT();
-                rr.rect = rc;
-                rr.radiusX = radius.X.ToZero();
-                rr.radiusY = radius.Y.ToZero();
+                var rr = new D2D1_ROUNDED_RECT
+                {
+                    rect = rc,
+                    radiusX = radius.X.ToZero(),
+                    radiusY = radius.Y.ToZero()
+                };
                 context.DeviceContext.Object.FillRoundedRectangle(ref rr, context.CreateSolidColorBrush(bg.Value).Object);
             }
             return;
@@ -185,7 +187,7 @@ public class Border : RenderVisual, IOneChildParent
         base.RenderBackgroundCore(context);
     }
 
-    protected override void RenderD2DSurface(SurfaceCreationOptions creationOptions = null, tagRECT? rect = null)
+    protected override void RenderD2DSurface(SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
     {
         // using D2D cancels Windows.UI.Composition animations, so avoid when possible...
         // note however that this means we currently don't support animations on borders with cornerradius or borderthickness set
@@ -215,10 +217,12 @@ public class Border : RenderVisual, IOneChildParent
                 var radius = CornerRadius;
                 if (radius.IsNotZero())
                 {
-                    var rr = new D2D1_ROUNDED_RECT();
-                    rr.rect = rc;
-                    rr.radiusX = radius.X.ToZero();
-                    rr.radiusY = radius.Y.ToZero();
+                    var rr = new D2D1_ROUNDED_RECT
+                    {
+                        rect = rc,
+                        radiusX = radius.X.ToZero(),
+                        radiusY = radius.Y.ToZero()
+                    };
                     context.DeviceContext.Object.DrawRoundedRectangle(ref rr, brush.Object, borderThickness, null);
                 }
                 else

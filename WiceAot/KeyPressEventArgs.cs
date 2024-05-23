@@ -11,7 +11,7 @@ public class KeyPressEventArgs : HandledEventArgs
         Characters = characters;
     }
 
-    internal KeyPressEventArgs(int character)
+    internal KeyPressEventArgs(uint character)
     {
         WithShift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
         WithControl = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
@@ -30,11 +30,11 @@ public class KeyPressEventArgs : HandledEventArgs
         }
         else
         {
-            Characters = new[] { (char)character };
+            Characters = [(char)character];
         }
     }
 
-    public int UTF32Character { get; }
+    public uint UTF32Character { get; }
     public char UTF16Character => Characters[0];
     public char[] Characters { get; }
     public bool WithShift { get; }

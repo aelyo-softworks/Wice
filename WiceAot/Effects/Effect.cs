@@ -4,81 +4,45 @@
 // https://github.com/microsoft/CsWinRT/issues/302
 // https://github.com/microsoft/CsWinRT/issues/799
 // etc.
-public abstract class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1Interop, IGraphicsEffectSource
+[System.Runtime.InteropServices.Marshalling.GeneratedComClass]
+public abstract partial class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1Interop, IGraphicsEffectSource, Interop.IInspectable
 {
-    private static readonly ConcurrentDictionary<Type, List<PropDef>> _properties = new ConcurrentDictionary<Type, List<PropDef>>();
-    private readonly List<IGraphicsEffectSource> _sources;
-    private readonly Lazy<IPropertyValueStatics> _statics;
-    private string _name;
+    private static readonly ConcurrentDictionary<Type, List<PropDef>> _properties = new();
+    private readonly List<IGraphicsEffectSource?> _sources;
+    private readonly Lazy<IComObject<IPropertyValueStatics>> _statics;
+    private string? _name;
 
-    protected Effect(int sourcesCount = 0)
+    protected Effect(uint sourcesCount = 0)
     {
-        if (sourcesCount < 0)
-            throw new ArgumentOutOfRangeException(nameof(sourcesCount));
-
         MaximumSourcesCount = sourcesCount;
-        _sources = new List<IGraphicsEffectSource>();
-        _statics = new Lazy<IPropertyValueStatics>(() => WinRTUtilities.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue"));
+        _sources = [];
+        _statics = new Lazy<IComObject<IPropertyValueStatics>>(() => ComObject.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue")!);
     }
 
-    public int MaximumSourcesCount { get; }
+    public uint MaximumSourcesCount { get; }
     public override string Name { get => _name ?? string.Empty; set => _name = value; } // *must* not be null for IGraphicsEffectD2D1Interop
     public virtual bool Cached { get; set; }
     public virtual D2D1_BUFFER_PRECISION Precision { get; set; }
-    public IList<IGraphicsEffectSource> Sources => _sources;
+    public IList<IGraphicsEffectSource?> Sources => _sources;
 
-#if NET
-    HRESULT IInspectable.GetIids(out int iidCount, out IntPtr iids)
+    HRESULT Interop.IInspectable.GetIids(out uint iidCount, out nint iids)
     {
         iidCount = 0;
-        iids = IntPtr.Zero;
-        return HRESULTS.S_OK;
+        iids = 0;
+        return Constants.S_OK;
     }
 
-    HRESULT IInspectable.GetRuntimeClassName(out string className)
+    HRESULT Interop.IInspectable.GetRuntimeClassName(out HSTRING className)
     {
-        className = null;
-        return HRESULTS.S_OK;
+        className = new HSTRING();
+        return Constants.S_OK;
     }
 
-    HRESULT IInspectable.GetTrustLevel(out TrustLevel trustLevel)
-    {
-        trustLevel = TrustLevel.FullTrust;
-        return HRESULTS.S_OK;
-    }
-
-    HRESULT IGraphicsEffect.GetIids(out int iidCount, out IntPtr iids)
-    {
-        iidCount = 0;
-        iids = IntPtr.Zero;
-        return HRESULTS.S_OK;
-    }
-
-    HRESULT IGraphicsEffect.GetRuntimeClassName(out string className)
-    {
-        className = null;
-        return HRESULTS.S_OK;
-    }
-
-    HRESULT IGraphicsEffect.GetTrustLevel(out TrustLevel trustLevel)
+    HRESULT Interop.IInspectable.GetTrustLevel(out TrustLevel trustLevel)
     {
         trustLevel = TrustLevel.FullTrust;
-        return HRESULTS.S_OK;
+        return Constants.S_OK;
     }
-
-    HRESULT IGraphicsEffect.get_Name(out string name)
-    {
-        name = Name;
-        return HRESULTS.S_OK;
-    }
-
-    HRESULT IGraphicsEffect.put_Name(string name)
-    {
-        Name = name;
-        return HRESULTS.S_OK;
-    }
-
-#endif
 
     public Guid Clsid
     {
@@ -92,18 +56,13 @@ public abstract class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1I
         }
     }
 
-    public Windows.Graphics.Effects.IGraphicsEffect GetIGraphicsEffect()
+    public IGraphicsEffect GetIGraphicsEffect()
     {
-#if NET
-        var unk = Marshal.GetIUnknownForObject(this);
-        return WinRT.MarshalInspectable<Windows.Graphics.Effects.IGraphicsEffect>.FromAbi(unk);
-
-#else
-        return this;
-#endif
+        ComWrappers.TryGetComInstance(this, out var unk);
+        return WinRT.MarshalInspectable<IGraphicsEffect>.FromAbi(unk);
     }
 
-    protected virtual IGraphicsEffectSource GetSource(int index)
+    protected virtual IGraphicsEffectSource? GetSource(int index)
     {
         if (index >= MaximumSourcesCount)
             throw new ArgumentOutOfRangeException(nameof(index));
@@ -134,117 +93,118 @@ public abstract class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1I
         }
     }
 
-    private class PropDef
+    private class PropDef(PropertyInfo property, int index, GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
     {
-        public PropertyInfo Property;
-        public int Index;
-        public GRAPHICS_EFFECT_PROPERTY_MAPPING Mapping;
+        public PropertyInfo Property => property;
+        public int Index => index;
+        public GRAPHICS_EFFECT_PROPERTY_MAPPING Mapping => mapping;
 
         public override string ToString() => "#" + Index + " " + Property?.Name;
 
-        public HRESULT GetPropertyValue(Effect effect, out IntPtr ptr)
+        public HRESULT GetPropertyValue(Effect effect, out nint ptr)
         {
             var statics = effect._statics.Value;
             var value = Property.GetValue(effect);
             if (value == null || Convert.IsDBNull(value))
-                return statics.CreateEmpty(out ptr);
+                return statics.Object.CreateEmpty(out ptr);
 
             // enums are passed as UInt32
             var type = value.GetType();
             if (type.IsEnum)
-                return statics.CreateUInt32((uint)(int)value, out ptr);
+                return statics.Object.CreateUInt32((uint)(int)value, out ptr);
 
             var tc = Type.GetTypeCode(type);
             switch (tc)
             {
                 case TypeCode.Boolean:
-                    return statics.CreateBoolean((bool)value, out ptr);
+                    return statics.Object.CreateBoolean((bool)value, out ptr);
 
                 case TypeCode.Byte:
-                    return statics.CreateUInt8((byte)value, out ptr);
+                    return statics.Object.CreateUInt8((byte)value, out ptr);
 
                 case TypeCode.Char:
-                    return statics.CreateChar16((char)value, out ptr);
+                    return statics.Object.CreateChar16((char)value, out ptr);
 
                 case TypeCode.DateTime:
-                    return statics.CreateDateTime((DateTime)value, out ptr);
+                    return statics.Object.CreateDateTime((DateTime)value, out ptr);
 
                 case TypeCode.Double:
-                    return statics.CreateDouble((double)value, out ptr);
+                    return statics.Object.CreateDouble((double)value, out ptr);
 
                 case TypeCode.Empty:
-                    return statics.CreateEmpty(out ptr);
+                    return statics.Object.CreateEmpty(out ptr);
 
                 case TypeCode.Int16:
-                    return statics.CreateInt16((short)value, out ptr);
+                    return statics.Object.CreateInt16((short)value, out ptr);
 
                 case TypeCode.Int32:
-                    return statics.CreateInt32((int)value, out ptr);
+                    return statics.Object.CreateInt32((int)value, out ptr);
 
                 case TypeCode.Int64:
-                    return statics.CreateInt64((long)value, out ptr);
+                    return statics.Object.CreateInt64((long)value, out ptr);
 
                 case TypeCode.SByte:
-                    return statics.CreateUInt8((byte)(sbyte)value, out ptr);
+                    return statics.Object.CreateUInt8((byte)(sbyte)value, out ptr);
 
                 case TypeCode.Single:
-                    return statics.CreateSingle((float)value, out ptr);
+                    return statics.Object.CreateSingle((float)value, out ptr);
 
                 case TypeCode.String:
-                    return statics.CreateString((string)value, out ptr);
+                    throw new NotImplementedException();
+                //return statics.Object.CreateString((string)value, out ptr);
 
                 case TypeCode.UInt16:
-                    return statics.CreateUInt16((ushort)value, out ptr);
+                    return statics.Object.CreateUInt16((ushort)value, out ptr);
 
                 case TypeCode.UInt32:
-                    return statics.CreateUInt32((uint)value, out ptr);
+                    return statics.Object.CreateUInt32((uint)value, out ptr);
 
                 case TypeCode.UInt64:
-                    return statics.CreateUInt64((ulong)value, out ptr);
+                    return statics.Object.CreateUInt64((ulong)value, out ptr);
 
                 default:
                     if (type == typeof(Guid))
-                        return statics.CreateGuid((Guid)value, out ptr);
+                        return statics.Object.CreateGuid((Guid)value, out ptr);
 
                     if (type == typeof(Point))
-                        return statics.CreatePoint((Point)value, out ptr);
+                        return statics.Object.CreatePoint((Point)value, out ptr);
 
                     if (type == typeof(Size))
-                        return statics.CreateSize((Size)value, out ptr);
+                        return statics.Object.CreateSize((Size)value, out ptr);
 
                     if (type == typeof(Rect))
-                        return statics.CreateRect((Rect)value, out ptr);
+                        return statics.Object.CreateRect((Rect)value, out ptr);
 
                     if (type == typeof(TimeSpan))
-                        return statics.CreateTimeSpan((TimeSpan)value, out ptr);
+                        return statics.Object.CreateTimeSpan((TimeSpan)value, out ptr);
 
                     if (type == typeof(D2D_VECTOR_4F))
-                        return statics.CreateSingleArray(((D2D_VECTOR_4F)value).ToArray(), out ptr);
+                        return statics.Object.CreateSingleArray(((D2D_VECTOR_4F)value).ToArray(), out ptr);
 
                     if (type == typeof(D2D_VECTOR_2F))
-                        return statics.CreateSingleArray(((D2D_VECTOR_2F)value).ToArray(), out ptr);
+                        return statics.Object.CreateSingleArray(((D2D_VECTOR_2F)value).ToArray(), out ptr);
 
-                    if (type == typeof(_D3DCOLORVALUE))
-                        return statics.CreateSingleArray(((_D3DCOLORVALUE)value).ToArray(), out ptr);
+                    if (type == typeof(D3DCOLORVALUE))
+                        return statics.Object.CreateSingleArray(((D3DCOLORVALUE)value).ToArray(), out ptr);
 
                     if (type == typeof(D2D_MATRIX_4X4_F))
-                        return statics.CreateSingleArray(((D2D_MATRIX_4X4_F)value).ToArray(), out ptr);
+                        return statics.Object.CreateSingleArray(((D2D_MATRIX_4X4_F)value).ToArray(), out ptr);
 
                     if (type == typeof(D2D_MATRIX_5X4_F))
-                        return statics.CreateSingleArray(((D2D_MATRIX_5X4_F)value).ToArray(), out ptr);
+                        return statics.Object.CreateSingleArray(((D2D_MATRIX_5X4_F)value).ToArray(), out ptr);
 
                     if (value is float[] floats)
-                        return statics.CreateSingleArray(floats, out ptr);
+                        return statics.Object.CreateSingleArray(floats, out ptr);
 
-                    if (value is IInspectable inspectable)
-                        return statics.CreateInspectable(inspectable, out ptr);
+                    if (value is Interop.IInspectable inspectable)
+                        return statics.Object.CreateInspectable(inspectable, out ptr);
 
                     break;
             }
 
-            ptr = IntPtr.Zero;
+            ptr = 0;
             Application.Trace(this + " " + this + " E_NOTIMPL");
-            return HRESULTS.E_NOTIMPL;
+            return Constants.E_NOTIMPL;
         }
     }
 
@@ -252,17 +212,14 @@ public abstract class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1I
     {
         if (!_properties.TryGetValue(type, out var list))
         {
-            list = new List<PropDef>();
+            list = [];
             foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.CanRead))
             {
                 var effectProp = BaseObjectProperty.GetProperties(type).OfType<EffectProperty>().FirstOrDefault(p => p.Name == prop.Name);
                 if (effectProp == null)
                     continue;
 
-                var def = new PropDef();
-                def.Property = prop;
-                def.Index = effectProp.Index;
-                def.Mapping = effectProp.Mapping;
+                var def = new PropDef(prop, effectProp.Index, effectProp.Mapping);
                 list.Add(def);
             }
             list = _properties.AddOrUpdate(type, list, (k, o) => o);
@@ -273,26 +230,27 @@ public abstract class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1I
     HRESULT IGraphicsEffectD2D1Interop.GetEffectId(out Guid id)
     {
         id = Clsid;
-        return HRESULTS.S_OK;
+        return Constants.S_OK;
     }
 
-    HRESULT IGraphicsEffectD2D1Interop.GetNamedPropertyMapping(string name, out uint index, out GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
+    HRESULT IGraphicsEffectD2D1Interop.GetNamedPropertyMapping(PWSTR name, out uint index, out GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
     {
         //Application.Trace(this + "name:" + name);
 
+        var n = name.ToString();
         var defs = GetPropDefs(GetType());
-        var def = defs.FirstOrDefault(p => p.Property.Name.EqualsIgnoreCase(name));
+        var def = defs.FirstOrDefault(p => p.Property.Name.EqualsIgnoreCase(n));
         if (def == null)
         {
             index = 0;
             mapping = 0;
             Application.Trace(this + " name:'" + name + "' E_INVALIDARG");
-            return HRESULTS.E_INVALIDARG;
+            return Constants.E_INVALIDARG;
         }
 
         index = (uint)def.Index;
         mapping = def.Mapping;
-        return HRESULTS.S_OK;
+        return Constants.S_OK;
     }
 
     HRESULT IGraphicsEffectD2D1Interop.GetPropertyCount(out uint count)
@@ -300,10 +258,10 @@ public abstract class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1I
         var defs = GetPropDefs(GetType());
         count = (uint)defs.Count;
         //Application.Trace(this + " count:" + count);
-        return HRESULTS.S_OK;
+        return Constants.S_OK;
     }
 
-    HRESULT IGraphicsEffectD2D1Interop.GetProperty(uint index, out IntPtr value)
+    HRESULT IGraphicsEffectD2D1Interop.GetProperty(uint index, out nint value)
     {
         try
         {
@@ -311,9 +269,9 @@ public abstract class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1I
             var defs = GetPropDefs(GetType());
             if (index >= defs.Count)
             {
-                value = IntPtr.Zero;
+                value = 0;
                 Application.Trace(this + " index:" + index + " E_BOUNDS");
-                return HRESULTS.E_BOUNDS;
+                return Constants.E_BOUNDS;
             }
 
             return defs[(int)index].GetPropertyValue(this, out value);
@@ -321,25 +279,40 @@ public abstract class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1I
         catch
         {
             Application.Trace(this + " index:" + index + " E_FAIL");
-            value = IntPtr.Zero;
-            return HRESULTS.E_FAIL;
+            value = 0;
+            return Constants.E_FAIL;
         }
     }
 
-    HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out /*IGraphicsEffectSource*/ IntPtr source)
+    HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out /*IGraphicsEffectSource*/ nint source)
     {
         //Application.Trace(this + " index:" + index);
         if (index >= MaximumSourcesCount || index >= _sources.Count)
         {
-            source = IntPtr.Zero;
+            source = 0;
             Application.Trace(this + " index:" + index + " E_BOUNDS");
-            return HRESULTS.E_BOUNDS;
+            return Constants.E_BOUNDS;
         }
 
         var src = _sources[(int)index];
 
-        source = Marshal.GetComInterfaceForObject(src, typeof(IGraphicsEffectSource));
-        return HRESULTS.S_OK;
+        if (!ComWrappers.TryGetComInstance(src, out var unk))
+        {
+            source = 0;
+            Application.Trace(this + " index:" + index + " E_FAIL");
+            return Constants.E_FAIL;
+        }
+
+        var iid = typeof(IGraphicsEffectSource).GUID;
+        Marshal.QueryInterface(unk, ref iid, out source);
+        if (source == 0)
+        {
+            source = 0;
+            Application.Trace(this + " index:" + index + " E_NOINTERFACE");
+            return Constants.E_NOINTERFACE;
+        }
+
+        return Constants.S_OK;
     }
 
     HRESULT IGraphicsEffectD2D1Interop.GetSourceCount(out uint count)
@@ -353,6 +326,6 @@ public abstract class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1I
             count = (uint)MaximumSourcesCount;
         }
         //Application.Trace(this + " count:" + count);
-        return HRESULTS.S_OK;
+        return Constants.S_OK;
     }
 }

@@ -59,7 +59,7 @@ public class Caret : Border
     [Category(CategoryLayout)]
     public D2D_POINT_2F Location
     {
-        get => new D2D_POINT_2F(Canvas.GetLeft(this), Canvas.GetTop(this));
+        get => new(Canvas.GetLeft(this), Canvas.GetTop(this));
         set { Canvas.SetLeft(this, value.x); Canvas.SetTop(this, value.y); DoWhenMeasured(ArrangeWithParent); }
     }
 
@@ -136,7 +136,7 @@ public class Caret : Border
 
     protected override void OnAttachedToParent(object sender, EventArgs e)
     {
-        if (!(Parent is Window))
+        if (Parent is not Wice.Window)
             throw new InvalidOperationException();
 
         Interlocked.Exchange(ref _blinkTimer, null)?.Dispose();
