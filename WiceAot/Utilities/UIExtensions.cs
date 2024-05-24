@@ -21,8 +21,7 @@ public static class UIExtensions
 
     public static void SetHyperLinkRange(this TextBox textBox, string text, Func<string, bool> onClick = null)
     {
-        if (textBox == null)
-            throw new ArgumentNullException(nameof(textBox));
+        ArgumentNullException.ThrowIfNull(textBox);
 
         ArgumentNullException.ThrowIfNull(text);
 
@@ -57,8 +56,10 @@ public static class UIExtensions
 
                 if (!handled)
                 {
-                    var psi = new ProcessStartInfo(text);
-                    psi.UseShellExecute = true;
+                    var psi = new ProcessStartInfo(text)
+                    {
+                        UseShellExecute = true
+                    };
                     Process.Start(psi);
                 }
             }

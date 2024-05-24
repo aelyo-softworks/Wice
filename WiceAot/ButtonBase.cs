@@ -57,7 +57,7 @@ public class ButtonBase : Border, IAccessKeyParent
         }
     }
 
-    protected override void OnKeyDown(object sender, KeyEventArgs e)
+    protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (!IsEnabled)
             return;
@@ -88,7 +88,7 @@ public class ButtonBase : Border, IAccessKeyParent
         Cursor = IsEnabled ? Cursor.Hand : null;
     }
 
-    protected virtual void OnClick(object sender, EventArgs e)
+    protected virtual void OnClick(object? sender, EventArgs e)
     {
         if (!IsEnabled)
             return;

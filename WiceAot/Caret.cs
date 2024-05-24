@@ -5,11 +5,11 @@ namespace Wice;
 public class Caret : Border
 {
 #if DEBUG
-    public static VisualProperty BlinkProperty = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);
+    public static VisualProperty BlinkProperty {get; } = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);
 #else
-    public static VisualProperty BlinkProperty = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);
+    public static VisualProperty BlinkProperty {get; } = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);
 #endif
-    public static VisualProperty IsShownProperty = VisualProperty.Add(typeof(Caret), nameof(IsShown), VisualPropertyInvalidateModes.Render, false);
+    public static VisualProperty IsShownProperty {get; } = VisualProperty.Add(typeof(Caret), nameof(IsShown), VisualPropertyInvalidateModes.Render, false);
 
     private WindowTimer _blinkTimer;
 
@@ -111,7 +111,7 @@ public class Caret : Border
         StartBlinking();
     }
 
-    protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions options = null)
+    protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
             return false;
@@ -134,7 +134,7 @@ public class Caret : Border
         return true;
     }
 
-    protected override void OnAttachedToParent(object sender, EventArgs e)
+    protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         if (Parent is not Wice.Window)
             throw new InvalidOperationException();
@@ -144,7 +144,7 @@ public class Caret : Border
         base.OnAttachedToParent(sender, e);
     }
 
-    protected override void OnDetachingFromParent(object sender, EventArgs e)
+    protected override void OnDetachingFromParent(object? sender, EventArgs e)
     {
         Interlocked.Exchange(ref _blinkTimer, null)?.Dispose();
         base.OnDetachingFromParent(sender, e);

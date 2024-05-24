@@ -323,7 +323,7 @@ public abstract partial class Effect : BaseObject, IGraphicsEffect, IGraphicsEff
         }
         else
         {
-            count = (uint)MaximumSourcesCount;
+            count = MaximumSourcesCount;
         }
         //Application.Trace(this + " count:" + count);
         return Constants.S_OK;

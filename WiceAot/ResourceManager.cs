@@ -364,7 +364,7 @@ public class ResourceManager
         return new ComObject<T>((T)layout);
     }
 
-    public GeometrySource2D GetToggleSwitchGeometrySource(float width, float height, float margin) => new GeometrySource2D("ToggleSwitch" + width + "\0" + height + "\0" + margin) { Geometry = Get(null, Domain.ToggleSwitchGeometry, width + "\0" + height + "\0" + margin, () => CreateToggleSwitchGeometry(width, height, margin)).Object };
+    public GeometrySource2D GetToggleSwitchGeometrySource(float width, float height, float margin) => new("ToggleSwitch" + width + "\0" + height + "\0" + margin) { Geometry = Get(null, Domain.ToggleSwitchGeometry, width + "\0" + height + "\0" + margin, () => CreateToggleSwitchGeometry(width, height, margin)).Object };
 
     //  margin is used as offset, so stroke can be fully seen
     public virtual IComObject<ID2D1PathGeometry1> GetToggleSwitchGeometry(float width, float height, float margin) => Get(null, Domain.ToggleSwitchGeometry, width + "\0" + height + "\0" + margin, () => CreateToggleSwitchGeometry(width, height, margin));
@@ -384,7 +384,7 @@ public class ResourceManager
         return path;
     }
 
-    public GeometrySource2D GetCheckButtonGeometrySource(float width, float height) => new GeometrySource2D("CheckButton" + width + "\0" + height) { Geometry = Get(null, Domain.CheckButtonGeometry, width + "\0" + height, () => CreateCheckButtonGeometry(width, height)).Object };
+    public GeometrySource2D GetCheckButtonGeometrySource(float width, float height) => new("CheckButton" + width + "\0" + height) { Geometry = Get(null, Domain.CheckButtonGeometry, width + "\0" + height, () => CreateCheckButtonGeometry(width, height)).Object };
 
     public virtual IComObject<ID2D1PathGeometry1> GetCheckButtonGeometry(float width, float height) => Get(null, Domain.CheckButtonGeometry, width + "\0" + height, () => CreateCheckButtonGeometry(width, height));
     public virtual IComObject<ID2D1PathGeometry1> CreateCheckButtonGeometry(float width, float height)
@@ -400,7 +400,7 @@ public class ResourceManager
         return path;
     }
 
-    public GeometrySource2D GetScrollBarButtonGeometrySource(DockType type, float width, float ratio, bool open) => new GeometrySource2D("ScrollBarButton" + ((int)type) + "\0" + width + "\0" + ratio + "\0" + (open ? 1 : 0)) { Geometry = Get(null, Domain.ScrollBarButtonGeometry, ((int)type) + "\0" + width + "\0" + ratio + "\0" + (open ? 1 : 0), () => CreateScrollBarButtonGeometry(type, width, ratio, open)).Object };
+    public GeometrySource2D GetScrollBarButtonGeometrySource(DockType type, float width, float ratio, bool open) => new("ScrollBarButton" + ((int)type) + "\0" + width + "\0" + ratio + "\0" + (open ? 1 : 0)) { Geometry = Get(null, Domain.ScrollBarButtonGeometry, ((int)type) + "\0" + width + "\0" + ratio + "\0" + (open ? 1 : 0), () => CreateScrollBarButtonGeometry(type, width, ratio, open)).Object };
 
     public virtual IComObject<ID2D1PathGeometry1> GetScrollBarButtonGeometry(DockType type, float width, float ratio, bool open) => Get(null, Domain.ScrollBarButtonGeometry, ((int)type) + "\0" + width + "\0" + ratio + "\0" + (open ? 1 : 0), () => CreateScrollBarButtonGeometry(type, width, ratio, open));
     public virtual IComObject<ID2D1PathGeometry1> CreateScrollBarButtonGeometry(DockType type, float width, float ratio, bool open)
@@ -454,7 +454,7 @@ public class ResourceManager
         return path;
     }
 
-    public GeometrySource2D GetTitleBarButtonGeometrySource(TitleBarButtonType type, float width) => new GeometrySource2D("TitleBarButton" + ((int)type) + "\0" + width) { Geometry = GetTitleBarButtonGeometry(type, width).Object };
+    public GeometrySource2D GetTitleBarButtonGeometrySource(TitleBarButtonType type, float width) => new("TitleBarButton" + ((int)type) + "\0" + width) { Geometry = GetTitleBarButtonGeometry(type, width).Object };
 
     public virtual IComObject<ID2D1PathGeometry1> GetTitleBarButtonGeometry(TitleBarButtonType type, float width) => Get(null, Domain.TitleBarButtonTypeGeometry, ((int)type) + "\0" + width, () => CreateTitleBarButtonGeometry(type, width));
     public virtual IComObject<ID2D1PathGeometry1> CreateTitleBarButtonGeometry(TitleBarButtonType type, float width)

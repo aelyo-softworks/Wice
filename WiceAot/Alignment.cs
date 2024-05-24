@@ -1,10 +1,9 @@
-﻿namespace Wice
+﻿namespace Wice;
+
+public enum Alignment
 {
-    public enum Alignment
-    {
-        Near, // left or top
-        Center,
-        Far, // right or bottom
-        Stretch
-    }
+    Near, // left or top
+    Center,
+    Far, // right or bottom
+    Stretch
 }

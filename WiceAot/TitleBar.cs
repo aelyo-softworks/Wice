@@ -116,7 +116,7 @@ public partial class TitleBar : Dock
         }
     }
 
-    protected virtual TextBox CreateTitle() => new TextBox();
+    protected virtual TextBox CreateTitle() => new();
     protected virtual Visual CreatePadding() => new();
     protected virtual TitleBarButton CreateMinButton() => new();
     protected virtual TitleBarButton CreateMaxButton() => new();

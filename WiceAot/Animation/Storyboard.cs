@@ -116,9 +116,9 @@ public abstract class Storyboard : AnimationObject
         }
     }
 
-    protected virtual void OnStarting(object sender, EventArgs e) => Starting?.Invoke(sender, e);
-    protected virtual void OnStopped(object sender, EventArgs e) => Stopped?.Invoke(sender, e);
-    protected virtual void OnTick(object sender, EventArgs e) => Tick?.Invoke(sender, e);
+    protected virtual void OnStarting(object? sender, EventArgs e) => Starting?.Invoke(sender, e);
+    protected virtual void OnStopped(object? sender, EventArgs e) => Stopped?.Invoke(sender, e);
+    protected virtual void OnTick(object? sender, EventArgs e) => Tick?.Invoke(sender, e);
 
     public virtual void Start()
     {

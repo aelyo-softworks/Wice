@@ -2,7 +2,7 @@
 
 public interface IFocusableParent
 {
-    Visual FocusableVisual { get; }
+    Visual? FocusableVisual { get; }
     Type? FocusVisualShapeType { get; }
     float? FocusOffset { get; }
 }

@@ -4,7 +4,7 @@ public interface IValueable
 {
     event EventHandler<ValueEventArgs> ValueChanged;
 
-    object Value { get; }
+    object? Value { get; }
     bool CanChangeValue { get; set; }
-    bool TrySetValue(object value);
+    bool TrySetValue(object? value);
 }

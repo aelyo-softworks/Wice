@@ -150,7 +150,7 @@ public class Application : IDisposable
     public static Theme CurrentTheme => Current.ResourceManager.Theme;
     public static bool UseDebugLayer { get => _useDebugLayer && DXGIFunctions.IsDebugLayerAvailable; set => _useDebugLayer = true; }
     public static IEnumerable<Window> Windows => _windows;
-    public static HINSTANCE ModuleHandle => Functions.GetModuleHandle(null);
+    public static HMODULE ModuleHandle => Functions.GetModuleHandleW(PWSTR.Null);
     public static bool IsFatalErrorShowing { get; private set; }
     public static bool QuitOnLastWindowRemoved { get; set; } = true;
 

@@ -59,7 +59,7 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
         get
         {
             using var name = new AllocPwstr(1024);
-            _ = Functions.GetWindowModuleFileNameW(Handle, name, (uint)name.SizeInChars);
+            _ = Functions.GetWindowModuleFileNameW(Handle, name, name.SizeInChars);
             return name.ToString();
         }
     }
@@ -290,13 +290,13 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
         ArgumentNullException.ThrowIfNull(className);
         ArgumentNullException.ThrowIfNull(windowProc);
         using var p = new Pwstr(className);
-        if (!Functions.GetClassInfoW(Application.ModuleHandle, p, out _))
+        if (!Functions.GetClassInfoW(new HINSTANCE { Value = Application.ModuleHandle.Value }, p, out _))
         {
             var cls = new WNDCLASSW
             {
                 style = WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW,
                 lpfnWndProc = windowProc,
-                hInstance = Application.ModuleHandle,
+                hInstance = new HINSTANCE { Value = Application.ModuleHandle.Value },
                 lpszClassName = p
             };
             //cls.hCursor = DirectN.Cursor.Arrow.Handle; // we set the cursor ourselves, otherwise the cursor will blink
@@ -323,7 +323,7 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
         foreach (var name in _classesNames)
         {
             using var p = new Pwstr(name);
-            Functions.UnregisterClassW(p, Application.ModuleHandle);
+            Functions.UnregisterClassW(p, new HINSTANCE { Value = Application.ModuleHandle.Value });
             _classesNames.TryRemove(name);
         }
     }

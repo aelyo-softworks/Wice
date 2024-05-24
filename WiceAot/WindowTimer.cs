@@ -29,7 +29,7 @@ public class WindowTimer : IDisposable
         OnTick(this, EventArgs.Empty);
     }
 
-    protected virtual void OnTick(object sender, EventArgs e) => Tick?.Invoke(sender, e);
+    protected virtual void OnTick(object? sender, EventArgs e) => Tick?.Invoke(sender, e);
 
     protected virtual void Dispose(bool disposing)
     {

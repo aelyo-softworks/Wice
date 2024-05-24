@@ -20,7 +20,7 @@ public class Shape : Visual
 
     // to be consistent with CompositionSpriteShape's FillBrush property
     [Category(CategoryRender)]
-    public CompositionBrush FillBrush { get => RenderBrush; set => RenderBrush = value; }
+    public CompositionBrush? FillBrush { get => RenderBrush; set => RenderBrush = value; }
 
     [Category(CategoryRender)]
     public CompositionBrush StrokeBrush { get => (CompositionBrush)GetPropertyValue(StrokeBrushProperty)!; set => SetPropertyValue(StrokeBrushProperty, value); }

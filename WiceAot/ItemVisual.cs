@@ -61,8 +61,10 @@ public class ItemVisual : Border, IOneChildParent, IFocusableParent, ISelectable
         var vb = DataBinder?.DataItemVisualBinder;
         if (vb != null)
         {
-            var ctx = new DataBindContext(_notifyPropertyChanged);
-            ctx.DataVisual = Child;
+            var ctx = new DataBindContext(_notifyPropertyChanged)
+            {
+                DataVisual = Child
+            };
             vb(ctx);
         }
     }

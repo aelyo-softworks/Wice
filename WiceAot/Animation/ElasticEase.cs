@@ -13,7 +13,7 @@ public class ElasticEase : IEasingFunction
 
     public float Ease(float normalizedTime)
     {
-        var oscillations = Math.Max(0.0, (double)Oscillations);
+        var oscillations = Math.Max(0.0, Oscillations);
         var springiness = Math.Max(0.0, Springiness);
         double expo;
         if (springiness == 0)

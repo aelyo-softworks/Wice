@@ -2,5 +2,5 @@
 
 public interface IOneChildParent
 {
-    Visual Child { get; }
+    Visual? Child { get; }
 }

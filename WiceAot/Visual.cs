@@ -677,13 +677,13 @@ public class Visual : BaseObject
     public Matrix4x4? RenderTransformMatrix { get => (Matrix4x4?)GetPropertyValue(RenderTransformMatrixProperty); set => SetPropertyValue(RenderTransformMatrixProperty, value); }
 
     [Category(CategoryRender)]
-    public CompositionBrush RenderBrush { get => (CompositionBrush)GetPropertyValue(RenderBrushProperty)!; set => SetPropertyValue(RenderBrushProperty, value); }
+    public CompositionBrush? RenderBrush { get => (CompositionBrush)GetPropertyValue(RenderBrushProperty)!; set => SetPropertyValue(RenderBrushProperty, value); }
 
     [Category(CategoryRender)]
     public CompositionBrush HoverRenderBrush { get => (CompositionBrush)GetPropertyValue(HoverRenderBrushProperty)!; set => SetPropertyValue(HoverRenderBrushProperty, value); }
 
     [Category(CategoryRender)]
-    public CompositionShadow RenderShadow { get => (CompositionShadow)GetPropertyValue(RenderShadowProperty)!; set => SetPropertyValue(RenderShadowProperty, value); }
+    public CompositionShadow? RenderShadow { get => (CompositionShadow)GetPropertyValue(RenderShadowProperty)!; set => SetPropertyValue(RenderShadowProperty, value); }
 
     [Category(CategoryRender)]
     public CompositionCompositeMode RenderCompositeMode { get => (CompositionCompositeMode)GetPropertyValue(RenderCompositeModeProperty)!; set => SetPropertyValue(RenderCompositeModeProperty, value); }

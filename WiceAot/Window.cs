@@ -2481,8 +2481,7 @@ public class Window : Canvas, ITitleBarParent
 
     internal void AddVisual(Visual visual, ref D2D_RECT_F renderBounds)
     {
-        var win = visual as Window;
-        if (win != null && win != this)
+        if (visual is Window win && win != this)
             throw new WiceException("0026: Cannot add a child window to this window.");
 
         if (!visual.DisablePointerEvents)
