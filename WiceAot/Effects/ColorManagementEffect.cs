@@ -20,10 +20,10 @@ public class ColorManagementEffect : EffectWithSource
         QualityProperty = EffectProperty.Add(typeof(ColorManagementEffect), nameof(Quality), 5, D2D1_COLORMANAGEMENT_QUALITY.D2D1_COLORMANAGEMENT_QUALITY_NORMAL);
     }
 
-    public ID2D1ColorContext SourceColorContext { get => (ID2D1ColorContext)GetPropertyValue(SourceColorContextProperty); set => SetPropertyValue(SourceColorContextProperty, value); }
-    public D2D1_COLORMANAGEMENT_RENDERING_INTENT SourceRenderingIntent { get => (D2D1_COLORMANAGEMENT_RENDERING_INTENT)GetPropertyValue(SourceRenderingIntentProperty); set => SetPropertyValue(SourceRenderingIntentProperty, value); }
-    public ID2D1ColorContext DestinationColorContext { get => (ID2D1ColorContext)GetPropertyValue(DestinationColorContextProperty); set => SetPropertyValue(DestinationColorContextProperty, value); }
+    public ID2D1ColorContext SourceColorContext { get => (ID2D1ColorContext)GetPropertyValue(SourceColorContextProperty)!; set => SetPropertyValue(SourceColorContextProperty, value); }
+    public D2D1_COLORMANAGEMENT_RENDERING_INTENT SourceRenderingIntent { get => (D2D1_COLORMANAGEMENT_RENDERING_INTENT)GetPropertyValue(SourceRenderingIntentProperty)!; set => SetPropertyValue(SourceRenderingIntentProperty, value); }
+    public ID2D1ColorContext DestinationColorContext { get => (ID2D1ColorContext)GetPropertyValue(DestinationColorContextProperty)!; set => SetPropertyValue(DestinationColorContextProperty, value); }
     public D2D1_COLORMANAGEMENT_RENDERING_INTENT DestinationRenderingIntent { get => (D2D1_COLORMANAGEMENT_RENDERING_INTENT)GetPropertyValue(DestinationRenderingIntentProperty); set => SetPropertyValue(DestinationRenderingIntentProperty, value); }
-    public D2D1_COLORMANAGEMENT_ALPHA_MODE AlphaMode { get => (D2D1_COLORMANAGEMENT_ALPHA_MODE)GetPropertyValue(AlphaModeProperty); set => SetPropertyValue(AlphaModeProperty, value); }
-    public D2D1_COLORMANAGEMENT_QUALITY Quality { get => (D2D1_COLORMANAGEMENT_QUALITY)GetPropertyValue(QualityProperty); set => SetPropertyValue(QualityProperty, value); }
+    public D2D1_COLORMANAGEMENT_ALPHA_MODE AlphaMode { get => (D2D1_COLORMANAGEMENT_ALPHA_MODE)GetPropertyValue(AlphaModeProperty)!; set => SetPropertyValue(AlphaModeProperty, value); }
+    public D2D1_COLORMANAGEMENT_QUALITY Quality { get => (D2D1_COLORMANAGEMENT_QUALITY)GetPropertyValue(QualityProperty)!; set => SetPropertyValue(QualityProperty, value); }
 }

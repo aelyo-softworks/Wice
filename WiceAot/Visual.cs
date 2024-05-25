@@ -43,13 +43,13 @@ public class Visual : BaseObject
     public static VisualProperty FocusIndexProperty { get; } = VisualProperty.Add<int?>(typeof(Visual), nameof(FocusIndex), VisualPropertyInvalidateModes.Render);
     public static VisualProperty ToolTipContentCreatorProperty { get; } = VisualProperty.Add<Action<ToolTip>>(typeof(Visual), nameof(ToolTipContentCreator), VisualPropertyInvalidateModes.None);
 
-    protected static object? NullifyString(BaseObject obj, object value) => ((string)value).Nullify();
-
+#pragma warning disable IDE0060 // Remove unused parameter
+    protected static object? NullifyString(BaseObject obj, object? value) => ((string)value!).Nullify();
     private static void IsMouseOverChanged(BaseObject obj, object? newValue, object? oldValue) => ((Visual)obj).IsMouseOverChanged((bool)newValue!);
 
-    protected static object ValidateNonNullString(BaseObject obj, object value)
+    protected static object? ValidateNonNullString(BaseObject obj, object? value)
     {
-        var s = (string)value;
+        var s = (string)value!;
         return s ?? string.Empty;
     }
 
@@ -64,6 +64,7 @@ public class Visual : BaseObject
 
         return flt;
     }
+#pragma warning restore IDE0060 // Remove unused parameter
 
     public static D2D_SIZE_F GetScaleFactor(D2D_SIZE_F availableSize, D2D_SIZE_F contentSize, Stretch stretch, StretchDirection stretchDirection)
     {
@@ -1517,7 +1518,7 @@ public class Visual : BaseObject
         return pt;
     }
 
-    private static bool CanAnimateColor(CompositionBrush from, CompositionBrush to, out D3DCOLORVALUE? toColor, out D3DCOLORVALUE? fromColor)
+    private static bool CanAnimateColor(CompositionBrush? from, CompositionBrush? to, out D3DCOLORVALUE? toColor, out D3DCOLORVALUE? fromColor)
     {
         toColor = null;
         fromColor = null;
@@ -2503,7 +2504,7 @@ public class Visual : BaseObject
         }
     }
 
-    protected virtual void SetCompositionBrush(CompositionBrush brush)
+    protected virtual void SetCompositionBrush(CompositionBrush? brush)
     {
         var cv = CompositionVisual;
         if (cv == null)

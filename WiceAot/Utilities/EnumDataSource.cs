@@ -12,7 +12,7 @@ public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     public IEnumerator<EnumBitValue> GetEnumerator() => Source?.GetEnumerator();
 
-    public static EnumDataSource FromValue(object value)
+    public static EnumDataSource? FromValue(object value)
     {
         if (value == null)
             return null;
@@ -20,11 +20,9 @@ public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
         return FromType(value.GetType(), value);
     }
 
-    public static EnumDataSource FromType(Type type, object value = null, bool? forceFlags = null)
+    public static EnumDataSource FromType(Type type, object? value = null, bool? forceFlags = null)
     {
-        if (type == null)
-            throw new ArgumentNullException(nameof(type));
-
+        ArgumentNullException.ThrowIfNull(type);
         if (!type.IsEnum)
             throw new ArgumentException(null, nameof(type));
 
@@ -52,7 +50,7 @@ public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
         return new EnumDataSource(GetValues(type, value));
     }
 
-    private static IEnumerable<EnumBitValue> GetEnumValues(Type type, object value)
+    private static IEnumerable<EnumBitValue> GetEnumValues(Type type)
     {
         foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(f => !f.IsSpecialName))
         {
@@ -60,13 +58,12 @@ public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
             if (browsable != null && !browsable.Browsable)
                 continue;
 
-            var ev = new EnumBitValue(field.GetValue(null));
-            ev.Name = field.Name;
-            ev.BitValue = field.GetValue(null);
+            var ev = new EnumBitValue(field.GetValue(null)!, field.Name);
+            ev.BitValue = field.GetValue(null)!;
             ev.DisplayName = field.GetCustomAttribute<DescriptionAttribute>()?.Description;
             if (ev.DisplayName == null)
             {
-                ev.DisplayName = Decamelizer.Decamelize(ev.Name);
+                ev.DisplayName = Conversions.Decamelize(ev.Name);
             }
             yield return ev;
         }
@@ -74,9 +71,9 @@ public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
 
     private static IEnumerable<EnumBitValue> GetValues(Type type, object value)
     {
-        foreach (var ev in GetEnumValues(type, value))
+        foreach (var ev in GetEnumValues(type))
         {
-            ev.IsSelected = ev.BitValue.Equals(value);
+            ev.IsSelected = ev.BitValue?.Equals(value) == true;
             yield return ev;
         }
     }
@@ -85,7 +82,7 @@ public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
     {
         var ulv = Conversions.EnumToUInt64(value);
         // note: this suppose the enum is simple (no twice the same value, no value combination)
-        foreach (var ev in GetEnumValues(type, value))
+        foreach (var ev in GetEnumValues(type))
         {
             if (ev.IsZero)
                 continue;

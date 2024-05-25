@@ -4,7 +4,7 @@
 // note this visual sits on a COM object so we must dispose it on the same thread that created it
 public class RichTextBox : RenderVisual, IDisposable
 {
-    private TextHost _host;
+    private TextHost? _host;
     private bool _disposedValue;
 
     public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
@@ -12,19 +12,19 @@ public class RichTextBox : RenderVisual, IDisposable
         Generator = generator;
         _host = new TextHost(generator)
         {
-            TextColor = 0
+            TextColor = new COLORREF()
         };
         BackgroundColor = D3DCOLORVALUE.Transparent;
     }
 
     [Category(CategoryLive)]
-    public dynamic Document => _host?.Document;
+    public IComObject<ITextDocument2>? Document => _host?.Document;
 
     [Category(CategoryBehavior)]
     public TextServicesGenerator Generator { get; }
 
     [Category(CategoryBehavior)]
-    public string GeneratorVersion => Document.Generator;
+    public string GeneratorVersion => _host?.Generator ?? string.Empty;
 
     [Category(CategoryRender)]
     public virtual D3DCOLORVALUE TextColor
@@ -61,7 +61,7 @@ public class RichTextBox : RenderVisual, IDisposable
     [Category(CategoryBehavior)]
     public virtual string Text
     {
-        get => _host?.Text;
+        get => _host?.Text ?? string.Empty;
         set
         {
             var host = _host;
@@ -77,7 +77,7 @@ public class RichTextBox : RenderVisual, IDisposable
     [Category(CategoryBehavior)]
     public virtual string RtfText
     {
-        get => _host?.RtfText;
+        get => _host?.RtfText ?? string.Empty;
         set
         {
             var host = _host;
@@ -94,7 +94,7 @@ public class RichTextBox : RenderVisual, IDisposable
     [Category(CategoryBehavior)]
     public virtual string HtmlText
     {
-        get => _host?.HtmlText;
+        get => _host?.HtmlText ?? string.Empty;
         set
         {
             var host = _host;
@@ -244,7 +244,7 @@ public class RichTextBox : RenderVisual, IDisposable
         }
 
         context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_PIXELS);
-        _host.Draw(context.DeviceContext.Object, rc);
+        host.Draw(context.DeviceContext.Object, rc);
     }
 
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
@@ -257,7 +257,7 @@ public class RichTextBox : RenderVisual, IDisposable
             var host = _host;
             if (host != null)
             {
-                host.BackColor = TextHost.ToColor((D3DCOLORVALUE)value);
+                host.BackColor = TextHost.ToColor((D3DCOLORVALUE)value!);
             }
             return true;
         }

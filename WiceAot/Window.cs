@@ -1,4 +1,5 @@
 ﻿using DirectN.Utilities;
+using WinRT;
 
 namespace Wice;
 
@@ -15,7 +16,7 @@ public class Window : Canvas, ITitleBarParent
     private readonly List<WindowTimer> _timers = [];
     private readonly WindowProc _windowProc;
     private int _animating;
-    private System.Drawing.Icon _icon;
+    private Icon? _icon;
     private D2D_RECT_F _lastClientRect;
     private readonly Lazy<NativeWindow> _native;
     private int _renderQueued;
@@ -111,7 +112,7 @@ public class Window : Canvas, ITitleBarParent
     public IComObject<ID2D1Device1> D2D1Device => _d2D1Device.Value;
 
     [Category(CategoryRender)]
-    public ContainerVisual FrameVisual { get; private set; }
+    public ContainerVisual? FrameVisual { get; private set; }
 
     protected virtual string ClassName => GetType().FullName!;
     protected virtual int MaxChildrenCount => int.MaxValue;
@@ -152,7 +153,7 @@ public class Window : Canvas, ITitleBarParent
     public RECT ClientRect => Native.ClientRect;
 
     [Browsable(false)]
-    public ToolTip CurrentToolTip { get; private set; }
+    public ToolTip? CurrentToolTip { get; private set; }
 
     [Browsable(false)]
     public Caret Caret => _caret.Value; // null if HasCaret is false
@@ -164,7 +165,7 @@ public class Window : Canvas, ITitleBarParent
     public HWND Handle => _native?.IsValueCreated == true ? _native.Value.Handle : HWND.Null;
 
     [Browsable(false)]
-    public FocusVisual FocusVisual { get; private set; }
+    public FocusVisual? FocusVisual { get; private set; }
 
     [Browsable(false)]
     public IEnumerable<Visual> ModalVisuals => Children.Where(v => v.IsModal());
@@ -173,7 +174,7 @@ public class Window : Canvas, ITitleBarParent
     public bool HasFocus { get => _hasFocus; private set => SetFocus(value); }
 
     [Browsable(false)]
-    public Visual FocusedVisual
+    public Visual? FocusedVisual
     {
         get => _focusedVisual;
         protected set
@@ -898,7 +899,7 @@ public class Window : Canvas, ITitleBarParent
 
     private NativeWindow GetNative()
     {
-        NativeWindow.RegisterWindowClass(ClassName, _windowProc);
+        NativeWindow.RegisterWindowClass(ClassName, Marshal.GetFunctionPointerForDelegate(_windowProc));
         var native = CreateNativeWindow();
         native.FrameChanged();
         OnHandleCreated(this, EventArgs.Empty);
@@ -917,7 +918,7 @@ public class Window : Canvas, ITitleBarParent
         }
 
         var surface = window.CompositionDevice.CreateDrawingSurface(new Size(1, 1), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
-        var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
+        var interop = surface.As<ICompositionDrawingSurfaceInterop>();
         using var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop);
         using var dc = surfaceInterop.BeginDraw();
         var size = dc.Object.GetMaximumBitmapSize();
@@ -965,22 +966,25 @@ public class Window : Canvas, ITitleBarParent
 
     protected virtual CompositionGraphicsDevice CreateCompositionDevice()
     {
-        var interop = CompositorController.Compositor.ComCast<ICompositorInterop>();
+        var interop = CompositorController.Compositor.As<ICompositorInterop>();
         var d2d1 = _d2D1Device.Value;
-        var hr = interop.CreateGraphicsDevice(d2d1.Object, out var unk);
-        var dev = unk.WinRTCast<CompositionGraphicsDevice>();
-        if (hr.Value < 0)
+        return ComObject.WithComInstance(d2d1.Object, devUnk =>
         {
-            try
+            var hr = interop.CreateGraphicsDevice(devUnk, out var unk);
+            var dev = MarshalInterface<CompositionGraphicsDevice>.FromAbi(unk);
+            if (hr.Value < 0)
             {
-                throw hr.GetException();
+                try
+                {
+                    throw hr.GetException()!;
+                }
+                catch (Exception e)
+                {
+                    Application.AddError(e);
+                }
             }
-            catch (Exception e)
-            {
-                Application.AddError(e);
-            }
-        }
-        return dev;
+            return dev;
+        });
     }
 
     protected override ContainerVisual CreateCompositionVisual() => throw new NotSupportedException();
@@ -992,9 +996,9 @@ public class Window : Canvas, ITitleBarParent
         var controller = new CompositorController();
         controller.CommitNeeded += OnCompositorControllerCommitNeeded;
 
-        var interop = controller.Compositor.ComCast<ICompositorDesktopInterop>();
-        interop.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
-        _compositionTarget = new ComObject<ICompositionTarget>((ICompositionTarget)target);
+        var interop = controller.Compositor.As<ICompositorDesktopInterop>();
+        //interop.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
+        //_compositionTarget = ComObject.FromPointer<ICompositionTarget>(target);
         CompositionVisual = CreateWindowVisual(controller.Compositor);
         if (CompositionVisual == null)
             throw new InvalidOperationException();
@@ -1007,7 +1011,8 @@ public class Window : Canvas, ITitleBarParent
         FrameVisual.Comment = "frame";
 #endif
         FrameVisual.Children.InsertAtTop(CompositionVisual);
-        _compositionTarget.Object.Root = FrameVisual;
+        //var root = MarshalInterface<T>.GetAbi(FrameVisual);
+        //_compositionTarget.Object.put_Root(root);
         RunTaskOnMainThread(() =>
         {
             // make sure nothing happens during CompositorController lazy creation
@@ -1051,7 +1056,7 @@ public class Window : Canvas, ITitleBarParent
 
         var fs = FrameSize;
         var surface = CompositionDevice.CreateDrawingSurface(cs.ToSize(), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
-        var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
+        var interop = surface.As<ICompositionDrawingSurfaceInterop>();
         using var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop);
         using (var dc = surfaceInterop.BeginDraw())
         {
@@ -1532,7 +1537,7 @@ public class Window : Canvas, ITitleBarParent
         UpdateFocus(FocusedVisual, null);
     }
 
-    protected virtual void UpdateFocus(Visual focused, Visual oldVisual)
+    protected virtual void UpdateFocus(Visual? focused, Visual? oldVisual)
     {
         if (focused != null)
         {
@@ -1584,7 +1589,7 @@ public class Window : Canvas, ITitleBarParent
         }
     }
 
-    public virtual void Animate(Action action, Action onCompleted = null, CompositionBatchTypes types = CompositionBatchTypes.Animation)
+    public virtual void Animate(Action action, Action? onCompleted = null, CompositionBatchTypes types = CompositionBatchTypes.Animation)
     {
         ArgumentNullException.ThrowIfNull(action);
 
@@ -1743,22 +1748,26 @@ public class Window : Canvas, ITitleBarParent
         }
         else
         {
-            try
+            var location = Process.GetCurrentProcess().MainModule?.FileName;
+            if (location != null)
             {
-                _icon?.Dispose();
-                _icon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetEntryAssembly().Location);
-                if (_icon == null)
+                try
                 {
-                    native.IconHandle = HICON.Null;
+                    _icon?.Dispose();
+                    _icon = Icon.ExtractAssociatedIcon(location);
+                    if (_icon == null)
+                    {
+                        native.IconHandle = HICON.Null;
+                    }
+                    else
+                    {
+                        native.IconHandle = _icon.Handle;
+                    }
                 }
-                else
+                catch
                 {
-                    native.IconHandle = _icon.Handle;
+                    // do nothing
                 }
-            }
-            catch
-            {
-                // do nothing
             }
         }
 

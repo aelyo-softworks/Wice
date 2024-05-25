@@ -1,4 +1,6 @@
-﻿namespace Wice.Effects;
+﻿using WinRT;
+
+namespace Wice.Effects;
 
 public static class AcrylicBrush
 {
@@ -76,7 +78,7 @@ public static class AcrylicBrush
 
     private static float GetTintOpacityModifier(D3DCOLORVALUE tintColor)
     {
-        if (!WinRTUtilities.Is19H1OrHigher)
+        if (!Utilities.Extensions.Is19H1OrHigher)
             return 1f;
 
         const float midPoint = 0.50f;
@@ -206,7 +208,7 @@ public static class AcrylicBrush
         acrylicBrush.SetSourceParameter("Noise", CreateNoiseBrush(device));
         acrylicBrush.Properties.InsertColor("TintColor.Color", effectiveTintColor.ToColor());
 
-        if (!useLegacyEffect && WinRTUtilities.Is19H1OrHigher)
+        if (!useLegacyEffect && Utilities.Extensions.Is19H1OrHigher)
         {
             acrylicBrush.Properties.InsertColor("LuminosityColor.Color", luminosityColor.ToColor());
         }
@@ -288,7 +290,7 @@ public static class AcrylicBrush
         IGraphicsEffectSource blurredSource;
         if (useWindowsAcrylic)
         {
-            blurredSource = backdropEffectSourceParameter.ComCast<IGraphicsEffectSource>();
+            blurredSource = backdropEffectSourceParameter.As<IGraphicsEffectSource>();
         }
         else
         {
@@ -297,12 +299,12 @@ public static class AcrylicBrush
                 Name = "Blur",
                 BorderMode = D2D1_BORDER_MODE.D2D1_BORDER_MODE_HARD,
                 StandardDeviation = _blurRadius,
-                Source = backdropEffectSourceParameter.ComCast<IGraphicsEffectSource>()
+                Source = backdropEffectSourceParameter.As<IGraphicsEffectSource>()
             };
             blurredSource = gaussianBlurEffect;
         }
 
-        if (!WinRTUtilities.Is19H1OrHigher)
+        if (!Utilities.Extensions.Is19H1OrHigher)
         {
             useLegacyEffect = true;
         }
@@ -316,7 +318,7 @@ public static class AcrylicBrush
         {
             EdgeModeX = D2D1_BORDER_EDGE_MODE.D2D1_BORDER_EDGE_MODE_WRAP,
             EdgeModeY = D2D1_BORDER_EDGE_MODE.D2D1_BORDER_EDGE_MODE_WRAP,
-            Source = new CompositionEffectSourceParameter("Noise").ComCast<IGraphicsEffectSource>()
+            Source = new CompositionEffectSourceParameter("Noise").As<IGraphicsEffectSource>()
         };
 
         var noiseOpacityEffect = new OpacityEffect

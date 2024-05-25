@@ -9,12 +9,11 @@ public class ResourceManager
     public ResourceManager(Application application)
     {
         ArgumentNullException.ThrowIfNull(application);
-
         Application = application;
         D2DFactory = D2D1Functions.D2D1CreateFactory1();
         DWriteFactory = DWriteFunctions.DWriteCreateFactory();
-        Theme = CreateTheme();
-        if (Theme == null)
+        _theme = CreateTheme();
+        if (_theme == null)
             throw new InvalidOperationException();
     }
 
@@ -27,7 +26,6 @@ public class ResourceManager
         set
         {
             ArgumentNullException.ThrowIfNull(value);
-
             if (_theme == value)
                 return;
 
@@ -50,7 +48,7 @@ public class ResourceManager
         sb.AppendLine("Windows Resources: " + _windowsResources.Count);
         foreach (var kv in _windowsResources)
         {
-            sb.AppendLine(" Window '" + kv.Key.Title + "' (Hwnd: 0x" + kv.Key.Native.Handle.ToString("X8") + ")");
+            sb.AppendLine(" Window '" + kv.Key.Title + "' (Hwnd: 0x" + kv.Key.Native.Handle.Value.ToString("X8") + ")");
             sb.AppendLine(" Resources: " + kv.Value._resources.Count);
             foreach (var kv2 in kv.Value._resources)
             {
@@ -82,16 +80,15 @@ public class ResourceManager
         ToggleSwitchGeometry,
     }
 
-    private string GetKey(Domain domain, string name)
+    private static string GetKey(Domain domain, string name)
     {
-        ArgumentNullException.ThrowIfNull(name);
         if (domain == Domain.Undefined)
             throw new ArgumentException(null, nameof(name));
 
         return name + "\0" + (int)domain;
     }
 
-    private T? Get<T>(Window? window, Domain domain, string name, T? defaultValue = default, bool propertiesUseConversions = false)
+    private T Get<T>(Window? window, Domain domain, string name, T? defaultValue = default, bool propertiesUseConversions = false)
     {
         var resources = window != null ? _windowsResources[window]._resources : _resources;
         if (!resources.TryGetValue(GetKey(domain, name), out var resource))
@@ -101,7 +98,7 @@ public class ResourceManager
         if (propertiesUseConversions)
             return Conversions.ChangeType(resource.Object, defaultValue);
 
-        return (T)resource.Object;
+        return (T)resource.Object!;
     }
 
     private T Get<T>(Window? window, Domain domain, string name, Func<T>? factory = null, bool propertiesUseConversions = false)
@@ -117,19 +114,20 @@ public class ResourceManager
             {
                 Object = factory()
             };
+
             return (T)resources.AddOrUpdate(key, resource, (k, o) =>
             {
                 resource.Dispose();
                 o.LastAccess = DateTime.Now;
                 return o;
-            }).Object;
+            }).Object!;
         }
 
         resource.LastAccess = DateTime.Now;
         if (propertiesUseConversions)
             return Conversions.ChangeType(resource.Object, default(T));
 
-        return (T)resource.Object;
+        return (T)resource.Object!;
     }
 
     public virtual IComObject<IDWriteTypography> GetTypography(Typography typography)
@@ -188,7 +186,7 @@ public class ResourceManager
         ArgumentNullException.ThrowIfNull(filePath);
         filePath = System.IO.Path.GetFullPath(filePath);
         var key = filePath.ToLowerInvariant();
-        return Get(null, Domain.WICBitmapSource, key, () => WICFunctions.LoadBitmapSource(filePath, options));
+        return Get(null, Domain.WICBitmapSource, key, () => WicUtilities.LoadBitmapSource(filePath, options));
     }
 
     public virtual IComObject<IWICBitmapSource> GetWicBitmapSource(Assembly assembly, string name, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
@@ -208,7 +206,7 @@ public class ResourceManager
     {
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(uniqueKey);
-        return Get(null, Domain.WICBitmapSource, uniqueKey, () => WICFunctions.LoadBitmapSource(stream, options));
+        return Get(null, Domain.WICBitmapSource, uniqueKey, () => WicUtilities.LoadBitmapSource(stream, options));
     }
 
     public virtual IComObject<IDWriteTextFormat> GetSymbolFormat(float fontSize = 0) => GetTextFormat(Theme.SymbolFontName, fontSize);
@@ -231,7 +229,7 @@ public class ResourceManager
         return GetTextFormat(text);
     }
 
-    public virtual IComObject<IDWriteTextFormat>? GetTextFormat(ITextFormat text)
+    public virtual IComObject<IDWriteTextFormat> GetTextFormat(ITextFormat text)
     {
         ArgumentNullException.ThrowIfNull(text);
         var family = text.FontFamilyName.Nullify() ?? Theme.DefaultFontFamilyName;
@@ -351,7 +349,7 @@ public class ResourceManager
         return CreateTextLayout<IDWriteTextLayout>(format.Object, text, textLength, maxWidth, maxHeight);
     }
 
-    private IComObject<T> CreateTextLayout<T>(
+    private ComObject<T> CreateTextLayout<T>(
         IDWriteTextFormat format,
         string text,
         int textLength = 0,
@@ -360,7 +358,7 @@ public class ResourceManager
         ) where T : IDWriteTextLayout
     {
         textLength = textLength <= 0 ? text.Length : textLength;
-        DWriteFactory.Object.CreateTextLayout(text, (uint)textLength, format, maxWidth, maxHeight, out var layout).ThrowOnError();
+        DWriteFactory.Object.CreateTextLayout(PWSTR.From(text), (uint)textLength, format, maxWidth, maxHeight, out var layout).ThrowOnError();
         return new ComObject<T>((T)layout);
     }
 
@@ -562,15 +560,9 @@ public class ResourceManager
         string Key { get; }
     }
 
-    private class KeyComObject<T> : ComObject<T>, IKeyable
+    private class KeyComObject<T>(T comObject, string key) : ComObject<T>(comObject), IKeyable
     {
-        public KeyComObject(T comObject, string key)
-            : base(comObject)
-        {
-            Key = key;
-        }
-
-        public string Key { get; }
+        public string Key { get; } = key;
     }
 
     private interface IBaseDisposable
@@ -578,44 +570,23 @@ public class ResourceManager
         void BaseDispose();
     }
 
-    private class RenderComObject<T> : ComObject<T>, IBaseDisposable
+    private class RenderComObject<T>(ResourceManager mgr, Window window, T comObject) : ComObject<T>(comObject), IBaseDisposable
     {
-        private readonly Window _window;
-        private readonly ResourceManager _mgr;
-
-        public RenderComObject(ResourceManager mgr, Window window, T comObject)
-            : base(comObject)
-        {
-            _mgr = mgr;
-            _window = window;
-        }
 
         // don't call the real dispose now
-        protected override void Dispose(bool disposing) => _mgr._windowsResources[_window]._renderDisposables.Add(this);
+        protected override void Dispose(bool disposing) => mgr._windowsResources[window]._renderDisposables.Add(this);
         public void BaseDispose() => base.Dispose(true);
     }
 
-    private class RenderDisposable : IBaseDisposable
+    private class RenderDisposable(IDisposable disposable) : IBaseDisposable
     {
-        private readonly IDisposable _disposable;
-
-        public RenderDisposable(IDisposable disposable)
-        {
-            _disposable = disposable;
-        }
-
-        public void BaseDispose() => _disposable.Dispose();
-        public override string ToString() => _disposable.ToString();
+        public void BaseDispose() => disposable.Dispose();
+        public override string ToString() => disposable?.ToString() ?? string.Empty;
     }
 
-    private class WindowResources
+    private class WindowResources(Window window)
     {
-        public WindowResources(Window window)
-        {
-            Window = window;
-        }
-
-        public Window Window;
+        public Window Window = window;
         public readonly ConcurrentBag<IBaseDisposable> _renderDisposables = [];
         public readonly ConcurrentDictionary<string, Resource> _resources = new(StringComparer.OrdinalIgnoreCase);
 
@@ -638,12 +609,12 @@ public class ResourceManager
         }
 
         public DateTime LastAccess;
-        public object Object;
+        public object? Object;
 
         public void Dispose()
         {
             //Application.Trace("Dispose " + Object + " " + LastAccess + " Elapsed: " + (DateTime.Now - LastAccess).ToString());
-            ((IDisposable)Object)?.Dispose();
+            ((IDisposable?)Object)?.Dispose();
         }
 
         public override string ToString() => LastAccess + " " + Object?.ToString();

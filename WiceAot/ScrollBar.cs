@@ -1,14 +1,8 @@
-﻿using System;
-using System.ComponentModel;
-using System.Numerics;
-using DirectN;
-using Wice.Utilities;
-
-namespace Wice
+﻿namespace Wice
 {
     public abstract class ScrollBar : Dock
     {
-        public static VisualProperty ModeProperty {get; } = VisualProperty.Add(typeof(ScrollBar), nameof(Mode), VisualPropertyInvalidateModes.Measure, ScrollBarMode.Standard);
+        public static VisualProperty ModeProperty { get; } = VisualProperty.Add(typeof(ScrollBar), nameof(Mode), VisualPropertyInvalidateModes.Measure, ScrollBarMode.Standard);
 
         public event EventHandler<EventArgs> SmallIncreaseClick;
         public event EventHandler<EventArgs> SmallDecreaseClick;
@@ -125,7 +119,7 @@ namespace Wice
 
             if (IsOverlay)
             {
-                RenderBrush = compositor.CreateColorBrush(_D3DCOLORVALUE.Transparent.ToColor());
+                RenderBrush = compositor.CreateColorBrush(D3DCOLORVALUE.Transparent.ToColor());
                 Thumb.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarOverlayThumbColor.ToColor());
                 Thumb.CornerRadius = new Vector2(Application.CurrentTheme.ScrollBarOverlayCornerRadius);
                 SmallDecrease.IsVisible = false;

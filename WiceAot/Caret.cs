@@ -1,15 +1,13 @@
-﻿using Windows.UI.Composition;
-
-namespace Wice;
+﻿namespace Wice;
 
 public class Caret : Border
 {
 #if DEBUG
-    public static VisualProperty BlinkProperty {get; } = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);
+    public static VisualProperty BlinkProperty { get; } = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);
 #else
     public static VisualProperty BlinkProperty {get; } = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);
 #endif
-    public static VisualProperty IsShownProperty {get; } = VisualProperty.Add(typeof(Caret), nameof(IsShown), VisualPropertyInvalidateModes.Render, false);
+    public static VisualProperty IsShownProperty { get; } = VisualProperty.Add(typeof(Caret), nameof(IsShown), VisualPropertyInvalidateModes.Render, false);
 
     private WindowTimer _blinkTimer;
 
@@ -17,8 +15,8 @@ public class Caret : Border
     {
         DisableKeyEvents = true;
         DisablePointerEvents = true;
-        BlinkTime = (int)WindowsFunctions.GetCaretBlinkTime();
-        if (BlinkTime == 0 || BlinkTime == int.MaxValue) // we always want to display a caret
+        BlinkTime = Functions.GetCaretBlinkTime();
+        if (BlinkTime == 0 || BlinkTime == uint.MaxValue) // we always want to display a caret
         {
             // default seems 530
             // https://github.com/microsoft/terminal/blob/master/src/interactivity/onecore/SystemConfigurationProvider.hpp#L43
@@ -35,7 +33,7 @@ public class Caret : Border
 
     // no key/mouse at all for caret
     [Category(CategoryBehavior)]
-    public virtual int BlinkTime { get; protected set; }
+    public virtual uint BlinkTime { get; protected set; }
 
     [Category(CategoryBehavior)]
     public bool Blink { get => (bool)GetPropertyValue(BlinkProperty); set => SetPropertyValue(BlinkProperty, value); }
@@ -51,7 +49,11 @@ public class Caret : Border
             if (TryGetPropertyValue(WidthProperty, out var obj) && obj is float value)
                 return value;
 
-            WindowsFunctions.SystemParametersInfo(WindowsConstants.SPI_GETCARETWIDTH, 0, out var width, false);
+            uint width = 0;
+            unsafe
+            {
+                Functions.SystemParametersInfoW(SYSTEM_PARAMETERS_INFO_ACTION.SPI_GETCARETWIDTH, 0, (nint)(&width), 0);
+            }
             return width;
         }
     }
@@ -98,7 +100,7 @@ public class Caret : Border
     {
         if (Blink)
         {
-            _blinkTimer?.Change(BlinkTime);
+            _blinkTimer?.Change((int)BlinkTime);
         }
     }
 
@@ -125,7 +127,7 @@ public class Caret : Border
             }
             else
             {
-                WindowsFunctions.DestroyCaret(); // mostly for UI automation support
+                Functions.DestroyCaret(); // mostly for UI automation support
                 StopBlinking();
                 IsVisible = false;
             }

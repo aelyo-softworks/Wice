@@ -604,7 +604,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     private void ApplyRanges()
     {
-        if (_finalRanges == null)
+        if (_finalRanges == null || _layout == null)
             return;
 
         foreach (var fr in _finalRanges)
@@ -635,7 +635,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 case FontRangeType.LocaleName:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetLocaleName((string)range.Value, range.Range).ThrowOnError();
+                        _layout.Object.SetLocaleName(PWSTR.From((string)range.Value!), range.Range).ThrowOnError();
                     }
                     break;
 
@@ -663,35 +663,38 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 case FontRangeType.FontFamilyName:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetFontFamilyName((string)range.Value, range.Range).ThrowOnError();
+                        _layout.Object.SetFontFamilyName(PWSTR.From((string)range.Value!), range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.FontCollection:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetFontCollection((IDWriteFontCollection)range.Value, range.Range).ThrowOnError();
+                        _layout.Object.SetFontCollection((IDWriteFontCollection)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.DrawingEffect:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetDrawingEffect(range.Value, range.Range).ThrowOnError();
+                        ComObject.WithComInstance(range.Value, ptr =>
+                        {
+                            _layout.Object.SetDrawingEffect(ptr, range.Range).ThrowOnError();
+                        });
                     }
                     break;
 
                 case FontRangeType.Typography:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetTypography((IDWriteTypography)range.Value, range.Range).ThrowOnError();
+                        _layout.Object.SetTypography((IDWriteTypography)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.InlineObject:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetInlineObject((IDWriteInlineObject)range.Value, range.Range).ThrowOnError();
+                        _layout.Object.SetInlineObject((IDWriteInlineObject)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
@@ -707,7 +710,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     private void ApplyRanges(RenderContext context)
     {
-        if (_finalRanges == null)
+        if (_finalRanges == null || _layout == null)
             return;
 
         foreach (var fr in _finalRanges)
@@ -717,10 +720,15 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 case FontRangeType.SolidColor:
                     foreach (var range in fr.Ranges)
                     {
-                        var color = (D3DCOLORVALUE)range.Value;
-                        using var brush = context.DeviceContext.CreateSolidColorBrush(color);
-                        var unk = ComObject.ToComInstance(brush);
-                        _layout.Object.SetDrawingEffect(unk, range.Range).ThrowOnError();
+                        var color = (D3DCOLORVALUE)range.Value!;
+                        using var brush = context.DeviceContext?.CreateSolidColorBrush(color);
+                        if (brush != null)
+                        {
+                            ComObject.WithComInstance(brush, unk =>
+                            {
+                                _layout.Object.SetDrawingEffect(unk, range.Range).ThrowOnError();
+                            });
+                        }
                     }
                     break;
             }
@@ -1544,30 +1552,32 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         if (string.IsNullOrEmpty(text))
             return;
 
-        TaskUtilities.RunWithSTAThread(() => System.Windows.Forms.Clipboard.SetText(text));
+        throw new NotImplementedException();
+        //TaskUtilities.RunWithSTAThread(() => System.Windows.Forms.Clipboard.SetText(text));
     }
 
     public virtual void PasteFromClipboard()
     {
-        var text = TaskUtilities.RunWithSTAThread(() => System.Windows.Forms.Clipboard.GetText()).Result;
-        if (text == null)
-            return;
+        throw new NotImplementedException();
+        //var text = TaskUtilities.RunWithSTAThread(() => System.Windows.Forms.Clipboard.GetText()).Result;
+        //if (text == null)
+        //    return;
 
-        if (!AcceptsReturn)
-        {
-            var pos = text.IndexOfAny(new[] { '\r', '\n' });
-            if (pos == 0)
-                return;
+        //if (!AcceptsReturn)
+        //{
+        //    var pos = text.IndexOfAny(new[] { '\r', '\n' });
+        //    if (pos == 0)
+        //        return;
 
-            if (pos > 0)
-            {
-                text = text.Substring(0, pos);
-            }
-        }
+        //    if (pos > 0)
+        //    {
+        //        text = text.Substring(0, pos);
+        //    }
+        //}
 
-        DeleteSelection();
-        InsertTextAt(_charPosition + _charPositionOffset, text);
-        SetSelection(TextBoxSetSelection.RightChar, (uint)text.Length, false);
+        //DeleteSelection();
+        //InsertTextAt(_charPosition + _charPositionOffset, text);
+        //SetSelection(TextBoxSetSelection.RightChar, (uint)text.Length, false);
     }
 
     //private int MirrorXCoordinate(int x, float paddingRight)
@@ -1681,7 +1691,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         if (inlineObject != null)
         {
             newLayout.SetTrimming(trimmingOptions, inlineObject);
-            Marshal.ReleaseComObject(inlineObject);
+            inlineObject.FinalRelease();
         }
 
         oldLayout.GetLineSpacing(out var lineSpacingMethod, out var lineSpacing, out var baseline);
@@ -1693,11 +1703,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         // Determines the length of a block of similarly formatted properties.
         // Use the first getter to get the range to increment the current position.
         var incrementAmount = new DWRITE_TEXT_RANGE(pos, 1);
-        using (var mem = new ComMemory(incrementAmount))
+        unsafe
         {
-            layout.GetFontWeight(pos, out var weight, mem.Pointer);
+            layout.GetFontWeight(pos, out _, (nint)(&incrementAmount));
         }
-
         return incrementAmount.length - (pos - incrementAmount.startPosition);
     }
 
@@ -1812,10 +1821,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         if (oldLayout.GetInlineObject(startPosForOld, out var inlineObject, 0).IsSuccess)
         {
             newLayout.SetInlineObject(inlineObject, range);
-            if (inlineObject != null)
-            {
-                Marshal.ReleaseComObject(inlineObject);
-            }
+            inlineObject.FinalRelease();
         }
 
         // typography

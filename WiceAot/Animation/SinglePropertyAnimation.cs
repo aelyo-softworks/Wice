@@ -4,7 +4,7 @@
 // https://docs.microsoft.com/en-us/dotnet/framework/wpf/graphics-multimedia/easing-functions
 public class SinglePropertyAnimation : PropertyAnimation
 {
-    public SinglePropertyAnimation(PropertyAnimationArguments arguments, float from, float to, IEasingFunction easingFunction = null, EasingMode easingMode = EasingMode.In)
+    public SinglePropertyAnimation(PropertyAnimationArguments arguments, float from, float to, IEasingFunction? easingFunction = null, EasingMode easingMode = EasingMode.In)
         : base(arguments)
     {
         From = from;

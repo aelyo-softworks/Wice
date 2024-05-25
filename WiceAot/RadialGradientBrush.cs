@@ -4,7 +4,7 @@ public class RadialGradientBrush : Brush
 {
     public RadialGradientBrush(D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES properties, params D2D1_GRADIENT_STOP[] stops)
     {
-        if (stops.IsEmpty())
+        if (stops == null || stops.Length == 0)
             throw new ArgumentException(null, nameof(stops));
 
         Properties = properties;

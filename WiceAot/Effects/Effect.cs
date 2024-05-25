@@ -56,11 +56,7 @@ public abstract partial class Effect : BaseObject, IGraphicsEffect, IGraphicsEff
         }
     }
 
-    public IGraphicsEffect GetIGraphicsEffect()
-    {
-        ComWrappers.TryGetComInstance(this, out var unk);
-        return WinRT.MarshalInspectable<IGraphicsEffect>.FromAbi(unk);
-    }
+    public IGraphicsEffect GetIGraphicsEffect() => ComObject.WithComInstance(this, WinRT.MarshalInspectable<IGraphicsEffect>.FromAbi);
 
     protected virtual IGraphicsEffectSource? GetSource(int index)
     {
@@ -295,24 +291,27 @@ public abstract partial class Effect : BaseObject, IGraphicsEffect, IGraphicsEff
         }
 
         var src = _sources[(int)index];
-
-        if (!ComWrappers.TryGetComInstance(src, out var unk))
+        nint srcUnk = 0;
+        var hr = ComObject.WithComInstance(src, unk =>
         {
-            source = 0;
-            Application.Trace(this + " index:" + index + " E_FAIL");
-            return Constants.E_FAIL;
-        }
+            if (unk == 0)
+            {
+                srcUnk = 0;
+                Application.Trace(this + " index:" + index + " E_FAIL");
+                return Constants.E_FAIL;
+            }
 
-        var iid = typeof(IGraphicsEffectSource).GUID;
-        Marshal.QueryInterface(unk, ref iid, out source);
-        if (source == 0)
-        {
-            source = 0;
-            Application.Trace(this + " index:" + index + " E_NOINTERFACE");
-            return Constants.E_NOINTERFACE;
-        }
-
-        return Constants.S_OK;
+            var iid = typeof(IGraphicsEffectSource).GUID;
+            Marshal.QueryInterface(unk, ref iid, out srcUnk);
+            if (srcUnk == 0)
+            {
+                Application.Trace(this + " index:" + index + " E_NOINTERFACE");
+                return Constants.E_NOINTERFACE;
+            }
+            return Constants.S_OK;
+        });
+        source = srcUnk;
+        return hr;
     }
 
     HRESULT IGraphicsEffectD2D1Interop.GetSourceCount(out uint count)

@@ -69,8 +69,8 @@ public class Header : Canvas, IAccessKeyParent, ISelectable
 
         // from something like that
         // C:\Windows\WinSxS\amd64_microsoft-windows-shell32.resources_31bf3856ad364e35_10.0.19041.964_en-us_378b74c637bce83b\shell32.dll.mui
-        var close = WindowsUtilities.LoadString("shell32.dll", 12851);
-        var open = WindowsUtilities.LoadString("shell32.dll", 12850);
+        var close = DirectN.Extensions.Utilities.Extensions.LoadString("shell32.dll", 12851);
+        var open = DirectN.Extensions.Utilities.Extensions.LoadString("shell32.dll", 12850);
         SelectedButton.ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, IsSelected ? close : open);
 
         Text = CreateText();

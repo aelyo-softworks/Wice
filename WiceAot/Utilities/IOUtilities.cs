@@ -78,7 +78,7 @@ public static partial class IOUtilities
         ArgumentNullException.ThrowIfNull(directoryPath);
         assembly ??= Assembly.GetCallingAssembly();
         var guid = (assembly.FullName + "\0" + name).ComputeGuidHash();
-        var location = Path.Combine(directoryPath, guid.ToString("N") + Path.GetExtension(name));
+        var location = System.IO.Path.Combine(directoryPath, guid.ToString("N") + System.IO.Path.GetExtension(name));
         if (!FileExists(location))
         {
             using var stream = assembly.GetManifestResourceStream(name);
@@ -98,9 +98,9 @@ public static partial class IOUtilities
     public static bool EnsureDirectory(string directoryPath)
     {
         ArgumentNullException.ThrowIfNull(directoryPath);
-        if (!Path.IsPathRooted(directoryPath))
+        if (!System.IO.Path.IsPathRooted(directoryPath))
         {
-            directoryPath = Path.GetFullPath(directoryPath);
+            directoryPath = System.IO.Path.GetFullPath(directoryPath);
         }
 
         if (DirectoryExists(directoryPath))
@@ -113,12 +113,12 @@ public static partial class IOUtilities
     public static bool FileEnsureDirectory(string filePath)
     {
         ArgumentNullException.ThrowIfNull(filePath);
-        if (!Path.IsPathRooted(filePath))
+        if (!System.IO.Path.IsPathRooted(filePath))
         {
-            filePath = Path.GetFullPath(filePath);
+            filePath = System.IO.Path.GetFullPath(filePath);
         }
 
-        var dir = Path.GetDirectoryName(filePath);
+        var dir = System.IO.Path.GetDirectoryName(filePath);
         if (dir == null || Directory.Exists(dir))
             return false;
 
@@ -250,8 +250,8 @@ public static partial class IOUtilities
         ArgumentNullException.ThrowIfNull(path2);
         if (normalize)
         {
-            path1 = Path.GetFullPath(path1);
-            path2 = Path.GetFullPath(path2);
+            path1 = System.IO.Path.GetFullPath(path1);
+            path2 = System.IO.Path.GetFullPath(path2);
         }
 
         return path1.EqualsIgnoreCase(path2);
@@ -266,8 +266,8 @@ public static partial class IOUtilities
         subPath = null;
         if (normalize)
         {
-            path = Path.GetFullPath(path);
-            child = Path.GetFullPath(child);
+            path = System.IO.Path.GetFullPath(path);
+            child = System.IO.Path.GetFullPath(child);
         }
 
         path = StripTerminatingPathSeparators(path)!;
@@ -277,12 +277,12 @@ public static partial class IOUtilities
         if (child.Length < (path.Length + 1))
             return false;
 
-        var newChild = Path.Combine(path, child[(path.Length + 1)..]);
+        var newChild = System.IO.Path.Combine(path, child[(path.Length + 1)..]);
         var b = newChild.EqualsIgnoreCase(child);
         if (b)
         {
             subPath = child[path.Length..];
-            while (subPath.StartsWith(Path.DirectorySeparatorChar.ToString()))
+            while (subPath.StartsWith(System.IO.Path.DirectorySeparatorChar.ToString()))
             {
                 subPath = subPath[1..];
             }
@@ -295,7 +295,7 @@ public static partial class IOUtilities
         if (path == null)
             return null;
 
-        while (path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+        while (path.EndsWith(System.IO.Path.DirectorySeparatorChar.ToString()))
         {
             path = path[..^1];
         }
@@ -422,7 +422,7 @@ public static partial class IOUtilities
         if (pos < 0)
             return -1;
 
-        var pos2 = path.IndexOfAny([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar]);
+        var pos2 = path.IndexOfAny([System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar]);
         if (pos2 < pos)
             return -1;
 
@@ -435,11 +435,11 @@ public static partial class IOUtilities
         if (!path.StartsWith(@"\\"))
             return -1;
 
-        var pos = path.IndexOf(Path.DirectorySeparatorChar, 3);
+        var pos = path.IndexOf(System.IO.Path.DirectorySeparatorChar, 3);
         if (pos < 3)
             return -1;
 
-        var pos2 = path.IndexOf(Path.DirectorySeparatorChar, pos + 1);
+        var pos2 = path.IndexOf(System.IO.Path.DirectorySeparatorChar, pos + 1);
         if (pos2 < pos)
         {
             onlyServer = true;
@@ -475,7 +475,7 @@ public static partial class IOUtilities
         for (var i = start; i < filePath.Length; i++)
         {
             var c = filePath[i];
-            if (c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar)
+            if (c == System.IO.Path.DirectorySeparatorChar || c == System.IO.Path.AltDirectorySeparatorChar)
             {
                 if (fn.Length > 0)
                 {
@@ -509,7 +509,7 @@ public static partial class IOUtilities
         if (Array.IndexOf(_reservedFileNames, fileName.ToLowerInvariant()) >= 0 || IsAllDots(fileName))
             return string.Format(reservedNameFormat, fileName);
 
-        var invalid = Path.GetInvalidFileNameChars();
+        var invalid = System.IO.Path.GetInvalidFileNameChars();
         var sb = new StringBuilder(fileName.Length);
         foreach (char c in fileName)
         {
@@ -558,7 +558,7 @@ public static partial class IOUtilities
         if (string.IsNullOrEmpty(fileName))
             return false;
 
-        if (fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+        if (fileName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) >= 0)
             return false;
 
         if (Array.IndexOf(_reservedFileNames, fileName.ToLowerInvariant()) >= 0)
@@ -573,13 +573,13 @@ public static partial class IOUtilities
             return false;
 
         var length = path.Length;
-        if (length < 1 || (path[0] != Path.DirectorySeparatorChar && path[0] != Path.AltDirectorySeparatorChar))
-            return (length >= 2 && path[1] == Path.VolumeSeparatorChar);
+        if (length < 1 || (path[0] != System.IO.Path.DirectorySeparatorChar && path[0] != System.IO.Path.AltDirectorySeparatorChar))
+            return (length >= 2 && path[1] == System.IO.Path.VolumeSeparatorChar);
 
         return true;
     }
 
-    public static string? PathCombineNoCheck(params string[] paths) => PathCombineNoCheck(Path.DirectorySeparatorChar, paths);
+    public static string? PathCombineNoCheck(params string[] paths) => PathCombineNoCheck(System.IO.Path.DirectorySeparatorChar, paths);
     public static string? PathCombineNoCheck(char separator, params string[] paths)
     {
         if (paths == null)

@@ -61,7 +61,7 @@ public class StateButton : ButtonBase, IValueable, ISelectable
     public IReadOnlyList<StateButtonState> States => _states;
 
     [Category(CategoryBehavior)]
-    public object Value { get => GetPropertyValue(ValueProperty)!; set => SetPropertyValue(ValueProperty, value); }
+    public object? Value { get => GetPropertyValue(ValueProperty); set => SetPropertyValue(ValueProperty, value); }
 
     protected virtual void OnIsSelectedChanged(object? sender, ValueEventArgs<bool> e)
     {

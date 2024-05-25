@@ -2,7 +2,7 @@
 
 public class Vector2PropertyAnimation : PropertyAnimation
 {
-    public Vector2PropertyAnimation(PropertyAnimationArguments arguments, Vector2 from, Vector2 to, IEasingFunction easingFunction = null, EasingMode easingMode = EasingMode.In)
+    public Vector2PropertyAnimation(PropertyAnimationArguments arguments, Vector2 from, Vector2 to, IEasingFunction? easingFunction = null, EasingMode easingMode = EasingMode.In)
         : base(arguments)
     {
         From = from;

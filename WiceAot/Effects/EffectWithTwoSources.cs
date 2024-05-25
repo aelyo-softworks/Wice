@@ -2,10 +2,11 @@
 
 public abstract class EffectWithTwoSources : Effect
 {
-    protected EffectWithTwoSources(int sourcesCount = 2)
+    protected EffectWithTwoSources(uint sourcesCount = 2)
         : base(sourcesCount)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(sourcesCount, 2);
+        if (sourcesCount < 2)
+            throw new ArgumentOutOfRangeException(nameof(sourcesCount));
     }
 
     public IGraphicsEffectSource Source1 { get => GetSource(0); set => SetSource(0, value); }

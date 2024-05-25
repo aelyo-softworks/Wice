@@ -23,7 +23,7 @@ public class Shape : Visual
     public CompositionBrush? FillBrush { get => RenderBrush; set => RenderBrush = value; }
 
     [Category(CategoryRender)]
-    public CompositionBrush StrokeBrush { get => (CompositionBrush)GetPropertyValue(StrokeBrushProperty)!; set => SetPropertyValue(StrokeBrushProperty, value); }
+    public CompositionBrush? StrokeBrush { get => (CompositionBrush)GetPropertyValue(StrokeBrushProperty); set => SetPropertyValue(StrokeBrushProperty, value); }
 
     [Category(CategoryRender)]
     public float StrokeThickness { get => (float)GetPropertyValue(StrokeThicknessProperty)!; set => SetPropertyValue(StrokeThicknessProperty, value); }

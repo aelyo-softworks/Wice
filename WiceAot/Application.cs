@@ -165,7 +165,7 @@ public class Application : IDisposable
     }
 
     public static bool HasErrors => _errors.Count > 0;
-    public static void AddError(Exception error, [CallerMemberName] string methodName = null)
+    public static void AddError(Exception error, [CallerMemberName] string? methodName = null)
     {
         if (error == null)
             return;

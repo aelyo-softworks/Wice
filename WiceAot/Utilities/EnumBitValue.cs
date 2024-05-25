@@ -7,20 +7,20 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
     private bool _isSelected;
     private readonly Lazy<bool> _isMultiValued;
 
-    public EnumBitValue(object value)
+    public EnumBitValue(object value, string name)
     {
-        if (value == null)
-            throw new ArgumentNullException(nameof(value));
-
+        ArgumentNullException.ThrowIfNull(value);
+        ArgumentNullException.ThrowIfNull(name);
         Value = value;
+        Name = name;
         RaiseIsSelectedChanged = true;
         _isMultiValued = new Lazy<bool>(GetIsMultiValued);
     }
 
     public object Value { get; }
-    public virtual string Name { get; set; }
-    public virtual string DisplayName { get; set; }
-    public virtual object BitValue { get; set; }
+    public virtual string Name { get; }
+    public virtual string? DisplayName { get; set; }
+    public virtual object? BitValue { get; set; }
 
     public virtual bool IsSelected
     {

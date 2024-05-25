@@ -2,7 +2,7 @@
 
 public class DragEventArgs : EventArgs
 {
-    public DragEventArgs(int x, int y, POINTER_MOD keys, DragState state, EventArgs sourceEventArgs = null)
+    public DragEventArgs(int x, int y, POINTER_MOD keys, DragState state, EventArgs? sourceEventArgs = null)
     {
         X = x;
         Y = y;

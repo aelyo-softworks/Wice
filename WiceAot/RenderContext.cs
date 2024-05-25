@@ -9,7 +9,7 @@ public class RenderContext
         SurfaceCreationOptions = creationOptions;
     }
 
-    public IComObject<ID2D1DeviceContext>? DeviceContext { get; private set; }
+    public IComObject<ID2D1DeviceContext> DeviceContext { get; private set; }
     public SurfaceCreationOptions? SurfaceCreationOptions { get; }
     public RECT? SurfaceRect { get; }
 
@@ -24,7 +24,7 @@ public class RenderContext
         }
         finally
         {
-            rc.DeviceContext = null;
+            rc.DeviceContext = null!;
         }
     }
 

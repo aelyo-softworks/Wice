@@ -1,4 +1,6 @@
-﻿namespace Wice.Utilities;
+﻿using WinRT;
+
+namespace Wice.Utilities;
 
 public static class UIExtensions
 {
@@ -19,7 +21,7 @@ public static class UIExtensions
     const int TMT_TEXTCOLOR = 3803;
 #pragma warning restore IDE1006 // Naming Styles
 
-    public static void SetHyperLinkRange(this TextBox textBox, string text, Func<string, bool> onClick = null)
+    public static void SetHyperLinkRange(this TextBox textBox, string text, Func<string, bool>? onClick = null)
     {
         ArgumentNullException.ThrowIfNull(textBox);
 
@@ -36,7 +38,7 @@ public static class UIExtensions
             if (textBox.IsPositionOverRange(e.GetPosition(textBox), range))
             {
                 textBox.SetSolidColor(HyperLinkHotColor, range);
-                textBox.Cursor = DirectN.Cursor.Hand;
+                textBox.Cursor = DirectN.Extensions.Utilities.Cursor.Hand;
             }
             else
             {
@@ -315,47 +317,47 @@ public static class UIExtensions
         return batch;
     }
 
-    //public static void Clear(this SpriteVisual visual, CompositionGraphicsDevice device, D3DCOLORVALUE? color = null, SurfaceCreationOptions? options = null, RECT? rect = null) => DrawOnSurface(visual, device, (dc) => dc.Clear(color ?? D3DCOLORVALUE.Transparent), options, rect);
-    //public static void DrawOnSurface(this SpriteVisual visual, CompositionGraphicsDevice device, Action<IComObject<ID2D1DeviceContext>> drawAction, SurfaceCreationOptions? options = null, RECT? rect = null)
-    //{
-    //    ArgumentNullException.ThrowIfNull(visual);
-    //    ArgumentNullException.ThrowIfNull(device);
-    //    ArgumentNullException.ThrowIfNull(drawAction);
-    //    var surface = EnsureDrawingSurface(visual, device, options);
-    //    if (surface == null)
-    //        return;
+    public static void Clear(this SpriteVisual visual, CompositionGraphicsDevice device, D3DCOLORVALUE? color = null, SurfaceCreationOptions? options = null, RECT? rect = null) => DrawOnSurface(visual, device, (dc) => dc.Clear(color ?? D3DCOLORVALUE.Transparent), options, rect);
+    public static void DrawOnSurface(this SpriteVisual visual, CompositionGraphicsDevice device, Action<IComObject<ID2D1DeviceContext>> drawAction, SurfaceCreationOptions? options = null, RECT? rect = null)
+    {
+        ArgumentNullException.ThrowIfNull(visual);
+        ArgumentNullException.ThrowIfNull(device);
+        ArgumentNullException.ThrowIfNull(drawAction);
+        var surface = EnsureDrawingSurface(visual, device, options);
+        if (surface == null)
+            return;
 
-    //    var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
-    //    using var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop);
-    //    using (var dc = surfaceInterop.BeginDraw(rect))
-    //    {
-    //        drawAction(dc);
-    //    }
-    //    surfaceInterop.EndDraw();
-    //}
+        var interop = surface.As<ICompositionDrawingSurfaceInterop>();
+        using var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop);
+        using (var dc = surfaceInterop.BeginDraw(rect))
+        {
+            drawAction(dc);
+        }
+        surfaceInterop.EndDraw();
+    }
 
-    //public static T? DrawOnSurface<T>(this SpriteVisual visual, CompositionGraphicsDevice device, Func<IComObject<ID2D1DeviceContext>, T> drawAction, SurfaceCreationOptions? options = null)
-    //{
-    //    ArgumentNullException.ThrowIfNull(visual);
-    //    ArgumentNullException.ThrowIfNull(device);
-    //    ArgumentNullException.ThrowIfNull(drawAction);
+    public static T? DrawOnSurface<T>(this SpriteVisual visual, CompositionGraphicsDevice device, Func<IComObject<ID2D1DeviceContext>, T> drawAction, SurfaceCreationOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(visual);
+        ArgumentNullException.ThrowIfNull(device);
+        ArgumentNullException.ThrowIfNull(drawAction);
 
-    //    T item;
-    //    var surface = EnsureDrawingSurface(visual, device, options);
-    //    if (surface == null)
-    //        return default;
+        T item;
+        var surface = EnsureDrawingSurface(visual, device, options);
+        if (surface == null)
+            return default;
 
-    //    var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
-    //    using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop))
-    //    {
-    //        using (var dc = surfaceInterop.BeginDraw())
-    //        {
-    //            item = drawAction(dc);
-    //        }
-    //        surfaceInterop.EndDraw();
-    //    }
-    //    return item;
-    //}
+        var interop = surface.As<ICompositionDrawingSurfaceInterop>();
+        using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop))
+        {
+            using (var dc = surfaceInterop.BeginDraw())
+            {
+                item = drawAction(dc);
+            }
+            surfaceInterop.EndDraw();
+        }
+        return item;
+    }
 
     public static CompositionDrawingSurface? EnsureDrawingSurface(this SpriteVisual visual, CompositionGraphicsDevice device, SurfaceCreationOptions? options = null)
     {

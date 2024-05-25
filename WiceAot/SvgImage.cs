@@ -1,4 +1,6 @@
-﻿namespace Wice;
+﻿using WinRT;
+
+namespace Wice;
 
 public class SvgImage : RenderVisual, IDisposable
 {
@@ -58,7 +60,7 @@ public class SvgImage : RenderVisual, IDisposable
         if (doc == null)
             return;
 
-        var dc = context.DeviceContext.Object.ComCast<ID2D1DeviceContext5>(false);
+        var dc = context.DeviceContext.As<ID2D1DeviceContext5>(false);
         if (dc == null)
             return;
 
@@ -80,7 +82,7 @@ public class SvgImage : RenderVisual, IDisposable
         // hence the possible buffer feature
         //
 
-        ID2D1SvgDocument? svg = null;
+        IComObject<ID2D1SvgDocument>? svg = null;
         if (BufferStream)
         {
             if (_documentBuffer == null)
@@ -96,7 +98,7 @@ public class SvgImage : RenderVisual, IDisposable
             if (_documentBuffer.Length > 0)
             {
                 _documentBuffer.Position = 0;
-                dc.CreateSvgDocument(_documentBuffer, rc.Size, out svg).ThrowOnError();
+                svg = dc.CreateSvgDocument(_documentBuffer, rc.Size);
                 //Application.Trace("loaded doc from buffer");
             }
         }
@@ -105,7 +107,7 @@ public class SvgImage : RenderVisual, IDisposable
             using var stream = doc.GetReadStream();
             if (stream != null)
             {
-                dc.CreateSvgDocument(new ManagedIStream(stream), rc.Size, out svg).ThrowOnError();
+                svg = dc.CreateSvgDocument(new ManagedIStream(stream), rc.Size);
                 //Application.Trace("loaded doc");
             }
         }
@@ -114,7 +116,7 @@ public class SvgImage : RenderVisual, IDisposable
 
         using var document = new ComObject<ID2D1SvgDocument>(svg);
         //Application.Trace("draw");
-        dc.DrawSvgDocument(document.Object);
+        dc.DrawSvgDocument(document);
     }
 
     protected virtual void Dispose(bool disposing)
