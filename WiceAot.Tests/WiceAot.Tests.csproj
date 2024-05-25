@@ -7,10 +7,20 @@
 		<Nullable>enable</Nullable>
 		<PublishAot>true</PublishAot>
 		<InvariantGlobalization>true</InvariantGlobalization>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\WiceAot\WiceAot.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="DirectN">
+	    <HintPath>..\WiceAot\External\DirectN.dll</HintPath>
+	  </Reference>
+	  <Reference Include="DirectN.Extensions">
+	    <HintPath>..\WiceAot\External\DirectN.Extensions.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 </Project>

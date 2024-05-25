@@ -5,12 +5,7 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
     private static readonly ConcurrentHashSet<string> _classesNames = [];
 
     public static WindowProc DefWindowdProc { get; } = GetDefWindowProc();
-    private static WindowProc GetDefWindowProc()
-    {
-        using var p = new Pstr("DefWindowProcW");
-        using var name = new Pwstr("user32.dll");
-        return Marshal.GetDelegateForFunctionPointer<WindowProc>(Functions.GetProcAddress(Functions.GetModuleHandleW(name), p));
-    }
+    private static WindowProc GetDefWindowProc() => Marshal.GetDelegateForFunctionPointer<WindowProc>(Functions.GetProcAddress(Functions.GetModuleHandleW(PWSTR.From("user32.dll")), PSTR.From("DefWindowProcW")));
 
     public static IEnumerable<NativeWindow> TopLevelWindows => EnumerateTopLevelWindows().Select(FromHandle).Where(w => w != null)!;
 
@@ -49,8 +44,7 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
         set
         {
             value ??= string.Empty;
-            using var p = new Pwstr(value);
-            Functions.SetWindowTextW(Handle, p);
+            Functions.SetWindowTextW(Handle, PWSTR.From(value));
         }
     }
 
@@ -203,9 +197,8 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
 
     public int ShellAbout(string? text = null, string? otherStuff = null)
     {
-        using var p = new Pwstr(text.Nullify() ?? Assembly.GetEntryAssembly()?.GetTitle());
-        using var po = new Pwstr(otherStuff);
-        return Functions.ShellAboutW(Handle, p, po, IconHandle);
+        var txt = text.Nullify() ?? Assembly.GetEntryAssembly()?.GetTitle();
+        return Functions.ShellAboutW(Handle, PWSTR.From(txt), PWSTR.From(otherStuff), IconHandle);
     }
 
     public override string ToString()
@@ -289,15 +282,14 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
     {
         ArgumentNullException.ThrowIfNull(className);
         ArgumentNullException.ThrowIfNull(windowProc);
-        using var p = new Pwstr(className);
-        if (!Functions.GetClassInfoW(new HINSTANCE { Value = Application.ModuleHandle.Value }, p, out _))
+        if (!Functions.GetClassInfoW(new HINSTANCE { Value = Application.ModuleHandle.Value }, PWSTR.From(className), out _))
         {
             var cls = new WNDCLASSW
             {
                 style = WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW,
                 lpfnWndProc = windowProc,
                 hInstance = new HINSTANCE { Value = Application.ModuleHandle.Value },
-                lpszClassName = p
+                lpszClassName = PWSTR.From(className),
             };
             //cls.hCursor = DirectN.Cursor.Arrow.Handle; // we set the cursor ourselves, otherwise the cursor will blink
             //const int WHITE_BRUSH = 0;
@@ -322,8 +314,7 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
     {
         foreach (var name in _classesNames)
         {
-            using var p = new Pwstr(name);
-            Functions.UnregisterClassW(p, new HINSTANCE { Value = Application.ModuleHandle.Value });
+            Functions.UnregisterClassW(PWSTR.From(name), new HINSTANCE { Value = Application.ModuleHandle.Value });
             _classesNames.TryRemove(name);
         }
     }

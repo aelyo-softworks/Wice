@@ -309,9 +309,7 @@ public class ResourceManager
         var family = fontFamilyName.Nullify() ?? Theme.DefaultFontFamilyName;
         var size = GetFontSize(fontSize);
         var key = family + "\0" + size + "\0" + TextFormat.GetCacheKey(fonts);
-        using var p = new Pwstr(family);
-        using var pe = new Pwstr(string.Empty);
-        DWriteFactory.Object.CreateTextFormat(p, fonts, fontWeight, fontStyle, fontStretch, size, pe, out var format).ThrowOnError();
+        DWriteFactory.Object.CreateTextFormat(PWSTR.From(family), fonts, fontWeight, fontStyle, fontStretch, size, PWSTR.From(string.Empty), out var format).ThrowOnError();
         return new KeyComObject<IDWriteTextFormat>(format, key);
     }
 

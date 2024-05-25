@@ -1735,9 +1735,7 @@ public class Window : Canvas, ITitleBarParent
             title = Conversions.Decamelize(Assembly.GetEntryAssembly().GetTitle());
         }
 
-        using var pc = new Pwstr(ClassName);
-        using var pt = new Pwstr(title);
-        var hwnd = Functions.CreateWindowExW(FinalExtendedStyle, pc, pt, FinalStyle, rc.left, rc.top, rc.Width, rc.Height, ParentHandle, HMENU.Null, HINSTANCE.Null, ptr);
+        var hwnd = Functions.CreateWindowExW(FinalExtendedStyle, PWSTR.From(ClassName), PWSTR.From(title), FinalStyle, rc.left, rc.top, rc.Width, rc.Height, ParentHandle, HMENU.Null, HINSTANCE.Null, ptr);
         if (hwnd.Value == 0)
             throw new Win32Exception(Marshal.GetLastWin32Error());
 

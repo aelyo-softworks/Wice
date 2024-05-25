@@ -1,15 +1,10 @@
-﻿using System;
-using System.ComponentModel;
-using System.Linq;
-using DirectN;
-using Wice.Utilities;
-using static Wice.EnumListBox;
+﻿using static Wice.EnumListBox;
 
 namespace Wice;
 
 public class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
 {
-    public static VisualProperty ValueProperty {get; } = VisualProperty.Add<object>(typeof(FlagsEnumListBox), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: EnumTypeCheck);
+    public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(FlagsEnumListBox), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: EnumTypeCheck);
 
     public event EventHandler<ValueEventArgs>? ValueChanged;
 
@@ -59,7 +54,7 @@ public class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
                 var oldValue = Conversions.ChangeType<ulong>(Value);
                 if (oldValue != value)
                 {
-                    Value = Conversions.ChangeType(value, ((IBindList)this).Type);
+                    Value = Conversions.ChangeObjectType(value, ((IBindList)this).Type);
                     var ds = EnumDataSource.FromValue(Value);
                     foreach (var bv in ds)
                     {

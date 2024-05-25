@@ -82,7 +82,7 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
         {
             if (!property.Type.GetType().IsAssignableFrom(property.DefaultValue.GetType()))
             {
-                property.DefaultValue = Conversions.ChangeType(property.DefaultValue, property.Type);
+                property.DefaultValue = Conversions.ChangeObjectType(property.DefaultValue, property.Type);
             }
         }
 
@@ -161,7 +161,7 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
         Name = name;
         Type = type;
         DefaultValue = defaultValue;
-        ConvertedDefaultValue = Conversions.ChangeType(defaultValue, type, null, CultureInfo.InvariantCulture);
+        ConvertedDefaultValue = Conversions.ChangeObjectType(defaultValue, type, null, CultureInfo.InvariantCulture);
         Convert = convert;
         Changing = changing;
         Changed = changed;
@@ -197,6 +197,6 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     }
 
     // TODO: add acrylic brush?
-    public virtual bool TryConvertToTargetType(object? value, out object? convertedValue) => Conversions.TryChangeType(value, Type, CultureInfo.InvariantCulture, out convertedValue);
-    public virtual object? ConvertToTargetType(object? value) => Conversions.ChangeType(value, Type, ConvertedDefaultValue, CultureInfo.InvariantCulture);
+    public virtual bool TryConvertToTargetType(object? value, out object? convertedValue) => Conversions.TryChangeObjectType(value, Type, CultureInfo.InvariantCulture, out convertedValue);
+    public virtual object? ConvertToTargetType(object? value) => Conversions.ChangeObjectType(value, Type, ConvertedDefaultValue, CultureInfo.InvariantCulture);
 }
