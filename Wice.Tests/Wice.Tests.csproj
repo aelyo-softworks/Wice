@@ -96,10 +96,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectN">
-      <Version>1.16.0</Version>
+      <Version>1.16.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.22621.3233</Version>
+      <Version>10.0.26100.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
