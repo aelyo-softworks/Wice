@@ -20,8 +20,8 @@ But... why Wice?
 * It **still support .NET Framework 4.7.2**.
 * It's **100% open source C# code**, with something like 50000 lines of code (which is a relatively small code base).
 * It's more modern than Winforms (GDI/GDI+) and WPF (which is still based on DirectX 9 and that causes lots of issues).
-* It has **no sandbox like UWP**, and **doesn't require Win2D** ... complex crappyness.
-* It **compiles much faster than UWP or WinUI** projects because the tooling is the standard .NET "ole" tooling we all love an cherish.
+* It has **no sandbox like UWP**, and **doesn't require Win2D**  (it's too complex to use and requires all sort off painful MSVC dependencies).
+* It **compiles much faster than UWP or WinUI** projects because the tooling is the standard .NET "old" tooling we all love an cherish.
 * It has no external dependencies, so it's **free from deployment pain** (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" my apps at all?`</rant>`). Using .NET 5/6/7+, you can even publish your app as a *really single* zero-dependency .exe!
 * It has the real Windows Acrylic (no hack!) brush w/o the need for UWP.
 * It ships with an integrated in-process (Snoop-like for people familiar with WPF) visual "Spy" utility (just press F9 in debug mode, actually, this sole part uses Winforms, but it's not necessary for Wice, it's more like an external embedded tool).
