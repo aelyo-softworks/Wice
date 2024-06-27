@@ -87,13 +87,10 @@ namespace Wice.Utilities
         public string Bitness => GetBitness();
 
         [Category("Process")]
-        public string CurrentCulture => CultureInfo.CurrentCulture.Name + " UI: " + CultureInfo.CurrentUICulture.Name;
+        public string CurrentCulture => CultureInfo.CurrentCulture.Name + ", UI: " + CultureInfo.CurrentUICulture.Name + ", Installed: " + CultureInfo.InstalledUICulture.Name;
 
         [Category("Process")]
-        public string Now => DateTime.Now + " Utc: " + DateTime.UtcNow;
-
-        [Category("Process")]
-        public string InstalledUICulture => CultureInfo.InstalledUICulture.Name;
+        public string Now => DateTime.Now + ", Utc: " + DateTime.UtcNow;
 
         [Category("Graphics")]
         public int TextScaleFactor => DpiUtilities.TextScaleFactor;
