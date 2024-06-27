@@ -23,9 +23,6 @@ namespace Wice.Utilities
             Assembly = assembly ?? Assembly.GetExecutingAssembly();
         }
 
-        [DllImport("user32", CharSet = CharSet.Auto, ExactSpelling = true)]
-        private static extern int GetSystemMetrics(SM nIndex);
-
         [Browsable(false)]
         public Assembly Assembly { get; }
 
@@ -90,13 +87,31 @@ namespace Wice.Utilities
         public string Bitness => GetBitness();
 
         [Category("Process")]
-        public string CurrentCulture => CultureInfo.CurrentCulture.Name + Environment.NewLine + "UI: " + CultureInfo.CurrentUICulture.Name;
+        public string CurrentCulture => CultureInfo.CurrentCulture.Name + " UI: " + CultureInfo.CurrentUICulture.Name;
 
         [Category("Process")]
-        public string Now => DateTime.Now + Environment.NewLine + "Utc: " + DateTime.UtcNow;
+        public string Now => DateTime.Now + " Utc: " + DateTime.UtcNow;
 
         [Category("Process")]
         public string InstalledUICulture => CultureInfo.InstalledUICulture.Name;
+
+        [Category("Graphics")]
+        public int TextScaleFactor => DpiUtilities.TextScaleFactor;
+
+        [Category("Graphics")]
+        public string DefaultTextServicesGeneratorVersion { get; } = RichTextBox.GetDefaultTextServicesGeneratorVersion();
+
+        [Category("Graphics")]
+        public string WindowDpiAwareness { get; } = Application.Windows.FirstOrDefault()?.Native.DpiAwarenessDescription;
+
+        [Category("Graphics")]
+        public int WindowDpiFromDpiAwareness { get; } = Application.Windows.FirstOrDefault()?.Native.DpiFromDpiAwareness ?? 96;
+
+        [Category("Graphics")]
+        public string ThreadDpiAwareness { get; } = NativeWindow.GetDpiAwarenessDescription(NativeWindow.GetThreadDpiAwarenessContext());
+
+        [Category("Graphics")]
+        public int ThreadDpiFromDpiAwareness { get; } = NativeWindow.GetDpiFromDpiAwarenessContext(NativeWindow.GetThreadDpiAwarenessContext());
 
         [Category("Graphics")]
         public string DesktopDpi
@@ -130,10 +145,18 @@ namespace Wice.Utilities
                 var tar = DisplayConfig.GetTargetName(path);
                 var src = DisplayConfig.GetSourceName(path);
                 var display = dd.FirstOrDefault(m => m.DeviceName.EqualsIgnoreCase(src.viewGdiDeviceName));
-                if (display.DeviceName == null)
-                    yield return tar.monitorFriendlyDeviceName + " " + src.viewGdiDeviceName;
 
-                yield return tar.monitorFriendlyDeviceName + " " + display.CurrentSettings;
+                string dpi = null;
+                var mon = display.Monitor;
+                if (mon != null)
+                {
+                    dpi = " Dpi(a:" + mon.AngularDpi.width + " e:" + mon.EffectiveDpi.width + " r:" + mon.RawDpi.width + ")";
+                }
+
+                if (display.DeviceName == null)
+                    yield return tar.monitorFriendlyDeviceName + " " + src.viewGdiDeviceName + dpi;
+
+                yield return tar.monitorFriendlyDeviceName + " " + display.CurrentSettings + dpi;
             }
         }
 
@@ -471,5 +494,8 @@ namespace Wice.Utilities
 
         [DllImport("kernel32", SetLastError = true)]
         private static extern bool CloseHandle(IntPtr handle);
+
+        [DllImport("user32", CharSet = CharSet.Auto, ExactSpelling = true)]
+        private static extern int GetSystemMetrics(SM nIndex);
     }
 }

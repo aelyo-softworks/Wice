@@ -2,6 +2,7 @@
   "profiles": {
     "WiceCore.Samples.Gallery": {
       "commandName": "Project",
+      "commandLineArgs": "\r\n",
       "nativeDebugging": false,
       "hotReloadEnabled": false
     }

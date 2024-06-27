@@ -34,6 +34,9 @@ namespace Wice
         public tagRECT ClientRect { get { WindowsFunctions.GetClientRect(Handle, out var rc); return rc; } }
         public IntPtr IconHandle { get => WindowsFunctions.SendMessage(Handle, MessageDecoder.WM_GETICON, new IntPtr(WindowsConstants.ICON_BIG)); set { var ptr = WindowsFunctions.SendMessage(Handle, MessageDecoder.WM_SETICON, new IntPtr(WindowsConstants.ICON_BIG), value); if (ptr != IntPtr.Zero) { WindowsFunctions.DestroyIcon(ptr); } } }
         public int Dpi { get { var dpi = WindowsFunctions.GetDpiForWindow(Handle); if (dpi <= 0) return 96; return dpi; } }
+        public IntPtr DpiAwareness => DpiUtilities.GetWindowDpiAwarenessContext(Handle);
+        public string DpiAwarenessDescription => GetDpiAwarenessDescription(DpiAwareness);
+        public int DpiFromDpiAwareness => GetDpiFromDpiAwarenessContext(DpiAwareness);
         public string Text { get => GetWindowText(Handle); set => WindowsFunctions.SetWindowText(Handle, value ?? string.Empty); }
         public WS Style { get => (WS)GetWindowLong(WindowsConstants.GWL_STYLE).ToInt64(); set => SetWindowLong(WindowsConstants.GWL_STYLE, new IntPtr((int)value)); }
         public WS_EX ExtendedStyle { get => (WS_EX)GetWindowLong(WindowsConstants.GWL_EXSTYLE).ToInt64(); set => SetWindowLong(WindowsConstants.GWL_EXSTYLE, new IntPtr((int)value)); }
@@ -524,6 +527,15 @@ namespace Wice
             public bool fTransitionOnMaximized;
         }
 
+        [DllImport("user32")]
+        private static extern bool AreDpiAwarenessContextsEqual(IntPtr dpiContextA, IntPtr dpiContextB);
+
+        [DllImport("user32")]
+        internal static extern IntPtr GetThreadDpiAwarenessContext();
+
+        [DllImport("user32")]
+        internal static extern int GetDpiFromDpiAwarenessContext(IntPtr value);
+
         [DllImport("shell32", ExactSpelling = true)]
         private static extern bool SHGetPropertyStoreForWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.LPStruct)] Guid riid, [MarshalAs(UnmanagedType.IUnknown)] out object ppv);
 
@@ -568,6 +580,36 @@ namespace Wice
         //    bb.fEnable = enable;
         //    DwmEnableBlurBehindWindow(hwnd, ref bb).ThrowOnError();
         //}
+
+        public static string GetDpiAwarenessDescription(IntPtr awareness)
+        {
+            if (awareness == IntPtr.Zero)
+                return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
+
+            if (WindowsVersionUtilities.KernelVersion >= new Version(10, 0, 14393))
+            {
+                if (AreDpiAwarenessContextsEqual(awareness, (IntPtr)DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE))
+                    return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE);
+
+                if (AreDpiAwarenessContextsEqual(awareness, (IntPtr)DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE))
+                    return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
+
+                if (AreDpiAwarenessContextsEqual(awareness, (IntPtr)DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE))
+                    return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
+
+                if (AreDpiAwarenessContextsEqual(awareness, (IntPtr)DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2))
+                    return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+
+                if (AreDpiAwarenessContextsEqual(awareness, (IntPtr)DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED))
+                    return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED);
+            }
+
+            if (IntPtr.Size == 4)
+                return "0x" + awareness.ToString("X8");
+
+            return "0x" + awareness.ToString("X16");
+        }
+
 
         public void EnableAcrylicBlurBehind() => EnableAcrylicBlurBehind(Handle);
         public static void EnableAcrylicBlurBehind(IntPtr hwnd)

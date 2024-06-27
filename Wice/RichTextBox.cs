@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading;
 using DirectN;
+using Wice.Utilities;
 
 namespace Wice
 {
@@ -14,11 +15,18 @@ namespace Wice
 
         public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
         {
+            if (generator == TextServicesGenerator.Default)
+            {
+                generator = GetDefaultTextServicesGenerator();
+            }
+
             Generator = generator;
             _host = new TextHost(generator);
             _host.TextColor = 0;
             BackgroundColor = _D3DCOLORVALUE.Transparent;
         }
+
+        protected TextHost Host => _host;
 
         [Category(CategoryLive)]
         public dynamic Document => _host?.Document;
@@ -293,5 +301,16 @@ namespace Wice
 
         ~RichTextBox() { Dispose(disposing: false); }
         public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
+
+        // allow command line change
+        public static TextServicesGenerator GetDefaultTextServicesGenerator() => CommandLine.GetArgument(nameof(TextServicesGenerator), TextServicesGenerator.Default);
+
+        public static string GetDefaultTextServicesGeneratorVersion()
+        {
+            using (var rtb = new RichTextBox())
+            {
+                return rtb.GeneratorVersion;
+            }
+        }
     }
 }
