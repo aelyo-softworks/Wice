@@ -78,9 +78,11 @@
     <Compile Include="DataBinder.cs" />
     <Compile Include="DataBindContext.cs" />
     <Compile Include="DialogBox.cs" />
+    <Compile Include="DpiChangedEventArgs.cs" />
     <Compile Include="EditorMode.cs" />
     <Compile Include="EditorHost.cs" />
     <Compile Include="EventTrigger.cs" />
+    <Compile Include="IClickable.cs" />
     <Compile Include="Interop\ICompositionTarget.cs" />
     <Compile Include="Interop\IGeometrySource2DWinRT.cs" />
     <Compile Include="Interop\IGraphicsEffectSourceWinRT.cs" />

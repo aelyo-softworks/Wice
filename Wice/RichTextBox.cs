@@ -157,6 +157,29 @@ namespace Wice
             }
 
             var size = host.GetNaturalSize(TXTNATURALSIZE.TXTNS_FITTOCONTENT, constraint).ToD2D_SIZE_F();
+            D2D_SIZE_U dpi;
+            if (Window?.Handle != IntPtr.Zero)
+            {
+                dpi = DpiUtilities.GetDpiForWindow(Window.Handle);
+            }
+            else
+            {
+                dpi = DpiUtilities.GetDpiForDesktop();
+            }
+
+            if (dpi.width != 96)
+            {
+                size.width = size.width * 96 / dpi.width;
+            }
+
+            if (dpi.height != 96)
+            {
+                size.height = size.height * 96 / dpi.height;
+            }
+
+            var ratio = GetMonitorDpiRatioToPrimary(Window.Monitor);
+            size.width = size.width * ratio.Monitor / ratio.Primary;
+            size.height = size.height * ratio.Monitor / ratio.Primary;
 
             if (leftPadding)
             {
@@ -246,16 +269,33 @@ namespace Wice
 
             if (dpi.width != 96)
             {
-                rc.Width = (int)(rc.Width * dpi.width / 96);
+                rc.Width = (int)(rc.Width * dpi.width * dpi.width / 96 / 96);
             }
 
             if (dpi.height != 96)
             {
-                rc.Height = (int)(rc.Height * dpi.height / 96);
+                rc.Height = (int)(rc.Height * dpi.height * dpi.height / 96 / 96);
             }
 
-            context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_PIXELS);
+            var ratio = GetMonitorDpiRatioToPrimary(Window.Monitor);
+            rc.Width = rc.Width * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor;
+            rc.Height = rc.Height * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor;
+
+            context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_DIPS);
             _host.Draw(context.DeviceContext.Object, rc);
+        }
+
+        // seems like richedit is relative to primary monitor's dpi
+        private static (int Primary, int Monitor) GetMonitorDpiRatioToPrimary(DirectN.Monitor monitor)
+        {
+            if (monitor == null || monitor.IsPrimary || monitor.EffectiveDpi.width == 0)
+                return (1, 1);
+
+            var primary = DirectN.Monitor.Primary;
+            if (primary == null || primary.EffectiveDpi.width == 0)
+                return (1, 1);
+
+            return ((int)primary.EffectiveDpi.width, (int)monitor.EffectiveDpi.width);
         }
 
         protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions options = null)

@@ -83,6 +83,9 @@ namespace Wice
         public event EventHandler Activated;
         public event EventHandler Deactivated;
         public event EventHandler Destroyed;
+        public event EventHandler<DpiChangedEventArgs> DpiChanged;
+        public event EventHandler DpiChangedBeforeParent;
+        public event EventHandler DpiChangedAfterParent;
         public event EventHandler<ClosingEventArgs> Closing;
 
         public Window()
@@ -152,6 +155,9 @@ namespace Wice
         public bool EnableInvalidationStackDiagnostics { get; set; }
 #endif
 
+        [Category(CategoryLayout)]
+        public int Dpi => Native?.Dpi ?? 96;
+
         [Category(CategoryBehavior)]
         public bool IsBackground { get; set; } // true => doesn't prevent to quit
 
@@ -166,6 +172,9 @@ namespace Wice
 
         [Browsable(false)]
         public IntPtr MonitorHandle { get; private set; }
+
+        [Browsable(false)]
+        public DirectN.Monitor Monitor => MonitorHandle != IntPtr.Zero ? new DirectN.Monitor(MonitorHandle) : null;
 
         [Category(CategoryLayout)]
         public tagRECT WindowRect => Native.WindowRect;
@@ -742,6 +751,9 @@ namespace Wice
         protected virtual void OnMonitorChanged(object sender, EventArgs e) => MonitorChanged?.Invoke(sender, e);
         protected virtual void OnHandleCreated(object sender, EventArgs e) => HandleCreated?.Invoke(sender, e);
         protected virtual void OnClosing(object sender, ClosingEventArgs e) => Closing?.Invoke(sender, e);
+        protected virtual void OnDpiChanged(object sender, DpiChangedEventArgs e) => DpiChanged?.Invoke(sender, e);
+        protected virtual void OnDpiChangedAfterParent(object sender, EventArgs e) => DpiChangedAfterParent?.Invoke(sender, e);
+        protected virtual void OnDpiChangedBeforeParent(object sender, EventArgs e) => DpiChangedBeforeParent?.Invoke(sender, e);
 
         public virtual bool Show(SW command = SW.SW_SHOW) => Native.Show(command);
         public bool Hide() => Native.Show(SW.SW_HIDE);
@@ -1756,9 +1768,9 @@ namespace Wice
                 return;
 
             MonitorHandle = monitor;
+            MainTitleBar?.Update();
             OnMonitorChanged(this, EventArgs.Empty);
             OnPropertyChanged(nameof(MonitorHandle));
-            Application.Trace("OnMonitorChanged");
         }
 
         protected virtual ToolTip CreateToolTip() => new ToolTip();
@@ -2884,18 +2896,18 @@ namespace Wice
         private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam)
         {
 #if DEBUG
-            if (msg != MessageDecoder.WM_SETCURSOR && msg != MessageDecoder.WM_NCMOUSEMOVE &&
-                msg != MessageDecoder.WM_NCHITTEST && msg != MessageDecoder.WM_MOUSEMOVE &&
-                msg != MessageDecoder.WM_MOUSELEAVE && msg != MessageDecoder.WM_NCMOUSELEAVE &&
-                msg != MessageDecoder.WM_MOUSEHOVER &&
-                msg != MessageDecoder.WM_SIZE && msg != MessageDecoder.WM_ENTERIDLE && msg != MessageDecoder.WM_GETOBJECT &&
-                msg != MessageDecoder.WM_MOVE && msg != MessageDecoder.WM_MOVING &&
-                msg != MessageDecoder.WM_GETMINMAXINFO && msg != MessageDecoder.WM_ERASEBKGND &&
-                msg != MessageDecoder.WM_PAINT && msg != MessageDecoder.WM_NCPAINT && msg != MessageDecoder.WM_GETICON &&
-                msg != MessageDecoder.WM_WINDOWPOSCHANGED && msg != MessageDecoder.WM_WINDOWPOSCHANGING)
-            {
-                //Application.Trace("msg: " + MessageDecoder.Decode(hwnd, msg, wParam, lParam));
-            }
+            //if (msg != MessageDecoder.WM_SETCURSOR && msg != MessageDecoder.WM_NCMOUSEMOVE &&
+            //    msg != MessageDecoder.WM_NCHITTEST && msg != MessageDecoder.WM_MOUSEMOVE &&
+            //    msg != MessageDecoder.WM_MOUSELEAVE && msg != MessageDecoder.WM_NCMOUSELEAVE &&
+            //    msg != MessageDecoder.WM_MOUSEHOVER &&
+            //    msg != MessageDecoder.WM_SIZE && msg != MessageDecoder.WM_ENTERIDLE && msg != MessageDecoder.WM_GETOBJECT &&
+            //    msg != MessageDecoder.WM_MOVE && msg != MessageDecoder.WM_MOVING &&
+            //    msg != MessageDecoder.WM_GETMINMAXINFO && msg != MessageDecoder.WM_ERASEBKGND &&
+            //    msg != MessageDecoder.WM_PAINT && msg != MessageDecoder.WM_NCPAINT && msg != MessageDecoder.WM_GETICON &&
+            //    msg != MessageDecoder.WM_WINDOWPOSCHANGED && msg != MessageDecoder.WM_WINDOWPOSCHANGING)
+            //{
+            //    Application.Trace("msg: " + MessageDecoder.Decode(hwnd, msg, wParam, lParam));
+            //}
 
             //var str = MessageDecoder.MsgToString(msg);
             //if (str != null && (str.IndexOf("mouse", StringComparison.OrdinalIgnoreCase) >= 0 || str.IndexOf("pointer", StringComparison.OrdinalIgnoreCase) >= 0))
@@ -3269,6 +3281,25 @@ namespace Wice
                     win.HasFocus = false;
                     break;
 
+                case MessageDecoder.WM_DPICHANGED:
+                    var newDpi = new D2D_SIZE_U((uint)wParam.LOWORD(), (uint)wParam.HIWORD());
+                    var rc = Marshal.PtrToStructure<tagRECT>(lParam);
+                    var dpic = new DpiChangedEventArgs(newDpi, rc);
+                    win.OnDpiChanged(win, dpic);
+                    if (dpic.Handled)
+                        break;
+
+                    win.Invalidate(VisualPropertyInvalidateModes.Measure, new InvalidateReason(win.GetType()));
+                    return WindowsFunctions.DefWndProc(hwnd, msg, wParam, lParam);
+
+                case MessageDecoder.WM_DPICHANGED_AFTERPARENT:
+                    win.OnDpiChangedAfterParent(win, EventArgs.Empty);
+                    break;
+
+                case MessageDecoder.WM_DPICHANGED_BEFOREPARENT:
+                    win.OnDpiChangedBeforeParent(win, EventArgs.Empty);
+                    break;
+
                 case WM_SETCARETPOS:
                     win.SetCaretPosition(wParam, lParam);
                     break;
@@ -3318,6 +3349,7 @@ namespace Wice
 
                     return WindowsFunctions.DefWndProc(hwnd, msg, wParam, lParam);
 
+                case MessageDecoder.WM_ENTERSIZEMOVE:
                 case MessageDecoder.WM_EXITSIZEMOVE:
                     win.UpdateMonitor(); // should we call that when moving?
                     break;

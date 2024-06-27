@@ -483,7 +483,6 @@ namespace Wice
         }
 
         public GeometrySource2D GetTitleBarButtonGeometrySource(TitleBarButtonType type, float width) => new GeometrySource2D("TitleBarButton" + ((int)type) + "\0" + width) { Geometry = GetTitleBarButtonGeometry(type, width).Object };
-
         public virtual IComObject<ID2D1PathGeometry1> GetTitleBarButtonGeometry(TitleBarButtonType type, float width) => Get(null, Domain.TitleBarButtonTypeGeometry, ((int)type) + "\0" + width, () => CreateTitleBarButtonGeometry(type, width));
         public virtual IComObject<ID2D1PathGeometry1> CreateTitleBarButtonGeometry(TitleBarButtonType type, float width)
         {

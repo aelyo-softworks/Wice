@@ -45,9 +45,6 @@ namespace Wice
             ScrollBarButtonHoverColor = new _D3DCOLORVALUE(0xFFC9C9C9);
             ScrollBarThumbColor = new _D3DCOLORVALUE(0xFFC9C9C9);
             ScrollBarOverlayThumbColor = new _D3DCOLORVALUE(0xA0393939);
-            VerticalScrollBarWidth = WindowsFunctions.GetSystemMetrics(SM.SM_CXVSCROLL);
-            HorizontalScrollBarHeight = WindowsFunctions.GetSystemMetrics(SM.SM_CXHSCROLL);
-            ScrollBarOverlaySize = WindowsFunctions.GetSystemMetrics(SM.SM_CXVSCROLL) / 3;
             ScrollBarOverlayCornerRadius = 5;
             ScrollBarButtonStrokeThickness = 1;
 
@@ -125,10 +122,7 @@ namespace Wice
         public virtual _D3DCOLORVALUE ScrollBarThumbColor { get; set; }
         public virtual _D3DCOLORVALUE ScrollBarOverlayThumbColor { get; set; }
         public virtual int ScrollBarArrowMargin { get; set; }
-        public virtual int ScrollBarOverlaySize { get; set; }
         public virtual int ScrollBarOverlayCornerRadius { get; set; }
-        public virtual int VerticalScrollBarWidth { get; set; }
-        public virtual int HorizontalScrollBarHeight { get; set; }
 
         public virtual _D3DCOLORVALUE TextBoxForegroundColor { get; set; }
         public virtual _D3DCOLORVALUE TextBoxSelectionColor { get; set; }
@@ -156,5 +150,9 @@ namespace Wice
         public virtual float DialogWindowOverlayOpacity { get; set; }
 
         public virtual float HeaderSelectionWidth { get; set; }
+
+        public virtual int GetVerticalScrollBarWidth(int dpi) => NativeWindow.GetSystemMetricsForDpi(SM.SM_CXVSCROLL, dpi);
+        public virtual int GetHorizontalScrollBarHeight(int dpi) => NativeWindow.GetSystemMetricsForDpi(SM.SM_CXHSCROLL, dpi);
+        public virtual int GetScrollBarOverlaySize(int dpi) => NativeWindow.GetSystemMetricsForDpi(SM.SM_CXVSCROLL, dpi) / 3;
     }
 }

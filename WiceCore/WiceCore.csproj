@@ -60,6 +60,7 @@
     <Compile Include="..\Wice\HorizontalScrollBar.cs" Link="HorizontalScrollBar.cs" />
     <Compile Include="..\Wice\IAccessKeyParent.cs" Link="IAccessKeyParent.cs" />
     <Compile Include="..\Wice\IBindingDisplayName.cs" Link="IBindingDisplayName.cs" />
+    <Compile Include="..\Wice\IClickable.cs" Link="IClickable.cs" />
     <Compile Include="..\Wice\IContentParent.cs" Link="IContentParent.cs" />
     <Compile Include="..\Wice\IDataSourceVisual.cs" Link="IDataSourceVisual.cs" />
     <Compile Include="..\Wice\IFocusableParent.cs" Link="IFocusableParent.cs" />
@@ -329,6 +330,7 @@
     <Compile Include="..\Wice\Interop\IGraphicsEffectSourceWinRT.cs" Link="Interop\IGraphicsEffectSourceWinRT.cs" />
     <Compile Include="..\Wice\Interop\IGraphicsEffectWinRT.cs" Link="Interop\IGraphicsEffectWinRT.cs" />
     <Compile Include="..\Wice\PointerUpdateEventArgs.cs" Link="PointerUpdateEventArgs.cs" />
+    <Compile Include="..\Wice\DpiChangedEventArgs.cs" Link="DpiChangedEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.16.1" />

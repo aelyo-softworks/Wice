@@ -528,6 +528,9 @@ namespace Wice
         }
 
         [DllImport("user32")]
+        internal static extern int GetSystemMetricsForDpi(SM index, int dpi);
+
+        [DllImport("user32")]
         private static extern bool AreDpiAwarenessContextsEqual(IntPtr dpiContextA, IntPtr dpiContextB);
 
         [DllImport("user32")]

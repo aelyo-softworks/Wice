@@ -75,6 +75,7 @@ namespace Wice.Samples.Gallery
         {
             // add a Wice titlebar (looks similar to UWP)
             var titleBar = new TitleBar { IsMain = true };
+
             Children.Add(titleBar);
 
             var menuBack = new Border();
@@ -91,6 +92,12 @@ namespace Wice.Samples.Gallery
             grid.Columns.Add(new GridColumn());
             grid.Rows.Add(new GridRow());
             Children.Add(grid);
+
+            // this code is used to handle DPI changes
+            titleBar.Updated += (s, e) =>
+            {
+                grid.Rows[0].Size = titleBar.Height;
+            };
 
             // the document holds pages
             var document = new Border();

@@ -9,7 +9,7 @@ namespace Wice
             Canvas.SetLeft(this, 0);
             Canvas.SetBottom(this, 0);
             SetDockType(this, DockType.Bottom);
-            Height = Application.CurrentTheme.HorizontalScrollBarHeight;
+            Height = Application.CurrentTheme.GetHorizontalScrollBarHeight(96);
 
             SmallDecrease.Width = Height; // square
             SetDockType(LargeDecrease, DockType.Left);
@@ -35,7 +35,7 @@ namespace Wice
                 }
                 else
                 {
-                    Thumb.Height = Application.CurrentTheme.ScrollBarOverlaySize;
+                    Thumb.Height = Application.CurrentTheme.GetScrollBarOverlaySize(96);
                 }
             }
             else

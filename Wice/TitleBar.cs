@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 using DirectN;
 using Wice.Utilities;
 
@@ -10,67 +9,67 @@ namespace Wice
     {
         private bool _isMain;
 
+        public event EventHandler Updated;
+
         public TitleBar()
         {
             Canvas.SetTop(this, 0);
             SetDockType(this, DockType.Top);
             CloseButton = CreateCloseButton();
-            if (CloseButton == null)
-                throw new InvalidOperationException();
-
+            if (CloseButton != null)
+            {
 #if DEBUG
-            CloseButton.Name = nameof(CloseButton);
+                CloseButton.Name = nameof(CloseButton);
 #endif
-            CloseButton.ButtonType = TitleBarButtonType.Close;
-            SetDockType(CloseButton, DockType.Right);
-            Children.Add(CloseButton);
+                SetDockType(CloseButton, DockType.Right);
+                Children.Add(CloseButton);
+            }
 
             MaxButton = CreateMaxButton();
-            if (MaxButton == null)
-                throw new InvalidOperationException();
-
+            if (MaxButton != null)
+            {
 #if DEBUG
-            MaxButton.Name = nameof(MaxButton);
+                MaxButton.Name = nameof(MaxButton);
 #endif
 
-            MaxButton.ButtonType = TitleBarButtonType.Maximize;
-            SetDockType(MaxButton, DockType.Right);
-            Children.Add(MaxButton);
+                SetDockType(MaxButton, DockType.Right);
+                Children.Add(MaxButton);
+            }
 
             MinButton = CreateMinButton();
-            if (MinButton == null)
-                throw new InvalidOperationException();
-
+            if (MinButton != null)
+            {
 #if DEBUG
-            MinButton.Name = nameof(MinButton);
+                MinButton.Name = nameof(MinButton);
 #endif
 
-            MinButton.ButtonType = TitleBarButtonType.Minimize;
-            SetDockType(MinButton, DockType.Right);
-            Children.Add(MinButton);
+                SetDockType(MinButton, DockType.Right);
+                Children.Add(MinButton);
+            }
 
             Title = CreateTitle();
-            if (Title == null)
-                throw new InvalidOperationException();
-
-            Title.Margin = D2D_RECT_F.Thickness(10, 0, 0, 0);
-            Title.FontSize = 12;
-            Title.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+            if (Title != null)
+            {
+                Title.Margin = D2D_RECT_F.Thickness(10, 0, 0, 0);
+                Title.FontSize = 12;
+                Title.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
 #if DEBUG
-            Title.Name = nameof(Title);
+                Title.Name = nameof(Title);
 #endif
-            SetDockType(Title, DockType.Left);
-            Children.Add(Title);
+                SetDockType(Title, DockType.Left);
+                Children.Add(Title);
 
-            TitlePadding = CreatePadding();
-            if (TitlePadding == null)
-                throw new InvalidOperationException();
+                TitlePadding = CreatePadding();
+                if (TitlePadding != null)
+                {
 
 #if DEBUG
-            TitlePadding.Name = nameof(TitlePadding);
+                    TitlePadding.Name = nameof(TitlePadding);
 #endif
-            SetDockType(TitlePadding, DockType.Left);
-            Children.Add(TitlePadding);
+                    SetDockType(TitlePadding, DockType.Left);
+                    Children.Add(TitlePadding);
+                }
+            }
         }
 
         [Browsable(false)]
@@ -80,13 +79,13 @@ namespace Wice
         public Visual TitlePadding { get; } // so we can say Title.IsVisible = false
 
         [Browsable(false)]
-        public TitleBarButton MinButton { get; }
+        public Visual MinButton { get; }
 
         [Browsable(false)]
-        public TitleBarButton MaxButton { get; }
+        public Visual MaxButton { get; }
 
         [Browsable(false)]
-        public TitleBarButton CloseButton { get; }
+        public Visual CloseButton { get; }
 
         [Category(CategoryBehavior)]
         public virtual bool IsMain
@@ -124,47 +123,75 @@ namespace Wice
 
         protected virtual TextBox CreateTitle() => new TextBox();
         protected virtual Visual CreatePadding() => new Visual();
-        protected virtual TitleBarButton CreateMinButton() => new TitleBarButton();
-        protected virtual TitleBarButton CreateMaxButton() => new TitleBarButton();
-        protected virtual TitleBarButton CreateCloseButton() => new TitleBarButton();
+        protected virtual Visual CreateMinButton() => new TitleBarButton { ButtonType = TitleBarButtonType.Minimize };
+        protected virtual Visual CreateMaxButton() => new TitleBarButton { ButtonType = TitleBarButtonType.Maximize };
+        protected virtual Visual CreateCloseButton() => new TitleBarButton { ButtonType = TitleBarButtonType.Close };
+
+        protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
+        {
+            var window = Window;
+            if (window != null)
+            {
+                var buttonSize = TitleBarButton.GetDpiAdjustedCaptionButtonSize(window);
+                Height = buttonSize.height;
+            }
+
+            var size = base.MeasureCore(constraint);
+            return size;
+        }
+
+        protected virtual void OnUpdated(object sender, EventArgs e) => Updated?.Invoke(sender, e);
 
         protected virtual internal void Update()
         {
-            var native = Window?.Native;
-            if (native == null)
+            var window = Window;
+            if (window == null)
                 return;
 
-            var bounds = new tagRECT();
-            WindowsFunctions.DwmGetWindowAttribute(native.Handle, DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, ref bounds, Marshal.SizeOf<tagRECT>());
-            Height = bounds.Height;
+            var buttonSize = TitleBarButton.GetDpiAdjustedCaptionButtonSize(window);
+            Height = buttonSize.height;
 
-            // we have 3 buttons. not sure this is always ok...
-            var width = (bounds.Width - 1) / 3;
+            if (CloseButton != null)
+            {
+                CloseButton.Height = buttonSize.height;
+                CloseButton.Width = buttonSize.width;
+                CloseButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
+            }
 
-            CloseButton.Height = bounds.Height;
-            CloseButton.Width = width;
-            CloseButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
-
-            MinButton.Height = bounds.Height;
-            MinButton.Width = width;
-            MinButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray.ToColor());
+            if (MinButton != null)
+            {
+                MinButton.Height = buttonSize.height;
+                MinButton.Width = buttonSize.width;
+                MinButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray.ToColor());
+            }
 
             var zoomed = false;
-            if (Parent is ITitleBarParent tbp)
+            if (Title != null)
             {
-                Title.Text = tbp.Title;
-                zoomed = tbp.IsZoomed;
-            }
-            else if (IsMain)
-            {
-                Title.Text = Window.Title;
-                zoomed = Window.IsZoomed;
+                if (Parent is ITitleBarParent tbp)
+                {
+                    Title.Text = tbp.Title;
+                    zoomed = tbp.IsZoomed;
+                }
+                else if (IsMain)
+                {
+                    Title.Text = Window.Title;
+                    zoomed = Window.IsZoomed;
+                }
             }
 
-            MaxButton.Height = bounds.Height;
-            MaxButton.Width = width;
-            MaxButton.ButtonType = zoomed ? TitleBarButtonType.Restore : TitleBarButtonType.Maximize;
-            MaxButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray.ToColor());
+            if (MaxButton != null)
+            {
+                MaxButton.Height = buttonSize.height;
+                MaxButton.Width = buttonSize.width;
+                if (MaxButton is TitleBarButton tbb)
+                {
+                    tbb.ButtonType = zoomed ? TitleBarButtonType.Restore : TitleBarButtonType.Maximize;
+                }
+                MaxButton.HoverRenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray.ToColor());
+            }
+
+            OnUpdated(this, EventArgs.Empty);
         }
 
         protected override void OnAttachedToComposition(object sender, EventArgs e)

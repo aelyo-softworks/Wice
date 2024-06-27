@@ -18,9 +18,12 @@ namespace Wice.Utilities
 {
     public class DiagnosticsInformation
     {
-        public DiagnosticsInformation(Assembly assembly = null)
+        private readonly Window _window;
+
+        public DiagnosticsInformation(Assembly assembly = null, Window window = null)
         {
             Assembly = assembly ?? Assembly.GetExecutingAssembly();
+            _window = window;
         }
 
         [Browsable(false)]
@@ -87,7 +90,7 @@ namespace Wice.Utilities
         public string Bitness => GetBitness();
 
         [Category("Process")]
-        public string CurrentCulture => CultureInfo.CurrentCulture.Name + ", UI: " + CultureInfo.CurrentUICulture.Name + ", Installed: " + CultureInfo.InstalledUICulture.Name;
+        public string Culture => CultureInfo.CurrentCulture.Name + ", UI: " + CultureInfo.CurrentUICulture.Name + ", Installed: " + CultureInfo.InstalledUICulture.Name;
 
         [Category("Process")]
         public string Now => DateTime.Now + ", Utc: " + DateTime.UtcNow;
@@ -99,10 +102,29 @@ namespace Wice.Utilities
         public string DefaultTextServicesGeneratorVersion { get; } = RichTextBox.GetDefaultTextServicesGeneratorVersion();
 
         [Category("Graphics")]
-        public string WindowDpiAwareness { get; } = Application.Windows.FirstOrDefault()?.Native.DpiAwarenessDescription;
+        public string WindowDpiAwareness => (_window ?? Application.Windows.FirstOrDefault())?.Native.DpiAwarenessDescription;
 
         [Category("Graphics")]
-        public int WindowDpiFromDpiAwareness { get; } = Application.Windows.FirstOrDefault()?.Native.DpiFromDpiAwareness ?? 96;
+        public int WindowDpiFromDpiAwareness => (_window ?? Application.Windows.FirstOrDefault())?.Native.DpiFromDpiAwareness ?? 96;
+
+        [Category("Graphics")]
+        public string WindowMonitor
+        {
+            get
+            {
+                var monitor = (_window ?? Application.Windows.FirstOrDefault())?.Monitor;
+                if (monitor == null)
+                    return null;
+
+                var s = monitor.DeviceName;
+                var dd = monitor.DISPLAY_DEVICE;
+                if (dd.HasValue)
+                {
+                    s += " (" + dd.Value.MonitorName + ")";
+                }
+                return s;
+            }
+        }
 
         [Category("Graphics")]
         public string ThreadDpiAwareness { get; } = NativeWindow.GetDpiAwarenessDescription(NativeWindow.GetThreadDpiAwarenessContext());

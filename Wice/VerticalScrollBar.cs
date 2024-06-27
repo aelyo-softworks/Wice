@@ -18,7 +18,7 @@ namespace Wice
 
             Canvas.SetRight(this, 0);
             Canvas.SetTop(this, 0);
-            Width = Application.CurrentTheme.VerticalScrollBarWidth;
+            Width = Application.CurrentTheme.GetVerticalScrollBarWidth(96);
             SetDockType(this, DockType.Right);
 
             SmallDecrease.Height = Width; // square
@@ -74,7 +74,7 @@ namespace Wice
                 }
                 else
                 {
-                    Thumb.Width = Application.CurrentTheme.ScrollBarOverlaySize;
+                    Thumb.Width = Application.CurrentTheme.GetHorizontalScrollBarHeight(96);
                 }
             }
             else

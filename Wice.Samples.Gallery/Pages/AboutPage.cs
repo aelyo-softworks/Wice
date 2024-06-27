@@ -95,7 +95,7 @@ namespace Wice.Samples.Gallery.Pages
                 //pg.MaxWidth = 600;
                 //TextBox.WordWrappingProperty.SetValue(pg, DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER);
                 pg.Margin = D2D_RECT_F.Thickness(10);
-                pg.SelectedObject = new DiagnosticsInformation();
+                pg.SelectedObject = new DiagnosticsInformation(null, Window);
                 dlg.Content.Children.Add(pg);
             };
             SetDockType(btn, DockType.Top);
