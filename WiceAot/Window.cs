@@ -2881,22 +2881,22 @@ public class Window : Canvas, ITitleBarParent
                     switch (ht)
                     {
                         case HT.HTCLOSE:
-                            Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, (int)SC.SC_CLOSE);
+                            Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_CLOSE });
                             break;
 
                         case HT.HTMAXBUTTON:
                             if (win.IsZoomed)
                             {
-                                Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, (int)SC.SC_RESTORE);
+                                Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_RESTORE });
                             }
                             else
                             {
-                                Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, (int)SC.SC_MAXIMIZE);
+                                Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_MAXIMIZE });
                             }
                             break;
 
                         case HT.HTMINBUTTON:
-                            Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, (int)SC.SC_MINIMIZE);
+                            Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_MINIMIZE });
                             break;
                     }
                 }

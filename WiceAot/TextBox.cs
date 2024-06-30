@@ -550,7 +550,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         if (layout == null)
             return null;
 
-        layout.Object.HitTestPoint(x, y, out isTrailingHit, out isInside, out var metrics);
+        layout.Object.HitTestPoint(x, y, out var trailingHit, out var inside, out var metrics).ThrowOnError();
+        isTrailingHit = trailingHit;
+        isInside = inside;
         return metrics;
     }
 
@@ -1904,7 +1906,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         DWRITE_LINE_METRICS[] lineMetrics;
         float caretX;
         float caretY;
-        bool isTrailingHit;
+        DirectN.BOOL isTrailingHit;
 
         var text = Text ?? string.Empty;
         switch (moveMode)
@@ -2648,7 +2650,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         public DWRITE_FONT_STRETCH fontStretch;
         public DWRITE_FONT_STYLE fontStyle;
         public D3DCOLORVALUE color;
-        public bool hasUnderline;
-        public bool hasStrikethrough;
+        public DirectN.BOOL hasUnderline;
+        public DirectN.BOOL hasStrikethrough;
     }
 }
