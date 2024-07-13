@@ -3,7 +3,7 @@
 namespace Wice.Utilities;
 
 [GeneratedComClass]
-public sealed partial class GeometrySource2D : IGeometrySource2D, IGeometrySource2DInterop, IEquatable<GeometrySource2D>, Interop.IInspectable
+public partial class GeometrySource2D : IGeometrySource2D, Interop.IGeometrySource2DInterop, IEquatable<GeometrySource2D>, Interop.IInspectable
 {
     public GeometrySource2D(string uniqueKey)
     {
@@ -14,7 +14,6 @@ public sealed partial class GeometrySource2D : IGeometrySource2D, IGeometrySourc
     public string UniqueKey { get; }
     public ID2D1Geometry? Geometry { get; set; }
 
-#if NET
     HRESULT Interop.IInspectable.GetIids(out uint iidCount, out nint iids)
     {
         iidCount = 0;
@@ -33,10 +32,9 @@ public sealed partial class GeometrySource2D : IGeometrySource2D, IGeometrySourc
         trustLevel = TrustLevel.FullTrust;
         return Constants.S_OK;
     }
-#endif
 
-    HRESULT IGeometrySource2DInterop.TryGetGeometryUsingFactory(ID2D1Factory factory, out ID2D1Geometry value) => throw new NotSupportedException();
-    HRESULT IGeometrySource2DInterop.GetGeometry(out ID2D1Geometry value)
+    HRESULT Interop.IGeometrySource2DInterop.TryGetGeometryUsingFactory(ID2D1Factory factory, out ID2D1Geometry value) => throw new NotSupportedException();
+    HRESULT Interop.IGeometrySource2DInterop.GetGeometry(out ID2D1Geometry value)
     {
         value = Geometry;
         return Constants.S_OK;
