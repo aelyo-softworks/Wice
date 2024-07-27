@@ -1,242 +1,51 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{40474E94-07D8-42C1-8BAD-2366A0B635D1}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>Wice.Samples.Gallery</RootNamespace>
-    <AssemblyName>Wice.Samples.Gallery</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>..\Assets\wice_color.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\Wice\Properties\AssemblyVersionInfo.cs">
-      <Link>Properties\AssemblyVersionInfo.cs</Link>
-    </Compile>
-    <Compile Include="Pages\MiscPage.cs" />
-    <Compile Include="Pages\CollectionsPage.cs" />
-    <Compile Include="Pages\MediaPage.cs" />
-    <Compile Include="Pages\EffectsPage.cs" />
-    <Compile Include="Pages\TextPage.cs" />
-    <Compile Include="Pages\WindowsPage.cs" />
-    <Compile Include="Pages\SampleListVisual.cs" />
-    <Compile Include="Pages\SampleVisual.cs" />
-    <Compile Include="Samples\Collections\EnumListBox\EnumListBoxSample.cs" />
-    <Compile Include="Samples\Collections\CheckBoxList\CheckBoxListSample.cs" />
-    <Compile Include="Samples\Collections\FlagsEnumListBox\FlagsEnumListBoxSample.cs" />
-    <Compile Include="Samples\Collections\ListBox\AdvancedListBoxSample.cs" />
-    <Compile Include="Samples\Collections\ListBox\ListBoxSample.cs" />
-    <Compile Include="Samples\Collections\PropertyGrid\PropertyGridSample.cs" />
-    <Compile Include="Samples\Collections\PropertyGrid\SampleModel.cs" />
-    <Compile Include="Samples\Collections\ListBoxSampleList.cs" />
-    <Compile Include="Samples\Collections\FlagsEnumListBoxSampleList.cs" />
-    <Compile Include="Samples\Collections\EnumListBoxSampleList.cs" />
-    <Compile Include="Samples\Collections\PropertyGridSampleList.cs" />
-    <Compile Include="Samples\Collections\CheckBoxListSampleList.cs" />
-    <Compile Include="Samples\Effects\Contrast\ContrastSample.cs" />
-    <Compile Include="Samples\Effects\ContrastSampleList.cs" />
-    <Compile Include="Samples\Effects\GrayscaleSampleList.cs" />
-    <Compile Include="Samples\Effects\Grayscale\GrayscaleSample.cs" />
-    <Compile Include="Samples\Effects\TemperatureTint\TemperatureTintSample.cs" />
-    <Compile Include="Samples\Effects\TemperatureTintSampleList.cs" />
-    <Compile Include="Samples\Effects\GaussianBlurSampleList.cs" />
-    <Compile Include="Samples\Effects\SepiaSampleList.cs" />
-    <Compile Include="Samples\Effects\Sepia\SepiaSample.cs" />
-    <Compile Include="Samples\Effects\GaussianBlur\GaussianBlurSample.cs" />
-    <Compile Include="Samples\Input\Button\ButtonDockSample.cs" />
-    <Compile Include="Samples\Input\Button\SimpleButtonSample.cs" />
-    <Compile Include="Samples\Input\CheckBox\ThreeStateCheckBoxSample.cs" />
-    <Compile Include="Samples\Input\CheckBox\TwoStateCheckBoxSample.cs" />
-    <Compile Include="Samples\Input\RadioButton\RadioButtonsSample.cs" />
-    <Compile Include="Samples\Input\RadioButton\SimpleRadioButtonSample.cs" />
-    <Compile Include="Samples\Input\StateButtonSampleList.cs" />
-    <Compile Include="Samples\Input\StateButton\CheckBoxStateButtonSample.cs" />
-    <Compile Include="Samples\Input\StateButton\SimpleStateButtonSample.cs" />
-    <Compile Include="Samples\Input\ToggleSwitchSampleList.cs" />
-    <Compile Include="Samples\Input\RadioButtonSampleList.cs" />
-    <Compile Include="Samples\Input\ToggleSwitch\GroupedToggleSwitchesSample.cs" />
-    <Compile Include="Samples\Input\ToggleSwitch\ToggleSwitchSample.cs" />
-    <Compile Include="Samples\Layout\DockSplitter\SimpleDockSplitterSample.cs" />
-    <Compile Include="Samples\Layout\GridSplitter\SimpleGridSplitterSample.cs" />
-    <Compile Include="Samples\Layout\Grid\SimpleGridSample.cs" />
-    <Compile Include="Samples\Layout\Dock\SimpleDockSample.cs" />
-    <Compile Include="Samples\Layout\ScrollViewerSampleList.cs" />
-    <Compile Include="Samples\Layout\ScrollViewer\ScrollViewerBasicSample.cs" />
-    <Compile Include="Samples\Layout\Stack\SimpleHorizontalStackSample.cs" />
-    <Compile Include="Samples\Layout\Stack\BoxesStackSample.cs" />
-    <Compile Include="Samples\Layout\Stack\SimpleVerticalStackSample.cs" />
-    <Compile Include="Samples\Layout\UniformGrid\ShapesUniformGridSample.cs" />
-    <Compile Include="Samples\Layout\UniformGrid\SimpleUniformGridSample.cs" />
-    <Compile Include="Samples\Layout\WrapSampleList.cs" />
-    <Compile Include="Samples\Layout\UniformGridSampleList.cs" />
-    <Compile Include="Samples\Layout\StackSampleList.cs" />
-    <Compile Include="Samples\Layout\GridSplitterSampleList.cs" />
-    <Compile Include="Samples\Layout\GridSampleList.cs" />
-    <Compile Include="Samples\Layout\DockSplitterSampleList.cs" />
-    <Compile Include="Samples\Layout\DockSampleList.cs" />
-    <Compile Include="Samples\Layout\CanvasSampleList.cs" />
-    <Compile Include="Samples\Layout\Border\BordersSample.cs" />
-    <Compile Include="Samples\Layout\Border\RoundBorderSample.cs" />
-    <Compile Include="Samples\Layout\Border\SimpleBorderSample.cs" />
-    <Compile Include="Samples\Layout\Canvas\BoundsCanvasSample.cs" />
-    <Compile Include="Samples\Layout\Canvas\SimpleCanvasSample.cs" />
-    <Compile Include="Samples\Layout\Wrap\SimpleWrapSample.cs" />
-    <Compile Include="Samples\Media\BrushSampleList.cs" />
-    <Compile Include="Samples\Media\Brush\Direct2DBrushSample.cs" />
-    <Compile Include="Samples\Media\Brush\CompositionBrushSample.cs" />
-    <Compile Include="Samples\Media\ImageSampleList.cs" />
-    <Compile Include="Samples\Media\Image\BasicImageSample.cs" />
-    <Compile Include="Samples\Media\ShapeSampleList.cs" />
-    <Compile Include="Samples\Media\Shape\LineShapeSample.cs" />
-    <Compile Include="Samples\Media\Shape\EllipseRectangleShapeSample.cs" />
-    <Compile Include="Samples\Media\Shape\RoundedRectangleShapeSample.cs" />
-    <Compile Include="Samples\Media\Shape\RectangleShapeSample.cs" />
-    <Compile Include="Samples\Media\SvgImageSampleList.cs" />
-    <Compile Include="Samples\Media\SvgImage\BasicSvgImageSample.cs" />
-    <Compile Include="Samples\Misc\ApplicationSampleList.cs" />
-    <Compile Include="Samples\Misc\Focus\FocusSample.cs" />
-    <Compile Include="Samples\Misc\Application\ApplicationSample.cs" />
-    <Compile Include="Samples\Misc\FocusSampleList.cs" />
-    <Compile Include="Samples\Misc\TitleBarSampleList.cs" />
-    <Compile Include="Samples\Misc\TitleBar\TitleBarSample.cs" />
-    <Compile Include="Samples\Misc\ToolTipSampleList.cs" />
-    <Compile Include="Samples\Misc\ToolTip\AdvancedToolTipSample.cs" />
-    <Compile Include="Samples\Misc\ToolTip\ToolTipSample.cs" />
-    <Compile Include="Samples\Misc\VisualsTreeSampleList.cs" />
-    <Compile Include="Samples\Misc\VisualsTree\VisualsTreeSample.cs" />
-    <Compile Include="Samples\Sample.cs" />
-    <Compile Include="Samples\Text\RichTextBoxSampleList.cs" />
-    <Compile Include="Samples\Text\RichTextBox\RichTextBoxSample.cs" />
-    <Compile Include="Samples\Text\RichTextBox\RtfRichTextBoxSample.cs" />
-    <Compile Include="Samples\Text\RichTextBox\DocumentRichTextBoxSample.cs" />
-    <Compile Include="Samples\Text\RichTextBox\SimpleRichTextBoxSample.cs" />
-    <Compile Include="Samples\Text\TextBoxSampleList.cs" />
-    <Compile Include="Samples\Text\TextBox\EditableTextBoxSample.cs" />
-    <Compile Include="Samples\Text\TextBox\ColorFontTextBoxSample.cs" />
-    <Compile Include="Samples\Text\TextBox\UnicodeTextBoxSample.cs" />
-    <Compile Include="Samples\Text\TextBox\SimpleTextBoxSample.cs" />
-    <Compile Include="Samples\Windows\DialogSampleList.cs" />
-    <Compile Include="Samples\Windows\Dialog\DialogBoxSimpleSample.cs" />
-    <Compile Include="Samples\Windows\Dialog\DialogSimpleSample.cs" />
-    <Compile Include="Samples\Windows\MessageBoxSampleList.cs" />
-    <Compile Include="Samples\Windows\MessageBox\MessageBoxSample.cs" />
-    <Compile Include="Samples\Windows\WindowSampleList.cs" />
-    <Compile Include="Samples\Windows\Window\WindowSample.cs" />
-    <Compile Include="Utilities\CodeBox.cs" />
-    <Compile Include="GalleryWindow.cs" />
-    <Compile Include="Pages\AboutPage.cs" />
-    <Compile Include="Pages\LayoutPage.cs" />
-    <Compile Include="Pages\InputPage.cs" />
-    <Compile Include="Pages\HomePage.cs" />
-    <Compile Include="Pages\Page.cs" />
-    <Compile Include="Pages\SampleButton.cs" />
-    <Compile Include="Pages\SampleListPage.cs" />
-    <Compile Include="RoundedButton.cs" />
-    <Compile Include="Samples\Input\CheckBoxSampleList.cs" />
-    <Compile Include="Samples\Input\ButtonSampleList.cs" />
-    <Compile Include="Samples\Layout\BorderSampleList.cs" />
-    <Compile Include="Samples\SampleList.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Pages\Titled.cs" />
-    <Compile Include="Utilities\ColorCode.cs" />
-    <Compile Include="Utilities\RtfFormatter.cs" />
-    <Compile Include="Utilities\WiceLanguage.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Wice\Wice.csproj">
-      <Project>{ef67ab82-0abc-4054-aada-293600d276d6}</Project>
-      <Name>Wice</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="DirectN">
-      <Version>1.16.1</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Windows.SDK.Contracts">
-      <Version>10.0.26100.1</Version>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\Assets\wice_color.ico">
-      <Link>wice_color.ico</Link>
-    </Content>
-    <EmbeddedResource Include="Resources\lorem-cn.txt" />
-    <EmbeddedResource Include="Resources\tiger.svg" />
-    <EmbeddedResource Include="Resources\rainier.jpg" />
-    <EmbeddedResource Include="Resources\samples.xml" />
-    <EmbeddedResource Include="Resources\aelyo_flat.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.manifest" />
-    <EmbeddedResource Include="Resources\wice.rtf" />
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net472</TargetFramework>
+		<UseWindowsForms>true</UseWindowsForms>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<ApplicationIcon>..\Assets\wice_color.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Resources\aelyo_flat.png" />
+		<None Remove="Resources\lorem-cn.txt" />
+		<None Remove="Resources\rainier.jpg" />
+		<None Remove="Resources\samples.xml" />
+		<None Remove="Resources\tiger.svg" />
+		<None Remove="Resources\wice.rtf" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\Wice\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\Assets\wice_color.ico" Link="wice_color.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Resources\aelyo_flat.png" />
+		<EmbeddedResource Include="Resources\lorem-cn.txt" />
+		<EmbeddedResource Include="Resources\rainier.jpg" />
+		<EmbeddedResource Include="Resources\samples.xml" />
+		<EmbeddedResource Include="Resources\tiger.svg" />
+		<EmbeddedResource Include="Resources\wice.rtf" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="DirectN" Version="1.16.1.2" />
+		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.26100.1" />
+		<PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Wice\Wice.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="Microsoft.CSharp" />
+	</ItemGroup>
+
 </Project>
