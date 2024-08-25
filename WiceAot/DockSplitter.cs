@@ -185,7 +185,7 @@ public class DockSplitter : Visual
     private Visual? GetPrevVisual() => ParentDock?.GetAt(this, Orientation == Orientation.Horizontal ? DockType.Left : DockType.Top);
     private Visual? GetNextVisual() => ParentDock?.GetAt(this, Orientation == Orientation.Horizontal ? DockType.Right : DockType.Bottom);
 
-    private class SplitDragState : DragState
+    private sealed class SplitDragState : DragState
     {
         public float _previousRenderSize;
         public float _nextRenderSize;

@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1BorderString)]
-public class BorderEffect : EffectWithSource
+public partial class BorderEffect : EffectWithSource
 {
     public static EffectProperty EdgeModeXProperty { get; }
     public static EffectProperty EdgeModeYProperty { get; }
@@ -12,6 +12,6 @@ public class BorderEffect : EffectWithSource
         EdgeModeYProperty = EffectProperty.Add(typeof(BorderEffect), nameof(EdgeModeY), 1, D2D1_BORDER_EDGE_MODE.D2D1_BORDER_EDGE_MODE_CLAMP);
     }
 
-    public D2D1_BORDER_EDGE_MODE EdgeModeX { get => (D2D1_BORDER_EDGE_MODE)GetPropertyValue(EdgeModeXProperty); set => SetPropertyValue(EdgeModeXProperty, value); }
-    public D2D1_BORDER_EDGE_MODE EdgeModeY { get => (D2D1_BORDER_EDGE_MODE)GetPropertyValue(EdgeModeYProperty); set => SetPropertyValue(EdgeModeYProperty, value); }
+    public D2D1_BORDER_EDGE_MODE EdgeModeX { get => (D2D1_BORDER_EDGE_MODE)GetPropertyValue(EdgeModeXProperty)!; set => SetPropertyValue(EdgeModeXProperty, value); }
+    public D2D1_BORDER_EDGE_MODE EdgeModeY { get => (D2D1_BORDER_EDGE_MODE)GetPropertyValue(EdgeModeYProperty)!; set => SetPropertyValue(EdgeModeYProperty, value); }
 }

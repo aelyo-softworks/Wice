@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1TintString)]
-public class TintEffect : EffectWithSource
+public partial class TintEffect : EffectWithSource
 {
     public static EffectProperty ColorProperty { get; }
     public static EffectProperty ClampOutputProperty { get; }
@@ -12,6 +12,6 @@ public class TintEffect : EffectWithSource
         ClampOutputProperty = EffectProperty.Add(typeof(TintEffect), nameof(ClampOutput), 1, false);
     }
 
-    public D2D_VECTOR_4F Color { get => (D2D_VECTOR_4F)GetPropertyValue(ColorProperty); set => SetPropertyValue(ColorProperty, value); }
-    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty); set => SetPropertyValue(ClampOutputProperty, value); }
+    public D2D_VECTOR_4F Color { get => (D2D_VECTOR_4F)GetPropertyValue(ColorProperty)!; set => SetPropertyValue(ColorProperty, value); }
+    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty)!; set => SetPropertyValue(ClampOutputProperty, value); }
 }

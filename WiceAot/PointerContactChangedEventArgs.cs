@@ -1,14 +1,8 @@
 ﻿namespace Wice;
 
-public class PointerContactChangedEventArgs : PointerUpdateEventArgs
+public class PointerContactChangedEventArgs(uint pointerId, int x, int y, POINTER_MESSAGE_FLAGS flags, bool up) : PointerUpdateEventArgs(pointerId, x, y, flags)
 {
-    public PointerContactChangedEventArgs(uint pointerId, int x, int y, POINTER_MESSAGE_FLAGS flags, bool up)
-        : base(pointerId, x, y, flags)
-    {
-        IsUp = up;
-    }
-
-    public bool IsUp { get; }
+    public bool IsUp { get; } = up;
     public bool IsDown => !IsUp;
     public bool IsDoubleClick { get; internal set; }
 

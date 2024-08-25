@@ -42,7 +42,7 @@ public class Image : RenderVisual, IDisposable
 
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => GetSize(constraint);
 
-    protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions? options = null)
+    protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
             return false;

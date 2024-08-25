@@ -2,17 +2,10 @@
 
 namespace Wice
 {
-    public class MouseWheelEventArgs : MouseEventArgs
+    public class MouseWheelEventArgs(int x, int y, POINTER_MOD vk, int delta, Orientation orientation) : MouseEventArgs(x, y, vk)
     {
-        public MouseWheelEventArgs(int x, int y, POINTER_MOD vk, int delta, Orientation orientation)
-            : base(x, y, vk)
-        {
-            Delta = delta / Constants.WHEEL_DELTA;
-            Orientation = orientation;
-        }
-
-        public int Delta { get; }
-        public Orientation Orientation { get; }
+        public int Delta { get; } = delta / Constants.WHEEL_DELTA;
+        public Orientation Orientation { get; } = orientation;
 
         public override string ToString() => base.ToString() + ",DE=" + Delta + ",O=" + Orientation;
     }

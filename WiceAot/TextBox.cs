@@ -75,7 +75,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return true;
     }
 
-    private class UndoState
+    private sealed class UndoState
     {
         public static UndoState From(TextBox tb)
         {
@@ -153,7 +153,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public Brush SelectionBrush { get => (Brush)GetPropertyValue(SelectionBrushProperty)!; set => SetPropertyValue(SelectionBrushProperty, value); }
 
     [Category(CategoryLayout)]
-    public string FontFamilyName { get => (string)GetPropertyValue(FontFamilyNameProperty)!; set => SetPropertyValue(FontFamilyNameProperty, value); }
+    public string? FontFamilyName { get => (string?)GetPropertyValue(FontFamilyNameProperty)!; set => SetPropertyValue(FontFamilyNameProperty, value); }
 
     [Category(CategoryLayout)]
     public DWRITE_FONT_WEIGHT FontWeight { get => (DWRITE_FONT_WEIGHT)GetPropertyValue(FontWeightProperty)!; set => SetPropertyValue(FontWeightProperty, value); }
@@ -186,7 +186,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public string Text { get => (string)GetPropertyValue(TextProperty)! ?? string.Empty; set => SetPropertyValue(TextProperty, value); }
 
     [Category(CategoryLayout)]
-    public IComObject<IDWriteFontCollection> FontCollection { get => (IComObject<IDWriteFontCollection>)GetPropertyValue(FontCollectionProperty)!; set => SetPropertyValue(FontCollectionProperty, value); }
+    public IComObject<IDWriteFontCollection>? FontCollection { get => (IComObject<IDWriteFontCollection?>)GetPropertyValue(FontCollectionProperty)!; set => SetPropertyValue(FontCollectionProperty, value); }
 
     [Category(CategoryLayout)]
     public D2D1_DRAW_TEXT_OPTIONS DrawOptions { get => (D2D1_DRAW_TEXT_OPTIONS)GetPropertyValue(DrawOptionsProperty)!; set => SetPropertyValue(DrawOptionsProperty, value); }
@@ -289,7 +289,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return text.TrimWithEllipsis() ?? string.Empty;
     }
 
-    protected override void SetCompositionBrush(CompositionBrush brush)
+    protected override void SetCompositionBrush(CompositionBrush? brush)
     {
         // we use or own system
         //base.SetCompositionBrush(brush);
@@ -2595,7 +2595,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    private class FontRange
+    private sealed class FontRange
     {
         public DWRITE_TEXT_RANGE Range;
         public object? Value;
@@ -2611,7 +2611,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         public override string ToString() => Range + " => " + Value;
     }
 
-    private class FontRanges
+    private sealed class FontRanges
     {
         public FontRangeType Type;
         public List<FontRange> Ranges = []; // note this should always sorted by construction
@@ -2639,7 +2639,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    private class CaretFormat
+    private sealed class CaretFormat
     {
         // the important range based properties for the current caret.
         // note these are stored outside the layout, since the current caret actually has a format, independent of the text it lies between.

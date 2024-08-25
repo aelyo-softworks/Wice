@@ -49,7 +49,7 @@ public class TitleBarButton : ButtonBase
         if (geoSource.Equals(_lastGeometrySource2D))
             return;
 
-        Path.GeometrySource2D = geoSource.GetIGeometrySource2();
+        Path.GeometrySource2D = geoSource;
         _lastGeometrySource2D = geoSource;
     }
 

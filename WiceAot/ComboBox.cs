@@ -1,18 +1,18 @@
 ﻿namespace Wice;
 
 // this currently doesn't work
-public class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
+public partial class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
 {
     public static VisualProperty MaxDropDownHeightProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(MaxDropDownHeight), VisualPropertyInvalidateModes.Measure, float.NaN, ValidateWidthOrHeight);
 
-    private readonly ListBox _lb;
+    private readonly ListBox? _lb;
     private readonly IDataSourceVisual _dataSourceVisual;
-    private readonly ISelectorVisual _selectorVisual;
+    private readonly ISelectorVisual? _selectorVisual;
     private readonly ScrollViewer _viewer = new();
     private readonly Popup _popup = new();
 
-    public event EventHandler<EventArgs> SelectionChanged;
-    public event EventHandler<EventArgs> DataBound;
+    public event EventHandler<EventArgs>? SelectionChanged;
+    public event EventHandler<EventArgs>? DataBound;
 
     public ComboBox()
     {
@@ -44,10 +44,10 @@ public class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
         if (List == null)
             throw new InvalidOperationException();
 
-        _dataSourceVisual = List as IDataSourceVisual;
-        if (_dataSourceVisual == null)
+        if (List is not IDataSourceVisual dsv)
             throw new InvalidOperationException();
 
+        _dataSourceVisual = dsv;
         _dataSourceVisual.DataBound += OnDataBound;
 
         _selectorVisual = List as ISelectorVisual;
@@ -80,16 +80,16 @@ public class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
     public bool IntegralHeight { get => (_lb?.IntegralHeight).GetValueOrDefault(); set { if (_lb != null) _lb.IntegralHeight = value; } }
 
     [Category(CategoryBehavior)]
-    public object DataSource { get => _dataSourceVisual.DataSource; set => _dataSourceVisual.DataSource = value; }
+    public object? DataSource { get => _dataSourceVisual.DataSource; set => _dataSourceVisual.DataSource = value; }
 
     [Category(CategoryBehavior)]
-    public string DataItemMember { get => _dataSourceVisual.DataItemMember; set => _dataSourceVisual.DataItemMember = value; }
+    public string? DataItemMember { get => _dataSourceVisual.DataItemMember; set => _dataSourceVisual.DataItemMember = value; }
 
     [Category(CategoryBehavior)]
-    public string DataItemFormat { get => _dataSourceVisual.DataItemFormat; set => _dataSourceVisual.DataItemFormat = value; }
+    public string? DataItemFormat { get => _dataSourceVisual.DataItemFormat; set => _dataSourceVisual.DataItemFormat = value; }
 
     [Browsable(false)]
-    public DataBinder DataBinder { get => _dataSourceVisual.DataBinder; set => _dataSourceVisual.DataBinder = value; }
+    public DataBinder? DataBinder { get => _dataSourceVisual.DataBinder; set => _dataSourceVisual.DataBinder = value; }
 
     [Browsable(false)]
     public Visual Text { get; }
@@ -114,8 +114,8 @@ public class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
     }
 
     public SelectionMode SelectionMode => (_selectorVisual?.SelectionMode).GetValueOrDefault();
-    public IEnumerable<ItemVisual> SelectedItems => _selectorVisual?.SelectedItems;
-    public ItemVisual SelectedItem => _selectorVisual?.SelectedItem;
+    public IEnumerable<ItemVisual> SelectedItems => _selectorVisual?.SelectedItems ?? [];
+    public ItemVisual? SelectedItem => _selectorVisual?.SelectedItem;
     public void Select(IEnumerable<ItemVisual> visuals) => _selectorVisual?.Select(visuals);
     public void Unselect(IEnumerable<ItemVisual> visuals) => _selectorVisual?.Unselect(visuals);
 
@@ -168,13 +168,13 @@ public class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         base.OnAttachedToParent(sender, e);
-        Window.Children.Add(_popup);
+        Window?.Children.Add(_popup);
     }
 
     protected override void OnDetachingFromParent(object? sender, EventArgs e)
     {
         base.OnDetachingFromParent(sender, e);
-        Window.Children.Remove(_popup);
+        Window?.Children.Remove(_popup);
     }
 
     void IDataSourceVisual.BindDataSource() => BindDataSource();
@@ -188,7 +188,7 @@ public class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
 
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
-        List.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+        List.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
         base.OnAttachedToComposition(sender, e);
         _popup.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
     }

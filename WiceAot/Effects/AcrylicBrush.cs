@@ -1,6 +1,4 @@
-﻿using WinRT;
-
-namespace Wice.Effects;
+﻿namespace Wice.Effects;
 
 public static class AcrylicBrush
 {
@@ -335,6 +333,6 @@ public static class AcrylicBrush
             Source = noiseOpacityEffect
         };
 
-        return compositor.CreateEffectFactory(blendEffectOuter.GetIGraphicsEffect(), animatedProperties);
+        return compositor.CreateEffectFactory(blendEffectOuter, animatedProperties);
     }
 }

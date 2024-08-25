@@ -193,7 +193,7 @@ public class Header : Canvas, IAccessKeyParent, ISelectable
         }
     }
 
-    protected override void OnMouseButtonDown(object sender, MouseButtonEventArgs e)
+    protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         if (!IsEnabled)
             return;

@@ -45,14 +45,9 @@ public class Grid : Visual
     [Category(CategoryLayout)]
     public BaseObjectCollection<GridColumn> Columns { get; }
 
-    private class RowCollection : BaseObjectCollection<GridRow>
+    private sealed class RowCollection(Grid grid) : BaseObjectCollection<GridRow>
     {
-        private readonly Grid _grid;
-
-        public RowCollection(Grid grid)
-        {
-            _grid = grid;
-        }
+        private readonly Grid _grid = grid;
 
         //protected override void ProtectedClear()
         //{
@@ -102,14 +97,9 @@ public class Grid : Visual
         }
     }
 
-    private class ColumnCollection : BaseObjectCollection<GridColumn>
+    private sealed class ColumnCollection(Grid grid) : BaseObjectCollection<GridColumn>
     {
-        private readonly Grid _grid;
-
-        public ColumnCollection(Grid grid)
-        {
-            _grid = grid;
-        }
+        private readonly Grid _grid = grid;
 
         //protected override void ProtectedClear()
         //{
@@ -762,7 +752,7 @@ public class Grid : Visual
         return Rows[index];
     }
 
-    private class GridSet
+    private sealed class GridSet
     {
         public int ColIndex;
         public int ColSpan;

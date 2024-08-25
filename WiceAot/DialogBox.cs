@@ -76,7 +76,7 @@ public class DialogBox : Dialog
     public string Title { get => TitleBar.Title.Text; set => TitleBar.Title.Text = value; }
 
     [Category(CategoryBehavior)]
-    public IEnumerable<Button> Buttons => ButtonsPanel?.Children.OfType<Button>();
+    public IEnumerable<Button> Buttons => ButtonsPanel?.Children.OfType<Button>() ?? [];
 
     [Browsable(false)]
     public TitleBar TitleBar { get; }

@@ -1,14 +1,9 @@
 ﻿namespace Wice.Animation;
 
-public class TimerStoryboard : Storyboard, IDisposable
+public partial class TimerStoryboard(Window window) : Storyboard(window), IDisposable
 {
-    private Timer _timer;
+    private Timer? _timer;
     private const int _defaultPeriod = 999 / 64;
-
-    public TimerStoryboard(Window window)
-        : base(window)
-    {
-    }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed override void Start() => throw new NotSupportedException();
@@ -31,7 +26,7 @@ public class TimerStoryboard : Storyboard, IDisposable
     public virtual void Start(TimeSpan period, TimeSpan? dueTime = null)
     {
         Stop();
-        dueTime = dueTime ?? TimeSpan.Zero;
+        dueTime ??= TimeSpan.Zero;
         DisposeTimer();
         base.Start();
         _timer = new Timer((state) => OnTick(), null, dueTime.Value, period);

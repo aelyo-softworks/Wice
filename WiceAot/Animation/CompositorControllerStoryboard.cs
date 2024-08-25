@@ -1,6 +1,6 @@
 ﻿namespace Wice.Animation;
 
-public class CompositorControllerStoryboard(Window window) : Storyboard(window)
+public partial class CompositorControllerStoryboard(Window window) : Storyboard(window)
 {
     private int _tickDivider = 1;
     private volatile bool _stop;

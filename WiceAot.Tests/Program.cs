@@ -1,14 +1,20 @@
-﻿using System.Diagnostics;
-using DirectN;
-using Wice;
+﻿namespace WiceAot.Tests;
 
-namespace WiceAot.Tests
+internal class Program
 {
-    internal class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
+        if (Debugger.IsAttached)
         {
-            if (Debugger.IsAttached)
+            using (var dw = new Application())
+            {
+                newWindow();
+                dw.Run();
+            }
+        }
+        else
+        {
+            try
             {
                 using (var dw = new Application())
                 {
@@ -16,32 +22,21 @@ namespace WiceAot.Tests
                     dw.Run();
                 }
             }
-            else
+            catch (Exception e)
             {
-                try
-                {
-                    using (var dw = new Application())
-                    {
-                        newWindow();
-                        dw.Run();
-                    }
-                }
-                catch (Exception e)
-                {
-                    Application.AddError(e);
-                    Application.ShowFatalError(HWND.Null);
-                }
+                Application.AddError(e);
+                Application.ShowFatalError(HWND.Null);
             }
+        }
 
-            void newWindow()
-            {
-                var win = new TestWindow { Title = "Wice" };
-                //WindowsUtilities.AllocConsole();
-                win.ResizeClient(400, 900);
-                win.Center();
-                win.Show();
-                win.SetForeground();
-            }
+        void newWindow()
+        {
+            var win = new TestWindow { Title = "Wice" };
+            //WindowsUtilities.AllocConsole();
+            win.ResizeClient(400, 900);
+            win.Center();
+            win.Show();
+            win.SetForeground();
         }
     }
 }

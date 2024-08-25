@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1CropString)]
-public class CropEffect : EffectWithSource
+public partial class CropEffect : EffectWithSource
 {
     public static EffectProperty RectProperty { get; }
     public static EffectProperty BorderModeProperty { get; }
@@ -12,6 +12,6 @@ public class CropEffect : EffectWithSource
         BorderModeProperty = EffectProperty.Add(typeof(CropEffect), nameof(BorderMode), 1, D2D1_BORDER_MODE.D2D1_BORDER_MODE_SOFT);
     }
 
-    public D2D_VECTOR_4F Rect { get => (D2D_VECTOR_4F)GetPropertyValue(RectProperty); set => SetPropertyValue(RectProperty, value); }
-    public D2D1_BORDER_MODE BorderMode { get => (D2D1_BORDER_MODE)GetPropertyValue(BorderModeProperty); set => SetPropertyValue(BorderModeProperty, value); }
+    public D2D_VECTOR_4F Rect { get => (D2D_VECTOR_4F)GetPropertyValue(RectProperty)!; set => SetPropertyValue(RectProperty, value); }
+    public D2D1_BORDER_MODE BorderMode { get => (D2D1_BORDER_MODE)GetPropertyValue(BorderModeProperty)!; set => SetPropertyValue(BorderModeProperty, value); }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1GaussianBlurString)]
-public class GaussianBlurEffect : EffectWithSource
+public partial class GaussianBlurEffect : EffectWithSource
 {
     public static EffectProperty StandardDeviationProperty { get; }
     public static EffectProperty OptimizationProperty { get; }
@@ -14,7 +14,7 @@ public class GaussianBlurEffect : EffectWithSource
         BorderModeProperty = EffectProperty.Add(typeof(GaussianBlurEffect), nameof(BorderMode), 2, D2D1_BORDER_MODE.D2D1_BORDER_MODE_SOFT);
     }
 
-    public float StandardDeviation { get => (float)GetPropertyValue(StandardDeviationProperty); set => SetPropertyValue(StandardDeviationProperty, value); }
-    public D2D1_GAUSSIANBLUR_OPTIMIZATION Optimization { get => (D2D1_GAUSSIANBLUR_OPTIMIZATION)GetPropertyValue(OptimizationProperty); set => SetPropertyValue(OptimizationProperty, value); }
-    public D2D1_BORDER_MODE BorderMode { get => (D2D1_BORDER_MODE)GetPropertyValue(BorderModeProperty); set => SetPropertyValue(BorderModeProperty, value); }
+    public float StandardDeviation { get => (float)GetPropertyValue(StandardDeviationProperty)!; set => SetPropertyValue(StandardDeviationProperty, value); }
+    public D2D1_GAUSSIANBLUR_OPTIMIZATION Optimization { get => (D2D1_GAUSSIANBLUR_OPTIMIZATION)GetPropertyValue(OptimizationProperty)!; set => SetPropertyValue(OptimizationProperty, value); }
+    public D2D1_BORDER_MODE BorderMode { get => (D2D1_BORDER_MODE)GetPropertyValue(BorderModeProperty)!; set => SetPropertyValue(BorderModeProperty, value); }
 }

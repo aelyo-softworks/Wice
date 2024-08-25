@@ -1,12 +1,6 @@
 ﻿namespace Wice;
 
-public class MouseButtonEventArgs : MouseEventArgs
+public class MouseButtonEventArgs(int x, int y, POINTER_MOD vk, MouseButton button) : MouseEventArgs(x, y, vk)
 {
-    public MouseButtonEventArgs(int x, int y, POINTER_MOD vk, MouseButton button)
-        : base(x, y, vk)
-    {
-        Button = button;
-    }
-
-    public MouseButton Button { get; }
+    public MouseButton Button { get; } = button;
 }

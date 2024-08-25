@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1TableTransferString)]
-public class TableTransferEffect : EffectWithSource
+public partial class TableTransferEffect : EffectWithSource
 {
     public static EffectProperty RedTableProperty { get; }
     public static EffectProperty RedDisableProperty { get; }
@@ -26,13 +26,13 @@ public class TableTransferEffect : EffectWithSource
         ClampOutputProperty = EffectProperty.Add(typeof(TableTransferEffect), nameof(ClampOutput), 8, false);
     }
 
-    public float[] RedTable { get => (float[])GetPropertyValue(RedTableProperty); set => SetPropertyValue(RedTableProperty, value); }
-    public bool RedDisable { get => (bool)GetPropertyValue(RedDisableProperty); set => SetPropertyValue(RedDisableProperty, value); }
-    public float[] GreenTable { get => (float[])GetPropertyValue(GreenTableProperty); set => SetPropertyValue(GreenTableProperty, value); }
-    public bool GreenDisable { get => (bool)GetPropertyValue(GreenDisableProperty); set => SetPropertyValue(GreenDisableProperty, value); }
-    public float[] BlueTable { get => (float[])GetPropertyValue(BlueTableProperty); set => SetPropertyValue(BlueTableProperty, value); }
-    public bool BlueDisable { get => (bool)GetPropertyValue(BlueDisableProperty); set => SetPropertyValue(BlueDisableProperty, value); }
-    public float[] AlphaTable { get => (float[])GetPropertyValue(AlphaTableProperty); set => SetPropertyValue(AlphaTableProperty, value); }
-    public bool AlphaDisable { get => (bool)GetPropertyValue(AlphaDisableProperty); set => SetPropertyValue(AlphaDisableProperty, value); }
-    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty); set => SetPropertyValue(ClampOutputProperty, value); }
+    public float[]? RedTable { get => (float[]?)GetPropertyValue(RedTableProperty); set => SetPropertyValue(RedTableProperty, value); }
+    public bool RedDisable { get => (bool)GetPropertyValue(RedDisableProperty)!; set => SetPropertyValue(RedDisableProperty, value); }
+    public float[]? GreenTable { get => (float[]?)GetPropertyValue(GreenTableProperty); set => SetPropertyValue(GreenTableProperty, value); }
+    public bool GreenDisable { get => (bool)GetPropertyValue(GreenDisableProperty)!; set => SetPropertyValue(GreenDisableProperty, value); }
+    public float[]? BlueTable { get => (float[]?)GetPropertyValue(BlueTableProperty); set => SetPropertyValue(BlueTableProperty, value); }
+    public bool BlueDisable { get => (bool)GetPropertyValue(BlueDisableProperty)!; set => SetPropertyValue(BlueDisableProperty, value); }
+    public float[]? AlphaTable { get => (float[]?)GetPropertyValue(AlphaTableProperty); set => SetPropertyValue(AlphaTableProperty, value); }
+    public bool AlphaDisable { get => (bool)GetPropertyValue(AlphaDisableProperty)!; set => SetPropertyValue(AlphaDisableProperty, value); }
+    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty)!; set => SetPropertyValue(ClampOutputProperty, value); }
 }

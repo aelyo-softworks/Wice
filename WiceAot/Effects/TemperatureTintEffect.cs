@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1TemperatureTintString)]
-public class TemperatureTintEffect : EffectWithSource
+public partial class TemperatureTintEffect : EffectWithSource
 {
     public static EffectProperty TemperatureProperty { get; }
     public static EffectProperty TintProperty { get; }
@@ -12,6 +12,6 @@ public class TemperatureTintEffect : EffectWithSource
         TintProperty = EffectProperty.Add(typeof(TemperatureTintEffect), nameof(Tint), 1, 0f);
     }
 
-    public float Temperature { get => (float)GetPropertyValue(TemperatureProperty); set => SetPropertyValue(TemperatureProperty, value.Clamp(-1f, 1f)); }
-    public float Tint { get => (float)GetPropertyValue(TintProperty); set => SetPropertyValue(TintProperty, value.Clamp(-1f, 1f)); }
+    public float Temperature { get => (float)GetPropertyValue(TemperatureProperty)!; set => SetPropertyValue(TemperatureProperty, value.Clamp(-1f, 1f)); }
+    public float Tint { get => (float)GetPropertyValue(TintProperty)!; set => SetPropertyValue(TintProperty, value.Clamp(-1f, 1f)); }
 }

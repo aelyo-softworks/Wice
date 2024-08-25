@@ -9,9 +9,9 @@
         public static VisualProperty IntegralHeightProperty { get; } = VisualProperty.Add(typeof(ListBox), nameof(IntegralHeight), VisualPropertyInvalidateModes.Measure, false);
         public static VisualProperty SelectionModeProperty { get; } = VisualProperty.Add(typeof(ListBox), nameof(SelectionMode), VisualPropertyInvalidateModes.Arrange, SelectionMode.Single);
 
-        public event EventHandler<EventArgs> SelectionChanged;
-        public event EventHandler<EventArgs> DataBound;
-        public event EventHandler<ValueEventArgs<ListBoxDataBindContext>> ItemDataBound;
+        public event EventHandler<EventArgs>? SelectionChanged;
+        public event EventHandler<EventArgs>? DataBound;
+        public event EventHandler<ValueEventArgs<ListBoxDataBindContext>>? ItemDataBound;
 
         public ListBox()
         {
@@ -28,22 +28,22 @@
         protected virtual bool RaiseOnSelectionChanged { get; set; }
 
         [Category(CategoryBehavior)]
-        public SelectionMode SelectionMode { get => (SelectionMode)GetPropertyValue(SelectionModeProperty); set => SetPropertyValue(SelectionModeProperty, value); }
+        public SelectionMode SelectionMode { get => (SelectionMode)GetPropertyValue(SelectionModeProperty)!; set => SetPropertyValue(SelectionModeProperty, value); }
 
         [Category(CategoryBehavior)]
-        public bool IntegralHeight { get => (bool)GetPropertyValue(IntegralHeightProperty); set => SetPropertyValue(IntegralHeightProperty, value); }
+        public bool IntegralHeight { get => (bool)GetPropertyValue(IntegralHeightProperty)!; set => SetPropertyValue(IntegralHeightProperty, value); }
 
         [Category(CategoryBehavior)]
-        public object DataSource { get => GetPropertyValue(DataSourceProperty); set => SetPropertyValue(DataSourceProperty, value); }
+        public object? DataSource { get => GetPropertyValue(DataSourceProperty); set => SetPropertyValue(DataSourceProperty, value); }
 
         [Category(CategoryBehavior)]
-        public string DataItemMember { get => (string)GetPropertyValue(DataItemMemberProperty); set => SetPropertyValue(DataItemMemberProperty, value); }
+        public string? DataItemMember { get => (string?)GetPropertyValue(DataItemMemberProperty); set => SetPropertyValue(DataItemMemberProperty, value); }
 
         [Category(CategoryBehavior)]
-        public string DataItemFormat { get => (string)GetPropertyValue(DataItemFormatProperty); set => SetPropertyValue(DataItemFormatProperty, value); }
+        public string? DataItemFormat { get => (string?)GetPropertyValue(DataItemFormatProperty); set => SetPropertyValue(DataItemFormatProperty, value); }
 
         [Browsable(false)]
-        public DataBinder DataBinder { get => (DataBinder)GetPropertyValue(DataBinderProperty); set => SetPropertyValue(DataBinderProperty, value); }
+        public DataBinder? DataBinder { get => (DataBinder?)GetPropertyValue(DataBinderProperty); set => SetPropertyValue(DataBinderProperty, value); }
 
         [Browsable(false)]
         public IEnumerable<ItemVisual> Items => Children.OfType<ItemVisual>();
@@ -52,7 +52,7 @@
         public IEnumerable<ItemVisual> SelectedItems => Items.Where(v => v.IsSelected);
 
         [Browsable(false)]
-        public ItemVisual SelectedItem => Items.FirstOrDefault(v => v.IsSelected);
+        public ItemVisual? SelectedItem => Items.FirstOrDefault(v => v.IsSelected);
 
         protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
         {
@@ -189,7 +189,7 @@
             return ((IOneChildParent?)e.VisualsStack.OfType<Visual>().LastOrDefault(v => IsChild(v) && v is IOneChildParent))?.Child;
         }
 
-        public virtual ItemVisual? GetItemVisual(object obj)
+        public virtual ItemVisual? GetItemVisual(object? obj)
         {
             if (obj is ItemVisual visual)
                 return Items.FirstOrDefault(v => Equals(visual, v));
@@ -197,8 +197,8 @@
             return Items.FirstOrDefault(v => Equals(obj, v.Data));
         }
 
-        public virtual void Toggle(object obj) => Toggle(GetItemVisual(obj));
-        private void Toggle(ItemVisual obj)
+        public virtual void Toggle(object? obj) => Toggle(GetItemVisual(obj));
+        private void Toggle(ItemVisual? obj)
         {
             if (obj == null)
                 return;
@@ -213,8 +213,8 @@
             }
         }
 
-        public virtual void Unselect(object obj) => UnselectChild(GetItemVisual(obj));
-        private void UnselectChild(ItemVisual obj)
+        public virtual void Unselect(object? obj) => UnselectChild(GetItemVisual(obj));
+        private void UnselectChild(ItemVisual? obj)
         {
             if (obj == null)
                 return;
@@ -225,8 +225,8 @@
             }
         }
 
-        public virtual void Select(object obj) => SelectChild(GetItemVisual(obj));
-        private void SelectChild(ItemVisual obj)
+        public virtual void Select(object? obj) => SelectChild(GetItemVisual(obj));
+        private void SelectChild(ItemVisual? obj)
         {
             if (obj == null)
                 return;
@@ -424,7 +424,7 @@
                     }
 
                     var options = new DataSourceEnumerateOptions { Member = DataItemMember, Format = DataItemFormat };
-                    object last = null;
+                    object? last = null;
                     var lastSet = false;
                     foreach (var data in source.Enumerate(options))
                     {
@@ -441,10 +441,9 @@
                         bindItem(last, true);
                     }
 
-                    void bindItem(object data, bool isLast)
+                    void bindItem(object? data, bool isLast)
                     {
                         var ctx = new ListBoxDataBindContext(data, Children.Count, isLast);
-                        //var ctx = new ListBoxDataBindContext(data, children.Count, isLast);
                         binder.DataItemVisualCreator(ctx);
                         if (ctx.DataVisual != null & binder.ItemVisualCreator != null)
                         {

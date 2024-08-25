@@ -4,9 +4,9 @@ public abstract class Storyboard : AnimationObject
 {
     private static readonly object _lock = new();
 
-    public event EventHandler Stopped;
-    public event EventHandler Starting;
-    public event EventHandler Tick;
+    public event EventHandler? Stopped;
+    public event EventHandler? Starting;
+    public event EventHandler? Tick;
 
     protected Storyboard(Window window)
     {
@@ -23,7 +23,7 @@ public abstract class Storyboard : AnimationObject
     public Stopwatch Watch { get; }
     public virtual bool DontWaitForFirstTick { get; set; }
 
-    protected IReadOnlyList<Animation> LockedChildren { get { lock (_lock) { return Children.ToArray(); } } }
+    protected IReadOnlyList<Animation> LockedChildren { get { lock (_lock) { return [.. Children]; } } }
 
     public virtual TimeSpan Duration
     {
@@ -46,14 +46,17 @@ public abstract class Storyboard : AnimationObject
         {
             case NotifyCollectionChangedAction.Remove:
             case NotifyCollectionChangedAction.Replace:
-                foreach (var item in e.OldItems.OfType<Animation>())
+                if (e.OldItems != null)
                 {
-                    if (item == null)
-                        continue;
+                    foreach (var item in e.OldItems.OfType<Animation>())
+                    {
+                        if (item == null)
+                            continue;
 
-                    item.Parent = null;
-                    item.OnDetachedFromParent(this, EventArgs.Empty);
-                    OnChildRemoved(item);
+                        item.Parent = null;
+                        item.OnDetachedFromParent(this, EventArgs.Empty);
+                        OnChildRemoved(item);
+                    }
                 }
 
                 if (e.Action == NotifyCollectionChangedAction.Replace)
@@ -69,17 +72,20 @@ public abstract class Storyboard : AnimationObject
 
         void add()
         {
-            foreach (var item in e.NewItems.OfType<Animation>())
+            if (e.NewItems != null)
             {
-                if (item == null)
-                    continue;
+                foreach (var item in e.NewItems.OfType<Animation>())
+                {
+                    if (item == null)
+                        continue;
 
-                if (item.Parent != null)
-                    throw new WiceException("0012: Item '" + item.Name + "' of type " + item.GetType().Name + " is already a children of parent '" + item.Parent.Name + "' of type " + item.Parent.GetType().Name + ".");
+                    if (item.Parent != null)
+                        throw new WiceException("0012: Item '" + item.Name + "' of type " + item.GetType().Name + " is already a children of parent '" + item.Parent.Name + "' of type " + item.Parent.GetType().Name + ".");
 
-                item.Parent = this;
-                item.OnAttachedToParent(this, EventArgs.Empty);
-                OnChildAdded(item);
+                    item.Parent = this;
+                    item.OnAttachedToParent(this, EventArgs.Empty);
+                    OnChildAdded(item);
+                }
             }
         }
     }

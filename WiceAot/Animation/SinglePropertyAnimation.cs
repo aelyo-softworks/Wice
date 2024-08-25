@@ -2,26 +2,24 @@
 
 // same idea as
 // https://docs.microsoft.com/en-us/dotnet/framework/wpf/graphics-multimedia/easing-functions
-public class SinglePropertyAnimation : PropertyAnimation
+public partial class SinglePropertyAnimation(PropertyAnimationArguments arguments, float from, float to, IEasingFunction? easingFunction = null, EasingMode easingMode = EasingMode.In)
+    : PropertyAnimation(arguments)
 {
-    public SinglePropertyAnimation(PropertyAnimationArguments arguments, float from, float to, IEasingFunction? easingFunction = null, EasingMode easingMode = EasingMode.In)
-        : base(arguments)
-    {
-        From = from;
-        To = to;
-        EasingFunction = easingFunction;
-        EasingMode = easingMode;
-    }
-
-    public float From { get; }
-    public float To { get; }
-    public IEasingFunction EasingFunction { get; }
-    public EasingMode EasingMode { get; }
+    public float From { get; } = from;
+    public float To { get; } = to;
+    public IEasingFunction? EasingFunction { get; } = easingFunction;
+    public EasingMode EasingMode { get; } = easingMode;
 
     protected override AnimationResult TryGetValue(out object value)
     {
         // special "set" case
         if (From == To)
+        {
+            value = To;
+            return AnimationResult.Stop;
+        }
+
+        if (Storyboard == null)
         {
             value = To;
             return AnimationResult.Stop;

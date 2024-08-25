@@ -117,7 +117,7 @@ public class Application : IDisposable
             Current.ResourceManager.RemoveWindow(window);
             WindowRemoved?.Invoke(Current, new ValueEventArgs<Window>(window));
 
-            if (QuitOnLastWindowRemoved && !_exiting && _windows.Count(w => !w.IsBackground) == 0)
+            if (QuitOnLastWindowRemoved && !_exiting && !_windows.Any(w => !w.IsBackground))
             {
                 _exiting = true;
                 var backgroundWindows = _windows.Where(w => w.IsBackground).ToArray();
@@ -144,7 +144,7 @@ public class Application : IDisposable
             {
                 _ = new Application();
             }
-            return _current;
+            return _current!;
         }
     }
     public static Theme CurrentTheme => Current.ResourceManager.Theme;
@@ -155,7 +155,7 @@ public class Application : IDisposable
     public static bool QuitOnLastWindowRemoved { get; set; } = true;
 
     public static int MainThreadId { get; private set; }
-    public static bool IsRunningAsMainThread => MainThreadId == Thread.CurrentThread.ManagedThreadId;
+    public static bool IsRunningAsMainThread => MainThreadId == Environment.CurrentManagedThreadId;
     public static void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0008: This method must be called on the render thread."); }
 
     public static void Exit()

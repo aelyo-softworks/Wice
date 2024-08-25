@@ -159,7 +159,7 @@ public class GridSplitter : Visual
         }
     }
 
-    protected override void OnMouseButtonDown(object sender, MouseButtonEventArgs e)
+    protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         if (e.Button == MouseButton.Left)
         {
@@ -193,7 +193,7 @@ public class GridSplitter : Visual
         base.OnKeyDown(sender, e);
     }
 
-    private class SplitDragState : DragState
+    private sealed class SplitDragState : DragState
     {
         public float _previousSize;
         public float _previousStars;

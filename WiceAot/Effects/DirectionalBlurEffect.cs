@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1DirectionalBlurString)]
-public class DirectionalBlurEffect : EffectWithSource
+public partial class DirectionalBlurEffect : EffectWithSource
 {
     public static EffectProperty StandardDeviationProperty { get; }
     public static EffectProperty AngleProperty { get; }
@@ -16,8 +16,8 @@ public class DirectionalBlurEffect : EffectWithSource
         BorderModeProperty = EffectProperty.Add(typeof(DirectionalBlurEffect), nameof(BorderMode), 3, D2D1_BORDER_MODE.D2D1_BORDER_MODE_SOFT);
     }
 
-    public float StandardDeviation { get => (float)GetPropertyValue(StandardDeviationProperty); set => SetPropertyValue(StandardDeviationProperty, value); }
-    public float Angle { get => (float)GetPropertyValue(AngleProperty); set => SetPropertyValue(AngleProperty, value); }
-    public D2D1_DIRECTIONALBLUR_OPTIMIZATION Optimization { get => (D2D1_DIRECTIONALBLUR_OPTIMIZATION)GetPropertyValue(OptimizationProperty); set => SetPropertyValue(OptimizationProperty, value); }
-    public D2D1_BORDER_MODE BorderMode { get => (D2D1_BORDER_MODE)GetPropertyValue(BorderModeProperty); set => SetPropertyValue(BorderModeProperty, value); }
+    public float StandardDeviation { get => (float)GetPropertyValue(StandardDeviationProperty)!; set => SetPropertyValue(StandardDeviationProperty, value); }
+    public float Angle { get => (float)GetPropertyValue(AngleProperty)!; set => SetPropertyValue(AngleProperty, value); }
+    public D2D1_DIRECTIONALBLUR_OPTIMIZATION Optimization { get => (D2D1_DIRECTIONALBLUR_OPTIMIZATION)GetPropertyValue(OptimizationProperty)!; set => SetPropertyValue(OptimizationProperty, value); }
+    public D2D1_BORDER_MODE BorderMode { get => (D2D1_BORDER_MODE)GetPropertyValue(BorderModeProperty)!; set => SetPropertyValue(BorderModeProperty, value); }
 }

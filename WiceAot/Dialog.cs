@@ -1,6 +1,4 @@
-﻿using Windows.UI;
-
-namespace Wice;
+﻿namespace Wice;
 
 public class Dialog : Popup
 {
@@ -145,6 +143,9 @@ public class Dialog : Popup
 
     private void AnimateRemove()
     {
+        if (Compositor == null || CompositionVisual == null)
+            return;
+
         var func = Compositor.EaseInCubic();
         var opacityAnimation = Compositor.CreateScalarKeyFrameAnimation();
         opacityAnimation.Duration = Application.CurrentTheme.DialogCloseAnimationDuration;
@@ -190,6 +191,7 @@ public class Dialog : Popup
                 {
                     color = Application.CurrentTheme.DialogWindowOverlayColor.ToColor();
                 }
+
                 overlay.RenderBrush = Compositor.CreateColorBrush(color);
                 Parent.Children.InsertBefore(this, overlay);
                 _overlay = overlay;
@@ -212,7 +214,7 @@ public class Dialog : Popup
     private void AnimateShow()
     {
         // show only once (resizing window causes a reshow)
-        if (_shown)
+        if (_shown || CompositionVisual == null)
             return;
 
         var size = CompositionVisual.Size;
@@ -223,8 +225,11 @@ public class Dialog : Popup
 
         SuspendCompositionUpdateParts(CompositionUpdateParts.Opacity);
 
-        Window.Animate(() =>
+        Window?.Animate(() =>
         {
+            if (Compositor == null)
+                return;
+
             var func = Compositor.EaseInCubic();
 
             var opacityAnimation = Compositor.CreateScalarKeyFrameAnimation();

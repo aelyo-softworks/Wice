@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1ShadowString)]
-public class ShadowEffect : EffectWithSource
+public partial class ShadowEffect : EffectWithSource
 {
     public static EffectProperty BlurStandardDeviationProperty { get; }
     public static EffectProperty ColorProperty { get; }
@@ -14,7 +14,7 @@ public class ShadowEffect : EffectWithSource
         OptimizationProperty = EffectProperty.Add(typeof(ShadowEffect), nameof(Optimization), 0, D2D1_SHADOW_OPTIMIZATION.D2D1_SHADOW_OPTIMIZATION_BALANCED);
     }
 
-    public float BlurStandardDeviation { get => (float)GetPropertyValue(BlurStandardDeviationProperty); set => SetPropertyValue(BlurStandardDeviationProperty, value); }
-    public D3DCOLORVALUE Color { get => (D3DCOLORVALUE)GetPropertyValue(ColorProperty); set => SetPropertyValue(ColorProperty, value); }
-    public D2D1_SHADOW_OPTIMIZATION Optimization { get => (D2D1_SHADOW_OPTIMIZATION)GetPropertyValue(OptimizationProperty); set => SetPropertyValue(OptimizationProperty, value); }
+    public float BlurStandardDeviation { get => (float)GetPropertyValue(BlurStandardDeviationProperty)!; set => SetPropertyValue(BlurStandardDeviationProperty, value); }
+    public D3DCOLORVALUE Color { get => (D3DCOLORVALUE)GetPropertyValue(ColorProperty)!; set => SetPropertyValue(ColorProperty, value); }
+    public D2D1_SHADOW_OPTIMIZATION Optimization { get => (D2D1_SHADOW_OPTIMIZATION)GetPropertyValue(OptimizationProperty)!; set => SetPropertyValue(OptimizationProperty, value); }
 }

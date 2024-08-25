@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1BlendString)]
-public class BlendEffect : Effect
+public partial class BlendEffect : Effect
 {
     public static EffectProperty ModeProperty { get; }
 
@@ -15,8 +15,7 @@ public class BlendEffect : Effect
     {
     }
 
-    public D2D1_BLEND_MODE Mode { get => (D2D1_BLEND_MODE)GetPropertyValue(ModeProperty); set => SetPropertyValue(ModeProperty, value); }
-
-    public IGraphicsEffectSource Background { get => GetSource(0); set => SetSource(0, value); }
-    public IGraphicsEffectSource Foreground { get => GetSource(1); set => SetSource(1, value); }
+    public D2D1_BLEND_MODE Mode { get => (D2D1_BLEND_MODE)GetPropertyValue(ModeProperty)!; set => SetPropertyValue(ModeProperty, value); }
+    public IGraphicsEffectSource? Background { get => GetSource(0); set => SetSource(0, value); }
+    public IGraphicsEffectSource? Foreground { get => GetSource(1); set => SetSource(1, value); }
 }

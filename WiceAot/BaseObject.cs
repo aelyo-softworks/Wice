@@ -141,7 +141,7 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
         return value1.Equals(value2);
     }
 
-    private class ObjectComparer(BaseObject bo) : IEqualityComparer<object>
+    private sealed class ObjectComparer(BaseObject bo) : IEqualityComparer<object>
     {
         private readonly BaseObject _bo = bo;
 

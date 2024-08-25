@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Caret : Border
+public partial class Caret : Border
 {
 #if DEBUG
     public static VisualProperty BlinkProperty { get; } = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);
@@ -9,7 +9,7 @@ public class Caret : Border
 #endif
     public static VisualProperty IsShownProperty { get; } = VisualProperty.Add(typeof(Caret), nameof(IsShown), VisualPropertyInvalidateModes.Render, false);
 
-    private WindowTimer _blinkTimer;
+    private WindowTimer? _blinkTimer;
 
     public Caret()
     {
@@ -28,7 +28,7 @@ public class Caret : Border
         //Opacity = 0.5f;
         //Width = 5;
 
-        DoWhenAttachedToComposition(() => RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.CaretColor.ToColor()));
+        DoWhenAttachedToComposition(() => RenderBrush = Compositor!.CreateColorBrush(Application.CurrentTheme.CaretColor.ToColor()));
     }
 
     // no key/mouse at all for caret
@@ -36,10 +36,10 @@ public class Caret : Border
     public virtual uint BlinkTime { get; protected set; }
 
     [Category(CategoryBehavior)]
-    public bool Blink { get => (bool)GetPropertyValue(BlinkProperty); set => SetPropertyValue(BlinkProperty, value); }
+    public bool Blink { get => (bool)GetPropertyValue(BlinkProperty)!; set => SetPropertyValue(BlinkProperty, value); }
 
     [Category(CategoryLayout)]
-    public bool IsShown { get => (bool)GetPropertyValue(IsShownProperty); set => SetPropertyValue(IsShownProperty, value); }
+    public bool IsShown { get => (bool)GetPropertyValue(IsShownProperty)!; set => SetPropertyValue(IsShownProperty, value); }
 
     [Category(CategoryLayout)]
     public float FinalWidth
@@ -113,14 +113,14 @@ public class Caret : Border
         StartBlinking();
     }
 
-    protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions? options = null)
+    protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
             return false;
 
         if (property == IsShownProperty)
         {
-            if ((bool)value)
+            if ((bool)value!)
             {
                 IsVisible = true;
                 StartBlinking();
@@ -142,7 +142,7 @@ public class Caret : Border
             throw new InvalidOperationException();
 
         Interlocked.Exchange(ref _blinkTimer, null)?.Dispose();
-        _blinkTimer = new WindowTimer(Window, OnCaretBlink); // not started
+        _blinkTimer = new WindowTimer(Window!, OnCaretBlink); // not started
         base.OnAttachedToParent(sender, e);
     }
 

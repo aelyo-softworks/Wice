@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1ColorMatrixString)]
-public class ColorMatrixEffect : EffectWithSource
+public partial class ColorMatrixEffect : EffectWithSource
 {
     public static EffectProperty ColorMatrixProperty { get; }
     public static EffectProperty AlphaModeProperty { get; }
@@ -14,7 +14,7 @@ public class ColorMatrixEffect : EffectWithSource
         ClampOutputProperty = EffectProperty.Add(typeof(ColorMatrixEffect), nameof(ClampOutput), 2, false);
     }
 
-    public D2D_MATRIX_5X4_F ColorMatrix { get => (D2D_MATRIX_5X4_F)GetPropertyValue(ColorMatrixProperty); set => SetPropertyValue(ColorMatrixProperty, value); }
-    public D2D1_COLORMATRIX_ALPHA_MODE AlphaMode { get => (D2D1_COLORMATRIX_ALPHA_MODE)GetPropertyValue(AlphaModeProperty); set => SetPropertyValue(AlphaModeProperty, value); }
-    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty); set => SetPropertyValue(ClampOutputProperty, value); }
+    public D2D_MATRIX_5X4_F ColorMatrix { get => (D2D_MATRIX_5X4_F)GetPropertyValue(ColorMatrixProperty)!; set => SetPropertyValue(ColorMatrixProperty, value); }
+    public D2D1_COLORMATRIX_ALPHA_MODE AlphaMode { get => (D2D1_COLORMATRIX_ALPHA_MODE)GetPropertyValue(AlphaModeProperty)!; set => SetPropertyValue(AlphaModeProperty, value); }
+    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty)!; set => SetPropertyValue(ClampOutputProperty, value); }
 }

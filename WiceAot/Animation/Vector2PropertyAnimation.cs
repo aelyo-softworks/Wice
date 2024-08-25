@@ -1,25 +1,22 @@
 ﻿namespace Wice.Animation;
 
-public class Vector2PropertyAnimation : PropertyAnimation
+public class Vector2PropertyAnimation(PropertyAnimationArguments arguments, Vector2 from, Vector2 to, IEasingFunction? easingFunction = null, EasingMode easingMode = EasingMode.In) : PropertyAnimation(arguments)
 {
-    public Vector2PropertyAnimation(PropertyAnimationArguments arguments, Vector2 from, Vector2 to, IEasingFunction? easingFunction = null, EasingMode easingMode = EasingMode.In)
-        : base(arguments)
-    {
-        From = from;
-        To = to;
-        EasingFunction = easingFunction;
-        EasingMode = easingMode;
-    }
-
-    public Vector2 From { get; }
-    public Vector2 To { get; }
-    public IEasingFunction EasingFunction { get; }
-    public EasingMode EasingMode { get; }
+    public Vector2 From { get; } = from;
+    public Vector2 To { get; } = to;
+    public IEasingFunction? EasingFunction { get; } = easingFunction;
+    public EasingMode EasingMode { get; } = easingMode;
 
     protected override AnimationResult TryGetValue(out object value)
     {
         // special "set" case
         if (From == To)
+        {
+            value = To;
+            return AnimationResult.Stop;
+        }
+
+        if (Storyboard == null)
         {
             value = To;
             return AnimationResult.Stop;

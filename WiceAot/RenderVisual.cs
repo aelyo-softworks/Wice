@@ -19,7 +19,7 @@ public abstract class RenderVisual : Visual
     [Category(CategoryRender)]
     public D3DCOLORVALUE? AscendantsBackgroundColor => GetAscendantsBackgroundColor(this);
 
-    private static D3DCOLORVALUE? GetAscendantsBackgroundColor(Visual visual)
+    private static D3DCOLORVALUE? GetAscendantsBackgroundColor(Visual? visual)
     {
         if (visual == null)
             return null;
@@ -44,7 +44,7 @@ public abstract class RenderVisual : Visual
     {
         if (property == RenderBrushProperty)
         {
-            var brush = (CompositionBrush)value;
+            var brush = (CompositionBrush)value!;
             if (CompositionObjectEqualityComparer.Default.Equals(brush, RenderBrush))
                 return false;
 

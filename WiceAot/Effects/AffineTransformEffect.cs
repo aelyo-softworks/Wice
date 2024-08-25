@@ -1,5 +1,7 @@
-﻿[Guid(Constants.CLSID_D2D12DAffineTransformString)]
-public class AffineTransformEffect : EffectWithSource
+﻿namespace Wice.Effects;
+
+[Guid(Constants.CLSID_D2D12DAffineTransformString)]
+public partial class AffineTransformEffect : EffectWithSource
 {
     public static EffectProperty InterpolationModeProperty { get; }
     public static EffectProperty BorderModeProperty { get; }
@@ -14,8 +16,8 @@ public class AffineTransformEffect : EffectWithSource
         SharpnessProperty = EffectProperty.Add(typeof(AffineTransformEffect), nameof(Sharpness), 3, 1f);
     }
 
-    public D2D1_2DAFFINETRANSFORM_INTERPOLATION_MODE InterpolationMode { get => (D2D1_2DAFFINETRANSFORM_INTERPOLATION_MODE)GetPropertyValue(InterpolationModeProperty); set => SetPropertyValue(InterpolationModeProperty, value); }
-    public D2D1_BORDER_MODE BorderMode { get => (D2D1_BORDER_MODE)GetPropertyValue(BorderModeProperty); set => SetPropertyValue(BorderModeProperty, value); }
-    public D2D_MATRIX_3X2_F TransformMatrix { get => (D2D_MATRIX_3X2_F)GetPropertyValue(TransformMatrixProperty); set => SetPropertyValue(TransformMatrixProperty, value); }
-    public float Sharpness { get => (float)GetPropertyValue(SharpnessProperty); set => SetPropertyValue(SharpnessProperty, value.Clamp(0f, 1f)); }
+    public D2D1_2DAFFINETRANSFORM_INTERPOLATION_MODE InterpolationMode { get => (D2D1_2DAFFINETRANSFORM_INTERPOLATION_MODE)GetPropertyValue(InterpolationModeProperty)!; set => SetPropertyValue(InterpolationModeProperty, value); }
+    public D2D1_BORDER_MODE BorderMode { get => (D2D1_BORDER_MODE)GetPropertyValue(BorderModeProperty)!; set => SetPropertyValue(BorderModeProperty, value); }
+    public D2D_MATRIX_3X2_F TransformMatrix { get => (D2D_MATRIX_3X2_F)GetPropertyValue(TransformMatrixProperty)!; set => SetPropertyValue(TransformMatrixProperty, value); }
+    public float Sharpness { get => (float)GetPropertyValue(SharpnessProperty)!; set => SetPropertyValue(SharpnessProperty, value.Clamp(0f, 1f)); }
 }

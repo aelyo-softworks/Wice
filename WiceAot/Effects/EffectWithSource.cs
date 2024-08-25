@@ -1,6 +1,6 @@
 ﻿namespace Wice.Effects;
 
-public abstract class EffectWithSource : Effect
+public abstract partial class EffectWithSource : Effect
 {
     protected EffectWithSource(uint sourcesCount = 1)
         : base(sourcesCount)
@@ -9,5 +9,5 @@ public abstract class EffectWithSource : Effect
             throw new ArgumentOutOfRangeException(nameof(sourcesCount));
     }
 
-    public IGraphicsEffectSource Source { get => GetSource(0); set => SetSource(0, value); }
+    public IGraphicsEffectSource? Source { get => GetSource(0); set => SetSource(0, value); }
 }

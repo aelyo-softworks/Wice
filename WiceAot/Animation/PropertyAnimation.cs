@@ -17,8 +17,17 @@ public abstract class PropertyAnimation : Animation
     }
 
     public BaseObjectProperty TargetProperty { get; }
-    public WeakReference<BaseObject> TargetReference { get; }
-    public BaseObject? Target { get { if (!TargetReference.TryGetTarget(out var target)) return null; return target; } }
+    public WeakReference<BaseObject>? TargetReference { get; }
+    public BaseObject? Target
+    {
+        get
+        {
+            if (TargetReference == null || !TargetReference.TryGetTarget(out var target))
+                return null;
+
+            return target;
+        }
+    }
 
     protected virtual void OnValueSet(object? sender, ValueEventArgs e) => ValueSet?.Invoke(sender, e);
 

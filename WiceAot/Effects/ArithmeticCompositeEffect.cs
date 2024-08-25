@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1ArithmeticCompositeString)]
-public class ArithmeticCompositeEffect : EffectWithTwoSources
+public partial class ArithmeticCompositeEffect : EffectWithTwoSources
 {
     public static EffectProperty CoefficientsProperty { get; }
     public static EffectProperty ClampOutputProperty { get; }
@@ -12,6 +12,6 @@ public class ArithmeticCompositeEffect : EffectWithTwoSources
         ClampOutputProperty = EffectProperty.Add(typeof(ArithmeticCompositeEffect), nameof(ClampOutput), 1, false);
     }
 
-    public D2D_VECTOR_4F Coefficients { get => (D2D_VECTOR_4F)GetPropertyValue(CoefficientsProperty); set => SetPropertyValue(CoefficientsProperty, value); }
-    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty); set => SetPropertyValue(ClampOutputProperty, value); }
+    public D2D_VECTOR_4F Coefficients { get => (D2D_VECTOR_4F)GetPropertyValue(CoefficientsProperty)!; set => SetPropertyValue(CoefficientsProperty, value); }
+    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty)!; set => SetPropertyValue(ClampOutputProperty, value); }
 }

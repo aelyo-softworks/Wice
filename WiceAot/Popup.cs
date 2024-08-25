@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Popup : Canvas, IModalVisual
+public partial class Popup : Canvas, IModalVisual
 {
     public static VisualProperty IsModalProperty { get; } = VisualProperty.Add(typeof(Popup), nameof(IsModal), VisualPropertyInvalidateModes.Render, false); // Render so we ensure modal list (computed in render) is ok 
     public static VisualProperty PlacementTargetProperty { get; } = VisualProperty.Add<Visual>(typeof(Popup), nameof(PlacementTarget), VisualPropertyInvalidateModes.Arrange);

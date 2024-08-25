@@ -1,6 +1,6 @@
 ﻿namespace Wice.Effects;
 
-public abstract class EffectWithTwoSources : Effect
+public abstract partial class EffectWithTwoSources : Effect
 {
     protected EffectWithTwoSources(uint sourcesCount = 2)
         : base(sourcesCount)

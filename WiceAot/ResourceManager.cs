@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class ResourceManager
+public partial class ResourceManager
 {
     private readonly ConcurrentDictionary<string, Resource> _resources = new(StringComparer.OrdinalIgnoreCase);
     private readonly ConcurrentDictionary<Window, WindowResources> _windowsResources = new();
@@ -88,7 +88,7 @@ public class ResourceManager
         return name + "\0" + (int)domain;
     }
 
-    private T Get<T>(Window? window, Domain domain, string name, T? defaultValue = default, bool propertiesUseConversions = false)
+    private T? Get<T>(Window? window, Domain domain, string name, T? defaultValue = default, bool propertiesUseConversions = false)
     {
         var resources = window != null ? _windowsResources[window]._resources : _resources;
         if (!resources.TryGetValue(GetKey(domain, name), out var resource))
@@ -101,7 +101,7 @@ public class ResourceManager
         return (T)resource.Object!;
     }
 
-    private T Get<T>(Window? window, Domain domain, string name, Func<T>? factory = null, bool propertiesUseConversions = false)
+    private T? Get<T>(Window? window, Domain domain, string name, Func<T>? factory = null, bool propertiesUseConversions = false)
     {
         if (factory == null)
             return Get(window, domain, name, default(T));
@@ -130,7 +130,7 @@ public class ResourceManager
         return (T)resource.Object!;
     }
 
-    public virtual IComObject<IDWriteTypography> GetTypography(Typography typography)
+    public virtual IComObject<IDWriteTypography>? GetTypography(Typography typography)
     {
         ArgumentNullException.ThrowIfNull(typography);
         var key = typography.CacheKey;
@@ -148,7 +148,7 @@ public class ResourceManager
         return tg;
     }
 
-    public virtual IComObject<ID2D1StrokeStyle> GetStrokeStyle(D2D1_STROKE_STYLE_PROPERTIES value, float[]? dashes = null)
+    public virtual IComObject<ID2D1StrokeStyle>? GetStrokeStyle(D2D1_STROKE_STYLE_PROPERTIES value, float[]? dashes = null)
     {
         var key = (int)value.dashCap + "\0" +
             (int)value.dashOffset + "\0" +
@@ -181,7 +181,7 @@ public class ResourceManager
         });
     }
 
-    public virtual IComObject<IWICBitmapSource> GetWicBitmapSource(string filePath, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
+    public virtual IComObject<IWICBitmapSource>? GetWicBitmapSource(string filePath, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
         ArgumentNullException.ThrowIfNull(filePath);
         filePath = System.IO.Path.GetFullPath(filePath);
@@ -189,7 +189,7 @@ public class ResourceManager
         return Get(null, Domain.WICBitmapSource, key, () => WicUtilities.LoadBitmapSource(filePath, options));
     }
 
-    public virtual IComObject<IWICBitmapSource> GetWicBitmapSource(Assembly assembly, string name, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
+    public virtual IComObject<IWICBitmapSource>? GetWicBitmapSource(Assembly assembly, string name, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
         ArgumentNullException.ThrowIfNull(assembly);
         ArgumentNullException.ThrowIfNull(name);
@@ -202,15 +202,15 @@ public class ResourceManager
     }
 
     // note: keep the stream open as wic lazy loads
-    public virtual IComObject<IWICBitmapSource> GetWicBitmapSource(Stream stream, string uniqueKey, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
+    public virtual IComObject<IWICBitmapSource>? GetWicBitmapSource(Stream stream, string uniqueKey, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(uniqueKey);
         return Get(null, Domain.WICBitmapSource, uniqueKey, () => WicUtilities.LoadBitmapSource(stream, options));
     }
 
-    public virtual IComObject<IDWriteTextFormat> GetSymbolFormat(float fontSize = 0) => GetTextFormat(Theme.SymbolFontName, fontSize);
-    public virtual IComObject<IDWriteTextFormat> GetTextFormat(
+    public virtual IComObject<IDWriteTextFormat>? GetSymbolFormat(float fontSize = 0) => GetTextFormat(Theme.SymbolFontName, fontSize);
+    public virtual IComObject<IDWriteTextFormat>? GetTextFormat(
         string? fontFamilyName = null,
         float fontSize = 0,
         DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
@@ -229,7 +229,7 @@ public class ResourceManager
         return GetTextFormat(text);
     }
 
-    public virtual IComObject<IDWriteTextFormat> GetTextFormat(ITextFormat text)
+    public virtual IComObject<IDWriteTextFormat>? GetTextFormat(ITextFormat text)
     {
         ArgumentNullException.ThrowIfNull(text);
         var family = text.FontFamilyName.Nullify() ?? Theme.DefaultFontFamilyName;
@@ -284,7 +284,7 @@ public class ResourceManager
         }
     }
 
-    public virtual IComObject<IDWriteTextFormat> GetTextFormat(
+    public virtual IComObject<IDWriteTextFormat>? GetTextFormat(
         string? fontFamilyName = null,
         float? fontSize = null,
         IDWriteFontCollection? fonts = null,
@@ -324,10 +324,7 @@ public class ResourceManager
             return CreateTextLayout<IDWriteTextLayout>(format, text, textLength, maxWidth, maxHeight);
 
         var key = textLength + "\0" + maxWidth + "\0" + maxHeight + "\0" + kf.Key + "\0" + text;
-        return Get(null, Domain.TextLayout, key, () =>
-        {
-            return CreateTextLayout<IDWriteTextLayout>(format, text, textLength, maxWidth, maxHeight);
-        });
+        return Get(null, Domain.TextLayout, key, () => CreateTextLayout<IDWriteTextLayout>(format, text, textLength, maxWidth, maxHeight));
     }
 
     public virtual IComObject<IDWriteTextLayout> CreateTextLayout(IComObject<IDWriteTextFormat> format, string text, int textLength = 0, float maxWidth = float.MaxValue, float maxHeight = float.MaxValue)
@@ -360,10 +357,10 @@ public class ResourceManager
         return new ComObject<T>((T)layout);
     }
 
-    public GeometrySource2D GetToggleSwitchGeometrySource(float width, float height, float margin) => new("ToggleSwitch" + width + "\0" + height + "\0" + margin) { Geometry = Get(null, Domain.ToggleSwitchGeometry, width + "\0" + height + "\0" + margin, () => CreateToggleSwitchGeometry(width, height, margin)).Object };
+    public GeometrySource2D GetToggleSwitchGeometrySource(float width, float height, float margin) => new("ToggleSwitch" + width + "\0" + height + "\0" + margin) { Geometry = Get(null, Domain.ToggleSwitchGeometry, width + "\0" + height + "\0" + margin, () => CreateToggleSwitchGeometry(width, height, margin))?.Object };
 
     //  margin is used as offset, so stroke can be fully seen
-    public virtual IComObject<ID2D1PathGeometry1> GetToggleSwitchGeometry(float width, float height, float margin) => Get(null, Domain.ToggleSwitchGeometry, width + "\0" + height + "\0" + margin, () => CreateToggleSwitchGeometry(width, height, margin));
+    public virtual IComObject<ID2D1PathGeometry1>? GetToggleSwitchGeometry(float width, float height, float margin) => Get(null, Domain.ToggleSwitchGeometry, width + "\0" + height + "\0" + margin, () => CreateToggleSwitchGeometry(width, height, margin));
     public virtual IComObject<ID2D1PathGeometry1> CreateToggleSwitchGeometry(float width, float height, float margin)
     {
         var path = D2DFactory.CreatePathGeometry<ID2D1PathGeometry1>();
@@ -380,9 +377,9 @@ public class ResourceManager
         return path;
     }
 
-    public GeometrySource2D GetCheckButtonGeometrySource(float width, float height) => new("CheckButton" + width + "\0" + height) { Geometry = Get(null, Domain.CheckButtonGeometry, width + "\0" + height, () => CreateCheckButtonGeometry(width, height)).Object };
+    public GeometrySource2D GetCheckButtonGeometrySource(float width, float height) => new("CheckButton" + width + "\0" + height) { Geometry = Get(null, Domain.CheckButtonGeometry, width + "\0" + height, () => CreateCheckButtonGeometry(width, height))?.Object };
 
-    public virtual IComObject<ID2D1PathGeometry1> GetCheckButtonGeometry(float width, float height) => Get(null, Domain.CheckButtonGeometry, width + "\0" + height, () => CreateCheckButtonGeometry(width, height));
+    public virtual IComObject<ID2D1PathGeometry1>? GetCheckButtonGeometry(float width, float height) => Get(null, Domain.CheckButtonGeometry, width + "\0" + height, () => CreateCheckButtonGeometry(width, height));
     public virtual IComObject<ID2D1PathGeometry1> CreateCheckButtonGeometry(float width, float height)
     {
         var path = D2DFactory.CreatePathGeometry<ID2D1PathGeometry1>();
@@ -396,9 +393,9 @@ public class ResourceManager
         return path;
     }
 
-    public GeometrySource2D GetScrollBarButtonGeometrySource(DockType type, float width, float ratio, bool open) => new("ScrollBarButton" + ((int)type) + "\0" + width + "\0" + ratio + "\0" + (open ? 1 : 0)) { Geometry = Get(null, Domain.ScrollBarButtonGeometry, ((int)type) + "\0" + width + "\0" + ratio + "\0" + (open ? 1 : 0), () => CreateScrollBarButtonGeometry(type, width, ratio, open)).Object };
+    public GeometrySource2D GetScrollBarButtonGeometrySource(DockType type, float width, float ratio, bool open) => new("ScrollBarButton" + ((int)type) + "\0" + width + "\0" + ratio + "\0" + (open ? 1 : 0)) { Geometry = Get(null, Domain.ScrollBarButtonGeometry, ((int)type) + "\0" + width + "\0" + ratio + "\0" + (open ? 1 : 0), () => CreateScrollBarButtonGeometry(type, width, ratio, open))?.Object };
 
-    public virtual IComObject<ID2D1PathGeometry1> GetScrollBarButtonGeometry(DockType type, float width, float ratio, bool open) => Get(null, Domain.ScrollBarButtonGeometry, ((int)type) + "\0" + width + "\0" + ratio + "\0" + (open ? 1 : 0), () => CreateScrollBarButtonGeometry(type, width, ratio, open));
+    public virtual IComObject<ID2D1PathGeometry1>? GetScrollBarButtonGeometry(DockType type, float width, float ratio, bool open) => Get(null, Domain.ScrollBarButtonGeometry, ((int)type) + "\0" + width + "\0" + ratio + "\0" + (open ? 1 : 0), () => CreateScrollBarButtonGeometry(type, width, ratio, open));
     public virtual IComObject<ID2D1PathGeometry1> CreateScrollBarButtonGeometry(DockType type, float width, float ratio, bool open)
     {
         if (ratio.IsNotSet() || ratio <= 0)
@@ -450,9 +447,9 @@ public class ResourceManager
         return path;
     }
 
-    public GeometrySource2D GetTitleBarButtonGeometrySource(TitleBarButtonType type, float width) => new("TitleBarButton" + ((int)type) + "\0" + width) { Geometry = GetTitleBarButtonGeometry(type, width).Object };
+    public GeometrySource2D GetTitleBarButtonGeometrySource(TitleBarButtonType type, float width) => new("TitleBarButton" + ((int)type) + "\0" + width) { Geometry = GetTitleBarButtonGeometry(type, width)?.Object };
 
-    public virtual IComObject<ID2D1PathGeometry1> GetTitleBarButtonGeometry(TitleBarButtonType type, float width) => Get(null, Domain.TitleBarButtonTypeGeometry, ((int)type) + "\0" + width, () => CreateTitleBarButtonGeometry(type, width));
+    public virtual IComObject<ID2D1PathGeometry1>? GetTitleBarButtonGeometry(TitleBarButtonType type, float width) => Get(null, Domain.TitleBarButtonTypeGeometry, ((int)type) + "\0" + width, () => CreateTitleBarButtonGeometry(type, width));
     public virtual IComObject<ID2D1PathGeometry1> CreateTitleBarButtonGeometry(TitleBarButtonType type, float width)
     {
         var path = D2DFactory.CreatePathGeometry<ID2D1PathGeometry1>();
@@ -558,7 +555,7 @@ public class ResourceManager
         string Key { get; }
     }
 
-    private class KeyComObject<T>(T comObject, string key) : ComObject<T>(comObject), IKeyable
+    private sealed class KeyComObject<T>(T comObject, string key) : ComObject<T>(comObject), IKeyable
     {
         public string Key { get; } = key;
     }
@@ -568,7 +565,7 @@ public class ResourceManager
         void BaseDispose();
     }
 
-    private class RenderComObject<T>(ResourceManager mgr, Window window, T comObject) : ComObject<T>(comObject), IBaseDisposable
+    private sealed partial class RenderComObject<T>(ResourceManager mgr, Window window, T comObject) : ComObject<T>(comObject), IBaseDisposable
     {
 
         // don't call the real dispose now
@@ -576,13 +573,13 @@ public class ResourceManager
         public void BaseDispose() => base.Dispose(true);
     }
 
-    private class RenderDisposable(IDisposable disposable) : IBaseDisposable
+    private sealed class RenderDisposable(IDisposable disposable) : IBaseDisposable
     {
         public void BaseDispose() => disposable.Dispose();
         public override string ToString() => disposable?.ToString() ?? string.Empty;
     }
 
-    private class WindowResources(Window window)
+    private sealed class WindowResources(Window window)
     {
         public Window Window = window;
         public readonly ConcurrentBag<IBaseDisposable> _renderDisposables = [];
@@ -599,7 +596,7 @@ public class ResourceManager
         }
     }
 
-    private class Resource : IDisposable
+    private sealed partial class Resource : IDisposable
     {
         public Resource()
         {

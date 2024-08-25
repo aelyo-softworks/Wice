@@ -1,6 +1,4 @@
-﻿using WinRT;
-
-namespace Wice.Utilities;
+﻿namespace Wice.Utilities;
 
 public static class UIExtensions
 {
@@ -328,12 +326,11 @@ public static class UIExtensions
             return;
 
         var interop = surface.As<ICompositionDrawingSurfaceInterop>();
-        using var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop);
-        using (var dc = surfaceInterop.BeginDraw(rect))
+        using (var dc = interop.BeginDraw<ID2D1DeviceContext>(rect))
         {
             drawAction(dc);
         }
-        surfaceInterop.EndDraw();
+        interop.EndDraw();
     }
 
     public static T? DrawOnSurface<T>(this SpriteVisual visual, CompositionGraphicsDevice device, Func<IComObject<ID2D1DeviceContext>, T> drawAction, SurfaceCreationOptions? options = null)
@@ -348,14 +345,11 @@ public static class UIExtensions
             return default;
 
         var interop = surface.As<ICompositionDrawingSurfaceInterop>();
-        using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop))
+        using (var dc = interop.BeginDraw<ID2D1DeviceContext>())
         {
-            using (var dc = surfaceInterop.BeginDraw())
-            {
-                item = drawAction(dc);
-            }
-            surfaceInterop.EndDraw();
+            item = drawAction(dc);
         }
+        interop.EndDraw();
         return item;
     }
 

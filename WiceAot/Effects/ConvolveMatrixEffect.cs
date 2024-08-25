@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1ConvolveMatrixString)]
-public class ConvolveMatrixEffect : EffectWithSource
+public partial class ConvolveMatrixEffect : EffectWithSource
 {
     public static EffectProperty KernelUnitLengthProperty { get; }
     public static EffectProperty ScaleModeProperty { get; }
@@ -30,15 +30,15 @@ public class ConvolveMatrixEffect : EffectWithSource
         ClampOutputProperty = EffectProperty.Add(typeof(ConvolveMatrixEffect), nameof(ClampOutput), 10, false);
     }
 
-    public D2D_VECTOR_2F KernelUnitLength { get => (D2D_VECTOR_2F)GetPropertyValue(KernelUnitLengthProperty); set => SetPropertyValue(KernelUnitLengthProperty, value); }
-    public D2D1_CONVOLVEMATRIX_SCALE_MODE ScaleMode { get => (D2D1_CONVOLVEMATRIX_SCALE_MODE)GetPropertyValue(ScaleModeProperty); set => SetPropertyValue(ScaleModeProperty, value); }
-    public uint KernelSizeX { get => (uint)GetPropertyValue(KernelSizeXProperty); set => SetPropertyValue(KernelSizeXProperty, value); }
-    public uint KernelSizeY { get => (uint)GetPropertyValue(KernelSizeYProperty); set => SetPropertyValue(KernelSizeYProperty, value); }
-    public float[] KernelMatrix { get => (float[])GetPropertyValue(KernelMatrixProperty); set => SetPropertyValue(KernelMatrixProperty, value); }
-    public float Divisor { get => (float)GetPropertyValue(DivisorProperty); set => SetPropertyValue(DivisorProperty, value); }
-    public float Bias { get => (float)GetPropertyValue(BiasProperty); set => SetPropertyValue(BiasProperty, value); }
-    public D2D_VECTOR_2F KernelOffset { get => (D2D_VECTOR_2F)GetPropertyValue(KernelOffsetProperty); set => SetPropertyValue(KernelOffsetProperty, value); }
-    public bool PreserveAlpha { get => (bool)GetPropertyValue(PreserveAlphaProperty); set => SetPropertyValue(PreserveAlphaProperty, value); }
-    public D2D1_BORDER_MODE BorderMode { get => (D2D1_BORDER_MODE)GetPropertyValue(BorderModeProperty); set => SetPropertyValue(BorderModeProperty, value); }
-    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty); set => SetPropertyValue(ClampOutputProperty, value); }
+    public D2D_VECTOR_2F KernelUnitLength { get => (D2D_VECTOR_2F)GetPropertyValue(KernelUnitLengthProperty)!; set => SetPropertyValue(KernelUnitLengthProperty, value); }
+    public D2D1_CONVOLVEMATRIX_SCALE_MODE ScaleMode { get => (D2D1_CONVOLVEMATRIX_SCALE_MODE)GetPropertyValue(ScaleModeProperty)!; set => SetPropertyValue(ScaleModeProperty, value); }
+    public uint KernelSizeX { get => (uint)GetPropertyValue(KernelSizeXProperty)!; set => SetPropertyValue(KernelSizeXProperty, value); }
+    public uint KernelSizeY { get => (uint)GetPropertyValue(KernelSizeYProperty)!; set => SetPropertyValue(KernelSizeYProperty, value); }
+    public float[] KernelMatrix { get => (float[])GetPropertyValue(KernelMatrixProperty)!; set => SetPropertyValue(KernelMatrixProperty, value); }
+    public float Divisor { get => (float)GetPropertyValue(DivisorProperty)!; set => SetPropertyValue(DivisorProperty, value); }
+    public float Bias { get => (float)GetPropertyValue(BiasProperty)!; set => SetPropertyValue(BiasProperty, value); }
+    public D2D_VECTOR_2F KernelOffset { get => (D2D_VECTOR_2F)GetPropertyValue(KernelOffsetProperty)!; set => SetPropertyValue(KernelOffsetProperty, value); }
+    public bool PreserveAlpha { get => (bool)GetPropertyValue(PreserveAlphaProperty)!; set => SetPropertyValue(PreserveAlphaProperty, value); }
+    public D2D1_BORDER_MODE BorderMode { get => (D2D1_BORDER_MODE)GetPropertyValue(BorderModeProperty)!; set => SetPropertyValue(BorderModeProperty, value); }
+    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty)!; set => SetPropertyValue(ClampOutputProperty, value); }
 }

@@ -20,7 +20,7 @@ public class Border : RenderVisual, IOneChildParent
     public float BorderThickness { get => (float)GetPropertyValue(BorderThicknessProperty)!; set => SetPropertyValue(BorderThicknessProperty, value); }
 
     [Browsable(false)]
-    public Visual Child
+    public Visual? Child
     {
         get => Children?.FirstOrDefault();
         set
@@ -33,7 +33,11 @@ public class Border : RenderVisual, IOneChildParent
             {
                 Children.Remove(child);
             }
-            Children.Add(value);
+
+            if (value != null)
+            {
+                Children.Add(value);
+            }
         }
     }
 
@@ -149,7 +153,7 @@ public class Border : RenderVisual, IOneChildParent
         {
             // use a rounded clip
             var radius = CornerRadius;
-            if (radius.IsNotZero())
+            if (radius.IsNotZero() && Compositor != null && CompositionVisual != null)
             {
                 // note this is not visually perfect as clipping is done by Windows.UI.Composition
                 // while rendering is done by D2D and both do not 100% agree on what's a radius
@@ -180,7 +184,7 @@ public class Border : RenderVisual, IOneChildParent
                     radiusX = radius.X.ToZero(),
                     radiusY = radius.Y.ToZero()
                 };
-                context.DeviceContext.Object.FillRoundedRectangle(ref rr, context.CreateSolidColorBrush(bg.Value).Object);
+                context.DeviceContext.Object.FillRoundedRectangle(rr, context.CreateSolidColorBrush(bg.Value).Object);
             }
             return;
         }
@@ -200,7 +204,7 @@ public class Border : RenderVisual, IOneChildParent
     protected internal override void RenderCore(RenderContext context)
     {
         base.RenderCore(context);
-        if (!CompositionVisual.IsVisible)
+        if (CompositionVisual == null || !CompositionVisual.IsVisible)
             return;
 
         // draw border
@@ -223,11 +227,11 @@ public class Border : RenderVisual, IOneChildParent
                         radiusX = radius.X.ToZero(),
                         radiusY = radius.Y.ToZero()
                     };
-                    context.DeviceContext.Object.DrawRoundedRectangle(ref rr, brush.Object, borderThickness, null);
+                    context.DeviceContext.Object.DrawRoundedRectangle(rr, brush.Object, borderThickness, null);
                 }
                 else
                 {
-                    context.DeviceContext.Object.DrawRectangle(ref rc, brush.Object, borderThickness, null);
+                    context.DeviceContext.Object.DrawRectangle(rc, brush.Object, borderThickness, null);
                 }
             }
         }

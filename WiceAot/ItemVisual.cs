@@ -22,7 +22,7 @@ public class ItemVisual : Border, IOneChildParent, IFocusableParent, ISelectable
     [Category(CategoryBehavior)]
     public bool IsSelected { get => (bool)GetPropertyValue(IsSelectedProperty)!; set => SetPropertyValue(IsSelectedProperty, value); }
 
-    Visual IFocusableParent.FocusableVisual => Child;
+    Visual? IFocusableParent.FocusableVisual => Child;
     Type? IFocusableParent.FocusVisualShapeType => null;
     float? IFocusableParent.FocusOffset => null;
 

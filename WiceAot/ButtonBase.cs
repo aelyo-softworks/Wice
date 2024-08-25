@@ -29,7 +29,7 @@ public class ButtonBase : Border, IAccessKeyParent
 
         if (property == IsEnabledProperty)
         {
-            IsFocusable = (bool)value;
+            IsFocusable = (bool)value!;
             UpdateStyle();
             return true;
         }
@@ -70,7 +70,7 @@ public class ButtonBase : Border, IAccessKeyParent
         base.OnKeyDown(sender, e);
     }
 
-    protected override void OnMouseButtonDown(object sender, MouseButtonEventArgs e)
+    protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         if (!IsEnabled)
             return;

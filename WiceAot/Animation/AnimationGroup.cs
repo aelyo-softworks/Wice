@@ -1,6 +1,6 @@
 ﻿namespace Wice.Animation;
 
-public class AnimationGroup : Animation
+public partial class AnimationGroup : Animation
 {
     public AnimationGroup()
     {

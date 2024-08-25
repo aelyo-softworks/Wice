@@ -8,10 +8,34 @@
 		<PublishAot>true</PublishAot>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<WindowsSdkPackageVersion>10.0.26100.42</WindowsSdkPackageVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<ProjectReference Include="..\WiceAot\WiceAot.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="System.Diagnostics" />
+		<Using Include="System.Reflection" />
+		<Using Include="System.Runtime.Versioning" />
+		<Using Include="System.Runtime.InteropServices" />
+		<Using Include="DirectN" />
+		<Using Include="DirectN.Extensions" />
+		<Using Include="DirectN.Extensions.Com" />
+		<Using Include="Wice" />
+		<Using Include="Wice.Animation" />
+		<Using Include="Wice.Effects" />
+		<Using Include="Wice.Utilities" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>

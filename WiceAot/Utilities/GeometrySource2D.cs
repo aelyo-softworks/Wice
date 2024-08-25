@@ -1,9 +1,6 @@
-﻿using System.Runtime.InteropServices.Marshalling;
+﻿namespace Wice.Utilities;
 
-namespace Wice.Utilities;
-
-[GeneratedComClass]
-public partial class GeometrySource2D : IGeometrySource2D, Interop.IGeometrySource2DInterop, IEquatable<GeometrySource2D>, Interop.IInspectable
+public partial class GeometrySource2D : IGeometrySource2D, Windows.Graphics.IGeometrySource2DInterop, IEquatable<GeometrySource2D>
 {
     public GeometrySource2D(string uniqueKey)
     {
@@ -13,38 +10,6 @@ public partial class GeometrySource2D : IGeometrySource2D, Interop.IGeometrySour
 
     public string UniqueKey { get; }
     public ID2D1Geometry? Geometry { get; set; }
-
-    HRESULT Interop.IInspectable.GetIids(out uint iidCount, out nint iids)
-    {
-        iidCount = 0;
-        iids = 0;
-        return Constants.S_OK;
-    }
-
-    HRESULT Interop.IInspectable.GetRuntimeClassName(out HSTRING className)
-    {
-        className = HSTRING.Null;
-        return Constants.S_OK;
-    }
-
-    HRESULT Interop.IInspectable.GetTrustLevel(out TrustLevel trustLevel)
-    {
-        trustLevel = TrustLevel.FullTrust;
-        return Constants.S_OK;
-    }
-
-    HRESULT Interop.IGeometrySource2DInterop.TryGetGeometryUsingFactory(ID2D1Factory factory, out ID2D1Geometry value) => throw new NotSupportedException();
-    HRESULT Interop.IGeometrySource2DInterop.GetGeometry(out ID2D1Geometry value)
-    {
-        value = Geometry;
-        return Constants.S_OK;
-    }
-
-    public IGeometrySource2D GetIGeometrySource2()
-    {
-        ComWrappers.TryGetComInstance(this, out var unk);
-        return WinRT.MarshalInspectable<IGeometrySource2D>.FromAbi(unk);
-    }
 
     public override int GetHashCode() => UniqueKey.GetHashCode();
     public override bool Equals(object? obj) => Equals(obj as GeometrySource2D);
@@ -57,5 +22,12 @@ public partial class GeometrySource2D : IGeometrySource2D, Interop.IGeometrySour
             return true;
 
         return UniqueKey == other.UniqueKey;
+    }
+
+    HRESULT Windows.Graphics.IGeometrySource2DInterop.TryGetGeometryUsingFactory(ID2D1Factory factory, out ID2D1Geometry value) => throw new NotImplementedException();
+    HRESULT Windows.Graphics.IGeometrySource2DInterop.GetGeometry(out ID2D1Geometry value)
+    {
+        value = Geometry;
+        return Constants.S_OK;
     }
 }

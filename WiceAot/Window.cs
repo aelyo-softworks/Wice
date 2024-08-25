@@ -1,7 +1,4 @@
-﻿using DirectN.Utilities;
-using WinRT;
-
-namespace Wice;
+﻿namespace Wice;
 
 public class Window : Canvas, ITitleBarParent
 {
@@ -487,7 +484,7 @@ public class Window : Canvas, ITitleBarParent
         }
     }
 
-    private class WindowBaseObjectCollection : BaseObjectCollection<Visual>
+    private sealed class WindowBaseObjectCollection : BaseObjectCollection<Visual>
     {
         private readonly Window _window;
 
@@ -641,10 +638,12 @@ public class Window : Canvas, ITitleBarParent
         return list.AsReadOnly();
     }
 
-    private class VisualDepthComparer : IComparer<Visual>
+    private sealed class VisualDepthComparer : IComparer<Visual>
     {
-        public int Compare(Visual x, Visual y)
+        public int Compare(Visual? x, Visual? y)
         {
+            ArgumentNullException.ThrowIfNull(x);
+            ArgumentNullException.ThrowIfNull(y);
             var cmp = -x.ViewOrder.CompareTo(y.ViewOrder);
 #if DEBUG
             //Application.Trace("x ► " + x.FullName + " y ► " + y.FullName + " => " + cmp);
@@ -803,7 +802,7 @@ public class Window : Canvas, ITitleBarParent
 
                 var key = "ClipFrame" + rc.ToString() + "\0" + buttonsWidth + "\0" + buttonsHeight;
                 var geoSource = new GeometrySource2D(key) { Geometry = path.Object };
-                var geo = Compositor.CreatePathGeometry(new CompositionPath(geoSource.GetIGeometrySource2()));
+                var geo = Compositor.CreatePathGeometry(new CompositionPath(geoSource));
                 CompositionVisual.Clip = Compositor.CreateGeometricClip(geo);
             }
         }
@@ -919,10 +918,9 @@ public class Window : Canvas, ITitleBarParent
 
         var surface = window.CompositionDevice.CreateDrawingSurface(new Size(1, 1), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
         var interop = surface.As<ICompositionDrawingSurfaceInterop>();
-        using var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop);
-        using var dc = surfaceInterop.BeginDraw();
+        using var dc = interop.BeginDraw<ID2D1DeviceContext>();
         var size = dc.Object.GetMaximumBitmapSize();
-        surfaceInterop.EndDraw();
+        interop.EndDraw();
         return size;
     }
 
@@ -1057,8 +1055,7 @@ public class Window : Canvas, ITitleBarParent
         var fs = FrameSize;
         var surface = CompositionDevice.CreateDrawingSurface(cs.ToSize(), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
         var interop = surface.As<ICompositionDrawingSurfaceInterop>();
-        using var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop);
-        using (var dc = surfaceInterop.BeginDraw())
+        using (var dc = interop.BeginDraw<ID2D1DeviceContext>())
         {
             var rc = cr.ToD2D_RECT_F();
             RenderContext.WithRenderContext(dc, context =>
@@ -1073,7 +1070,7 @@ public class Window : Canvas, ITitleBarParent
                 }
             });
         }
-        surfaceInterop.EndDraw();
+        interop.EndDraw();
 
         var brush = Compositor.CreateSurfaceBrush(surface);
         sprite.Brush = brush;
@@ -2250,13 +2247,13 @@ public class Window : Canvas, ITitleBarParent
         if (property == WidthProperty)
         {
             var rc = WindowRect;
-            Resize((int)(float)value, rc.Height);
+            Resize((int)(float)value!, rc.Height);
             return true;
         }
         else if (property == HeightProperty)
         {
             var rc = WindowRect;
-            Resize(rc.Width, (int)(float)value);
+            Resize(rc.Width, (int)(float)value!);
             return true;
         }
 
@@ -2587,7 +2584,7 @@ public class Window : Canvas, ITitleBarParent
     private void SetCaretPosition(WPARAM wParam, LPARAM lParam)
     {
         var h = GCHandle.FromIntPtr(lParam.Value);
-        var rc = (D2D_RECT_F)h.Target;
+        var rc = (D2D_RECT_F)h.Target!;
         h.Free();
 
         Application.Trace("rc: " + rc.ToRECT());
@@ -2596,14 +2593,9 @@ public class Window : Canvas, ITitleBarParent
         NativeWindow.SetCaretPosition((int)Math.Round(rc.left), (int)Math.Round(rc.top));
     }
 
-    private class Scheduler : TaskScheduler
+    private sealed class Scheduler(Window window) : TaskScheduler
     {
-        public Scheduler(Window window)
-        {
-            Window = window;
-        }
-
-        public Window Window { get; }
+        public Window Window { get; } = window;
 
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued) => false;
         protected override IEnumerable<Task> GetScheduledTasks() => Window._tasks;

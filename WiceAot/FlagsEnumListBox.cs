@@ -87,7 +87,7 @@ public class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
 
     protected virtual void OnValueChanged(object sender, ValueEventArgs e) => ValueChanged?.Invoke(sender, e);
 
-    protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions? options = null)
+    protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
             return false;

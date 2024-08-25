@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1CompositeString)]
-public class CompositeEffect : Effect
+public partial class CompositeEffect : Effect
 {
     public static EffectProperty ModeProperty { get; }
 
@@ -15,5 +15,5 @@ public class CompositeEffect : Effect
     {
     }
 
-    public D2D1_COMPOSITE_MODE Mode { get => (D2D1_COMPOSITE_MODE)GetPropertyValue(ModeProperty); set => SetPropertyValue(ModeProperty, value); }
+    public D2D1_COMPOSITE_MODE Mode { get => (D2D1_COMPOSITE_MODE)GetPropertyValue(ModeProperty)!; set => SetPropertyValue(ModeProperty, value); }
 }

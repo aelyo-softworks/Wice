@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1WhiteLevelAdjustmentString)]
-public class WhiteLevelAdjustmentEffect : EffectWithSource
+public partial class WhiteLevelAdjustmentEffect : EffectWithSource
 {
     public static EffectProperty InputWhiteLevelProperty { get; }
     public static EffectProperty OutputWhiteLevelProperty { get; }
@@ -12,6 +12,6 @@ public class WhiteLevelAdjustmentEffect : EffectWithSource
         OutputWhiteLevelProperty = EffectProperty.Add(typeof(WhiteLevelAdjustmentEffect), nameof(OutputWhiteLevel), 1, 0f);
     }
 
-    public float InputWhiteLevel { get => (float)GetPropertyValue(InputWhiteLevelProperty); set => SetPropertyValue(InputWhiteLevelProperty, value); }
-    public float OutputWhiteLevel { get => (float)GetPropertyValue(OutputWhiteLevelProperty); set => SetPropertyValue(OutputWhiteLevelProperty, value); }
+    public float InputWhiteLevel { get => (float)GetPropertyValue(InputWhiteLevelProperty)!; set => SetPropertyValue(InputWhiteLevelProperty, value); }
+    public float OutputWhiteLevel { get => (float)GetPropertyValue(OutputWhiteLevelProperty)!; set => SetPropertyValue(OutputWhiteLevelProperty, value); }
 }

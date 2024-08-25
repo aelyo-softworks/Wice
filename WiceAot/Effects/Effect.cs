@@ -1,48 +1,23 @@
-﻿namespace Wice.Effects;
+﻿using IGraphicsEffectD2D1Interop = Windows.Graphics.Effects.IGraphicsEffectD2D1Interop;
+
+namespace Wice.Effects;
 
 // if you find this code is an absolute mess (because of combined .NET Framework & .NET 5+ support), you're 100% right and you should talk to Microsoft because they broke everything
 // https://github.com/microsoft/CsWinRT/issues/302
 // https://github.com/microsoft/CsWinRT/issues/799
 // etc.
-[System.Runtime.InteropServices.Marshalling.GeneratedComClass]
-public abstract partial class Effect : BaseObject, IGraphicsEffect, IGraphicsEffectD2D1Interop, IGraphicsEffectSource, Interop.IInspectable
+public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraphicsEffect, IGraphicsEffectSource, IGraphicsEffectD2D1Interop
 {
     private static readonly ConcurrentDictionary<Type, List<PropDef>> _properties = new();
-    private readonly List<IGraphicsEffectSource?> _sources;
-    private readonly Lazy<IComObject<IPropertyValueStatics>> _statics;
+    private readonly List<IGraphicsEffectSource?> _sources = [];
+    private readonly Lazy<IComObject<IPropertyValueStatics>> _statics = new Lazy<IComObject<IPropertyValueStatics>>(() => ComObject.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue")!);
     private string? _name;
 
-    protected Effect(uint sourcesCount = 0)
-    {
-        MaximumSourcesCount = sourcesCount;
-        _sources = [];
-        _statics = new Lazy<IComObject<IPropertyValueStatics>>(() => ComObject.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue")!);
-    }
-
-    public uint MaximumSourcesCount { get; }
+    public uint MaximumSourcesCount { get; } = sourcesCount;
     public override string Name { get => _name ?? string.Empty; set => _name = value; } // *must* not be null for IGraphicsEffectD2D1Interop
     public virtual bool Cached { get; set; }
     public virtual D2D1_BUFFER_PRECISION Precision { get; set; }
     public IList<IGraphicsEffectSource?> Sources => _sources;
-
-    HRESULT Interop.IInspectable.GetIids(out uint iidCount, out nint iids)
-    {
-        iidCount = 0;
-        iids = 0;
-        return Constants.S_OK;
-    }
-
-    HRESULT Interop.IInspectable.GetRuntimeClassName(out HSTRING className)
-    {
-        className = new HSTRING();
-        return Constants.S_OK;
-    }
-
-    HRESULT Interop.IInspectable.GetTrustLevel(out TrustLevel trustLevel)
-    {
-        trustLevel = TrustLevel.FullTrust;
-        return Constants.S_OK;
-    }
 
     public Guid Clsid
     {
@@ -56,8 +31,6 @@ public abstract partial class Effect : BaseObject, IGraphicsEffect, IGraphicsEff
         }
     }
 
-    public IGraphicsEffect GetIGraphicsEffect() => ComObject.WithComInstance(this, WinRT.MarshalInspectable<IGraphicsEffect>.FromAbi);
-
     protected virtual IGraphicsEffectSource? GetSource(int index)
     {
         if (index >= MaximumSourcesCount)
@@ -69,7 +42,7 @@ public abstract partial class Effect : BaseObject, IGraphicsEffect, IGraphicsEff
         return _sources[index];
     }
 
-    protected virtual void SetSource(int index, IGraphicsEffectSource effect)
+    protected virtual void SetSource(int index, IGraphicsEffectSource? effect)
     {
         // effect can be null
         if (index >= MaximumSourcesCount)
@@ -89,7 +62,7 @@ public abstract partial class Effect : BaseObject, IGraphicsEffect, IGraphicsEff
         }
     }
 
-    private class PropDef(PropertyInfo property, int index, GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
+    private sealed class PropDef(PropertyInfo property, int index, GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
     {
         public PropertyInfo Property => property;
         public int Index => index;
@@ -280,38 +253,18 @@ public abstract partial class Effect : BaseObject, IGraphicsEffect, IGraphicsEff
         }
     }
 
-    HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out /*IGraphicsEffectSource*/ nint source)
+    HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource source)
     {
         //Application.Trace(this + " index:" + index);
         if (index >= MaximumSourcesCount || index >= _sources.Count)
         {
-            source = 0;
+            source = null;
             Application.Trace(this + " index:" + index + " E_BOUNDS");
             return Constants.E_BOUNDS;
         }
 
-        var src = _sources[(int)index];
-        nint srcUnk = 0;
-        var hr = ComObject.WithComInstance(src, unk =>
-        {
-            if (unk == 0)
-            {
-                srcUnk = 0;
-                Application.Trace(this + " index:" + index + " E_FAIL");
-                return Constants.E_FAIL;
-            }
-
-            var iid = typeof(IGraphicsEffectSource).GUID;
-            Marshal.QueryInterface(unk, ref iid, out srcUnk);
-            if (srcUnk == 0)
-            {
-                Application.Trace(this + " index:" + index + " E_NOINTERFACE");
-                return Constants.E_NOINTERFACE;
-            }
-            return Constants.S_OK;
-        });
-        source = srcUnk;
-        return hr;
+        source = _sources[(int)index];
+        return Constants.S_OK;
     }
 
     HRESULT IGraphicsEffectD2D1Interop.GetSourceCount(out uint count)

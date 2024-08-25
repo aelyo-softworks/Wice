@@ -1,6 +1,4 @@
-﻿using Windows.UI;
-
-namespace Wice.Utilities;
+﻿namespace Wice.Utilities;
 
 public static class Extensions
 {

@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class RadioButton : StateButton, IFocusableParent
+public partial class RadioButton : StateButton, IFocusableParent
 {
     public RadioButton()
     {
@@ -9,7 +9,7 @@ public class RadioButton : StateButton, IFocusableParent
     }
 
     [Category(CategoryBehavior)]
-    public new bool Value { get => (bool)base.Value; set => base.Value = value; }
+    public new bool Value { get => (bool)base.Value!; set => base.Value = value; }
 
     Visual? IFocusableParent.FocusableVisual => null;
     Type IFocusableParent.FocusVisualShapeType => typeof(Ellipse);
@@ -58,5 +58,11 @@ public class RadioButton : StateButton, IFocusableParent
         return ellipse;
     }
 
-    protected virtual Visual CreateChild(StateButton box, EventArgs e, StateButtonState state) => true.Equals(state.Value) ? CreateDefaultTrueVisual(Compositor) : CreateDefaultFalseVisual(Compositor);
+    protected virtual Visual CreateChild(StateButton box, EventArgs e, StateButtonState state)
+    {
+        if (Compositor == null)
+            throw new InvalidOperationException();
+
+        return true.Equals(state.Value) ? CreateDefaultTrueVisual(Compositor) : CreateDefaultFalseVisual(Compositor);
+    }
 }

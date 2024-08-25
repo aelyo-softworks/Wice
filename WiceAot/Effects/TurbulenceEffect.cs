@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1TurbulenceString)]
-public class TurbulenceEffect : Effect
+public partial class TurbulenceEffect : Effect
 {
     public static EffectProperty OffsetProperty { get; }
     public static EffectProperty SizeProperty { get; }
@@ -22,11 +22,11 @@ public class TurbulenceEffect : Effect
         StitchableProperty = EffectProperty.Add(typeof(TurbulenceEffect), nameof(Stitchable), 6, false);
     }
 
-    public D2D_VECTOR_2F Offset { get => (D2D_VECTOR_2F)GetPropertyValue(OffsetProperty); set => SetPropertyValue(OffsetProperty, value); }
-    public D2D_VECTOR_2F Size { get => (D2D_VECTOR_2F)GetPropertyValue(SizeProperty); set => SetPropertyValue(SizeProperty, value); }
-    public D2D_VECTOR_2F BaseFrequency { get => (D2D_VECTOR_2F)GetPropertyValue(BaseFrequencyProperty); set => SetPropertyValue(BaseFrequencyProperty, value); }
-    public uint NumOctaves { get => (uint)GetPropertyValue(NumOctavesProperty); set => SetPropertyValue(NumOctavesProperty, value); }
-    public uint Seed { get => (uint)GetPropertyValue(SeedProperty); set => SetPropertyValue(SeedProperty, value); }
-    public D2D1_TURBULENCE_NOISE Noise { get => (D2D1_TURBULENCE_NOISE)GetPropertyValue(NoiseProperty); set => SetPropertyValue(NoiseProperty, value); }
-    public bool Stitchable { get => (bool)GetPropertyValue(StitchableProperty); set => SetPropertyValue(StitchableProperty, value); }
+    public D2D_VECTOR_2F Offset { get => (D2D_VECTOR_2F)GetPropertyValue(OffsetProperty)!; set => SetPropertyValue(OffsetProperty, value); }
+    public D2D_VECTOR_2F Size { get => (D2D_VECTOR_2F)GetPropertyValue(SizeProperty)!; set => SetPropertyValue(SizeProperty, value); }
+    public D2D_VECTOR_2F BaseFrequency { get => (D2D_VECTOR_2F)GetPropertyValue(BaseFrequencyProperty)!; set => SetPropertyValue(BaseFrequencyProperty, value); }
+    public uint NumOctaves { get => (uint)GetPropertyValue(NumOctavesProperty)!; set => SetPropertyValue(NumOctavesProperty, value); }
+    public uint Seed { get => (uint)GetPropertyValue(SeedProperty)!; set => SetPropertyValue(SeedProperty, value); }
+    public D2D1_TURBULENCE_NOISE Noise { get => (D2D1_TURBULENCE_NOISE)GetPropertyValue(NoiseProperty)!; set => SetPropertyValue(NoiseProperty, value); }
+    public bool Stitchable { get => (bool)GetPropertyValue(StitchableProperty)!; set => SetPropertyValue(StitchableProperty, value); }
 }

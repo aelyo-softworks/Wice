@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1DistantDiffuseString)]
-public class DistantDiffuseEffect : EffectWithSource
+public partial class DistantDiffuseEffect : EffectWithSource
 {
     public static EffectProperty AzimuthProperty { get; }
     public static EffectProperty ElevationProperty { get; }
@@ -22,11 +22,11 @@ public class DistantDiffuseEffect : EffectWithSource
         ScaleModeProperty = EffectProperty.Add(typeof(DistantDiffuseEffect), nameof(ScaleMode), 6, D2D1_DISTANTDIFFUSE_SCALE_MODE.D2D1_DISTANTDIFFUSE_SCALE_MODE_LINEAR);
     }
 
-    public float Azimuth { get => (float)GetPropertyValue(AzimuthProperty); set => SetPropertyValue(AzimuthProperty, value.Clamp(0f, 360f)); }
-    public float Elevation { get => (float)GetPropertyValue(ElevationProperty); set => SetPropertyValue(ElevationProperty, value.Clamp(0f, 360f)); }
-    public float DiffuseConstant { get => (float)GetPropertyValue(DiffuseConstantProperty); set => SetPropertyValue(DiffuseConstantProperty, value.Clamp(0f, 10000f)); }
-    public float SurfaceScale { get => (float)GetPropertyValue(SurfaceScaleProperty); set => SetPropertyValue(SurfaceScaleProperty, value.Clamp(0f, 10000f)); }
-    public D2D_VECTOR_3F Color { get => (D2D_VECTOR_3F)GetPropertyValue(ColorProperty); set => SetPropertyValue(ColorProperty, value); }
-    public D2D_VECTOR_2F KernelUnitLength { get => (D2D_VECTOR_2F)GetPropertyValue(KernelUnitLengthProperty); set => SetPropertyValue(KernelUnitLengthProperty, value); }
-    public D2D1_DISTANTDIFFUSE_SCALE_MODE ScaleMode { get => (D2D1_DISTANTDIFFUSE_SCALE_MODE)GetPropertyValue(ScaleModeProperty); set => SetPropertyValue(ScaleModeProperty, value); }
+    public float Azimuth { get => (float)GetPropertyValue(AzimuthProperty)!; set => SetPropertyValue(AzimuthProperty, value.Clamp(0f, 360f)); }
+    public float Elevation { get => (float)GetPropertyValue(ElevationProperty)!; set => SetPropertyValue(ElevationProperty, value.Clamp(0f, 360f)); }
+    public float DiffuseConstant { get => (float)GetPropertyValue(DiffuseConstantProperty)!; set => SetPropertyValue(DiffuseConstantProperty, value.Clamp(0f, 10000f)); }
+    public float SurfaceScale { get => (float)GetPropertyValue(SurfaceScaleProperty)!; set => SetPropertyValue(SurfaceScaleProperty, value.Clamp(0f, 10000f)); }
+    public D2D_VECTOR_3F Color { get => (D2D_VECTOR_3F)GetPropertyValue(ColorProperty)!; set => SetPropertyValue(ColorProperty, value); }
+    public D2D_VECTOR_2F KernelUnitLength { get => (D2D_VECTOR_2F)GetPropertyValue(KernelUnitLengthProperty)!; set => SetPropertyValue(KernelUnitLengthProperty, value); }
+    public D2D1_DISTANTDIFFUSE_SCALE_MODE ScaleMode { get => (D2D1_DISTANTDIFFUSE_SCALE_MODE)GetPropertyValue(ScaleModeProperty)!; set => SetPropertyValue(ScaleModeProperty, value); }
 }

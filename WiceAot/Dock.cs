@@ -289,7 +289,7 @@ public class Dock : Visual
         }
     }
 
-    private class Docked
+    private sealed class Docked
     {
         public Visual? Left;
         public Visual? Right;

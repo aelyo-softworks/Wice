@@ -1,6 +1,6 @@
 ﻿namespace Wice.Animation;
 
-public class VerticalBlankStoryboard(Window window) : Storyboard(window)
+public partial class VerticalBlankStoryboard(Window window) : Storyboard(window)
 {
     private readonly VerticalBlankTicker _ticker = new();
 

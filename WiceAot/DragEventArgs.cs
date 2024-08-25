@@ -1,22 +1,13 @@
 ﻿namespace Wice;
 
-public class DragEventArgs : EventArgs
+public class DragEventArgs(int x, int y, POINTER_MOD keys, DragState state, EventArgs? sourceEventArgs = null) : EventArgs
 {
-    public DragEventArgs(int x, int y, POINTER_MOD keys, DragState state, EventArgs? sourceEventArgs = null)
-    {
-        X = x;
-        Y = y;
-        Keys = keys;
-        State = state;
-        SourceEventArgs = sourceEventArgs;
-    }
-
-    public POINTER_MOD Keys { get; }
-    public EventArgs SourceEventArgs { get; }
+    public POINTER_MOD Keys { get; } = keys;
+    public EventArgs SourceEventArgs { get; } = sourceEventArgs;
 
     // window relative
-    public int X { get; }
-    public int Y { get; }
+    public int X { get; } = x;
+    public int Y { get; } = y;
 
-    public DragState State { get; }
+    public DragState State { get; } = state;
 }

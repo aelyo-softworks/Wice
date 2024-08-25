@@ -34,7 +34,7 @@ public class HeaderedContent : Stack, IOneChildParent
     public ScrollViewer Viewer { get; }
 
     [Browsable(false)]
-    public Visual Child { get => Viewer.Child; set => Viewer.Child = value; }
+    public Visual? Child { get => Viewer.Child; set => Viewer.Child = value; }
 
     [Category(CategoryBehavior)]
     public virtual float? OpenHeight { get; set; }
@@ -62,7 +62,10 @@ public class HeaderedContent : Stack, IOneChildParent
 
         if (_sb == null)
         {
-            _sb = new TimerStoryboard(Window);
+            if (Window != null)
+            {
+                _sb = new TimerStoryboard(Window);
+            }
         }
         else
         {
@@ -91,7 +94,10 @@ public class HeaderedContent : Stack, IOneChildParent
 
         var animation = new SinglePropertyAnimation(new PropertyAnimationArguments(Viewer, HeightProperty, Application.CurrentTheme.SelectedAnimationDuration), from, to);
 
-        _sb.Children.Add(animation);
-        _sb.Start();
+        if (_sb != null)
+        {
+            _sb.Children.Add(animation);
+            _sb.Start();
+        }
     }
 }

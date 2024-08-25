@@ -9,7 +9,16 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<PublishAot>true</PublishAot>
 		<IsAotCompatible>true</IsAotCompatible>
+		<WindowsSdkPackageVersion>10.0.26100.42</WindowsSdkPackageVersion>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\NoiseAsset_256X256.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\NoiseAsset_256X256.png" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Using Include="DirectN" />
@@ -36,10 +45,12 @@
 		<Using Include="Wice.Effects" />
 		<Using Include="Wice.Interop" />
 		<Using Include="Wice.Utilities" />
+		<Using Include="WinRT" />
 		<Using Include="Windows.Foundation" />
 		<Using Include="Windows.Graphics" />
 		<Using Include="Windows.Graphics.DirectX" />
 		<Using Include="Windows.Graphics.Effects" />
+		<Using Include="Windows.UI" />
 		<Using Include="Windows.UI.Composition" />
 		<Using Include="Windows.UI.Composition.Core" />
 		<Using Include="Windows.UI.Composition.Diagnostics" />
@@ -48,6 +59,10 @@
 
 	<ItemGroup>
 	  <Folder Include="External\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>

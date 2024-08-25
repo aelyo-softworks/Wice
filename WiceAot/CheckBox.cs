@@ -10,7 +10,7 @@ public class CheckBox : StateButton
     }
 
     [Category(CategoryBehavior)]
-    public new bool Value { get => (bool)base.Value; set => base.Value = value; }
+    public new bool Value { get => (bool)base.Value!; set => base.Value = value; }
 
     public static Visual CreateDefaultTrueVisual()
     {
@@ -24,7 +24,7 @@ public class CheckBox : StateButton
         border.Arranged += (s, e) =>
         {
             var geoSource = Application.Current.ResourceManager.GetCheckButtonGeometrySource(border.ArrangedRect.Width, border.ArrangedRect.Height);
-            path.GeometrySource2D = geoSource.GetIGeometrySource2();
+            path.GeometrySource2D = geoSource;
         };
 
         border.AttachedToComposition += (s, e) =>

@@ -4,10 +4,10 @@
     {
         public static VisualProperty ModeProperty { get; } = VisualProperty.Add(typeof(ScrollBar), nameof(Mode), VisualPropertyInvalidateModes.Measure, ScrollBarMode.Standard);
 
-        public event EventHandler<EventArgs> SmallIncreaseClick;
-        public event EventHandler<EventArgs> SmallDecreaseClick;
-        public event EventHandler<EventArgs> LargeIncreaseClick;
-        public event EventHandler<EventArgs> LargeDecreaseClick;
+        public event EventHandler<EventArgs>? SmallIncreaseClick;
+        public event EventHandler<EventArgs>? SmallDecreaseClick;
+        public event EventHandler<EventArgs>? LargeIncreaseClick;
+        public event EventHandler<EventArgs>? LargeDecreaseClick;
 
         protected ScrollBar()
         {
@@ -79,7 +79,7 @@
         [Browsable(false)]
         public ButtonBase SmallIncrease { get; }
 
-        internal ScrollViewer View => Parent as ScrollViewer;
+        internal ScrollViewer? View => Parent as ScrollViewer;
         internal bool IsOverlay => View?.ScrollMode == ScrollViewerMode.Overlay;
 
         protected abstract ScrollBarButton CreateSmallDecrease();
@@ -93,7 +93,7 @@
         protected virtual void OnLargeIncreaseClick(object? sender, EventArgs e) => LargeIncreaseClick?.Invoke(sender, e);
         protected virtual void OnLargeDecreaseClick(object? sender, EventArgs e) => LargeDecreaseClick?.Invoke(sender, e);
 
-        public ScrollBarMode Mode { get => (ScrollBarMode)GetPropertyValue(ModeProperty); set => SetPropertyValue(ModeProperty, value); }
+        public ScrollBarMode Mode { get => (ScrollBarMode)GetPropertyValue(ModeProperty)!; set => SetPropertyValue(ModeProperty, value); }
 
         protected internal virtual void UpdateCorner(ScrollViewer view)
         {
@@ -113,7 +113,7 @@
         protected override void OnRendered(object? sender, EventArgs e)
         {
             base.OnRendered(sender, e);
-            var compositor = Window.Compositor;
+            var compositor = Window?.Compositor;
             if (compositor == null)
                 return;
 

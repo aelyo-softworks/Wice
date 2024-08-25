@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 [Guid(Constants.CLSID_D2D1GammaTransferString)]
-public class GammaTransferEffect : EffectWithSource
+public partial class GammaTransferEffect : EffectWithSource
 {
     public static EffectProperty RedAmplitudeProperty { get; }
     public static EffectProperty RedExponentProperty { get; }
@@ -42,21 +42,21 @@ public class GammaTransferEffect : EffectWithSource
         ClampOutputProperty = EffectProperty.Add(typeof(GammaTransferEffect), nameof(ClampOutput), 16, false);
     }
 
-    public float RedAmplitude { get => (float)GetPropertyValue(RedAmplitudeProperty); set => SetPropertyValue(RedAmplitudeProperty, value); }
-    public float RedExponent { get => (float)GetPropertyValue(RedExponentProperty); set => SetPropertyValue(RedExponentProperty, value); }
-    public float RedOffset { get => (float)GetPropertyValue(RedOffsetProperty); set => SetPropertyValue(RedOffsetProperty, value); }
-    public bool RedDisable { get => (bool)GetPropertyValue(RedDisableProperty); set => SetPropertyValue(RedDisableProperty, value); }
-    public float GreenAmplitude { get => (float)GetPropertyValue(GreenAmplitudeProperty); set => SetPropertyValue(GreenAmplitudeProperty, value); }
-    public float GreenExponent { get => (float)GetPropertyValue(GreenExponentProperty); set => SetPropertyValue(GreenExponentProperty, value); }
-    public float GreenOffset { get => (float)GetPropertyValue(GreenOffsetProperty); set => SetPropertyValue(GreenOffsetProperty, value); }
-    public bool GreenDisable { get => (bool)GetPropertyValue(GreenDisableProperty); set => SetPropertyValue(GreenDisableProperty, value); }
-    public float BlueAmplitude { get => (float)GetPropertyValue(BlueAmplitudeProperty); set => SetPropertyValue(BlueAmplitudeProperty, value); }
-    public float BlueExponent { get => (float)GetPropertyValue(BlueExponentProperty); set => SetPropertyValue(BlueExponentProperty, value); }
-    public float BlueOffset { get => (float)GetPropertyValue(BlueOffsetProperty); set => SetPropertyValue(BlueOffsetProperty, value); }
-    public bool BlueDisable { get => (bool)GetPropertyValue(BlueDisableProperty); set => SetPropertyValue(BlueDisableProperty, value); }
-    public float AlphaAmplitude { get => (float)GetPropertyValue(AlphaAmplitudeProperty); set => SetPropertyValue(AlphaAmplitudeProperty, value); }
-    public float AlphaExponent { get => (float)GetPropertyValue(AlphaExponentProperty); set => SetPropertyValue(AlphaExponentProperty, value); }
-    public float AlphaOffset { get => (float)GetPropertyValue(AlphaOffsetProperty); set => SetPropertyValue(AlphaOffsetProperty, value); }
-    public bool AlphaDisable { get => (bool)GetPropertyValue(AlphaDisableProperty); set => SetPropertyValue(AlphaDisableProperty, value); }
-    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty); set => SetPropertyValue(ClampOutputProperty, value); }
+    public float RedAmplitude { get => (float)GetPropertyValue(RedAmplitudeProperty)!; set => SetPropertyValue(RedAmplitudeProperty, value); }
+    public float RedExponent { get => (float)GetPropertyValue(RedExponentProperty)!; set => SetPropertyValue(RedExponentProperty, value); }
+    public float RedOffset { get => (float)GetPropertyValue(RedOffsetProperty)!; set => SetPropertyValue(RedOffsetProperty, value); }
+    public bool RedDisable { get => (bool)GetPropertyValue(RedDisableProperty)!; set => SetPropertyValue(RedDisableProperty, value); }
+    public float GreenAmplitude { get => (float)GetPropertyValue(GreenAmplitudeProperty)!; set => SetPropertyValue(GreenAmplitudeProperty, value); }
+    public float GreenExponent { get => (float)GetPropertyValue(GreenExponentProperty)!; set => SetPropertyValue(GreenExponentProperty, value); }
+    public float GreenOffset { get => (float)GetPropertyValue(GreenOffsetProperty)!; set => SetPropertyValue(GreenOffsetProperty, value); }
+    public bool GreenDisable { get => (bool)GetPropertyValue(GreenDisableProperty)!; set => SetPropertyValue(GreenDisableProperty, value); }
+    public float BlueAmplitude { get => (float)GetPropertyValue(BlueAmplitudeProperty)!; set => SetPropertyValue(BlueAmplitudeProperty, value); }
+    public float BlueExponent { get => (float)GetPropertyValue(BlueExponentProperty)!; set => SetPropertyValue(BlueExponentProperty, value); }
+    public float BlueOffset { get => (float)GetPropertyValue(BlueOffsetProperty)!; set => SetPropertyValue(BlueOffsetProperty, value); }
+    public bool BlueDisable { get => (bool)GetPropertyValue(BlueDisableProperty)!; set => SetPropertyValue(BlueDisableProperty, value); }
+    public float AlphaAmplitude { get => (float)GetPropertyValue(AlphaAmplitudeProperty)!; set => SetPropertyValue(AlphaAmplitudeProperty, value); }
+    public float AlphaExponent { get => (float)GetPropertyValue(AlphaExponentProperty)!; set => SetPropertyValue(AlphaExponentProperty, value); }
+    public float AlphaOffset { get => (float)GetPropertyValue(AlphaOffsetProperty)!; set => SetPropertyValue(AlphaOffsetProperty, value); }
+    public bool AlphaDisable { get => (bool)GetPropertyValue(AlphaDisableProperty)!; set => SetPropertyValue(AlphaDisableProperty, value); }
+    public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty)!; set => SetPropertyValue(ClampOutputProperty, value); }
 }
