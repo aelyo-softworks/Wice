@@ -465,14 +465,14 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
         }
     }
 
-    private sealed class Tables(ConcurrentHashSet<T>.Node[] buckets, object[] locks, int[] countPerLock)
+    private sealed class Tables(Node[] buckets, object[] locks, int[] countPerLock)
     {
         public readonly Node[] Buckets = buckets;
         public readonly object[] Locks = locks;
         public volatile int[] CountPerLock = countPerLock;
     }
 
-    private sealed class Node(T item, int hashcode, ConcurrentHashSet<T>.Node next)
+    private sealed class Node(T item, int hashcode, Node next)
     {
         public readonly T Item = item;
         public readonly int Hashcode = hashcode;

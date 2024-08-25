@@ -49,8 +49,8 @@ public class Window : Canvas, ITitleBarParent
 #endif
     private bool _isResizable;
     private bool _hasFocus;
-    private Visual _focusedVisual;
-    private Visual _oldFocusedVisual;
+    private Visual? _focusedVisual;
+    private Visual? _oldFocusedVisual;
 
     public event EventHandler HandleCreated;
     public event EventHandler MonitorChanged;
@@ -185,10 +185,7 @@ public class Window : Canvas, ITitleBarParent
             var old = _focusedVisual;
             _focusedVisual = value;
 
-            if (old != null)
-            {
-                old.IsFocusedChanged(false);
-            }
+            old?.IsFocusedChanged(false);
 
             if (_focusedVisual == null)
             {
@@ -1561,10 +1558,7 @@ public class Window : Canvas, ITitleBarParent
                     Children.Add(fv);
                 }
 
-                if (fv != null)
-                {
-                    fv.OnUpdateFocus(focused, oldVisual);
-                }
+                fv?.OnUpdateFocus(focused, oldVisual);
             }
         }
 
@@ -1670,10 +1664,7 @@ public class Window : Canvas, ITitleBarParent
         }
 
         Application.RemoveWindow(this);
-        if (_compositionTarget != null)
-        {
-            _compositionTarget.Dispose();
-        }
+        _compositionTarget?.Dispose();
 
         if (FrameVisual != null)
         {
@@ -2087,7 +2078,7 @@ public class Window : Canvas, ITitleBarParent
             }
 
             _mousedEnteredVisuals.Clear();
-            _mousedEnteredVisuals = e._visualsStack.ToList();
+            _mousedEnteredVisuals = [.. e._visualsStack];
 
             // tooltip handling
             if (msg == MessageDecoder.WM_MOUSEHOVER)
@@ -2134,7 +2125,7 @@ public class Window : Canvas, ITitleBarParent
                     return null;
 
                 // handle modals
-                var modal = Window.ModalVisuals.FirstOrDefault();
+                var modal = Window?.ModalVisuals.FirstOrDefault();
                 if (modal == null || visual.IsParent(modal))
                     return visual;
 
@@ -2196,7 +2187,7 @@ public class Window : Canvas, ITitleBarParent
         }
 
         _mousedEnteredVisuals.Clear();
-        _mousedEnteredVisuals = e._visualsStack.ToList();
+        _mousedEnteredVisuals = [.. e._visualsStack];
 
         if (!cursorSet)
         {

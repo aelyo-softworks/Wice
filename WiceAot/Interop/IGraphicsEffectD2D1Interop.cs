@@ -25,7 +25,7 @@ namespace Windows.Graphics.Effects
         HRESULT GetNamedPropertyMapping(PWSTR name, out uint index, out GRAPHICS_EFFECT_PROPERTY_MAPPING mapping);
         HRESULT GetPropertyCount(out uint count);
         HRESULT GetProperty(uint index, out nint value);
-        HRESULT GetSource(uint index, out IGraphicsEffectSource source);
+        HRESULT GetSource(uint index, out IGraphicsEffectSource? source);
         HRESULT GetSourceCount(out uint count);
 
         // v-table

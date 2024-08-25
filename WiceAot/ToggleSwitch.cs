@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class ToggleSwitch : ButtonBase, IValueable, ISelectable
+public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
 {
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<bool>(typeof(ToggleSwitch), nameof(Value), VisualPropertyInvalidateModes.Render);
     public static VisualProperty OnButtonBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(ToggleSwitch), nameof(OnButtonBrush), VisualPropertyInvalidateModes.Render);
@@ -13,7 +13,24 @@ public class ToggleSwitch : ButtonBase, IValueable, ISelectable
     private readonly Ellipse _button = new();
     private EventHandler<ValueEventArgs>? _valueChanged;
 
-    event EventHandler<ValueEventArgs> IValueable.ValueChanged { add { UIExtensions.AddEvent(ref _valueChanged, value); } remove { UIExtensions.RemoveEvent(ref _valueChanged, value); } }
+    event EventHandler<ValueEventArgs> IValueable.ValueChanged
+    {
+        add
+        {
+            if (_valueChanged == null)
+                return;
+
+            UIExtensions.AddEvent(ref _valueChanged, value);
+        }
+        remove
+        {
+            if (_valueChanged == null)
+                return;
+
+            UIExtensions.RemoveEvent(ref _valueChanged, value);
+        }
+    }
+
     public event EventHandler<ValueEventArgs<bool>>? ValueChanged;
     public event EventHandler<ValueEventArgs<bool>>? IsSelectedChanged;
 
@@ -107,6 +124,9 @@ public class ToggleSwitch : ButtonBase, IValueable, ISelectable
 
     protected override void Render()
     {
+        if (Compositor == null)
+            return;
+
         if (Value)
         {
             _path.StrokeBrush = null;

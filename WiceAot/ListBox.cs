@@ -270,16 +270,12 @@
             {
                 visual.DoWhenAttachedToComposition(() =>
                 {
-                    visual.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
+                    visual.RenderBrush = Compositor?.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
                 });
             }
             else
             {
-                var compositor = Compositor;
-                if (compositor != null)
-                {
-                    visual.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor.ToColor());
-                }
+                visual.RenderBrush = Compositor?.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor.ToColor());
             }
 
             return selected != visual.IsSelected;
@@ -414,13 +410,13 @@
                 if (ds != null)
                 {
                     var binder = DataBinder ?? new DataBinder();
-                    binder.ItemVisualCreator = binder.ItemVisualCreator ?? CreateItemVisual;
-                    binder.DataItemVisualCreator = binder.DataItemVisualCreator ?? CreateDataItemVisual;
-                    binder.DataItemVisualBinder = binder.DataItemVisualBinder ?? BindDataItemVisual;
+                    binder.ItemVisualCreator ??= CreateItemVisual;
+                    binder.DataItemVisualCreator ??= CreateDataItemVisual;
+                    binder.DataItemVisualBinder ??= BindDataItemVisual;
                     var lbdb = binder as ListBoxDataBinder;
                     if (lbdb != null)
                     {
-                        lbdb.SeparatorVisualCreator = lbdb.SeparatorVisualCreator ?? CreateSeparatorVisual;
+                        lbdb.SeparatorVisualCreator ??= CreateSeparatorVisual;
                     }
 
                     var options = new DataSourceEnumerateOptions { Member = DataItemMember, Format = DataItemFormat };
@@ -445,13 +441,13 @@
                     {
                         var ctx = new ListBoxDataBindContext(data, Children.Count, isLast);
                         binder.DataItemVisualCreator(ctx);
-                        if (ctx.DataVisual != null & binder.ItemVisualCreator != null)
+                        if (ctx.DataVisual != null && binder.ItemVisualCreator != null)
                         {
                             binder.ItemVisualCreator(ctx);
                             var item = ctx.ItemVisual;
                             if (item != null)
                             {
-                                item.Children.Add(ctx.DataVisual);
+                                item.Children.Add(ctx.DataVisual!);
                                 Children.Add(item);
                                 //children.Add(item);
                                 binder.DataItemVisualBinder(ctx);
@@ -459,7 +455,7 @@
 
                                 OnItemDataBound(this, new ValueEventArgs<ListBoxDataBindContext>(ctx));
 
-                                if (!isLast && lbdb != null)
+                                if (!isLast && lbdb != null && lbdb.SeparatorVisualCreator != null)
                                 {
                                     lbdb.SeparatorVisualCreator(ctx);
                                     if (ctx.SeparatorVisual != null)
@@ -518,9 +514,6 @@
         {
             ArgumentNullException.ThrowIfNull(context);
 
-            if (Compositor == null)
-                throw new InvalidOperationException();
-
             var item = NewItemVisual();
             if (item == null)
                 return;
@@ -531,7 +524,7 @@
 
             item.DataBinder = DataBinder;
             item.ColorAnimationDuration = Application.CurrentTheme.SelectionBrushAnimationDuration;
-            item.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor.ToColor());
+            item.RenderBrush = Compositor?.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor.ToColor());
 
             void updateHover()
             {
@@ -560,7 +553,7 @@
             context.ItemVisual = item;
         }
 
-        protected virtual void OnItemIsSelectedChanged(object sender, ValueEventArgs<bool> e)
+        protected virtual void OnItemIsSelectedChanged(object? sender, ValueEventArgs<bool> e)
         {
             if (e.Value)
             {
@@ -620,7 +613,7 @@
                             }
                             else
                             {
-                                newChild = Children[Children.Count - 1];
+                                newChild = Children[^1];
                             }
                         }
                         e.Handled = true;
@@ -632,7 +625,7 @@
                         break;
 
                     case VIRTUAL_KEY.VK_END:
-                        newChild = Children[Children.Count - 1];
+                        newChild = Children[^1];
                         e.Handled = true;
                         break;
 

@@ -31,7 +31,7 @@ public class ConcurrentQuadTree<T> : IQuadTree<T> where T : notnull
         return sw.ToString();
     }
 
-    public void Dump(System.IO.TextWriter writer)
+    public void Dump(TextWriter writer)
     {
         foreach (var node in _root.AllNodes)
         {

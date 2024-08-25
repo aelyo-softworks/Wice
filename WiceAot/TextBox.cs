@@ -49,10 +49,27 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     private FontRanges[]? _finalRanges;
     private TextBoxRenderMode _renderMode;
     private readonly UndoStack<UndoState> _undoStack = new();
-    private EventHandler<ValueEventArgs> _valueChanged;
+    private EventHandler<ValueEventArgs>? _valueChanged;
     private bool _textHasChanged;
 
-    event EventHandler<ValueEventArgs> IValueable.ValueChanged { add { UIExtensions.AddEvent(ref _valueChanged, value); } remove { UIExtensions.RemoveEvent(ref _valueChanged, value); } }
+    event EventHandler<ValueEventArgs> IValueable.ValueChanged
+    {
+        add
+        {
+            if (_valueChanged == null)
+                return;
+
+            UIExtensions.AddEvent(ref _valueChanged, value);
+        }
+        remove
+        {
+            if (_valueChanged == null)
+                return;
+
+            UIExtensions.RemoveEvent(ref _valueChanged, value);
+        }
+    }
+
     public event EventHandler<ValueEventArgs<string>>? TextChanged;
 
     public TextBox()
@@ -91,11 +108,11 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             return state;
         }
 
-        public string Text;
+        public string Text = string.Empty;
         public uint CharAnchor;
         public uint CharPosition;
         public uint CharPositionOffset;
-        public CaretFormat CaretFormat;
+        public CaretFormat? CaretFormat;
         public D2D_POINT_2F Origin;
 
         public void Apply(TextBox tb)
@@ -183,10 +200,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public DWRITE_TRIMMING_GRANULARITY TrimmingGranularity { get => (DWRITE_TRIMMING_GRANULARITY)GetPropertyValue(TrimmingGranularityProperty)!; set => SetPropertyValue(TrimmingGranularityProperty, value); }
 
     [Category(CategoryLayout)]
-    public string Text { get => (string)GetPropertyValue(TextProperty)! ?? string.Empty; set => SetPropertyValue(TextProperty, value); }
+    public string Text { get => (string?)GetPropertyValue(TextProperty)! ?? string.Empty; set => SetPropertyValue(TextProperty, value); }
 
     [Category(CategoryLayout)]
-    public IComObject<IDWriteFontCollection>? FontCollection { get => (IComObject<IDWriteFontCollection?>)GetPropertyValue(FontCollectionProperty)!; set => SetPropertyValue(FontCollectionProperty, value); }
+    public IComObject<IDWriteFontCollection>? FontCollection { get => (IComObject<IDWriteFontCollection>?)GetPropertyValue(FontCollectionProperty)!; set => SetPropertyValue(FontCollectionProperty, value); }
 
     [Category(CategoryLayout)]
     public D2D1_DRAW_TEXT_OPTIONS DrawOptions { get => (D2D1_DRAW_TEXT_OPTIONS)GetPropertyValue(DrawOptionsProperty)!; set => SetPropertyValue(DrawOptionsProperty, value); }
@@ -216,55 +233,55 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public char? PasswordCharacter { get => (char?)GetPropertyValue(PasswordCharProperty); set => SetPropertyValue(PasswordCharProperty, value); }
 
     public void SetFontWeight(DWRITE_FONT_WEIGHT weight) => SetFontWeight(weight, new DWRITE_TEXT_RANGE(0));
-    public void SetFontWeight(DWRITE_FONT_WEIGHT weight, DWRITE_TEXT_RANGE range) => SetFontWeight(weight, new DWRITE_TEXT_RANGE[] { range });
+    public void SetFontWeight(DWRITE_FONT_WEIGHT weight, DWRITE_TEXT_RANGE range) => SetFontWeight(weight, [range]);
     public virtual void SetFontWeight(DWRITE_FONT_WEIGHT weight, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontWeight, weight, ranges);
 
     public void SetFontStretch(DWRITE_FONT_STRETCH stretch) => SetFontStretch(stretch, new DWRITE_TEXT_RANGE(0));
-    public void SetFontStretch(DWRITE_FONT_STRETCH stretch, DWRITE_TEXT_RANGE range) => SetFontStretch(stretch, new DWRITE_TEXT_RANGE[] { range });
+    public void SetFontStretch(DWRITE_FONT_STRETCH stretch, DWRITE_TEXT_RANGE range) => SetFontStretch(stretch, [range]);
     public virtual void SetFontStretch(DWRITE_FONT_STRETCH stretch, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontStretch, stretch, ranges);
 
     public void SetFontStyle(DWRITE_FONT_STYLE style) => SetFontStyle(style, new DWRITE_TEXT_RANGE(0));
-    public void SetFontStyle(DWRITE_FONT_STYLE style, DWRITE_TEXT_RANGE range) => SetFontStyle(style, new DWRITE_TEXT_RANGE[] { range });
+    public void SetFontStyle(DWRITE_FONT_STYLE style, DWRITE_TEXT_RANGE range) => SetFontStyle(style, [range]);
     public virtual void SetFontStyle(DWRITE_FONT_STYLE style, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontStyle, style, ranges);
 
     public void SetFontSize(float size) => SetFontSize(size, new DWRITE_TEXT_RANGE(0));
-    public void SetFontSize(float size, DWRITE_TEXT_RANGE range) => SetFontSize(size, new DWRITE_TEXT_RANGE[] { range });
+    public void SetFontSize(float size, DWRITE_TEXT_RANGE range) => SetFontSize(size, [range]);
     public virtual void SetFontSize(float size, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontSize, size, ranges);
 
     public void SetFontFamilyName(string name) => SetFontFamilyName(name, new DWRITE_TEXT_RANGE(0));
-    public void SetFontFamilyName(string name, DWRITE_TEXT_RANGE range) => SetFontFamilyName(name, new DWRITE_TEXT_RANGE[] { range });
+    public void SetFontFamilyName(string name, DWRITE_TEXT_RANGE range) => SetFontFamilyName(name, [range]);
     public virtual void SetFontFamilyName(string name, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontFamilyName, name, ranges);
 
     public void SetFontCollection(string collection) => SetFontCollection(collection, new DWRITE_TEXT_RANGE(0));
-    public void SetFontCollection(string collection, DWRITE_TEXT_RANGE range) => SetFontCollection(collection, new DWRITE_TEXT_RANGE[] { range });
+    public void SetFontCollection(string collection, DWRITE_TEXT_RANGE range) => SetFontCollection(collection, [range]);
     public virtual void SetFontCollection(string collection, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontCollection, collection, ranges);
 
     public void SetStrikethrough(bool strikethrough) => SetStrikethrough(strikethrough, new DWRITE_TEXT_RANGE(0));
-    public void SetStrikethrough(bool strikethrough, DWRITE_TEXT_RANGE range) => SetStrikethrough(strikethrough, new DWRITE_TEXT_RANGE[] { range });
+    public void SetStrikethrough(bool strikethrough, DWRITE_TEXT_RANGE range) => SetStrikethrough(strikethrough, [range]);
     public virtual void SetStrikethrough(bool strikethrough, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.Strikethrough, strikethrough, ranges);
 
     public void SetUnderline(bool underline) => SetUnderline(underline, new DWRITE_TEXT_RANGE(0));
-    public void SetUnderline(bool underline, DWRITE_TEXT_RANGE range) => SetUnderline(underline, new DWRITE_TEXT_RANGE[] { range });
+    public void SetUnderline(bool underline, DWRITE_TEXT_RANGE range) => SetUnderline(underline, [range]);
     public virtual void SetUnderline(bool underline, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.Underline, underline, ranges);
 
     public void SetLocaleName(string name) => SetLocaleName(name, new DWRITE_TEXT_RANGE(0));
-    public void SetLocaleName(string name, DWRITE_TEXT_RANGE range) => SetLocaleName(name, new DWRITE_TEXT_RANGE[] { range });
+    public void SetLocaleName(string name, DWRITE_TEXT_RANGE range) => SetLocaleName(name, [range]);
     public virtual void SetLocaleName(string name, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.LocaleName, name, ranges);
 
     public void SetTypography(IDWriteTypography typography) => SetTypography(typography, new DWRITE_TEXT_RANGE(0));
-    public void SetTypography(IDWriteTypography typography, DWRITE_TEXT_RANGE range) => SetTypography(typography, new DWRITE_TEXT_RANGE[] { range });
+    public void SetTypography(IDWriteTypography typography, DWRITE_TEXT_RANGE range) => SetTypography(typography, [range]);
     public virtual void SetTypography(IDWriteTypography typography, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.Typography, typography, ranges);
 
     public void SetInlineObject(IDWriteInlineObject inlineObject) => SetInlineObject(inlineObject, new DWRITE_TEXT_RANGE(0));
-    public void SetInlineObject(IDWriteInlineObject inlineObject, DWRITE_TEXT_RANGE range) => SetInlineObject(inlineObject, new DWRITE_TEXT_RANGE[] { range });
+    public void SetInlineObject(IDWriteInlineObject inlineObject, DWRITE_TEXT_RANGE range) => SetInlineObject(inlineObject, [range]);
     public virtual void SetInlineObject(IDWriteInlineObject inlineObject, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.InlineObject, inlineObject, ranges);
 
     public void SetDrawingEffect(object drawingEffect) => SetDrawingEffect(drawingEffect, new DWRITE_TEXT_RANGE(0));
-    public void SetDrawingEffect(object drawingEffect, DWRITE_TEXT_RANGE range) => SetDrawingEffect(drawingEffect, new DWRITE_TEXT_RANGE[] { range });
+    public void SetDrawingEffect(object drawingEffect, DWRITE_TEXT_RANGE range) => SetDrawingEffect(drawingEffect, [range]);
     public virtual void SetDrawingEffect(object drawingEffect, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.DrawingEffect, drawingEffect, ranges);
 
     public void SetSolidColor(D3DCOLORVALUE color) => SetSolidColor(color, new DWRITE_TEXT_RANGE(0));
-    public void SetSolidColor(D3DCOLORVALUE color, DWRITE_TEXT_RANGE range) => SetSolidColor(color, new DWRITE_TEXT_RANGE[] { range });
+    public void SetSolidColor(D3DCOLORVALUE color, DWRITE_TEXT_RANGE range) => SetSolidColor(color, [range]);
     public virtual void SetSolidColor(D3DCOLORVALUE color, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.SolidColor, color, ranges);
 
     private string PasswordText
@@ -470,7 +487,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     {
         if (IsFocused && IsEditable && IsEnabled)
         {
-            var caret = Window.Caret;
+            var caret = Window?.Caret;
             if (caret != null)
             {
                 caret.IsShown = true;
@@ -556,9 +573,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return metrics;
     }
 
-    private IComObject<IDWriteTextFormat>? GetFormat()
+    private IComObject<IDWriteTextFormat> GetFormat()
     {
-        var format = Application.Current.ResourceManager.GetTextFormat(this);
+        var format = Application.Current.ResourceManager.GetTextFormat(this)!;
         //Application.Trace(this + " fontsize:" + format.Object.GetFontSize());
         return format;
     }
@@ -781,7 +798,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
         if (IsEditable && IsFocused)
         {
-            var caret = Window.Caret;
+            var caret = Window?.Caret;
             if (caret != null)
             {
                 var rc = GetCaretRect();
@@ -789,12 +806,12 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 caret.Height = rc.Height;
             }
 
-            if (caret.Width.IsSet())
+            if (caret?.Width.IsSet() == true)
             {
                 width = Math.Max(width, caret.Width);
             }
 
-            if (caret.Height.IsSet())
+            if (caret?.Height.IsSet() == true)
             {
                 height = Math.Max(height, caret.Height);
             }
@@ -856,7 +873,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
 
         var finalSize = finalRect.Size;
-        var layout = GetLayout(finalSize.width, finalSize.height)?.Object;
+        var layout = GetLayout(finalSize.width, finalSize.height).Object;
         var metrics = layout.GetMetrics1();
 
         var size = new D2D_SIZE_F(metrics.Base.widthIncludingTrailingWhitespace, metrics.Base.height);
@@ -1056,7 +1073,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
             var trpMode = false;
             var trp = TextRenderingParameters;
-            if (trp != null)
+            if (trp != null && Window != null)
             {
                 trpMode = trp.Mode.HasValue;
                 trp.Set(Window.MonitorHandle, context.DeviceContext.Object);
@@ -1089,10 +1106,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         if (IsFocused)
         {
             var caret = Window?.Caret;
-            if (caret != null)
-            {
-                caret.StartBlinking();
-            }
+            caret?.StartBlinking();
         }
     }
 
@@ -1347,16 +1361,19 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 else
                 {
                     // Get the size of the following cluster.
-                    _layout.Object.HitTestTextPosition(
-                        absolutePosition,
-                        false,
-                        out _,
-                        out _,
-                        out var hitTestMetrics
-                        ).ThrowOnError();
+                    if (_layout != null)
+                    {
+                        _layout.Object.HitTestTextPosition(
+                            absolutePosition,
+                            false,
+                            out _,
+                            out _,
+                            out var hitTestMetrics
+                            ).ThrowOnError();
 
-                    RemoveTextAt(hitTestMetrics.textPosition, hitTestMetrics.length);
-                    SetSelection(TextBoxSetSelection.AbsoluteLeading, hitTestMetrics.textPosition, false);
+                        RemoveTextAt(hitTestMetrics.textPosition, hitTestMetrics.length);
+                        SetSelection(TextBoxSetSelection.AbsoluteLeading, hitTestMetrics.textPosition, false);
+                    }
                 }
 
                 e.Handled = true;
@@ -1476,7 +1493,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    private bool HandleChar(KeyPressEventArgs e)
+    private static bool HandleChar(KeyPressEventArgs e)
     {
         //if (e.UTF32Character == '\t' && AcceptsTab)
         //    return true;
@@ -1606,7 +1623,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         {
             var newLayout = RecreateLayout(text);
 
-            CopyGlobalProperties(oldLayout.Object, newLayout.Object);
+            CopyGlobalProperties(oldLayout!.Object, newLayout!.Object);
 
             // For each property, get the position range and apply it to the old text.
             if (position == 0)
@@ -1650,7 +1667,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
         var newLayout = RecreateLayout(text);
 
-        CopyGlobalProperties(oldLayout.Object, newLayout.Object);
+        CopyGlobalProperties(oldLayout!.Object, newLayout!.Object);
 
         if (position == 0)
         {
@@ -1672,14 +1689,14 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         SetText(text);
     }
 
-    private IComObject<IDWriteTextLayout> RecreateLayout(string text)
+    private IComObject<IDWriteTextLayout>? RecreateLayout(string text)
     {
-        var w = _layout.Object.GetMaxWidth();
+        var w = _layout!.Object.GetMaxWidth();
         var h = _layout.Object.GetMaxHeight();
         return Application.Current.ResourceManager.GetTextLayout(_layout.Object, text, maxWidth: w, maxHeight: h);
     }
 
-    private void CopyGlobalProperties(IDWriteTextLayout oldLayout, IDWriteTextLayout newLayout)
+    private static void CopyGlobalProperties(IDWriteTextLayout oldLayout, IDWriteTextLayout newLayout)
     {
         // Copies global properties that are not range based.
         newLayout.SetTextAlignment(oldLayout.GetTextAlignment());
@@ -1700,7 +1717,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         newLayout.SetLineSpacing(lineSpacingMethod, lineSpacing, baseline);
     }
 
-    private uint CalculateRangeLengthAt(IDWriteTextLayout layout, uint pos)
+    private static uint CalculateRangeLengthAt(IDWriteTextLayout layout, uint pos)
     {
         // Determines the length of a block of similarly formatted properties.
         // Use the first getter to get the range to increment the current position.
@@ -1861,10 +1878,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
         // MirrorXCoordinate
         // On RTL builds, coordinates may need to be restored to or converted from Cartesian coordinates, where x increases positively to the right.
-        var style = Window.ExtendedStyle;
+        var style = (Window?.ExtendedStyle).GetValueOrDefault();
         if (style.HasFlag(WINDOW_EX_STYLE.WS_EX_LAYOUTRTL))
         {
-            var rect = Window.ClientRect;
+            var rect = Window!.ClientRect;
             pos.x = (int)(rect.right - pos.x - 1 - padding.right);
         }
         else
@@ -1904,9 +1921,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         uint oldCaretAnchor = _charAnchor;
         DWRITE_HIT_TEST_METRICS hitTestMetrics;
         DWRITE_LINE_METRICS[] lineMetrics;
-        float caretX;
-        float caretY;
-        DirectN.BOOL isTrailingHit;
+        BOOL isTrailingHit;
 
         var text = Text ?? string.Empty;
         switch (moveMode)
@@ -1958,8 +1973,11 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 _charPositionOffset = 0;
                 {
                     // Use hit-testing to limit text position.
-                    _layout.Object.HitTestTextPosition(_charPosition, false, out _, out _, out hitTestMetrics).ThrowOnError();
-                    _charPosition = Math.Min(_charPosition, hitTestMetrics.textPosition + hitTestMetrics.length);
+                    if (_layout != null)
+                    {
+                        _layout.Object.HitTestTextPosition(_charPosition, false, out _, out _, out hitTestMetrics).ThrowOnError();
+                        _charPosition = Math.Min(_charPosition, hitTestMetrics.textPosition + hitTestMetrics.length);
+                    }
                 }
                 break;
 
@@ -1994,34 +2012,37 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 // This is because the characters are variable size.
 
                 // Get x of current text position
-                _layout.Object.HitTestTextPosition(
-                    _charPosition,
-                    _charPositionOffset > 0, // trailing if nonzero, else leading edge
-                    out caretX,
-                    out _,
-                    out _
-                    ).ThrowOnError();
+                if (_layout != null)
+                {
+                    _layout.Object.HitTestTextPosition(
+                        _charPosition,
+                        _charPositionOffset > 0, // trailing if nonzero, else leading edge
+                        out float caretX,
+                        out _,
+                        out _
+                        ).ThrowOnError();
 
-                // Get y of new position
-                _layout.Object.HitTestTextPosition(
-                    linePosition,
-                    false, // leading edge
-                    out _,
-                    out caretY,
-                    out _
-                    ).ThrowOnError();
+                    // Get y of new position
+                    _layout.Object.HitTestTextPosition(
+                        linePosition,
+                        false, // leading edge
+                        out _,
+                        out float caretY,
+                        out _
+                        ).ThrowOnError();
 
-                // Now get text position of new x,y.
-                _layout.Object.HitTestPoint(
-                    Math.Max(caretX, _lastCaretX), // use last horizontal caret position (like many editors, not notepad)
-                    caretY,
-                    out isTrailingHit,
-                    out _,
-                    out hitTestMetrics
-                    ).ThrowOnError();
+                    // Now get text position of new x,y.
+                    _layout.Object.HitTestPoint(
+                        Math.Max(caretX, _lastCaretX), // use last horizontal caret position (like many editors, not notepad)
+                        caretY,
+                        out isTrailingHit,
+                        out _,
+                        out hitTestMetrics
+                        ).ThrowOnError();
 
-                _charPosition = hitTestMetrics.textPosition;
-                _charPositionOffset = (uint)(isTrailingHit ? ((hitTestMetrics.length > 0) ? 1 : 0) : 0);
+                    _charPosition = hitTestMetrics.textPosition;
+                    _charPositionOffset = (uint)(isTrailingHit ? ((hitTestMetrics.length > 0) ? 1 : 0) : 0);
+                }
                 break;
 
             case TextBoxSetSelection.PageUp:
@@ -2029,22 +2050,28 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 var pos = RelativeRenderRect - Margin;
                 var crc = GetCaretRect();
                 var top = crc.top + (moveMode == TextBoxSetSelection.PageUp ? -pos.Height : +pos.Height);
-                _layout.Object.HitTestPoint(
-                    Math.Max(crc.left, _lastCaretX),
-                    top,
-                    out isTrailingHit,
-                    out _,
-                    out hitTestMetrics
-                    ).ThrowOnError();
+                if (_layout != null)
+                {
+                    _layout.Object.HitTestPoint(
+                        Math.Max(crc.left, _lastCaretX),
+                        top,
+                        out isTrailingHit,
+                        out _,
+                        out hitTestMetrics
+                        ).ThrowOnError();
 
-                _charPosition = hitTestMetrics.textPosition;
-                _charPositionOffset = (uint)(isTrailingHit ? ((hitTestMetrics.length > 0) ? 1 : 0) : 0);
+                    _charPosition = hitTestMetrics.textPosition;
+                    _charPositionOffset = (uint)(isTrailingHit ? ((hitTestMetrics.length > 0) ? 1 : 0) : 0);
+                }
                 break;
 
             case TextBoxSetSelection.LeftWord:
             case TextBoxSetSelection.RightWord:
                 // To navigate by whole words, we look for the canWrapLineAfter flag in the cluster metrics.
                 // First need to know how many clusters there are.
+                if (_layout == null)
+                    break;
+
                 _layout.Object.GetClusterMetrics(0, 0, out var clusterCount); // don't check error by design
                 if (clusterCount == 0)
                     break;
@@ -2230,7 +2257,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             --currentPos; // Always adopt the trailing properties.
         }
 
-        _caretFormat = _caretFormat ?? new CaretFormat();
+        _caretFormat ??= new CaretFormat();
 
         _caretFormat.fontFamilyName = _layout.Object.GetFontFamilyName(currentPos);
         _caretFormat.localeName = _layout.Object.GetLocaleName(currentPos);
@@ -2331,9 +2358,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         var caretEnd = _charPosition + _charPositionOffset;
         if (caretBegin > caretEnd)
         {
-            var tmp = caretBegin;
-            caretBegin = caretEnd;
-            caretEnd = tmp;
+            (caretEnd, caretBegin) = (caretBegin, caretEnd);
         }
 
         // Limit to actual text length.
@@ -2343,6 +2368,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return new DWRITE_TEXT_RANGE(caretBegin, caretEnd - caretBegin);
     }
 
+    [MemberNotNull(nameof(_layout))]
     private void CheckLayout()
     {
         if (_layout == null)
@@ -2360,7 +2386,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return lineMetrics;
     }
 
-    private void GetLineFromPosition(DWRITE_LINE_METRICS[] lineMetrics, uint lineCount, uint textPosition, out uint lineOut, out uint linePositionOut)
+    private static void GetLineFromPosition(DWRITE_LINE_METRICS[] lineMetrics, uint lineCount, uint textPosition, out uint lineOut, out uint linePositionOut)
     {
         // Given the line metrics, determines the current line and starting text position of that line by summing up the lengths.
         // When the startingline position is beyond the given text position, we have our line.
@@ -2480,7 +2506,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                         continue;
                     }
 
-                    if (fontRange.Value.Equals(value))
+                    if (fontRange.Value?.Equals(value) == true)
                     {
                         if (currentRange.startPosition >= fontRange.Range.startPosition)
                         {
@@ -2584,7 +2610,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
             if (changed)
             {
-                list = _ranges.Values.ToArray();
+                list = [.. _ranges.Values];
             }
         }
 
@@ -2634,7 +2660,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 if (Ranges.Count == 0)
                     return 0;
 
-                return Ranges[Ranges.Count - 1].Range.EndPosition;
+                return Ranges[^1].Range.EndPosition;
             }
         }
     }
@@ -2650,7 +2676,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         public DWRITE_FONT_STRETCH fontStretch;
         public DWRITE_FONT_STYLE fontStyle;
         public D3DCOLORVALUE color;
-        public DirectN.BOOL hasUnderline;
-        public DirectN.BOOL hasStrikethrough;
+        public BOOL hasUnderline;
+        public BOOL hasStrikethrough;
     }
 }

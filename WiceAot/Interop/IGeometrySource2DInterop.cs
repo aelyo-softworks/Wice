@@ -21,8 +21,8 @@ namespace Windows.Graphics
     [WindowsRuntimeHelperType(typeof(IGeometrySource2DInterop))]
     public partial interface IGeometrySource2DInterop
     {
-        HRESULT GetGeometry(out ID2D1Geometry value);
-        HRESULT TryGetGeometryUsingFactory(ID2D1Factory factory, out ID2D1Geometry value);
+        HRESULT GetGeometry(out ID2D1Geometry? value);
+        HRESULT TryGetGeometryUsingFactory(ID2D1Factory factory, out ID2D1Geometry? value);
 
         // v-table
         internal unsafe struct Vftbl

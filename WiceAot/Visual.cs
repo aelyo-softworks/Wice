@@ -596,7 +596,7 @@ public class Visual : BaseObject
     public Cursor? Cursor { get => (Cursor?)GetPropertyValue(CursorProperty); set => SetPropertyValue(CursorProperty, value); }
 
     [Browsable(false)]
-    public object Data { get => GetPropertyValue(DataProperty)!; set => SetPropertyValue(DataProperty, value); }
+    public object? Data { get => GetPropertyValue(DataProperty)!; set => SetPropertyValue(DataProperty, value); }
 
     [Category(CategoryRender)]
     public float Opacity { get => (float)GetPropertyValue(OpacityProperty)!; set => SetPropertyValue(OpacityProperty, value); }
@@ -681,7 +681,7 @@ public class Visual : BaseObject
     public CompositionBrush? RenderBrush { get => (CompositionBrush)GetPropertyValue(RenderBrushProperty)!; set => SetPropertyValue(RenderBrushProperty, value); }
 
     [Category(CategoryRender)]
-    public CompositionBrush HoverRenderBrush { get => (CompositionBrush)GetPropertyValue(HoverRenderBrushProperty)!; set => SetPropertyValue(HoverRenderBrushProperty, value); }
+    public CompositionBrush? HoverRenderBrush { get => (CompositionBrush)GetPropertyValue(HoverRenderBrushProperty)!; set => SetPropertyValue(HoverRenderBrushProperty, value); }
 
     [Category(CategoryRender)]
     public CompositionShadow? RenderShadow { get => (CompositionShadow)GetPropertyValue(RenderShadowProperty)!; set => SetPropertyValue(RenderShadowProperty, value); }
@@ -1558,7 +1558,7 @@ public class Visual : BaseObject
             if (sv.Brush is not CompositionColorBrush cb)
             {
                 // no clone since we create it
-                Windows.UI.Color color;
+                Color color;
                 if (from != null)
                 {
                     color = from.Value.ToColor();

@@ -89,7 +89,7 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
         public override string ToString() => Node + " => " + Bounds;
     }
 
-    internal class Quadrant(IQuadTree<T> quadTree, QuadTree<T>.Quadrant? parent, D2D_RECT_F bounds)
+    internal class Quadrant(IQuadTree<T> quadTree, Quadrant? parent, D2D_RECT_F bounds)
     {
         public Quadrant? Parent = parent;
         public D2D_RECT_F Bounds = bounds;

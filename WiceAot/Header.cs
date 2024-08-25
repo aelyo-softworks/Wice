@@ -147,9 +147,7 @@ public class Header : Canvas, IAccessKeyParent, ISelectable
                     target.SuspendCompositionUpdateParts(CompositionUpdateParts.RotationAngleInDegrees);
 
                     var compositor = Compositor;
-                    if (compositor != null)
-                    {
-                        compositor.RunScopedBatch(() =>
+                    compositor?.RunScopedBatch(() =>
                         {
                             var animation = compositor.CreateScalarKeyFrameAnimation();
                             animation.Duration = Application.CurrentTheme.SelectedAnimationDuration;
@@ -164,7 +162,6 @@ public class Header : Canvas, IAccessKeyParent, ISelectable
                                 tb.Text = IsSelected ? MDL2GlyphResource.ChevronUp : MDL2GlyphResource.ChevronDown;
                             }
                         });
-                    }
                 }
             }
             else

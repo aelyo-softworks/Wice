@@ -6,7 +6,7 @@
         {
             ArgumentNullException.ThrowIfNull(name);
 
-            assembly = assembly ?? Assembly.GetCallingAssembly();
+            assembly ??= Assembly.GetCallingAssembly();
             var stream = assembly.GetManifestResourceStream(name);
             if (stream == null)
                 return null;
@@ -18,7 +18,7 @@
         {
             ArgumentNullException.ThrowIfNull(predicate);
 
-            assembly = assembly ?? Assembly.GetCallingAssembly();
+            assembly ??= Assembly.GetCallingAssembly();
             var name = assembly.GetManifestResourceNames().FirstOrDefault(predicate);
             if (name == null)
                 return null;

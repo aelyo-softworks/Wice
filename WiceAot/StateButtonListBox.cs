@@ -59,7 +59,7 @@ public abstract class StateButtonListBox : ListBox
         // prevent single mode
         if (property == SelectionModeProperty)
         {
-            var mode = (SelectionMode)value;
+            var mode = (SelectionMode)value!;
             if (mode == SelectionMode.Single)
                 return false;
         }

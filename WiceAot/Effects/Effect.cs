@@ -253,7 +253,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         }
     }
 
-    HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource source)
+    HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource? source)
     {
         //Application.Trace(this + " index:" + index);
         if (index >= MaximumSourcesCount || index >= _sources.Count)
