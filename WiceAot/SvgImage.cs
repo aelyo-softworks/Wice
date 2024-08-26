@@ -1,8 +1,6 @@
-﻿using WinRT;
+﻿namespace Wice;
 
-namespace Wice;
-
-public class SvgImage : RenderVisual, IDisposable
+public partial class SvgImage : RenderVisual, IDisposable
 {
     public static VisualProperty DocumentProperty { get; } = VisualProperty.Add<IReadStreamer>(typeof(SvgImage), nameof(Document), VisualPropertyInvalidateModes.Measure);
     public static VisualProperty StretchProperty { get; } = VisualProperty.Add(typeof(SvgImage), nameof(Stretch), VisualPropertyInvalidateModes.Measure, Stretch.Uniform);
@@ -95,7 +93,7 @@ public class SvgImage : RenderVisual, IDisposable
                 }
             }
 
-            if (_documentBuffer.Length > 0)
+            if (_documentBuffer?.Length > 0)
             {
                 _documentBuffer.Position = 0;
                 svg = dc.CreateSvgDocument(_documentBuffer, rc.Size);

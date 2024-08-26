@@ -5,7 +5,7 @@ public class MouseEventArgs(int x, int y, POINTER_MOD vk) : HandledEventArgs
     internal readonly List<Visual> _visualsStack = [];
 
     public POINTER_MOD Keys { get; } = vk;
-    public PointerEventArgs SourcePointerEvent { get; internal set; } // will be null if EnableMouseInPointer was not called
+    public PointerEventArgs? SourcePointerEvent { get; internal set; } // will be null if EnableMouseInPointer was not called
 
     // window relative
     public int X { get; } = x;

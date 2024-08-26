@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class ToolTip : PopupWindow, IContentParent
+public partial class ToolTip : PopupWindow, IContentParent
 {
     public ToolTip()
     {

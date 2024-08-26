@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class RenderLayerVisual : Canvas
+public partial class RenderLayerVisual : Canvas
 {
     public static VisualProperty RenderEffectProperty { get; } = VisualProperty.Add<CompositionEffectBrush>(typeof(Visual), nameof(RenderEffect), VisualPropertyInvalidateModes.Render);
 

@@ -29,43 +29,53 @@ public class TextRenderingParameters
         var ctl = ClearTypeLevel ?? existing.ClearTypeLevel;
         var pg = PixelGeometry ?? existing.PixelGeometry;
         var mode = Mode ?? existing.Mode;
+        if (!gamma.HasValue || !ec.HasValue || !ctl.HasValue || !pg.HasValue || !mode.HasValue)
+            return;
 
-        IDWriteRenderingParams? drp = null;
+        ComObject<IDWriteRenderingParams>? drp = null;
         try
         {
-            if (Mode.HasValue && (int)Mode.Value > (int)DWRITE_RENDERING_MODE1.DWRITE_RENDERING_MODE1_OUTLINE)
+            if ((int)mode.Value > (int)DWRITE_RENDERING_MODE1.DWRITE_RENDERING_MODE1_OUTLINE)
             {
-                var gec = GrayscaleEnhancedContrast ?? existing.GrayscaleEnhancedContrast;
                 var gfm = GridFitMode ?? existing.GridFitMode;
-                var fac3 = (IDWriteFactory3)fac;
-                fac3.CreateCustomRenderingParams(gamma.Value, ec.Value, gec.Value, ctl.Value, pg.Value, mode.Value, gfm.Value, out var drp3).ThrowOnError();
-                drp = drp3;
+                var gec = GrayscaleEnhancedContrast ?? existing.GrayscaleEnhancedContrast;
+                if (gfm.HasValue && gec.HasValue)
+                {
+                    var fac3 = (IDWriteFactory3)fac;
+                    fac3.CreateCustomRenderingParams(gamma.Value, ec.Value, gec.Value, ctl.Value, pg.Value, mode.Value, gfm.Value, out var drp3).ThrowOnError();
+                    drp = new ComObject<IDWriteRenderingParams>(drp3);
+                }
             }
             else if (GridFitMode.HasValue)
             {
                 var gec = GrayscaleEnhancedContrast ?? existing.GrayscaleEnhancedContrast;
-                var fac2 = (IDWriteFactory2)fac;
-                fac2.CreateCustomRenderingParams(gamma.Value, ec.Value, gec.Value, ctl.Value, pg.Value, (DWRITE_RENDERING_MODE)mode.Value, GridFitMode.Value, out var drp2).ThrowOnError();
-                drp = drp2;
+                if (gec.HasValue)
+                {
+                    var fac2 = (IDWriteFactory2)fac;
+                    fac2.CreateCustomRenderingParams(gamma.Value, ec.Value, gec.Value, ctl.Value, pg.Value, (DWRITE_RENDERING_MODE)mode.Value, GridFitMode.Value, out var drp2).ThrowOnError();
+                    drp = new ComObject<IDWriteRenderingParams>(drp2);
+                }
             }
             else if (GrayscaleEnhancedContrast.HasValue)
             {
                 var fac1 = (IDWriteFactory1)fac;
                 fac1.CreateCustomRenderingParams(gamma.Value, ec.Value, GrayscaleEnhancedContrast.Value, ctl.Value, pg.Value, (DWRITE_RENDERING_MODE)mode.Value, out var drp1).ThrowOnError();
-                drp = drp1;
+                drp = new ComObject<IDWriteRenderingParams>(drp1);
             }
             else
             {
-                Application.Current.ResourceManager.DWriteFactory.Object.CreateCustomRenderingParams(gamma.Value, ec.Value, ctl.Value, pg.Value, (DWRITE_RENDERING_MODE)mode.Value, out drp).ThrowOnError();
+                Application.Current.ResourceManager.DWriteFactory.Object.CreateCustomRenderingParams(gamma.Value, ec.Value, ctl.Value, pg.Value, (DWRITE_RENDERING_MODE)mode.Value, out var drp0).ThrowOnError();
+                drp = new ComObject<IDWriteRenderingParams>(drp0);
             }
-            context.SetTextRenderingParams(drp);
+
+            if (drp != null)
+            {
+                context.SetTextRenderingParams(drp.Object);
+            }
         }
         finally
         {
-            if (drp != null)
-            {
-                Marshal.ReleaseComObject(drp);
-            }
+            drp?.Dispose();
         }
     }
 

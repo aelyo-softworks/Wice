@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class UniformGrid : RenderVisual
+public partial class UniformGrid : RenderVisual
 {
     public static VisualProperty ColumnsProperty { get; } = VisualProperty.Add(typeof(UniformGrid), nameof(Columns), VisualPropertyInvalidateModes.Measure, 0);
     public static VisualProperty RowsProperty { get; } = VisualProperty.Add(typeof(UniformGrid), nameof(Rows), VisualPropertyInvalidateModes.Measure, 0);

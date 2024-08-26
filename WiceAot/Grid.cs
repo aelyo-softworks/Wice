@@ -1,24 +1,24 @@
 ﻿namespace Wice;
 
-public class Grid : Visual
+public partial class Grid : Visual
 {
     public static VisualProperty RowProperty { get; } = VisualProperty.Add(typeof(Grid), "Row", VisualPropertyInvalidateModes.Measure, 0, convert: ValidateRowCol);
     public static VisualProperty ColumnProperty { get; } = VisualProperty.Add(typeof(Grid), "Column", VisualPropertyInvalidateModes.Measure, 0, convert: ValidateRowCol);
     public static VisualProperty RowSpanProperty { get; } = VisualProperty.Add(typeof(Grid), "RowSpan", VisualPropertyInvalidateModes.Measure, 1, convert: ValidateSpan);
     public static VisualProperty ColumnSpanProperty { get; } = VisualProperty.Add(typeof(Grid), "ColumnSpan", VisualPropertyInvalidateModes.Measure, 1, convert: ValidateSpan);
 
-    private static object ValidateRowCol(BaseObject obj, object value)
+    private static object? ValidateRowCol(BaseObject obj, object? value)
     {
-        var i = (int)value;
+        var i = (int)value!;
         if (i < 0)
             throw new ArgumentOutOfRangeException(nameof(value));
 
         return i;
     }
 
-    private static object ValidateSpan(BaseObject obj, object value)
+    private static object? ValidateSpan(BaseObject obj, object? value)
     {
-        var i = (int)value;
+        var i = (int)value!;
         if (i <= 0)
             throw new ArgumentOutOfRangeException(nameof(value));
 
@@ -33,6 +33,7 @@ public class Grid : Visual
         {
             new GridRow()
         };
+
         Columns = new ColumnCollection(this)
         {
             new GridColumn()
@@ -45,7 +46,7 @@ public class Grid : Visual
     [Category(CategoryLayout)]
     public BaseObjectCollection<GridColumn> Columns { get; }
 
-    private sealed class RowCollection(Grid grid) : BaseObjectCollection<GridRow>
+    private sealed partial class RowCollection(Grid grid) : BaseObjectCollection<GridRow>
     {
         private readonly Grid _grid = grid;
 
@@ -97,7 +98,7 @@ public class Grid : Visual
         }
     }
 
-    private sealed class ColumnCollection(Grid grid) : BaseObjectCollection<GridColumn>
+    private sealed partial class ColumnCollection(Grid grid) : BaseObjectCollection<GridColumn>
     {
         private readonly Grid _grid = grid;
 
@@ -385,7 +386,8 @@ public class Grid : Visual
                 maxSizedCols.Add(col);
                 continue;
             }
-            othersSize += col.DesiredSize.Value;
+
+            othersSize += col.DesiredSize!.Value;
         }
 
         if (maxSizedCols.Count > 0)
@@ -413,7 +415,8 @@ public class Grid : Visual
                 maxSizedRows.Add(row);
                 continue;
             }
-            othersSize += row.DesiredSize.Value;
+
+            othersSize += row.DesiredSize!.Value;
         }
 
         if (maxSizedRows.Count > 0)
@@ -428,11 +431,12 @@ public class Grid : Visual
             }
         }
 
-        var width = Columns.Sum(d => d.DesiredSize.Value);
-        var height = Rows.Sum(d => d.DesiredSize.Value);
+        var width = Columns.Sum(d => d.DesiredSize!.Value);
+        var height = Rows.Sum(d => d.DesiredSize!.Value);
         return new D2D_SIZE_F(width, height);
     }
 
+    [MemberNotNull(nameof(_childrenByDimensions))]
     private void InitializeDimensionsChildren()
     {
         _childrenByDimensions = [];
@@ -488,7 +492,7 @@ public class Grid : Visual
         {
             if (Width.IsNotSet() && constraint.width.IsSet())
             {
-                var left = Math.Max(0, constraint.width - Columns.Where(d => !d.HasStarSize).Sum(d => d.DesiredSize.Value));
+                var left = Math.Max(0, constraint.width - Columns.Where(d => !d.HasStarSize).Sum(d => d.DesiredSize!.Value));
                 var colSizeUnit = (left - padding.Width * Columns.Count) / colsStars;
                 foreach (var col in starCols)
                 {
@@ -507,10 +511,10 @@ public class Grid : Visual
 
                     foreach (var child in list)
                     {
-                        col.DesiredSize = Math.Max(col.DesiredSize.Value, child.DesiredSize.width);
+                        col.DesiredSize = Math.Max(col.DesiredSize!.Value, child.DesiredSize.width);
                     }
 
-                    if (col.DesiredSize.Value > max)
+                    if (col.DesiredSize!.Value > max)
                     {
                         max = col.DesiredSize.Value;
                         starsForMax = col.Stars;
@@ -537,7 +541,7 @@ public class Grid : Visual
         {
             if (Height.IsNotSet() && constraint.height.IsSet())
             {
-                var left = Math.Max(0, constraint.height - Rows.Where(d => !d.HasStarSize).Sum(d => d.DesiredSize.Value));
+                var left = Math.Max(0, constraint.height - Rows.Where(d => !d.HasStarSize).Sum(d => d.DesiredSize!.Value));
                 var rowSizeUnit = (left - padding.Height * Rows.Count) / rowsStars;
                 foreach (var row in starRows)
                 {
@@ -556,10 +560,10 @@ public class Grid : Visual
 
                     foreach (var child in list)
                     {
-                        row.DesiredSize = Math.Max(row.DesiredSize.Value, child.DesiredSize.height);
+                        row.DesiredSize = Math.Max(row.DesiredSize!.Value, child.DesiredSize.height);
                     }
 
-                    if (row.DesiredSize.Value > max)
+                    if (row.DesiredSize!.Value > max)
                     {
                         max = row.DesiredSize.Value;
                         starsForMax = row.Stars;
@@ -580,7 +584,7 @@ public class Grid : Visual
         if (Rows.Any(r => !r.DesiredSize.HasValue) || Columns.Any(c => !c.DesiredSize.HasValue))
         {
             // TODO: this is suspect
-            MeasureCore(_lastMeasureSize.Value);
+            MeasureCore(_lastMeasureSize!.Value);
         }
 
         var finalSize = finalRect.Size;
@@ -603,7 +607,7 @@ public class Grid : Visual
             else
             {
                 col.FinalStartPosition = position;
-                position += col.DesiredSize.Value;
+                position += col.DesiredSize!.Value;
                 position += padding.right;
             }
             //Application.Trace(" col: " + col);
@@ -621,7 +625,7 @@ public class Grid : Visual
             else
             {
                 row.FinalStartPosition = position;
-                position += row.DesiredSize.Value;
+                position += row.DesiredSize!.Value;
                 position += padding.bottom;
             }
             //Application.Trace(" row: " + row);
@@ -633,10 +637,10 @@ public class Grid : Visual
             var gs = GridSet.Get(this, child);
 
             // row & col visible?
-            if (gs.Col.FinalStartPosition.HasValue && gs.Row.FinalStartPosition.HasValue)
+            if (gs.Col!.FinalStartPosition.HasValue && gs.Row!.FinalStartPosition.HasValue)
             {
-                var colsWidth = gs.GetCols(this).Sum(d => d.DesiredSize.Value);
-                var rowsHeight = gs.GetRows(this).Sum(d => d.DesiredSize.Value);
+                var colsWidth = gs.GetCols(this).Sum(d => d.DesiredSize!.Value);
+                var rowsHeight = gs.GetRows(this).Sum(d => d.DesiredSize!.Value);
 
                 var finalWidth = Math.Min(child.DesiredSize.width, colsWidth);
                 var finalHeight = Math.Min(child.DesiredSize.height, rowsHeight);
@@ -699,7 +703,7 @@ public class Grid : Visual
             }
         }
 
-        _childrenByDimensions.Clear();
+        _childrenByDimensions?.Clear();
         _childrenByDimensions = null;
     }
 
@@ -760,10 +764,10 @@ public class Grid : Visual
         public int RowSpan;
         public int LastColIndex => ColIndex + ColSpan - 1;
         public int LastRowIndex => RowIndex + RowSpan - 1;
-        public GridColumn Col;
-        public GridRow Row;
-        public GridColumn LastCol;
-        public GridRow LastRow;
+        public GridColumn? Col;
+        public GridRow? Row;
+        public GridColumn? LastCol;
+        public GridRow? LastRow;
 
         public float? GetMaxWidth(Grid grid, float totalColStars, float widthForStars)
         {

@@ -1,12 +1,12 @@
 ﻿namespace Wice;
 
-public class MessageBox : DialogBox
+public partial class MessageBox : DialogBox
 {
     protected MESSAGEBOX_RESULT? MessageBoxResult { get; set; }
 
     public MessageBox()
     {
-        DoWhenAttachedToComposition(() => Title = Application.GetTitle(Window.Handle));
+        DoWhenAttachedToComposition(() => Title = Application.GetTitle(Window!.Handle));
     }
 
     public new MESSAGEBOX_RESULT Result

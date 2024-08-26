@@ -12,6 +12,7 @@ public partial class RadioButton : StateButton, IFocusableParent
     public new bool Value { get => (bool)base.Value!; set => base.Value = value; }
 
     Visual? IFocusableParent.FocusableVisual => null;
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
     Type IFocusableParent.FocusVisualShapeType => typeof(Ellipse);
     float? IFocusableParent.FocusOffset => null;
 

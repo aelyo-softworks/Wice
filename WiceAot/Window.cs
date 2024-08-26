@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Window : Canvas, ITitleBarParent
+public partial class Window : Canvas, ITitleBarParent
 {
     private static Lazy<uint> _maximumBitmapSize = new(GetMaximumBitmapSize, true);
     public static uint MaximumBitmapSize => _maximumBitmapSize.Value;
@@ -20,7 +20,7 @@ public class Window : Canvas, ITitleBarParent
     private HWND _parentHandle;
     private WINDOW_EX_STYLE? _extendedStyle;
     private WINDOW_STYLE? _style;
-    private string _title;
+    private string? _title;
     private HICON _iconHandle;
     private RECT _createRect;
     private WindowsFrameMode _frameMode;
@@ -30,15 +30,15 @@ public class Window : Canvas, ITitleBarParent
     private readonly Lazy<IComObject<ID2D1Device1>> _d2D1Device;
     private readonly Lazy<CompositorController> _compositorController;
     private readonly Lazy<CompositionGraphicsDevice> _compositionDevice;
-    private IComObject<ICompositionTarget> _compositionTarget;
-    private ConcurrentQuadTree<Visual> _visualsTree;
+    private CompositionTarget? _compositionTarget;
+    private ConcurrentQuadTree<Visual>? _visualsTree;
     private List<Visual> _mousedEnteredVisuals = [];
     private readonly ConcurrentDictionary<Visual, InvalidateMode> _invalidations = new();
     private bool _mouseTracking; // https://docs.microsoft.com/en-us/windows/win32/learnwin32/other-mouse-operations
     private readonly Scheduler _scheduler;
     private bool _frameExtended;
     private float _frameSize;
-    private Timer _tooltipTimer;
+    private Timer? _tooltipTimer;
     private ulong _lastPointerDownTime;
     private int _lastPointerDownPositionX = int.MinValue;
     private int _lastPointerDownPositionY = int.MinValue;
@@ -52,14 +52,14 @@ public class Window : Canvas, ITitleBarParent
     private Visual? _focusedVisual;
     private Visual? _oldFocusedVisual;
 
-    public event EventHandler HandleCreated;
-    public event EventHandler MonitorChanged;
-    public event EventHandler Moved;
-    public event EventHandler Resized;
-    public event EventHandler Activated;
-    public event EventHandler Deactivated;
-    public event EventHandler Destroyed;
-    public event EventHandler<ClosingEventArgs> Closing;
+    public event EventHandler? HandleCreated;
+    public event EventHandler? MonitorChanged;
+    public event EventHandler? Moved;
+    public event EventHandler? Resized;
+    public event EventHandler? Activated;
+    public event EventHandler? Deactivated;
+    public event EventHandler? Destroyed;
+    public event EventHandler<ClosingEventArgs>? Closing;
 
     public Window()
     {
@@ -85,7 +85,6 @@ public class Window : Canvas, ITitleBarParent
 
         FrameSize = 1;
         FrameColor = D3DCOLORVALUE.DimGray;
-        ExtendFrameIntoClientRect = ExtendFrameIntoClientRect;
         BorderWidth = Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXFRAME) + Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXPADDEDBORDER);
         BorderHeight = Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYFRAME) + Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXPADDEDBORDER);
         CreateRect = new RECT(Constants.CW_USEDEFAULT, Constants.CW_USEDEFAULT, Constants.CW_USEDEFAULT, Constants.CW_USEDEFAULT);
@@ -431,7 +430,7 @@ public class Window : Canvas, ITitleBarParent
             if (_native?.IsValueCreated == true)
                 return _native.Value.Text;
 
-            return _title;
+            return _title ?? string.Empty;
         }
         set
         {
@@ -481,7 +480,7 @@ public class Window : Canvas, ITitleBarParent
         }
     }
 
-    private sealed class WindowBaseObjectCollection : BaseObjectCollection<Visual>
+    private sealed partial class WindowBaseObjectCollection : BaseObjectCollection<Visual>
     {
         private readonly Window _window;
 
@@ -496,17 +495,14 @@ public class Window : Canvas, ITitleBarParent
         protected override void ProtectedAdd(Visual item, bool checkMaxChildrenCount)
         {
             var check = true;
-            if (item != null)
+            if (item is Caret)
             {
-                if (item is Caret)
-                {
-                    check = false;
-                }
+                check = false;
+            }
 
-                if (item is FocusVisual)
-                {
-                    check = false;
-                }
+            if (item is FocusVisual)
+            {
+                check = false;
             }
             base.ProtectedAdd(item, check);
         }
@@ -518,7 +514,7 @@ public class Window : Canvas, ITitleBarParent
 
             var item = this[index];
             if (_window._caret.IsValueCreated && item == _window.Caret)
-                throw new ArgumentException(null, nameof(item));
+                throw new ArgumentException(null, nameof(index));
 
             base.ProtectedRemoveAt(index);
         }
@@ -628,7 +624,7 @@ public class Window : Canvas, ITitleBarParent
     {
         var qt = _visualsTree;
         if (qt == null)
-            return Array.Empty<Visual>();
+            return [];
 
         var list = qt.GetIntersectingNodes(bounds).ToList();
         list.Sort(new VisualDepthComparer());
@@ -676,7 +672,6 @@ public class Window : Canvas, ITitleBarParent
     public static void CreateDefaultToolTipContent(ToolTip parent, string text)
     {
         ArgumentNullException.ThrowIfNull(parent);
-
         if (parent.Compositor == null)
             throw new InvalidOperationException();
 
@@ -702,7 +697,8 @@ public class Window : Canvas, ITitleBarParent
             DrawOptions = D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT,
             WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WRAP
         };
-        tb.SetTypography(Typography.WithLigatures.DWriteTypography.Object);
+
+        tb.SetTypography(Typography.WithLigatures.DWriteTypography?.Object);
         parent.Content.Children.Add(tb);
     }
 
@@ -799,8 +795,8 @@ public class Window : Canvas, ITitleBarParent
 
                 var key = "ClipFrame" + rc.ToString() + "\0" + buttonsWidth + "\0" + buttonsHeight;
                 var geoSource = new GeometrySource2D(key) { Geometry = path.Object };
-                var geo = Compositor.CreatePathGeometry(new CompositionPath(geoSource));
-                CompositionVisual.Clip = Compositor.CreateGeometricClip(geo);
+                var geo = Compositor!.CreatePathGeometry(new CompositionPath(geoSource));
+                CompositionVisual!.Clip = Compositor.CreateGeometricClip(geo);
             }
         }
     }
@@ -924,19 +920,18 @@ public class Window : Canvas, ITitleBarParent
     protected virtual IComObject<IDXGIAdapter1>? GetAdapter()
     {
         using var fac = DXGIFunctions.CreateDXGIFactory1();
-        var adapter = fac.EnumAdapters1().FirstOrDefault(a => !((DXGI_ADAPTER_FLAG)a.GetDesc1().Flags).HasFlag(DXGI_ADAPTER_FLAG.DXGI_ADAPTER_FLAG_SOFTWARE) && a.EnumOutputs<IDXGIOutput1>().Count() > 0);
+        var adapter = fac.EnumAdapters1().FirstOrDefault(a => !((DXGI_ADAPTER_FLAG)a.GetDesc1().Flags).HasFlag(DXGI_ADAPTER_FLAG.DXGI_ADAPTER_FLAG_SOFTWARE) && a.EnumOutputs<IDXGIOutput1>().Any());
         adapter ??= fac.EnumAdapters1().FirstOrDefault();
         //Application.Trace("adapter: " + adapter);
         return adapter;
     }
 
-    //private IComObject<IDXGIDebug> CreateDeviceDebug() => new ComObject<IDXGIDebug>((IDXGIDebug)_device.Value.Object);
-    protected virtual IComObject<ID3D11Device>? CreateD3D11Device()
+    protected virtual IComObject<ID3D11Device> CreateD3D11Device()
     {
         using var fac = DXGIFunctions.CreateDXGIFactory1();
         using var adapter = GetAdapter();
         if (adapter == null)
-            return null;
+            throw new WiceException("0024: Cannot find  a suitable DXGI adapter.");
 
         var flags = D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_BGRA_SUPPORT; // for D2D cooperation
                                                                                //flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
@@ -992,8 +987,8 @@ public class Window : Canvas, ITitleBarParent
         controller.CommitNeeded += OnCompositorControllerCommitNeeded;
 
         var interop = controller.Compositor.As<ICompositorDesktopInterop>();
-        //interop.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
-        //_compositionTarget = ComObject.FromPointer<ICompositionTarget>(target);
+        interop.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
+        _compositionTarget = MarshalInspectable<CompositionTarget>.FromAbi(target);
         CompositionVisual = CreateWindowVisual(controller.Compositor);
         if (CompositionVisual == null)
             throw new InvalidOperationException();
@@ -1006,8 +1001,7 @@ public class Window : Canvas, ITitleBarParent
         FrameVisual.Comment = "frame";
 #endif
         FrameVisual.Children.InsertAtTop(CompositionVisual);
-        //var root = MarshalInterface<T>.GetAbi(FrameVisual);
-        //_compositionTarget.Object.put_Root(root);
+        _compositionTarget.Root = FrameVisual;
         RunTaskOnMainThread(() =>
         {
             // make sure nothing happens during CompositorController lazy creation
@@ -1025,7 +1019,7 @@ public class Window : Canvas, ITitleBarParent
 
         var cr = ClientRect;
         var cs = cr.Size;
-        FrameVisual.Size = new Vector2(cs.cx, cs.cy);
+        FrameVisual!.Size = new Vector2(cs.cx, cs.cy);
 
         if (WindowsFrameMode == WindowsFrameMode.Standard)
             return;
@@ -1069,8 +1063,11 @@ public class Window : Canvas, ITitleBarParent
         }
         interop.EndDraw();
 
-        var brush = Compositor.CreateSurfaceBrush(surface);
-        sprite.Brush = brush;
+        if (Compositor != null)
+        {
+            var brush = Compositor.CreateSurfaceBrush(surface);
+            sprite.Brush = brush;
+        }
 
         if (fs > 0)
         {
@@ -1092,7 +1089,7 @@ public class Window : Canvas, ITitleBarParent
         ArgumentNullException.ThrowIfNull(visual);
         ArgumentNullException.ThrowIfNull(reason);
         PrivateInvalidate(visual, modes, reason);
-        if (_invalidations.Count > 0)
+        if (!_invalidations.IsEmpty)
         {
             RequestRender();
         }
@@ -1154,7 +1151,7 @@ public class Window : Canvas, ITitleBarParent
                 if (same)
                     throw new WiceException("0021: Invalidate loop has been detected.");
             }
-            new Change(visual.GetType(), visual.Id, Change.InvalidateMarker, modes);
+            _ = new Change(visual.GetType(), visual.Id, Change.InvalidateMarker, modes);
         }
 #endif
         var mode = VisualProperty.GetInvalidateMode(modes);
@@ -1194,7 +1191,7 @@ public class Window : Canvas, ITitleBarParent
                     if (existingParentMode == InvalidateMode.Measure)
                         return;
 
-                    var newReason = new ParentUpgradeInvalidateReason(visual.Parent.GetType(), visual.GetType(), existingParentMode, VisualPropertyInvalidateModes.Measure, reason);
+                    var newReason = new ParentUpgradeInvalidateReason(visual.Parent!.GetType(), visual.GetType(), existingParentMode, VisualPropertyInvalidateModes.Measure, reason);
                     PrivateInvalidate(parent, VisualPropertyInvalidateModes.Measure, newReason);
                     return;
                 }
@@ -1204,7 +1201,7 @@ public class Window : Canvas, ITitleBarParent
                     if (existingParentMode == InvalidateMode.Measure || existingParentMode == InvalidateMode.Arrange)
                         return;
 
-                    var newReason = new ParentUpgradeInvalidateReason(visual.Parent.GetType(), visual.GetType(), existingParentMode, VisualPropertyInvalidateModes.Arrange, reason);
+                    var newReason = new ParentUpgradeInvalidateReason(visual.Parent!.GetType(), visual.GetType(), existingParentMode, VisualPropertyInvalidateModes.Arrange, reason);
                     PrivateInvalidate(parent, VisualPropertyInvalidateModes.Arrange, newReason);
                     return;
                 }
@@ -1503,7 +1500,10 @@ public class Window : Canvas, ITitleBarParent
                     break;
 
                 case InvalidateMode.Arrange:
-                    visual.Arrange(visual._lastArrangeRect.Value);
+                    if (visual._lastArrangeRect.HasValue)
+                    {
+                        visual.Arrange(visual._lastArrangeRect.Value);
+                    }
                     RenderVisualAndChildren(visual);
                     break;
 
@@ -1522,7 +1522,10 @@ public class Window : Canvas, ITitleBarParent
                     }
 
                     visual.Measure(visual._lastMeasureSize.Value);
-                    visual.Arrange(visual._lastArrangeRect.Value);
+                    if (visual._lastArrangeRect.HasValue)
+                    {
+                        visual.Arrange(visual._lastArrangeRect.Value);
+                    }
                     RenderVisualAndChildren(visual);
                     break;
             }
@@ -1558,7 +1561,7 @@ public class Window : Canvas, ITitleBarParent
                     Children.Add(fv);
                 }
 
-                fv?.OnUpdateFocus(focused, oldVisual);
+                fv?.OnUpdateFocus(focused);
             }
         }
 
@@ -1568,7 +1571,7 @@ public class Window : Canvas, ITitleBarParent
         }
     }
 
-    private void RenderVisualAndChildren(Visual visual)
+    private static void RenderVisualAndChildren(Visual visual)
     {
         visual.InternalRender();
         if (visual.CompositionVisual?.IsVisible == false)
@@ -1600,7 +1603,7 @@ public class Window : Canvas, ITitleBarParent
         compositor.RunScopedBatch(action, () =>
         {
             Interlocked.Decrement(ref _animating);
-            if (focusVisible == true)
+            if (fv != null && focusVisible == true)
             {
                 fv.IsVisible = true;
             }
@@ -2462,7 +2465,9 @@ public class Window : Canvas, ITitleBarParent
     internal void RemoveTimer(WindowTimer timer) => _timers.Remove(timer);
 
 #if DEBUG
+#pragma warning disable CA1822 // Mark members as static
     private void CheckVisualsTree()
+#pragma warning restore CA1822 // Mark members as static
     {
         //var tree = _visualsTree;
         //if (tree == null)
@@ -2572,7 +2577,7 @@ public class Window : Canvas, ITitleBarParent
 
     // caret APIs must be called on window's message thread
     public void SetCaretPosition(D2D_RECT_F rc) => Native.PostMessage(WM_SETCARETPOS, WPARAM.Null, new LPARAM { Value = GCHandle.ToIntPtr(GCHandle.Alloc(rc)) });
-    private void SetCaretPosition(WPARAM wParam, LPARAM lParam)
+    private void SetCaretPosition(LPARAM lParam)
     {
         var h = GCHandle.FromIntPtr(lParam.Value);
         var rc = (D2D_RECT_F)h.Target!;
@@ -2827,7 +2832,7 @@ public class Window : Canvas, ITitleBarParent
             msg != MessageDecoder.WM_PAINT && msg != MessageDecoder.WM_NCPAINT && msg != MessageDecoder.WM_GETICON &&
             msg != MessageDecoder.WM_WINDOWPOSCHANGED && msg != MessageDecoder.WM_WINDOWPOSCHANGING)
         {
-            //Application.Trace("msg: " + MessageDecoder.Decode(hwnd, msg, wParam, lParam));
+            Application.Trace("msg: " + MessageDecoder.Decode(hwnd, msg, wParam, lParam));
         }
 
         //var str = MessageDecoder.MsgToString(msg);
@@ -2843,11 +2848,11 @@ public class Window : Canvas, ITitleBarParent
             var localRet = win.WindowProc(msg, wParam, lParam, out var handled);
             if (handled)
                 return localRet;
-        }
 
-        var ret = CompositionWindowProc(win, hwnd, msg, wParam, lParam, out var callDef);
-        if (!callDef)
-            return ret;
+            var ret = CompositionWindowProc(win, hwnd, msg, wParam, lParam, out var callDef);
+            if (!callDef)
+                return ret;
+        }
 
         POINT pt;
         Orientation orientation;
@@ -2858,6 +2863,9 @@ public class Window : Canvas, ITitleBarParent
             // I don't know why we must do this, it should be automatic but somehow the nc mouse handling is broken and doesn't always send syscommands...
             // so we do it ourselves
             case MessageDecoder.WM_NCLBUTTONDOWN:
+                if (win == null)
+                    break;
+
                 if (win.WindowsFrameMode != WindowsFrameMode.Standard)
                 {
                     ht = (HT)wParam.Value.ToUInt32();
@@ -2900,12 +2908,15 @@ public class Window : Canvas, ITitleBarParent
                 var button = MessageToButton(msg, wParam, out var cmsg);
                 if (button.HasValue)
                 {
-                    win.OnMouseButtonEvent(cmsg, new MouseButtonEventArgs(lParam.Value.SignedLOWORD(), lParam.Value.SignedHIWORD(), (POINTER_MOD)wParam.Value.LOWORD(), button.Value));
+                    win?.OnMouseButtonEvent(cmsg, new MouseButtonEventArgs(lParam.Value.SignedLOWORD(), lParam.Value.SignedHIWORD(), (POINTER_MOD)wParam.Value.LOWORD(), button.Value));
                 }
                 break;
 
             case MessageDecoder.WM_POINTERDOWN:
             case MessageDecoder.WM_POINTERUP:
+                if (win == null)
+                    break;
+
                 pt = new POINT(lParam.Value.SignedLOWORD(), lParam.Value.SignedHIWORD());
                 pt = win.Native.ScreenToClient(pt);
                 var pce = new PointerContactChangedEventArgs(
@@ -3018,6 +3029,9 @@ public class Window : Canvas, ITitleBarParent
 
             case MessageDecoder.WM_MOUSEHWHEEL:
             case MessageDecoder.WM_MOUSEWHEEL:
+                if (win == null)
+                    break;
+
                 // wheel is relative to the screen, not the client
                 pt = new POINT(lParam.Value.SignedLOWORD(), lParam.Value.SignedHIWORD());
                 pt = win.Native.ScreenToClient(pt);
@@ -3027,6 +3041,9 @@ public class Window : Canvas, ITitleBarParent
 
             case MessageDecoder.WM_POINTERHWHEEL:
             case MessageDecoder.WM_POINTERWHEEL:
+                if (win == null)
+                    break;
+
                 pt = new POINT(lParam.Value.SignedLOWORD(), lParam.Value.SignedHIWORD());
                 pt = win.Native.ScreenToClient(pt);
                 orientation = msg == MessageDecoder.WM_POINTERHWHEEL ? Orientation.Horizontal : Orientation.Vertical;
@@ -3043,6 +3060,9 @@ public class Window : Canvas, ITitleBarParent
                 break;
 
             case MessageDecoder.WM_MOUSEACTIVATE:
+                if (win == null)
+                    break;
+
                 ht = (HT)lParam.Value.SignedLOWORD();
                 ma = win.OnMouseActivate(new HWND { Value = (nint)wParam.Value }, lParam.Value.HIWORD(), ht);
                 if (ma == MA.MA_DONT_HANDLE)
@@ -3051,6 +3071,9 @@ public class Window : Canvas, ITitleBarParent
                 return new LRESULT { Value = (int)ma };
 
             case MessageDecoder.WM_POINTERACTIVATE:
+                if (win == null)
+                    break;
+
                 ht = (HT)wParam.Value.SignedHIWORD();
                 var ea = new PointerActivateEventArgs(wParam.GetPointerId(), new HWND { Value = lParam.Value }, ht);
                 var pa = win.OnPointerActivate(ea);
@@ -3080,6 +3103,9 @@ public class Window : Canvas, ITitleBarParent
 
             case MessageDecoder.WM_MOUSEMOVE:
             case MessageDecoder.WM_MOUSEHOVER:
+                if (win == null)
+                    break;
+
                 //Application.Trace("WM_MOUSExxx msg: " + msg + " tracking: " + win._mouseTracking);
                 if (!win._mouseTracking && msg == MessageDecoder.WM_MOUSEMOVE)
                 {
@@ -3122,6 +3148,9 @@ public class Window : Canvas, ITitleBarParent
                 break;
 
             case MessageDecoder.WM_POINTERUPDATE:
+                if (win == null)
+                    break;
+
                 pt = new POINT(lParam.Value.SignedLOWORD(), lParam.Value.SignedHIWORD());
                 pt = win.Native.ScreenToClient(pt);
                 var ppe = new PointerUpdateEventArgs(
@@ -3151,6 +3180,9 @@ public class Window : Canvas, ITitleBarParent
                 return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_MOUSELEAVE:
+                if (win == null)
+                    break;
+
                 var ttHandle = HWND.Null;
                 var tt = win.CurrentToolTip;
                 if (tt != null && tt._native?.IsValueCreated == true)
@@ -3166,6 +3198,9 @@ public class Window : Canvas, ITitleBarParent
 
                 void onMouseLeave(bool raiseEvent)
                 {
+                    if (win == null)
+                        return;
+
                     if (raiseEvent)
                     {
                         pt = win.Native.GetClientCursorPosition();
@@ -3179,6 +3214,9 @@ public class Window : Canvas, ITitleBarParent
                 return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_POINTERENTER:
+                if (win == null)
+                    break;
+
                 pt = new POINT(lParam.Value.SignedLOWORD(), lParam.Value.SignedHIWORD());
                 pt = win.Native.ScreenToClient(pt);
                 win.OnPointerEnter(new PointerEnterEventArgs(
@@ -3189,6 +3227,9 @@ public class Window : Canvas, ITitleBarParent
                 break;
 
             case MessageDecoder.WM_POINTERLEAVE:
+                if (win == null)
+                    break;
+
                 pt = new POINT(lParam.Value.SignedLOWORD(), lParam.Value.SignedHIWORD());
                 pt = win.Native.ScreenToClient(pt);
                 win.OnPointerLeave(new PointerLeaveEventArgs(
@@ -3198,18 +3239,30 @@ public class Window : Canvas, ITitleBarParent
                     wParam.GetPointerFlags())); break;
 
             case MessageDecoder.WM_SETFOCUS:
+                if (win == null)
+                    break;
+
                 win.HasFocus = true;
                 break;
 
             case MessageDecoder.WM_KILLFOCUS:
+                if (win == null)
+                    break;
+
                 win.HasFocus = false;
                 break;
 
             case WM_SETCARETPOS:
-                win.SetCaretPosition(wParam, lParam);
+                if (win == null)
+                    break;
+
+                win.SetCaretPosition(lParam);
                 break;
 
             case MessageDecoder.WM_SETTEXT:
+                if (win == null)
+                    break;
+
                 win.MainTitleBar?.Update();
                 return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
 
@@ -3217,6 +3270,9 @@ public class Window : Canvas, ITitleBarParent
                 var sized = wParam.Value.ToUInt32();
                 //Application.Trace("WM_SIZE sized: " + sized);
                 if (sized == Constants.SIZE_MINIMIZED)
+                    break;
+
+                if (win == null)
                     break;
 
                 win.OnWmSize();
@@ -3239,6 +3295,9 @@ public class Window : Canvas, ITitleBarParent
 
             case MessageDecoder.WM_CHAR:
             case MessageDecoder.WM_SYSCHAR:
+                if (win == null)
+                    break;
+
                 var e = new KeyPressEventArgs(wParam.Value.ToUInt32());
                 win.OnKeyPressEvent(e);
                 if (e.Handled)
@@ -3250,6 +3309,9 @@ public class Window : Canvas, ITitleBarParent
             case MessageDecoder.WM_KEYUP:
             case MessageDecoder.WM_SYSKEYDOWN:
             case MessageDecoder.WM_SYSKEYUP:
+                if (win == null)
+                    break;
+
                 var e2 = new KeyEventArgs((VIRTUAL_KEY)wParam.Value.ToUInt32(), (uint)lParam.Value.ToInt64());
                 win.OnKeyEvent(e2);
                 if (e2.Handled)
@@ -3258,14 +3320,23 @@ public class Window : Canvas, ITitleBarParent
                 return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_EXITSIZEMOVE:
+                if (win == null)
+                    break;
+
                 win.UpdateMonitor(); // should we call that when moving?
                 break;
 
             case MessageDecoder.WM_DESTROY:
+                if (win == null)
+                    break;
+
                 win.OnWmDestroy();
                 break;
 
             case MessageDecoder.WM_CLOSE:
+                if (win == null)
+                    break;
+
                 var ec = new ClosingEventArgs();
                 win.OnClosing(win, ec);
                 if (ec.Cancel)
@@ -3274,6 +3345,9 @@ public class Window : Canvas, ITitleBarParent
                 return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_MOVE:
+                if (win == null)
+                    break;
+
                 win.OnMoved(win, EventArgs.Empty);
                 win.OnPropertyChanged(nameof(WindowRect));
                 return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
@@ -3283,10 +3357,16 @@ public class Window : Canvas, ITitleBarParent
                 break;
 
             case WM_PROCESS_TASKS:
+                if (win == null)
+                    break;
+
                 win.ProcessTasks();
                 break;
 
             case WM_PROCESS_INVALIDATIONS:
+                if (win == null)
+                    break;
+
                 win.ProcessInvalidations();
                 break;
 
@@ -3296,12 +3376,9 @@ public class Window : Canvas, ITitleBarParent
         return LRESULT.Null;
     }
 
-#pragma warning disable IDE1006 // Naming Styles
-    //private const int HOVER_DEFAULT = -1;
     private const uint MOUSE_TRACK_TIMER_ID = 1;
     private const uint WM_PROCESS_INVALIDATIONS = Application.WM_HOSTQUIT - 1;
     private const uint WM_SETCARETPOS = MessageDecoder.WM_APP - 2;
     private const uint WM_PROCESS_TASKS = Application.WM_HOSTQUIT - 3;
     internal const uint WM_MOUSEENTER = 1; // pseudo message for us
-#pragma warning restore IDE1006 // Naming Styles
 }

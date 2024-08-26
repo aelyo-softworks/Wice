@@ -125,7 +125,7 @@ public partial class TitleBar : Dock
     protected virtual internal void Update()
     {
         var native = Window?.Native;
-        if (native == null)
+        if (native == null || Window == null || Compositor == null)
             return;
 
         var bounds = new RECT();

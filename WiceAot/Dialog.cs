@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Dialog : Popup
+public partial class Dialog : Popup
 {
     private object? _closeButtonClickHandler;
     private Visual? _overlay;
@@ -169,7 +169,7 @@ public class Dialog : Popup
     {
         base.OnAttachedToParent(sender, e);
 
-        if (ShowWindowOverlay)
+        if (ShowWindowOverlay && Compositor != null && Parent != null)
         {
             var opacity = WindowOverlayOpacity ?? Application.CurrentTheme.DialogWindowOverlayOpacity;
             if (opacity > 0)

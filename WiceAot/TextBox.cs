@@ -268,9 +268,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public void SetLocaleName(string name, DWRITE_TEXT_RANGE range) => SetLocaleName(name, [range]);
     public virtual void SetLocaleName(string name, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.LocaleName, name, ranges);
 
-    public void SetTypography(IDWriteTypography typography) => SetTypography(typography, new DWRITE_TEXT_RANGE(0));
-    public void SetTypography(IDWriteTypography typography, DWRITE_TEXT_RANGE range) => SetTypography(typography, [range]);
-    public virtual void SetTypography(IDWriteTypography typography, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.Typography, typography, ranges);
+    public void SetTypography(IDWriteTypography? typography) => SetTypography(typography, new DWRITE_TEXT_RANGE(0));
+    public void SetTypography(IDWriteTypography? typography, DWRITE_TEXT_RANGE range) => SetTypography(typography, [range]);
+    public virtual void SetTypography(IDWriteTypography? typography, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.Typography, typography, ranges);
 
     public void SetInlineObject(IDWriteInlineObject inlineObject) => SetInlineObject(inlineObject, new DWRITE_TEXT_RANGE(0));
     public void SetInlineObject(IDWriteInlineObject inlineObject, DWRITE_TEXT_RANGE range) => SetInlineObject(inlineObject, [range]);
@@ -2448,7 +2448,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         SolidColor
     }
 
-    private void SetFontRangeValue(FontRangeType type, object value, DWRITE_TEXT_RANGE[] ranges)
+    private void SetFontRangeValue(FontRangeType type, object? value, DWRITE_TEXT_RANGE[] ranges)
     {
         ArgumentNullException.ThrowIfNull(ranges);
 
@@ -2464,7 +2464,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         FontRanges[]? list = null;
         lock (_rangesLock)
         {
-            bool changed = false;
+            var changed = false;
             foreach (var range in ranges)
             {
                 var newFontRange = new FontRange { Range = range, Value = value };

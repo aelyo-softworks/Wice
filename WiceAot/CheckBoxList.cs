@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class CheckBoxList : StateButtonListBox
+public partial class CheckBoxList : StateButtonListBox
 {
     protected override StateButton CreateStateButton(DataBindContext context)
     {
@@ -8,7 +8,10 @@ public class CheckBoxList : StateButtonListBox
         var cb = new CheckBox();
         cb.Click += (s, e) =>
         {
-            context.ItemVisual.IsSelected = cb.Value;
+            if (context.ItemVisual != null)
+            {
+                context.ItemVisual.IsSelected = cb.Value;
+            }
         };
         return cb;
     }

@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class SymbolHeaderedContent : HeaderedContent
+public partial class SymbolHeaderedContent : HeaderedContent
 {
     public new SymbolHeader Header => (SymbolHeader)base.Header;
 

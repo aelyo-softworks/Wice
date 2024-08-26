@@ -1,10 +1,10 @@
 ﻿namespace Wice;
 
-public class Header : Canvas, IAccessKeyParent, ISelectable
+public partial class Header : Canvas, IAccessKeyParent, ISelectable
 {
     public static VisualProperty IsSelectedProperty { get; } = VisualProperty.Add(typeof(Header), nameof(IsSelected), VisualPropertyInvalidateModes.Measure, false);
 
-    public event EventHandler<ValueEventArgs<bool>> IsSelectedChanged;
+    public event EventHandler<ValueEventArgs<bool>>? IsSelectedChanged;
 
     private readonly List<AccessKey> _accessKeys = [];
 
@@ -25,7 +25,7 @@ public class Header : Canvas, IAccessKeyParent, ISelectable
 #endif
         Children.Add(Selection);
         Selection.IsVisible = false;
-        Selection.DoWhenAttachedToComposition(() => Selection.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor()));
+        Selection.DoWhenAttachedToComposition(() => Selection.RenderBrush = Compositor!.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor()));
 
         Panel = CreatePanel();
         Panel.Margin = 10;
@@ -139,29 +139,32 @@ public class Header : Canvas, IAccessKeyParent, ISelectable
             if (SelectedButton.IsVisible)
             {
                 var target = SelectedButton.Child;
-                var rr = target.RelativeRenderRect;
-                if (rr.IsValid)
+                if (target != null)
                 {
-                    var size = target.RelativeRenderRect.Size;
-                    target.CompositionVisual.CenterPoint = new Vector3(size.width / 2, size.height / 2, 0);
-                    target.SuspendCompositionUpdateParts(CompositionUpdateParts.RotationAngleInDegrees);
+                    var rr = target.RelativeRenderRect;
+                    if (rr.IsValid && target.CompositionVisual != null)
+                    {
+                        var size = target.RelativeRenderRect.Size;
+                        target.CompositionVisual.CenterPoint = new Vector3(size.width / 2, size.height / 2, 0);
+                        target.SuspendCompositionUpdateParts(CompositionUpdateParts.RotationAngleInDegrees);
 
-                    var compositor = Compositor;
-                    compositor?.RunScopedBatch(() =>
-                        {
-                            var animation = compositor.CreateScalarKeyFrameAnimation();
-                            animation.Duration = Application.CurrentTheme.SelectedAnimationDuration;
-                            animation.InsertKeyFrame(0, 0);
-                            animation.InsertKeyFrame(1, IsSelected ? 180 : -180, compositor.CreateLinearEasingFunction());
-                            target.CompositionVisual.StartAnimation(nameof(ContainerVisual.RotationAngleInDegrees), animation);
-                        }, () =>
-                        {
-                            target.ResumeCompositionUpdateParts();
-                            if (SelectedButton.Child is TextBox tb)
+                        var compositor = Compositor;
+                        compositor?.RunScopedBatch(() =>
                             {
-                                tb.Text = IsSelected ? MDL2GlyphResource.ChevronUp : MDL2GlyphResource.ChevronDown;
-                            }
-                        });
+                                var animation = compositor.CreateScalarKeyFrameAnimation();
+                                animation.Duration = Application.CurrentTheme.SelectedAnimationDuration;
+                                animation.InsertKeyFrame(0, 0);
+                                animation.InsertKeyFrame(1, IsSelected ? 180 : -180, compositor.CreateLinearEasingFunction());
+                                target.CompositionVisual.StartAnimation(nameof(ContainerVisual.RotationAngleInDegrees), animation);
+                            }, () =>
+                            {
+                                target.ResumeCompositionUpdateParts();
+                                if (SelectedButton.Child is TextBox tb)
+                                {
+                                    tb.Text = IsSelected ? MDL2GlyphResource.ChevronUp : MDL2GlyphResource.ChevronDown;
+                                }
+                            });
+                    }
                 }
             }
             else

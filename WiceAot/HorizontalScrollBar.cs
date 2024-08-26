@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class HorizontalScrollBar : ScrollBar
+public partial class HorizontalScrollBar : ScrollBar
 {
     public HorizontalScrollBar()
     {

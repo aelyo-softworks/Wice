@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Viewer : Visual, IOneChildParent
+public partial class Viewer : Visual, IOneChildParent
 {
     public static VisualProperty IsWidthUnconstrainedProperty { get; } = VisualProperty.Add(typeof(Viewer), nameof(IsWidthUnconstrained), VisualPropertyInvalidateModes.Measure, true);
     public static VisualProperty IsHeightUnconstrainedProperty { get; } = VisualProperty.Add(typeof(Viewer), nameof(IsHeightUnconstrained), VisualPropertyInvalidateModes.Measure, true);
@@ -22,7 +22,11 @@ public class Viewer : Visual, IOneChildParent
             {
                 Children.Remove(child);
             }
-            Children.Add(value);
+
+            if (value != null)
+            {
+                Children.Add(value);
+            }
         }
     }
 

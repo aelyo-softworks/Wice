@@ -76,11 +76,9 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
     }
 
     [Browsable(false)]
-    [Json(IgnoreWhenSerializing = true, IgnoreWhenDeserializing = true)]
     public int Id { get; }
 
     [Browsable(false)]
-    [Json(IgnoreWhenSerializing = true, IgnoreWhenDeserializing = true)]
     public string FullName => _fullName.Value;
 
     [Category(CategoryBase)]
@@ -357,48 +355,4 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
     object? IPropertyOwner.GetPropertyValue(BaseObjectProperty property) => GetPropertyValue(property);
     bool IPropertyOwner.IsPropertyValueSet(BaseObjectProperty property) => IsPropertyValueSet(property);
     bool IPropertyOwner.ResetPropertyValue(BaseObjectProperty property, out object? value) => ResetPropertyValue(property, out value);
-
-    public static T? Deserialize<T>(string filePath, JsonOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(filePath);
-        if (!IOUtilities.FileExists(filePath))
-            return default;
-
-        using var reader = new StreamReader(filePath);
-        return Deserialize<T>(reader, options);
-    }
-
-    public static T? Deserialize<T>(Stream stream, JsonOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(stream);
-        using var reader = new StreamReader(stream);
-        return Deserialize<T>(reader, options);
-    }
-
-    public static T? Deserialize<T>(TextReader reader, JsonOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(reader);
-        return Json.Deserialize<T>(reader, options);
-    }
-
-    public virtual void Serialize(TextWriter writer, JsonOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(writer);
-        Json.SerializeFormatted(writer, this, options);
-    }
-
-    public virtual void Serialize(Stream stream, JsonOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(stream);
-        using var writer = new StreamWriter(stream, Encoding.UTF8);
-        Serialize(writer, options);
-    }
-
-    public virtual void Serialize(string filePath, JsonOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(filePath);
-        IOUtilities.FileEnsureDirectory(filePath);
-        using var writer = new StreamWriter(filePath, false, Encoding.UTF8);
-        Serialize(writer, options);
-    }
 }

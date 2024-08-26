@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Application : IDisposable
+public partial class Application : IDisposable
 {
     private bool _disposedValue;
     private static Application? _current;

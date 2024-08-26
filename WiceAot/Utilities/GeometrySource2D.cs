@@ -27,7 +27,7 @@ public partial class GeometrySource2D : IGeometrySource2D, Windows.Graphics.IGeo
     HRESULT Windows.Graphics.IGeometrySource2DInterop.TryGetGeometryUsingFactory(ID2D1Factory factory, out ID2D1Geometry value) => throw new NotImplementedException();
     HRESULT Windows.Graphics.IGeometrySource2DInterop.GetGeometry(out ID2D1Geometry value)
     {
-        value = Geometry;
-        return Constants.S_OK;
+        value = Geometry!;
+        return value == null ? Constants.E_FAIL : Constants.S_OK;
     }
 }

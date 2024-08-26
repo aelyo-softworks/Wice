@@ -1,18 +1,18 @@
 ﻿namespace Wice.Utilities;
 
-public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
+public partial class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
 {
     private EnumDataSource(IEnumerable<EnumBitValue> values)
         : base(values)
     {
     }
 
-    public new IEnumerable<EnumBitValue> Source => (IEnumerable<EnumBitValue>)base.Source;
+    public new IEnumerable<EnumBitValue> Source => (IEnumerable<EnumBitValue>)base.Source!;
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    public IEnumerator<EnumBitValue> GetEnumerator() => Source?.GetEnumerator();
+    public IEnumerator<EnumBitValue> GetEnumerator() => Source.GetEnumerator();
 
-    public static EnumDataSource? FromValue(object value)
+    public static EnumDataSource? FromValue(object? value)
     {
         if (value == null)
             return null;
@@ -20,7 +20,7 @@ public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
         return FromType(value.GetType(), value);
     }
 
-    public static EnumDataSource FromType(Type type, object? value = null, bool? forceFlags = null)
+    public static EnumDataSource FromType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicFields)] Type type, object? value = null, bool? forceFlags = null)
     {
         ArgumentNullException.ThrowIfNull(type);
         if (!type.IsEnum)
@@ -50,7 +50,7 @@ public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
         return new EnumDataSource(GetValues(type, value));
     }
 
-    private static IEnumerable<EnumBitValue> GetEnumValues(Type type)
+    private static IEnumerable<EnumBitValue> GetEnumValues([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type)
     {
         foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(f => !f.IsSpecialName))
         {
@@ -58,18 +58,18 @@ public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
             if (browsable != null && !browsable.Browsable)
                 continue;
 
-            var ev = new EnumBitValue(field.GetValue(null)!, field.Name);
-            ev.BitValue = field.GetValue(null)!;
-            ev.DisplayName = field.GetCustomAttribute<DescriptionAttribute>()?.Description;
-            if (ev.DisplayName == null)
+            var ev = new EnumBitValue(field.GetValue(null)!, field.Name)
             {
-                ev.DisplayName = Conversions.Decamelize(ev.Name);
-            }
+                BitValue = field.GetValue(null)!,
+                DisplayName = field.GetCustomAttribute<DescriptionAttribute>()?.Description
+            };
+
+            ev.DisplayName ??= Conversions.Decamelize(ev.Name);
             yield return ev;
         }
     }
 
-    private static IEnumerable<EnumBitValue> GetValues(Type type, object value)
+    private static IEnumerable<EnumBitValue> GetValues([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type, object? value)
     {
         foreach (var ev in GetEnumValues(type))
         {
@@ -78,8 +78,11 @@ public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
         }
     }
 
-    private static IEnumerable<EnumBitValue> GetFlagsValues(Type type, object value)
+    private static IEnumerable<EnumBitValue> GetFlagsValues([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type, object? value)
     {
+        if (value == null)
+            yield break;
+
         var ulv = Conversions.EnumToUInt64(value);
         // note: this suppose the enum is simple (no twice the same value, no value combination)
         foreach (var ev in GetEnumValues(type))

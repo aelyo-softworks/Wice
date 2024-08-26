@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class GridRow : GridDimension
+public partial class GridRow : GridDimension
 {
     public GridRow()
     {

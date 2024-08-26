@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class ItemVisual : Border, IOneChildParent, IFocusableParent, ISelectable
+public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISelectable
 {
     public static VisualProperty IsSelectedProperty { get; } = VisualProperty.Add(typeof(ItemVisual), nameof(IsSelected), VisualPropertyInvalidateModes.Measure, false);
 
@@ -23,6 +23,7 @@ public class ItemVisual : Border, IOneChildParent, IFocusableParent, ISelectable
     public bool IsSelected { get => (bool)GetPropertyValue(IsSelectedProperty)!; set => SetPropertyValue(IsSelectedProperty, value); }
 
     Visual? IFocusableParent.FocusableVisual => Child;
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
     Type? IFocusableParent.FocusVisualShapeType => null;
     float? IFocusableParent.FocusOffset => null;
 

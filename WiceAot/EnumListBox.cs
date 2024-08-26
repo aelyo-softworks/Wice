@@ -2,7 +2,7 @@
 
 namespace Wice;
 
-public class EnumListBox : ListBox, IValueable, IBindList
+public partial class EnumListBox : ListBox, IValueable, IBindList
 {
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(EnumListBox), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: EnumTypeCheck);
 
@@ -10,7 +10,7 @@ public class EnumListBox : ListBox, IValueable, IBindList
 
     internal interface IBindList
     {
-        Type Type { get; set; }
+        Type? Type { get; set; }
         bool NeedBind { get; set; }
     }
 
@@ -51,7 +51,7 @@ public class EnumListBox : ListBox, IValueable, IBindList
         return true;
     }
 
-    Type IBindList.Type { get; set; }
+    Type? IBindList.Type { get; set; }
     bool IBindList.NeedBind { get; set; }
 
     protected override void OnSelectionChanged()

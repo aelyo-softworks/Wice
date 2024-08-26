@@ -1,7 +1,7 @@
 ﻿namespace Wice;
 
 // note for border (thickness) rendering, it can be better (try the magnify tool) to use two composited borders than a border with BorderThickness not 0
-public class Border : RenderVisual, IOneChildParent
+public partial class Border : RenderVisual, IOneChildParent
 {
     public static VisualProperty BorderBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(Border), nameof(BorderBrush), VisualPropertyInvalidateModes.Render);
     public static VisualProperty BorderThicknessProperty { get; } = VisualProperty.Add(typeof(Border), nameof(BorderThickness), VisualPropertyInvalidateModes.Measure, 0f);

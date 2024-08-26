@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class HeaderedContent : Stack, IOneChildParent
+public partial class HeaderedContent : Stack, IOneChildParent
 {
     private TimerStoryboard? _sb;
 

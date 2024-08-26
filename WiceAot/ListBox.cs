@@ -1,6 +1,6 @@
 ﻿namespace Wice
 {
-    public class ListBox : Visual, IDataSourceVisual, ISelectorVisual
+    public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     {
         public static VisualProperty DataSourceProperty { get; } = VisualProperty.Add<object>(typeof(ListBox), nameof(DataSource), VisualPropertyInvalidateModes.Measure);
         public static VisualProperty DataItemMemberProperty { get; } = VisualProperty.Add<string>(typeof(ListBox), nameof(DataItemMember), VisualPropertyInvalidateModes.Measure, convert: NullifyString);

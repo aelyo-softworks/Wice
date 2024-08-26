@@ -41,7 +41,7 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
     bool ISelectable.RaiseIsSelectedChanged { get => RaiseIsSelectedChanged; set => RaiseIsSelectedChanged = value; }
     protected virtual bool RaiseIsSelectedChanged { get; set; }
 
-    public virtual ulong UInt64BitValue => Conversions.EnumToUInt64(BitValue);
+    public virtual ulong UInt64BitValue => Conversions.EnumToUInt64(BitValue!);
     public bool IsZero => UInt64BitValue == 0;
     public bool IsMultiValued => _isMultiValued.Value;
 

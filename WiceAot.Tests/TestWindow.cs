@@ -1,6 +1,6 @@
 ﻿namespace WiceAot.Tests;
 
-internal class TestWindow : Window
+internal partial class TestWindow : Window
 {
     public TestWindow()
     {
@@ -8,7 +8,7 @@ internal class TestWindow : Window
         Style |= WINDOW_STYLE.WS_THICKFRAME | WINDOW_STYLE.WS_CAPTION | WINDOW_STYLE.WS_SYSMENU | WINDOW_STYLE.WS_MAXIMIZEBOX | WINDOW_STYLE.WS_MINIMIZEBOX;
         //SizeToContent = DimensionOptions.WidthAndHeight;
         //Native.EnableBlurBehind();
-        RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+        RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
         //RenderBrush = AcrylicBrush.CreateAcrylicBrush(
         //    CompositionDevice,
         //    D3DCOLORVALUE.White,
@@ -20,7 +20,9 @@ internal class TestWindow : Window
         DisplayTime();
     }
 
-    private Timer _timer;
+#pragma warning disable IDE0052 // Remove unread private members
+    private Timer? _timer;
+#pragma warning restore IDE0052 // Remove unread private members
     private void DisplayTime()
     {
         var label = new TextBox();
@@ -39,11 +41,13 @@ internal class TestWindow : Window
 
     public void AddEditableTexts()
     {
-        var stack = new Dock();
-        //stack.Orientation = Orientation.Vertical;
-        //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
-        //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
-        stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LemonChiffon.ToColor());
+        var stack = new Dock
+        {
+            //stack.Orientation = Orientation.Vertical;
+            //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LemonChiffon.ToColor())
+        };
         //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
 
         //stack.LastChildFill = false;
@@ -58,7 +62,7 @@ internal class TestWindow : Window
             text.IsEditable = true;
 
             //text.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
-            text.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.GreenYellow.ToColor());
+            text.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.GreenYellow.ToColor());
             text.Name = "text#" + i;
             text.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Red);
             stack.Children.Add(text);

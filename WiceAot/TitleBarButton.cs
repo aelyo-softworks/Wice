@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class TitleBarButton : ButtonBase
+public partial class TitleBarButton : ButtonBase
 {
     private TitleBarButtonType _buttonType;
     private GeometrySource2D? _lastGeometrySource2D;
@@ -56,8 +56,12 @@ public class TitleBarButton : ButtonBase
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
-        Path.Shape.StrokeThickness = 1f;
-        Path.StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Black.ToColor());
+        if (Path.Shape != null)
+        {
+            Path.Shape.StrokeThickness = 1f;
+        }
+
+        Path.StrokeBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Black.ToColor());
     }
 }
 

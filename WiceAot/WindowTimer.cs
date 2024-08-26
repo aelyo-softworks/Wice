@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class WindowTimer : IDisposable
+public partial class WindowTimer : IDisposable
 {
     private Timer? _timer;
     private readonly Action? _action;

@@ -11,13 +11,11 @@ public static class UIExtensions
     public static D3DCOLORVALUE HyperLinkDisabledColor => _hyperLinkDisabledColor.Value;
 
     // see https://stackoverflow.com/questions/4009701/windows-visual-themes-gallery-of-parts-and-states/4009712#4009712
-#pragma warning disable IDE1006 // Naming Styles
     const int TEXT_HYPERLINKTEXT = 6;
     const int TS_HYPERLINK_NORMAL = 1;
     const int TS_HYPERLINK_HOT = 2;
     const int TS_HYPERLINK_DISABLED = 4;
     const int TMT_TEXTCOLOR = 3803;
-#pragma warning restore IDE1006 // Naming Styles
 
     public static void SetHyperLinkRange(this TextBox textBox, string text, Func<string, bool>? onClick = null)
     {
@@ -91,8 +89,8 @@ public static class UIExtensions
         }
     }
 
-    public static void Unselect(this IEnumerable<ISelectable> selectables, bool raiseIsSelectedChanged = false) => Select(selectables, (ISelectable)null, raiseIsSelectedChanged);
-    public static void Select(this IEnumerable<ISelectable> selectables, ISelectable selected, bool raiseIsSelectedChanged = false)
+    public static void Unselect(this IEnumerable<ISelectable> selectables, bool raiseIsSelectedChanged = false) => Select(selectables, (ISelectable?)null, raiseIsSelectedChanged);
+    public static void Select(this IEnumerable<ISelectable> selectables, ISelectable? selected, bool raiseIsSelectedChanged = false)
     {
         if (selected != null)
         {
@@ -124,7 +122,6 @@ public static class UIExtensions
     public static void Select(this IEnumerable<ISelectable> selectables, Func<ISelectable, bool> selectionCompareFunc, bool raiseIsSelectedChanged = false)
     {
         ArgumentNullException.ThrowIfNull(selectionCompareFunc);
-
         if (selectables == null)
             return;
 
@@ -228,12 +225,11 @@ public static class UIExtensions
     }
 
     // avoid AmbiguousMatchException
-    public static PropertyInfo? GetUnambiguousProperty(object component, string name, BindingFlags flags = BindingFlags.Public | BindingFlags.Instance) => GetUnambiguousProperty(component?.GetType()!, name, flags);
-    public static PropertyInfo? GetUnambiguousProperty(this Type type, string name, BindingFlags flags = BindingFlags.Public | BindingFlags.Instance)
+    public static PropertyInfo? GetUnambiguousProperty([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] this Type type, string name)
     {
         ArgumentNullException.ThrowIfNull(type);
         ArgumentNullException.ThrowIfNull(name);
-        return type.GetProperties(flags).Where(p => p.Name.EqualsIgnoreCase(name)).FirstOrDefault();
+        return type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.Name.EqualsIgnoreCase(name)).FirstOrDefault();
     }
 
     public static string? TrimWithEllipsis(this string? text, int maxCount = 100, string? ellipsis = "...")
@@ -248,7 +244,7 @@ public static class UIExtensions
         if (elen > maxCount)
             return null;
 
-        return text.Substring(0, maxCount - elen) + ellipsis;
+        return string.Concat(text.AsSpan(0, maxCount - elen), ellipsis);
     }
 
     public static object AddOnClick(this Visual visual, EventHandler handler)

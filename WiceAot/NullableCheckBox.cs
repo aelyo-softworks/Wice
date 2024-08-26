@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class NullableCheckBox : StateButton
+public partial class NullableCheckBox : StateButton
 {
     public NullableCheckBox()
     {
@@ -42,7 +42,7 @@ public class NullableCheckBox : StateButton
 
         canvas.AttachedToComposition += (s, e) =>
         {
-            rect.StrokeBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
+            rect.StrokeBrush = canvas.Compositor!.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
             b.RenderBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor());
         };
         return canvas;

@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Dock : Visual
+public partial class Dock : Visual
 {
     private readonly Dictionary<Visual, Docked> _docked = [];
 

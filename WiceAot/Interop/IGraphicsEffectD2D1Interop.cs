@@ -181,8 +181,7 @@ namespace Windows.Graphics.Effects
                     var hr = ComWrappersSupport.FindObject<IGraphicsEffectD2D1Interop>(thisPtr).GetSource(index, out var v);
                     if (hr >= 0)
                     {
-                        //var unk = ComObject.ToComInstanceOfType<IGraphicsEffectSource>(v);
-                        var unk = MarshalInspectable<IGraphicsEffectSource>.FromManaged(v);
+                        var unk = MarshalInspectable<IGraphicsEffectSource>.FromManaged(v!);
                         *value = unk;
                     }
                     return hr;

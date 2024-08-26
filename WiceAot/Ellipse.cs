@@ -1,11 +1,11 @@
 ﻿namespace Wice;
 
-public class Ellipse : SingleShape
+public partial class Ellipse : SingleShape
 {
     public static VisualProperty RadiusProperty { get; } = VisualProperty.Add(typeof(Ellipse), nameof(Radius), VisualPropertyInvalidateModes.Render, new Vector2());
     public static VisualProperty RadiusOffsetProperty { get; } = VisualProperty.Add(typeof(Ellipse), nameof(RadiusOffset), VisualPropertyInvalidateModes.Render, new Vector2());
 
-    public new CompositionEllipseGeometry? Geometry => (CompositionEllipseGeometry)base.Geometry;
+    public new CompositionEllipseGeometry? Geometry => (CompositionEllipseGeometry?)base.Geometry;
 
     [Category(CategoryLayout)]
     public Vector2 Radius { get => (Vector2)GetPropertyValue(RadiusProperty)!; set => SetPropertyValue(RadiusProperty, value); }
@@ -19,7 +19,7 @@ public class Ellipse : SingleShape
     {
         base.Render();
         var ar = ArrangedRect;
-        if (ar.IsValid)
+        if (ar.IsValid && Geometry != null)
         {
             var size = ar.Size - Margin;
             Geometry.Center = new Vector2(size.width / 2, size.height / 2);

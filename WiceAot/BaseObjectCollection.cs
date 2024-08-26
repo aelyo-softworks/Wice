@@ -1,6 +1,4 @@
-﻿using System.Collections.Specialized;
-
-namespace Wice;
+﻿namespace Wice;
 
 public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : BaseObject, INotifyCollectionChanged, IList<T>, IList where T : BaseObject // IList is good for property grid support
 {
@@ -41,6 +39,7 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
 
     protected virtual void ProtectedAdd(T item, bool checkMaxChildrenCount)
     {
+        ArgumentNullException.ThrowIfNull(item);
         if (checkMaxChildrenCount && Count == MaxChildrenCount)
             throw new WiceException("0002: Collection has a maximum of " + MaxChildrenCount + " children.");
 

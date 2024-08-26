@@ -1,7 +1,7 @@
 ﻿namespace Wice;
 
 // only (re)created if window loses focus
-public class FocusVisual : Border//, IModalVisual
+public partial class FocusVisual : Border//, IModalVisual
 {
     public FocusVisual()
     {
@@ -14,7 +14,7 @@ public class FocusVisual : Border//, IModalVisual
 
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
-        if (Parent is not Wice.Window)
+        if (Parent is null)
             throw new InvalidOperationException();
 
         base.OnAttachedToParent(sender, e);
@@ -57,7 +57,7 @@ public class FocusVisual : Border//, IModalVisual
         Arrange(childRect);
     }
 
-    protected virtual internal void OnUpdateFocus(Visual newFocusedVisual, Visual oldFocusedVisual)
+    protected virtual internal void OnUpdateFocus(Visual newFocusedVisual)
     {
         ArgumentNullException.ThrowIfNull(newFocusedVisual);
         if (!newFocusedVisual.IsActuallyVisible)
@@ -77,7 +77,7 @@ public class FocusVisual : Border//, IModalVisual
         {
             if (Child == null || !parent.FocusVisualShapeType.IsAssignableFrom(Child.GetType()))
             {
-                Child = (SingleShape)Activator.CreateInstance(parent.FocusVisualShapeType);
+                Child = (SingleShape)Activator.CreateInstance(parent.FocusVisualShapeType)!;
             }
         }
         else

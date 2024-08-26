@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class ScrollViewer : Dock, IOneChildParent
+public partial class ScrollViewer : Dock, IOneChildParent
 {
     // values from https://github.com/wine-mirror/wine/blob/master/dlls/user32/scroll.c
     // don't know where to get that from Windows api?
@@ -279,11 +279,11 @@ public class ScrollViewer : Dock, IOneChildParent
 
         if (property == VerticalScrollBarVisibilityProperty)
         {
-            Viewer.IsHeightUnconstrained = !value.Equals(ScrollBarVisibility.Disabled);
+            Viewer.IsHeightUnconstrained = !value!.Equals(ScrollBarVisibility.Disabled);
         }
         else if (property == HorizontalScrollBarVisibilityProperty)
         {
-            Viewer.IsWidthUnconstrained = !value.Equals(ScrollBarVisibility.Disabled);
+            Viewer.IsWidthUnconstrained = !value!.Equals(ScrollBarVisibility.Disabled);
         }
         return true;
     }

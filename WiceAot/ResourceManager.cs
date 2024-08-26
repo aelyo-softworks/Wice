@@ -555,7 +555,7 @@ public partial class ResourceManager
         string Key { get; }
     }
 
-    private sealed class KeyComObject<T>(T comObject, string key) : ComObject<T>(comObject), IKeyable
+    private sealed partial class KeyComObject<T>(T comObject, string key) : ComObject<T>(comObject), IKeyable
     {
         public string Key { get; } = key;
     }

@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Image : RenderVisual, IDisposable
+public partial class Image : RenderVisual, IDisposable
 {
     public static VisualProperty SourceOpacityProperty { get; } = VisualProperty.Add(typeof(Image), nameof(SourceOpacity), VisualPropertyInvalidateModes.Render, 1f);
     public static VisualProperty SourceProperty { get; } = VisualProperty.Add<IComObject<IWICBitmapSource>>(typeof(Image), nameof(Source), VisualPropertyInvalidateModes.Measure);
@@ -9,6 +9,9 @@ public class Image : RenderVisual, IDisposable
     public static VisualProperty StretchDirectionProperty { get; } = VisualProperty.Add(typeof(Image), nameof(StretchDirection), VisualPropertyInvalidateModes.Measure, StretchDirection.Both);
     public static VisualProperty SourceRectangleProperty { get; } = VisualProperty.Add<D2D_RECT_F?>(typeof(Image), nameof(SourceRectangle), VisualPropertyInvalidateModes.Measure);
 
+    public event EventHandler<EventArgs>? BitmapCreated;
+    public event EventHandler<EventArgs>? BitmapDisposed;
+
     private bool _disposedValue;
     private IComObject<ID2D1Bitmap>? _bitmap;
 
@@ -16,9 +19,6 @@ public class Image : RenderVisual, IDisposable
     {
         BackgroundColor = D3DCOLORVALUE.Transparent;
     }
-
-    public event EventHandler<EventArgs> BitmapCreated;
-    public event EventHandler<EventArgs> BitmapDisposed;
 
     public IComObject<ID2D1Bitmap>? Bitmap => _bitmap;
 

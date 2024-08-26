@@ -1,13 +1,17 @@
 ﻿namespace Wice;
 
-public class NullableCheckBoxList : StateButtonListBox
+public partial class NullableCheckBoxList : StateButtonListBox
 {
     protected override StateButton CreateStateButton(DataBindContext context)
     {
+        ArgumentNullException.ThrowIfNull(context);
         var ncb = new NullableCheckBox();
         ncb.Click += (s, e) =>
         {
-            context.ItemVisual.IsSelected = ncb.Value == true;
+            if (context.ItemVisual != null)
+            {
+                context.ItemVisual.IsSelected = ncb.Value == true;
+            }
         };
         return ncb;
     }

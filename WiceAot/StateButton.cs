@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class StateButton : ButtonBase, IValueable, ISelectable
+public partial class StateButton : ButtonBase, IValueable, ISelectable
 {
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(StateButton), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: ConvertValue);
 

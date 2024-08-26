@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class ButtonBase : Border, IAccessKeyParent
+public partial class ButtonBase : Border, IAccessKeyParent
 {
     public event EventHandler<EventArgs>? Click;
 

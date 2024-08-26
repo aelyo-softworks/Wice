@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Wrap : Visual
+public partial class Wrap : Visual
 {
     public static VisualProperty OrientationProperty { get; } = VisualProperty.Add(typeof(Wrap), nameof(Orientation), VisualPropertyInvalidateModes.Measure, Orientation.Vertical);
     public static VisualProperty ItemWidthProperty { get; } = VisualProperty.Add(typeof(Wrap), nameof(ItemWidth), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);

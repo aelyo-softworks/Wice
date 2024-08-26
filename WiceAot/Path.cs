@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Path : SingleShape
+public partial class Path : SingleShape
 {
     public static VisualProperty GeometrySource2DProperty { get; } = VisualProperty.Add<IGeometrySource2D>(typeof(Path), nameof(GeometrySource2D), VisualPropertyInvalidateModes.Render, convert: SetGeo);
 

@@ -1,7 +1,7 @@
 ﻿namespace Wice;
 
 // note shape has no size by itself (Measure not override)
-public class Shape : Visual
+public partial class Shape : Visual
 {
     public static VisualProperty StrokeBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(Shape), nameof(StrokeBrush), VisualPropertyInvalidateModes.Render);
     public static VisualProperty StrokeThicknessProperty { get; } = VisualProperty.Add<float>(typeof(Shape), nameof(StrokeThickness), VisualPropertyInvalidateModes.Measure);
@@ -23,7 +23,7 @@ public class Shape : Visual
     public CompositionBrush? FillBrush { get => RenderBrush; set => RenderBrush = value; }
 
     [Category(CategoryRender)]
-    public CompositionBrush? StrokeBrush { get => (CompositionBrush)GetPropertyValue(StrokeBrushProperty); set => SetPropertyValue(StrokeBrushProperty, value); }
+    public CompositionBrush? StrokeBrush { get => (CompositionBrush?)GetPropertyValue(StrokeBrushProperty); set => SetPropertyValue(StrokeBrushProperty, value); }
 
     [Category(CategoryRender)]
     public float StrokeThickness { get => (float)GetPropertyValue(StrokeThicknessProperty)!; set => SetPropertyValue(StrokeThicknessProperty, value); }
@@ -229,7 +229,7 @@ public class Shape : Visual
         }
     }
 
-    protected virtual void SetStrokeBrush(CompositionBrush brush)
+    protected virtual void SetStrokeBrush(CompositionBrush? brush)
     {
         var shapeVisual = CompositionVisual;
         if (shapeVisual != null)
@@ -241,7 +241,7 @@ public class Shape : Visual
         }
     }
 
-    protected virtual void SetFillBrush(CompositionBrush brush)
+    protected virtual void SetFillBrush(CompositionBrush? brush)
     {
         var shapeVisual = CompositionVisual;
         if (shapeVisual != null)

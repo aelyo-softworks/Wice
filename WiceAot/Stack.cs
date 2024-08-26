@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Stack : Visual
+public partial class Stack : Visual
 {
     public static VisualProperty OrientationProperty { get; } = VisualProperty.Add(typeof(Stack), nameof(Orientation), VisualPropertyInvalidateModes.Measure, Orientation.Vertical);
     public static VisualProperty LinesSizeProperty { get; } = VisualProperty.Add(typeof(Stack), nameof(LinesSize), VisualPropertyInvalidateModes.Measure, 0f);

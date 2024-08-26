@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class DockSplitter : Visual
+public partial class DockSplitter : Visual
 {
     public static VisualProperty SizeProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(Size), VisualPropertyInvalidateModes.Measure, 5f);
 
@@ -22,7 +22,7 @@ public class DockSplitter : Visual
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         var parent = Parent;
-        var index = parent.Children.IndexOf(this);
+        var index = parent!.Children.IndexOf(this);
         DockType = index <= 0 ? DockType.Left : Dock.GetDockType(parent.Children[index - 1]);
         Orientation = Dock.GetOrientation(DockType);
         Cursor = Orientation == Orientation.Horizontal ? Cursor.SizeWE : Cursor.SizeNS;

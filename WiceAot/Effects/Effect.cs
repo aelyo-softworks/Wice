@@ -10,7 +10,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
 {
     private static readonly ConcurrentDictionary<Type, List<PropDef>> _properties = new();
     private readonly List<IGraphicsEffectSource?> _sources = [];
-    private readonly Lazy<IComObject<IPropertyValueStatics>> _statics = new Lazy<IComObject<IPropertyValueStatics>>(() => ComObject.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue")!);
+    private readonly Lazy<IComObject<IPropertyValueStatics>> _statics = new(() => ComObject.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue")!);
     private string? _name;
 
     public uint MaximumSourcesCount { get; } = sourcesCount;
@@ -177,7 +177,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         }
     }
 
-    private static List<PropDef> GetPropDefs(Type type)
+    private static List<PropDef> GetPropDefs([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type)
     {
         if (!_properties.TryGetValue(type, out var list))
         {

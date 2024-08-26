@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Rectangle : SingleShape
+public partial class Rectangle : SingleShape
 {
     public new CompositionRectangleGeometry? Geometry => (CompositionRectangleGeometry?)base.Geometry;
 
@@ -10,7 +10,7 @@ public class Rectangle : SingleShape
     {
         base.Render();
         var ar = ArrangedRect;
-        if (ar.IsValid)
+        if (ar.IsValid && Geometry != null)
         {
             Geometry.Size = (ar.Size - Margin).ToVector2();
         }

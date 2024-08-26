@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class DialogBox : Dialog
+public partial class DialogBox : Dialog
 {
     private readonly RoundedRectangle _rr;
 
@@ -10,7 +10,8 @@ public class DialogBox : Dialog
         {
             CornerRadius = new Vector2(Application.CurrentTheme.RoundedButtonCornerRadius)
         };
-        _rr.DoWhenAttachedToComposition(() => _rr.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor()));
+
+        _rr.DoWhenAttachedToComposition(() => _rr.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor()));
         Content.Children.Add(_rr);
 
         BackPanel = CreateBackPanel();
@@ -117,7 +118,7 @@ public class DialogBox : Dialog
 #if DEBUG
         button.Name = command + "Button";
 #endif
-        button.Text.Text = Functions.GetMessageBoxString(command);
+        button.Text.Text = Functions.GetMessageBoxString(command) ?? string.Empty;
         button.Command = command;
         button.AccessKeys.AddRange(accessKeys);
 

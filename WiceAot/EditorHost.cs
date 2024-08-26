@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class EditorHost : HeaderedContent
+public partial class EditorHost : HeaderedContent
 {
     public event EventHandler<EventArgs>? DialogOpened;
     public event EventHandler<EventArgs>? DialogClosed;
@@ -14,33 +14,36 @@ public class EditorHost : HeaderedContent
     {
         Header.IsSelectedChanged += (s, e) =>
         {
-            if (Dialog == null)
+            if (Window != null && Compositor != null)
             {
-                var dlg = new Dialog();
-#if DEBUG
-                dlg.Name = "dialog" + Name.CapitalizeFirst();
-#endif
-                Window.MouseButtonDown += OnWindowMouseButtonDown;
-
-                if (EditorMode != EditorMode.Modal)
+                if (Dialog == null)
                 {
-                    dlg.IsModal = false;
-                    dlg.ShowWindowOverlay = false;
-                }
+                    var dlg = new Dialog();
+#if DEBUG
+                    dlg.Name = "dialog" + Name.CapitalizeFirst();
+#endif
+                    Window.MouseButtonDown += OnWindowMouseButtonDown;
 
-                dlg.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightPink.ToColor());
-                dlg.PlacementMode = PlacementMode.OuterBottomRight;
-                dlg.PlacementTarget = this;
-                Window.Children.Add(dlg);
-                Dialog = dlg;
-                OnDialogOpened(this, EventArgs.Empty);
-            }
-            else
-            {
-                OnDialogClosed(this, EventArgs.Empty);
-                Window.MouseButtonDown -= OnWindowMouseButtonDown;
-                Dialog.Close();
-                Dialog = null;
+                    if (EditorMode != EditorMode.Modal)
+                    {
+                        dlg.IsModal = false;
+                        dlg.ShowWindowOverlay = false;
+                    }
+
+                    dlg.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightPink.ToColor());
+                    dlg.PlacementMode = PlacementMode.OuterBottomRight;
+                    dlg.PlacementTarget = this;
+                    Window.Children.Add(dlg);
+                    Dialog = dlg;
+                    OnDialogOpened(this, EventArgs.Empty);
+                }
+                else
+                {
+                    OnDialogClosed(this, EventArgs.Empty);
+                    Window.MouseButtonDown -= OnWindowMouseButtonDown;
+                    Dialog.Close();
+                    Dialog = null;
+                }
             }
         };
     }

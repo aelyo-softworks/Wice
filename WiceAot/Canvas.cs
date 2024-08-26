@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Canvas : Visual
+public partial class Canvas : Visual
 {
     public static VisualProperty MeasureToContentProperty { get; } = VisualProperty.Add(typeof(Window), nameof(Canvas), VisualPropertyInvalidateModes.Measure, DimensionOptions.Manual);
 

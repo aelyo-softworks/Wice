@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class Thumb : RoundedRectangle
+public partial class Thumb : RoundedRectangle
 {
     public event EventHandler<DragEventArgs>? DragStarted;
     public event EventHandler<DragEventArgs>? DragDelta;

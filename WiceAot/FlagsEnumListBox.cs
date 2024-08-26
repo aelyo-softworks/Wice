@@ -2,7 +2,7 @@
 
 namespace Wice;
 
-public class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
+public partial class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
 {
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(FlagsEnumListBox), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: EnumTypeCheck);
 
@@ -28,7 +28,7 @@ public class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
         return true;
     }
 
-    Type IBindList.Type { get; set; }
+    Type? IBindList.Type { get; set; }
     bool IBindList.NeedBind { get; set; }
 
     public override bool UpdateItemSelection(ItemVisual visual, bool? select)
@@ -54,14 +54,17 @@ public class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
                 var oldValue = Conversions.ChangeType<ulong>(Value);
                 if (oldValue != value)
                 {
-                    Value = Conversions.ChangeObjectType(value, ((IBindList)this).Type);
+                    Value = Conversions.ChangeObjectType(value, ((IBindList)this).Type!);
                     var ds = EnumDataSource.FromValue(Value);
-                    foreach (var bv in ds)
+                    if (ds != null)
                     {
-                        var item = Items.FirstOrDefault(i => bv.Equals(i.Data));
-                        if (item != null)
+                        foreach (var bv in ds)
                         {
-                            item.IsSelected = bv.IsSelected;
+                            var item = Items.FirstOrDefault(i => bv.Equals(i.Data));
+                            if (item != null)
+                            {
+                                item.IsSelected = bv.IsSelected;
+                            }
                         }
                     }
                 }
@@ -80,7 +83,7 @@ public class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
         var selected = SelectedItems.Select(i => i.Data as EnumBitValue).Where(i => i != null).ToArray();
         foreach (var bitValue in selected)
         {
-            value |= bitValue.UInt64BitValue;
+            value |= bitValue!.UInt64BitValue;
         }
         return value;
     }
@@ -98,7 +101,7 @@ public class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
             var ibl = (IBindList)this;
             if (ibl.NeedBind)
             {
-                DataSource = EnumDataSource.FromValue(Value);
+                DataSource = EnumDataSource.FromValue(Value!);
                 ibl.NeedBind = false;
             }
         }

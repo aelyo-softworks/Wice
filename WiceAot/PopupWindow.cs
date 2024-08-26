@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class PopupWindow : Window
+public partial class PopupWindow : Window
 {
     public static VisualProperty PlacementTargetProperty { get; } = VisualProperty.Add<Visual>(typeof(PopupWindow), nameof(PlacementTarget), VisualPropertyInvalidateModes.Measure);
     public static VisualProperty PlacementModeProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(PlacementMode), VisualPropertyInvalidateModes.Measure, PlacementMode.Relative);
@@ -88,7 +88,13 @@ public class PopupWindow : Window
             return;
 
         target.Arranged -= OnTargetArranged;
-        target.DoWhenDetachingFromComposition(() => target.Window.Moved -= OnTargetWindowMoved);
+        target.DoWhenDetachingFromComposition(() =>
+        {
+            if (target.Window != null)
+            {
+                target.Window.Moved -= OnTargetWindowMoved;
+            }
+        });
     }
 
     private void FollowTarget()
@@ -98,7 +104,13 @@ public class PopupWindow : Window
             return;
 
         target.Arranged += OnTargetArranged;
-        target.DoWhenDetachingFromComposition(() => target.Window.Moved += OnTargetWindowMoved);
+        target.DoWhenDetachingFromComposition(() =>
+        {
+            if (target.Window != null)
+            {
+                target.Window.Moved += OnTargetWindowMoved;
+            }
+        });
     }
 
     private void OnTargetArranged(object? sender, EventArgs e) => Invalidate(VisualPropertyInvalidateModes.Render, new InvalidateReason(GetType()));
@@ -154,7 +166,7 @@ public class PopupWindow : Window
             D2D_POINT_2F leftTop;
             D2D_POINT_2F rightBottom;
             var tr = target.AbsoluteRenderRect;
-            if (parameters.UseScreenCoordinates)
+            if (parameters.UseScreenCoordinates && target.Window != null)
             {
                 leftTop = target.Window.ClientToScreen(tr.LeftTop.ToPOINT()).ToD2D_POINT_2F();
                 rightBottom = target.Window.ClientToScreen(tr.RightBottom.ToPOINT()).ToD2D_POINT_2F();

@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class RoundedRectangle : SingleShape
+public partial class RoundedRectangle : SingleShape
 {
     public static VisualProperty CornerRadiusProperty { get; } = VisualProperty.Add(typeof(RoundedRectangle), nameof(CornerRadius), VisualPropertyInvalidateModes.Render, new Vector2());
 

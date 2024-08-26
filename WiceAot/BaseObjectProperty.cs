@@ -173,6 +173,7 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     public int Id { get; private set; }
     public string Name { get; }
     public Type DeclaringType { get; } // is a BaseObject
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
     public Type Type { get; }
     public ConvertDelegate? Convert { get; }
     public ChangedDelegate? Changed { get; }

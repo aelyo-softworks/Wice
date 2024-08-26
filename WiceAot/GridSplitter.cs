@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class GridSplitter : Visual
+public partial class GridSplitter : Visual
 {
     public new Grid? Parent => base.Parent as Grid;
     public Orientation? Orientation { get; private set; }
@@ -132,28 +132,31 @@ public class GridSplitter : Visual
             }
 
             IEnumerable<GridDimension> dimensions;
-            if (orientation == Wice.Orientation.Horizontal)
+            if (Parent != null && Dimension != null)
             {
-                dimensions = Parent.Rows;
-            }
-            else
-            {
-                dimensions = Parent.Columns;
-            }
+                if (orientation == Wice.Orientation.Horizontal)
+                {
+                    dimensions = Parent.Rows;
+                }
+                else
+                {
+                    dimensions = Parent.Columns;
+                }
 
-            foreach (var dimension in dimensions)
-            {
-                if (dimension == Dimension.Previous)
+                foreach (var dimension in dimensions)
                 {
-                    dimension.Stars = newPrevSize;
-                }
-                else if (dimension == Dimension.Next)
-                {
-                    dimension.Stars = newNextSize;
-                }
-                else if (dimension.HasStarSize)
-                {
-                    dimension.Stars = dimension.FinalSize.Value;
+                    if (dimension == Dimension.Previous)
+                    {
+                        dimension.Stars = newPrevSize;
+                    }
+                    else if (dimension == Dimension.Next)
+                    {
+                        dimension.Stars = newNextSize;
+                    }
+                    else if (dimension.HasStarSize)
+                    {
+                        dimension.Stars = dimension.FinalSize!.Value;
+                    }
                 }
             }
         }
@@ -173,7 +176,7 @@ public class GridSplitter : Visual
         if (e.Key == VIRTUAL_KEY.VK_ESCAPE)
         {
             var state = (SplitDragState?)CancelDragMove(e);
-            if (state != null)
+            if (state != null && Dimension != null)
             {
                 var prev = Dimension.Previous;
                 if (prev != null)

@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class SymbolHeader : Header
+public partial class SymbolHeader : Header
 {
     public new TextBox Icon => (TextBox)base.Icon;
 

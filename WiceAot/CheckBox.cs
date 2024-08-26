@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public class CheckBox : StateButton
+public partial class CheckBox : StateButton
 {
     public CheckBox()
     {
@@ -29,7 +29,7 @@ public class CheckBox : StateButton
 
         border.AttachedToComposition += (s, e) =>
         {
-            border.RenderBrush = border.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
+            border.RenderBrush = border.Compositor!.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
             path.StrokeBrush = border.Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor.ToColor());
         };
 
@@ -49,7 +49,7 @@ public class CheckBox : StateButton
 
         rect.AttachedToComposition += (s, e) =>
         {
-            rect.StrokeBrush = rect.Compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor());
+            rect.StrokeBrush = rect.Compositor!.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor());
         };
 #if DEBUG
         rect.Name = nameof(CheckBox) + ".false";
