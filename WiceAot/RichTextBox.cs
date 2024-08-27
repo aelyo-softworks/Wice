@@ -9,13 +9,17 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
     public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
     {
-        Generator = generator;
-        _host = new TextHost(generator)
+        if (generator == TextServicesGenerator.Default)
         {
-            TextColor = new COLORREF()
-        };
+            generator = GetDefaultTextServicesGenerator();
+        }
+
+        Generator = generator;
+        _host = new TextHost(generator) { TextColor = new COLORREF() };
         BackgroundColor = D3DCOLORVALUE.Transparent;
     }
+
+    protected TextHost? Host => _host;
 
     [Category(CategoryLive)]
     public IComObject<ITextDocument2>? Document => _host?.Document;
@@ -146,6 +150,29 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
 
         var size = host.GetNaturalSize(TXTNATURALSIZE.TXTNS_FITTOCONTENT, constraint).ToD2D_SIZE_F();
+        D2D_SIZE_U dpi;
+        if (Window != null && Window.Handle != 0)
+        {
+            dpi = DpiUtilities.GetDpiForWindow(Window.Handle);
+        }
+        else
+        {
+            dpi = DpiUtilities.GetDpiForDesktop();
+        }
+
+        if (dpi.width != 96)
+        {
+            size.width = size.width * 96 / dpi.width;
+        }
+
+        if (dpi.height != 96)
+        {
+            size.height = size.height * 96 / dpi.height;
+        }
+
+        var ratio = GetMonitorDpiRatioToPrimary(Window?.Monitor);
+        size.width = size.width * ratio.Monitor / ratio.Primary;
+        size.height = size.height * ratio.Monitor / ratio.Primary;
 
         if (leftPadding)
         {
@@ -243,8 +270,35 @@ public partial class RichTextBox : RenderVisual, IDisposable
             rc.Height = (int)(rc.Height * dpi.height / 96);
         }
 
+        if (dpi.width != 96)
+        {
+            rc.Width = (int)(rc.Width * dpi.width * dpi.width / 96 / 96);
+        }
+
+        if (dpi.height != 96)
+        {
+            rc.Height = (int)(rc.Height * dpi.height * dpi.height / 96 / 96);
+        }
+
+        var ratio = GetMonitorDpiRatioToPrimary(Window.Monitor);
+        rc.Width = rc.Width * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor;
+        rc.Height = rc.Height * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor;
+
         context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_PIXELS);
         host.Draw(context.DeviceContext.Object, rc);
+    }
+
+    // seems like richedit is relative to primary monitor's dpi
+    private static (int Primary, int Monitor) GetMonitorDpiRatioToPrimary(DirectN.Extensions.Utilities.Monitor? monitor)
+    {
+        if (monitor == null || monitor.IsPrimary || monitor.EffectiveDpi.width == 0)
+            return (1, 1);
+
+        var primary = DirectN.Extensions.Utilities.Monitor.Primary;
+        if (primary == null || primary.EffectiveDpi.width == 0)
+            return (1, 1);
+
+        return ((int)primary.EffectiveDpi.width, (int)monitor.EffectiveDpi.width);
     }
 
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
@@ -290,4 +344,13 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
     ~RichTextBox() { Dispose(disposing: false); }
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
+
+    // allow command line change
+    public static TextServicesGenerator GetDefaultTextServicesGenerator() => CommandLine.Current.GetArgument(nameof(TextServicesGenerator), TextServicesGenerator.Default);
+
+    public static string GetDefaultTextServicesGeneratorVersion()
+    {
+        using var rtb = new RichTextBox();
+        return rtb.GeneratorVersion;
+    }
 }

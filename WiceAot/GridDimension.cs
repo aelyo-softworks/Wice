@@ -9,7 +9,7 @@ public abstract class GridDimension : BaseObject
     public static BaseObjectProperty SizeProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(Size), 0f, convert: ValidateSize); // TODO: float.nan?
     public static BaseObjectProperty MinSizeProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(MinSize), 0f, convert: ValidateMinMaxSize);
     public static BaseObjectProperty MaxSizeProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(MaxSize), float.MaxValue, convert: ValidateMinMaxSize);
-    public static BaseObjectProperty DefaultAlignmentProperty { get; } = BaseObjectProperty.Add<Alignment?>(typeof(GridDimension), nameof(DefaultAlignment));
+    public static BaseObjectProperty DefaultAlignmentProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(DefaultAlignment), typeof(Alignment?), null, null, null, null);
 
     private static object? ValidateStars(BaseObject obj, object? value)
     {

@@ -61,15 +61,15 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
     public event PropertyChangedEventHandler? PropertyChanged;
     public event PropertyChangingEventHandler? PropertyChanging;
 
-    private string _name;
-    private Lazy<string> _fullName;
+    private string? _name;
+    private Lazy<string?> _fullName;
 
     protected BaseObject()
     {
 #if DEBUG
         _name = GetType().Name;
 #endif
-        _fullName = new Lazy<string>(GetFullName, true);
+        _fullName = new Lazy<string?>(GetFullName, true);
         Values = new ConcurrentDictionary<int, object?>();
         Id = Interlocked.Increment(ref _id);
         _objectsById.AddOrUpdate(Id, this, (k, o) => this);
@@ -79,10 +79,10 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
     public int Id { get; }
 
     [Browsable(false)]
-    public string FullName => _fullName.Value;
+    public string? FullName => _fullName.Value;
 
     [Category(CategoryBase)]
-    public virtual string Name
+    public virtual string? Name
     {
         get => _name;
         set
@@ -91,12 +91,12 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
                 return;
 
             _name = value;
-            _fullName = new Lazy<string>(GetFullName, true);
+            _fullName = new Lazy<string?>(GetFullName, true);
             OnPropertyChanged();
         }
     }
 
-    protected virtual string GetFullName() => Name;
+    protected virtual string? GetFullName() => Name;
 
     protected ConcurrentDictionary<int, object?> Values { get; }
     protected virtual bool RaiseOnPropertyChanging { get; set; }

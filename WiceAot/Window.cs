@@ -59,6 +59,9 @@ public partial class Window : Canvas, ITitleBarParent
     public event EventHandler? Activated;
     public event EventHandler? Deactivated;
     public event EventHandler? Destroyed;
+    public event EventHandler<DpiChangedEventArgs>? DpiChanged;
+    public event EventHandler? DpiChangedBeforeParent;
+    public event EventHandler? DpiChangedAfterParent;
     public event EventHandler<ClosingEventArgs>? Closing;
 
     public Window()
@@ -127,6 +130,9 @@ public partial class Window : Canvas, ITitleBarParent
     public bool EnableInvalidationStackDiagnostics { get; set; }
 #endif
 
+    [Category(CategoryLayout)]
+    public uint Dpi => Native?.Dpi ?? 96;
+
     [Category(CategoryBehavior)]
     public bool IsBackground { get; set; } // true => doesn't prevent to quit
 
@@ -141,6 +147,9 @@ public partial class Window : Canvas, ITitleBarParent
 
     [Browsable(false)]
     public HMONITOR MonitorHandle { get; private set; }
+
+    [Browsable(false)]
+    public DirectN.Extensions.Utilities.Monitor? Monitor => MonitorHandle != IntPtr.Zero ? new DirectN.Extensions.Utilities.Monitor(MonitorHandle) : null;
 
     [Category(CategoryLayout)]
     public RECT WindowRect => Native.WindowRect;
@@ -709,6 +718,9 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual void OnMoved(object? sender, EventArgs e) => Moved?.Invoke(sender, e);
     protected virtual void OnMonitorChanged(object? sender, EventArgs e) => MonitorChanged?.Invoke(sender, e);
     protected virtual void OnHandleCreated(object? sender, EventArgs e) => HandleCreated?.Invoke(sender, e);
+    protected virtual void OnDpiChanged(object sender, DpiChangedEventArgs e) => DpiChanged?.Invoke(sender, e);
+    protected virtual void OnDpiChangedAfterParent(object sender, EventArgs e) => DpiChangedAfterParent?.Invoke(sender, e);
+    protected virtual void OnDpiChangedBeforeParent(object sender, EventArgs e) => DpiChangedBeforeParent?.Invoke(sender, e);
     protected virtual void OnClosing(object? sender, ClosingEventArgs e) => Closing?.Invoke(sender, e);
 
     public virtual bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOW) => Native.Show(command);
@@ -1705,9 +1717,10 @@ public partial class Window : Canvas, ITitleBarParent
             return;
 
         MonitorHandle = monitor;
+        MainTitleBar?.Update();
         OnMonitorChanged(this, EventArgs.Empty);
         OnPropertyChanged(nameof(MonitorHandle));
-        Application.Trace("OnMonitorChanged");
+        //Application.Trace("OnMonitorChanged");
     }
 
     protected virtual ToolTip CreateToolTip() => new();
@@ -2632,7 +2645,7 @@ public partial class Window : Canvas, ITitleBarParent
         return (Window?)handle.Target;
     }
 
-    private static LRESULT CompositionWindowProc(Window win, HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam, out bool callDef)
+    private static LRESULT CompositionWindowProc(Window? win, HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam, out bool callDef)
     {
         RECT rc;
         callDef = !Functions.DwmDefWindowProc(hwnd, msg, wParam, lParam, out var ret);
@@ -2648,11 +2661,11 @@ public partial class Window : Canvas, ITitleBarParent
 
             // note: you can be here just because the window as WS_VISIBLE and is created (even with WS_EX_NOACTIVATE)
             case MessageDecoder.WM_ACTIVATE:
-                win.OnWmActivate(hwnd, wParam.Value != 0);
+                win?.OnWmActivate(hwnd, wParam.Value != 0);
                 break;
 
             case MessageDecoder.WM_NCCALCSIZE:
-                if (win.WindowsFrameMode != WindowsFrameMode.Standard)
+                if (win != null && win.WindowsFrameMode != WindowsFrameMode.Standard)
                 {
                     if (wParam.Value.ToUInt32() != 0)
                     {
@@ -2673,11 +2686,11 @@ public partial class Window : Canvas, ITitleBarParent
                 break;
 
             case MessageDecoder.WM_NCPAINT:
-                win.OnWmNcPaint();
+                win?.OnWmNcPaint();
                 break;
 
             case MessageDecoder.WM_NCMOUSEMOVE: // REVIEW: handle WM_NCMOUSELEAVE?
-                if (win.WindowsFrameMode != WindowsFrameMode.Standard)
+                if (win != null && win.WindowsFrameMode != WindowsFrameMode.Standard)
                 {
                     var titleBar = win.MainTitleBar;
                     if (titleBar != null)
@@ -2723,6 +2736,9 @@ public partial class Window : Canvas, ITitleBarParent
                 break;
 
             case MessageDecoder.WM_NCHITTEST:
+                if (win == null)
+                    break;
+
                 switch (win.WindowsFrameMode)
                 {
                     case WindowsFrameMode.Merged:
@@ -2798,13 +2814,13 @@ public partial class Window : Canvas, ITitleBarParent
                                 var titleBar = win.MainTitleBar;
                                 if (titleBar != null && titleBar.AbsoluteRenderBounds.Contains(cli))
                                 {
-                                    if (titleBar.CloseButton.AbsoluteRenderBounds.Contains(cli))
+                                    if (titleBar.CloseButton?.AbsoluteRenderBounds.Contains(cli) == true)
                                         return HT.HTCLOSE;
 
-                                    if (titleBar.MaxButton.AbsoluteRenderBounds.Contains(cli))
+                                    if (titleBar.MaxButton?.AbsoluteRenderBounds.Contains(cli) == true)
                                         return HT.HTMAXBUTTON;
 
-                                    if (titleBar.MinButton.AbsoluteRenderBounds.Contains(cli))
+                                    if (titleBar.MinButton?.AbsoluteRenderBounds.Contains(cli) == true)
                                         return HT.HTMINBUTTON;
 
                                     return HT.HTCAPTION;
@@ -2832,7 +2848,7 @@ public partial class Window : Canvas, ITitleBarParent
             msg != MessageDecoder.WM_PAINT && msg != MessageDecoder.WM_NCPAINT && msg != MessageDecoder.WM_GETICON &&
             msg != MessageDecoder.WM_WINDOWPOSCHANGED && msg != MessageDecoder.WM_WINDOWPOSCHANGING)
         {
-            Application.Trace("msg: " + MessageDecoder.Decode(hwnd, msg, wParam, lParam));
+            //Application.Trace("msg: " + MessageDecoder.Decode(hwnd, msg, wParam, lParam));
         }
 
         //var str = MessageDecoder.MsgToString(msg);
@@ -2848,11 +2864,11 @@ public partial class Window : Canvas, ITitleBarParent
             var localRet = win.WindowProc(msg, wParam, lParam, out var handled);
             if (handled)
                 return localRet;
-
-            var ret = CompositionWindowProc(win, hwnd, msg, wParam, lParam, out var callDef);
-            if (!callDef)
-                return ret;
         }
+
+        var ret = CompositionWindowProc(win, hwnd, msg, wParam, lParam, out var callDef);
+        if (!callDef)
+            return ret;
 
         POINT pt;
         Orientation orientation;
@@ -2891,7 +2907,7 @@ public partial class Window : Canvas, ITitleBarParent
                             break;
                     }
                 }
-                return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_LBUTTONDOWN:
             case MessageDecoder.WM_LBUTTONUP:
@@ -3066,7 +3082,7 @@ public partial class Window : Canvas, ITitleBarParent
                 ht = (HT)lParam.Value.SignedLOWORD();
                 ma = win.OnMouseActivate(new HWND { Value = (nint)wParam.Value }, lParam.Value.HIWORD(), ht);
                 if (ma == MA.MA_DONT_HANDLE)
-                    return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                    return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
                 return new LRESULT { Value = (int)ma };
 
@@ -3094,7 +3110,7 @@ public partial class Window : Canvas, ITitleBarParent
                             break;
 
                         default:
-                            return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                            return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
                     }
                 }
@@ -3177,7 +3193,7 @@ public partial class Window : Canvas, ITitleBarParent
                     onMouseLeave(false);
                     break;
                 }
-                return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_MOUSELEAVE:
                 if (win == null)
@@ -3211,7 +3227,7 @@ public partial class Window : Canvas, ITitleBarParent
                     // https://stackoverflow.com/a/51037982/403671
                     Functions.KillTimer(hwnd, MOUSE_TRACK_TIMER_ID);
                 }
-                return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_POINTERENTER:
                 if (win == null)
@@ -3252,6 +3268,28 @@ public partial class Window : Canvas, ITitleBarParent
                 win.HasFocus = false;
                 break;
 
+            case MessageDecoder.WM_DPICHANGED:
+                if (win == null)
+                    break;
+
+                var newDpi = new D2D_SIZE_U(wParam.Value.LOWORD(), wParam.Value.HIWORD());
+                var rc = Marshal.PtrToStructure<RECT>(lParam);
+                var dpic = new DpiChangedEventArgs(newDpi, rc);
+                win.OnDpiChanged(win, dpic);
+                if (dpic.Handled)
+                    break;
+
+                win.Invalidate(VisualPropertyInvalidateModes.Measure, new InvalidateReason(win.GetType()));
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
+
+            case MessageDecoder.WM_DPICHANGED_AFTERPARENT:
+                win?.OnDpiChangedAfterParent(win, EventArgs.Empty);
+                break;
+
+            case MessageDecoder.WM_DPICHANGED_BEFOREPARENT:
+                win?.OnDpiChangedBeforeParent(win, EventArgs.Empty);
+                break;
+
             case WM_SETCARETPOS:
                 if (win == null)
                     break;
@@ -3264,7 +3302,7 @@ public partial class Window : Canvas, ITitleBarParent
                     break;
 
                 win.MainTitleBar?.Update();
-                return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_SIZE:
                 var sized = wParam.Value.ToUInt32();
@@ -3291,7 +3329,7 @@ public partial class Window : Canvas, ITitleBarParent
                         }
                     }
                 }
-                return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_CHAR:
             case MessageDecoder.WM_SYSCHAR:
@@ -3303,7 +3341,7 @@ public partial class Window : Canvas, ITitleBarParent
                 if (e.Handled)
                     break;
 
-                return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_KEYDOWN:
             case MessageDecoder.WM_KEYUP:
@@ -3317,7 +3355,7 @@ public partial class Window : Canvas, ITitleBarParent
                 if (e2.Handled)
                     break;
 
-                return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_EXITSIZEMOVE:
                 if (win == null)
@@ -3342,7 +3380,7 @@ public partial class Window : Canvas, ITitleBarParent
                 if (ec.Cancel)
                     break;
 
-                return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_MOVE:
                 if (win == null)
@@ -3350,7 +3388,7 @@ public partial class Window : Canvas, ITitleBarParent
 
                 win.OnMoved(win, EventArgs.Empty);
                 win.OnPropertyChanged(nameof(WindowRect));
-                return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_PAINT:
                 NativeWindow.OnPaint(hwnd);
@@ -3371,7 +3409,7 @@ public partial class Window : Canvas, ITitleBarParent
                 break;
 
             default:
-                return NativeWindow.DefWindowdProc(hwnd, msg, wParam, lParam);
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
         }
         return LRESULT.Null;
     }

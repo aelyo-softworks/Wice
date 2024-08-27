@@ -4,7 +4,7 @@ internal partial class TestWindow : Window
 {
     public TestWindow()
     {
-        WindowsFrameMode = WindowsFrameMode.Merged;
+        //WindowsFrameMode = WindowsFrameMode.Merged;
         Style |= WINDOW_STYLE.WS_THICKFRAME | WINDOW_STYLE.WS_CAPTION | WINDOW_STYLE.WS_SYSMENU | WINDOW_STYLE.WS_MAXIMIZEBOX | WINDOW_STYLE.WS_MINIMIZEBOX;
         //SizeToContent = DimensionOptions.WidthAndHeight;
         //Native.EnableBlurBehind();

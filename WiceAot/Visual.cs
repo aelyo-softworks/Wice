@@ -234,7 +234,7 @@ public partial class Visual : BaseObject
         }
     }
 
-    public override string Name
+    public override string? Name
     {
         get => base.Name;
         set
@@ -1600,10 +1600,10 @@ public partial class Visual : BaseObject
     }
 
 #if DEBUG
-    public new string FullName => GetFullName();
+    public new string? FullName => GetFullName();
 #endif
 
-    protected override string GetFullName()
+    protected override string? GetFullName()
     {
         var parent = Parent;
         if (parent == null)

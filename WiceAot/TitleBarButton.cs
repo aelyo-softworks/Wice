@@ -2,6 +2,8 @@
 
 public partial class TitleBarButton : ButtonBase
 {
+    private const float _strokeThickness = 1;
+
     private TitleBarButtonType _buttonType;
     private GeometrySource2D? _lastGeometrySource2D;
 
@@ -15,10 +17,6 @@ public partial class TitleBarButton : ButtonBase
         Path.Name = nameof(Path);
 #endif
         Children.Add(Path);
-
-        // this is a starting point so it's not zero but ultimate size should be computed by TitleBar
-        Path.Width = 10;
-        Path.Height = 10;
     }
 
     [Category(CategoryLayout)]
@@ -40,11 +38,26 @@ public partial class TitleBarButton : ButtonBase
 
     protected virtual Path CreatePath() => new();
 
+    protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
+    {
+        var window = Window;
+        if (window != null)
+        {
+            var dpiSize = GetDpiAdjustedCaptionButtonSize(window);
+            var height = dpiSize.cy / 3;
+            Path.Height = height;
+            Path.Width = height;
+        }
+
+        var size = base.MeasureCore(constraint);
+        return size;
+    }
+
     protected override void OnArranged(object? sender, EventArgs e)
     {
         base.OnArranged(sender, e);
-        var size = (Path.ArrangedRect - Path.Margin).Size;
-        var geoSize = size.height;
+        var size = Path.ArrangedRect;
+        var geoSize = size.Height;
         var geoSource = Application.Current.ResourceManager.GetTitleBarButtonGeometrySource(ButtonType, geoSize);
         if (geoSource.Equals(_lastGeometrySource2D))
             return;
@@ -58,10 +71,45 @@ public partial class TitleBarButton : ButtonBase
         base.OnAttachedToComposition(sender, e);
         if (Path.Shape != null)
         {
-            Path.Shape.StrokeThickness = 1f;
+            Path.Shape.StrokeThickness = _strokeThickness;
         }
 
         Path.StrokeBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Black.ToColor());
     }
-}
 
+    // this is dpi-adjusted but only when called *after* some message like SHOWWINDOW or NCPAINT (not sure)
+    internal unsafe static SIZE GetDpiAdjustedCaptionButtonSize(Window window)
+    {
+        var bounds = new RECT();
+        var size = (uint)sizeof(RECT);
+        Functions.DwmGetWindowAttribute(window.Handle, (uint)DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, (nint)(&bounds), size);
+        var height = bounds.Height;
+        height = AdjustForMonitorDpi(window, height, true);
+        if (_strokeThickness % 2 == 1 && height % 2 == 1)
+        {
+            height++;
+        }
+
+        // we have 3 buttons. not sure this is always ok...
+        var width = (bounds.Width - 1) / 3;
+        width = AdjustForMonitorDpi(window, width, true);
+        return new SIZE(width, height);
+    }
+
+    private static int AdjustForMonitorDpi(Window window, int value, bool reduce = false)
+    {
+        var dpi = window.Monitor?.EffectiveDpi.width;
+        if (!dpi.HasValue)
+        {
+            dpi = (uint)window.Dpi;
+        }
+
+        if (dpi == 96)
+            return value;
+
+        if (reduce)
+            return (int)(value * 96 / dpi.Value);
+
+        return (int)(value * dpi.Value / 96);
+    }
+}

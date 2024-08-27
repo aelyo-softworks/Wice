@@ -45,12 +45,29 @@ public partial class DialogBox : Dialog
 #if DEBUG
         TitleBar.Name = "titleBar";
 #endif
-        TitleBar.Title.FontSize = Application.CurrentTheme.DefaultFontSize;
+
         var margin = Application.CurrentTheme.ButtonMargin;
-        TitleBar.Title.Margin = D2D_RECT_F.Thickness(margin, 0, margin, 0);
-        TitleBar.MaxButton.IsVisible = false;
-        TitleBar.MinButton.IsVisible = false;
-        TitleBar.CloseButton.Click += (s2, e2) => { Result = false; if (TryClose()) Close(); };
+        if (TitleBar.Title != null)
+        {
+            TitleBar.Title.FontSize = Application.CurrentTheme.DefaultFontSize;
+            TitleBar.Title.Margin = D2D_RECT_F.Thickness(margin, 0, margin, 0);
+        }
+
+        if (TitleBar.MaxButton != null)
+        {
+            TitleBar.MaxButton.IsVisible = false;
+        }
+
+        if (TitleBar.MinButton != null)
+        {
+            TitleBar.MinButton.IsVisible = false;
+        }
+
+        if (TitleBar.CloseButton is IClickable clickable)
+        {
+            clickable.Click += (s2, e2) => { Result = false; if (TryClose()) Close(); };
+        }
+
         BackPanel.Children.Add(TitleBar);
 
         DialogContent = CreateDialogContent();
@@ -74,7 +91,18 @@ public partial class DialogBox : Dialog
     }
 
     [Category(CategoryBehavior)]
-    public string Title { get => TitleBar.Title.Text; set => TitleBar.Title.Text = value; }
+    public string Title
+    {
+        get => TitleBar.Title?.Text ?? string.Empty;
+        set
+        {
+            var title = TitleBar.Title;
+            if (title != null)
+            {
+                title.Text = value;
+            }
+        }
+    }
 
     [Category(CategoryBehavior)]
     public IEnumerable<Button> Buttons => ButtonsPanel?.Children.OfType<Button>() ?? [];

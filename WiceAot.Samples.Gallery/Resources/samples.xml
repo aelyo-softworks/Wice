@@ -1,0 +1,1477 @@
+<samples>
+  <sample namespace="Samples.Collections.EnumListBox.EnumListBoxSample">void Layout(Visual parent)
+{
+    var lb = new EnumListBox();
+    lb.Value = States.State1;
+    lb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+    parent.Children.Add(lb);
+
+    // States is defined like this
+    //enum States
+    //{
+    //    State1,
+    //    State2,
+    //    State3,
+    //    State4,
+    //    State5,
+    //}
+}</sample>
+  <sample namespace="Samples.Collections.CheckBoxList.CheckBoxListSample">void Layout(Visual parent)
+{
+    var lb = new CheckBoxList();
+    lb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+    parent.Children.Add(lb);
+
+    // set the list box's data source
+    lb.DataSource = new[] { "hello", "happy", "world" };
+}</sample>
+  <sample namespace="Samples.Collections.FlagsEnumListBox.FlagsEnumListBoxSample">void Layout(Visual parent)
+{
+    var lb = new FlagsEnumListBox();
+
+    // use existing multi-valued enum
+    lb.Value = SampleDaysOfWeek.WeekDays;
+
+    // WeekDays is a combination of other flags so if you select it, it will select other corresponding values as well.
+    // Also NoDay (0) is not displayed since it correspond to no selection.
+
+    lb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+    parent.Children.Add(lb);
+
+    // SampleDaysOfWeek is defined like this
+    //[Flags]
+    //public enum SampleDaysOfWeek
+    //{
+    //    NoDay = 0,
+    //    Monday = 1,
+    //    Tuesday = 2,
+    //    Wednesday = 4,
+    //    Thursday = 8,
+    //    Friday = 16,
+    //    Saturday = 32,
+    //    Sunday = 64,
+    //    WeekDays = Monday | Tuesday | Wednesday | Thursday | Friday
+    //}
+}</sample>
+  <sample namespace="Samples.Collections.ListBox.AdvancedListBoxSample">void Layout(Visual parent)
+{
+    var lb = new ListBox();
+    lb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+    parent.Children.Add(lb);
+
+    // set the list box's data source
+    lb.DataSource = new[] { "hello", "happy", "world" };
+}</sample>
+  <sample namespace="Samples.Collections.ListBox.ListBoxSample">void Layout(Visual parent)
+{
+    var lb = new ListBox();
+    lb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+    parent.Children.Add(lb);
+
+    lb.DataBinder = new DataBinder
+    {
+        // called when an item visual (container) is being created
+        DataItemVisualCreator = (ctx) =&gt;
+        {
+            var tb = new TextBox();
+            tb.Height = 20;
+            ctx.DataVisual = tb;
+        },
+        // called when an item visual (container) is being bound to the data
+        DataItemVisualBinder = (ctx) =&gt;
+        {
+            var tb = (TextBox)ctx.DataVisual;
+            var data = (Tuple&lt;string, string&gt;)ctx.Data;
+            tb.Text = data.Item1;
+            tb.SetSolidColor(D3DCOLORVALUE.FromName(data.Item1));
+            tb.BackgroundColor = D3DCOLORVALUE.FromName(data.Item2);
+        }
+    };
+
+    // set the list box's data source
+    lb.DataSource = new[] {
+        new Tuple&lt;string, string&gt;("blue", "white"),
+        new Tuple&lt;string, string&gt;("white", "black"),
+        new Tuple&lt;string, string&gt;("red", "white")
+    };
+}</sample>
+  <sample namespace="Samples.Collections.PropertyGrid.PropertyGridSample">void Layout(Visual parent)
+{
+    // wrap the property grid in a scroll viewer
+    var sv = new ScrollViewer();
+    sv.Height = 500;
+    sv.Width = 500;
+    parent.Children.Add(sv);
+
+    var pg = new PropertyGrid.PropertyGrid();
+    pg.CellMargin = 5;
+    sv.Viewer.Child = pg;
+
+    // use a custom complex object for demonstration
+    var cus = new SampleCustomer();
+    pg.SelectedObject = cus;
+
+}</sample>
+  <sample namespace="Samples.Effects.Contrast.ContrastSample">void Layout(Visual parent)
+{
+    var visual = new Visual();
+    parent.Children.Add(visual);
+
+    var cb = new CheckBox();
+    cb.Margin = D2D_RECT_F.Thickness(5);
+    parent.Children.Add(cb);
+
+    var tb = new TextBox();
+    tb.HorizontalAlignment = Alignment.Center;
+    tb.Text = "Toggle Effect";
+    parent.Children.Add(tb);
+
+    // use the sepia effect
+    var fx = new ContrastEffect();
+    fx.ClampInput = true;
+    fx.Contrast = 1;
+    fx.Source = new CompositionEffectSourceParameter("Input").ComCast&lt;IGraphicsEffectSource&gt;();
+
+    // build an effect graph
+    var fac = Compositor.CreateEffectFactory(fx.GetIGraphicsEffect());
+    var effect = fac.CreateBrush();
+
+    // use image as the source
+    var img = getEmbeddedImageAsBrush("rainier.jpg");
+    effect.SetSourceParameter("Input", img);
+
+    // set the visual's effect
+    visual.RenderBrush = effect;
+
+    cb.Click += (s, e) =&gt;
+    {
+        if (visual.RenderBrush == effect)
+        {
+            visual.RenderBrush = img;
+        }
+        else
+        {
+            visual.RenderBrush = effect;
+        }
+    };
+
+    // get an image as composition brush
+    CompositionSurfaceBrush getEmbeddedImageAsBrush(string name)
+    {
+        using (var im = ResourcesUtilities.GetWicBitmapSource(Assembly.GetExecutingAssembly(), n =&gt; n.EndsWith(name)))
+        {
+            // use image size to determine visual size
+            var size = im.GetSizeF();
+            visual.Width = 300;
+            visual.Height = visual.Width * size.height / size.width;
+
+            // create a drawing (D2D1) surface
+            var surface = Window.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            using (var dc = surface.BeginDraw())
+            {
+                // we don't need to clear the surface as we redraw it completely
+                using (var bmp = dc.CreateBitmapFromWicBitmap(im))
+                {
+                    dc.DrawBitmap(bmp);
+                }
+                surface.EndDraw();
+
+                // create a composition brush from the D2D1 surface
+                return Compositor.CreateSurfaceBrush(surface);
+            }
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Effects.Grayscale.GrayscaleSample">void Layout(Visual parent)
+{
+    var visual = new Visual();
+    parent.Children.Add(visual);
+
+    // use the sepia effect
+    var fx = new GrayscaleEffect();
+    fx.Source = new CompositionEffectSourceParameter("Input").ComCast&lt;IGraphicsEffectSource&gt;();
+
+    // build an effect graph
+    var fac = Compositor.CreateEffectFactory(fx.GetIGraphicsEffect());
+    var effect = fac.CreateBrush();
+
+    // use image as the source
+    var img = getEmbeddedImageAsBrush("rainier.jpg");
+    effect.SetSourceParameter("Input", img);
+
+    // set the visual's effect
+    visual.RenderBrush = effect;
+
+    // get an image as composition brush
+    CompositionSurfaceBrush getEmbeddedImageAsBrush(string name)
+    {
+        using (var im = ResourcesUtilities.GetWicBitmapSource(Assembly.GetExecutingAssembly(), n =&gt; n.EndsWith(name)))
+        {
+            // use image size to determine visual size
+            var size = im.GetSizeF();
+            visual.Width = 300;
+            visual.Height = visual.Width * size.height / size.width;
+
+            // create a drawing (D2D1) surface
+            var surface = Window.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            using (var dc = surface.BeginDraw())
+            {
+                // we don't need to clear the surface as we redraw it completely
+                using (var bmp = dc.CreateBitmapFromWicBitmap(im))
+                {
+                    dc.DrawBitmap(bmp);
+                }
+                surface.EndDraw();
+
+                // create a composition brush from the D2D1 surface
+                return Compositor.CreateSurfaceBrush(surface);
+            }
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Effects.TemperatureTint.TemperatureTintSample">void Layout(Visual parent)
+{
+    var visual = new Visual();
+    parent.Children.Add(visual);
+
+    // use the sepia effect
+    var fx = new TemperatureTintEffect();
+    fx.Temperature = 0.5f;
+    fx.Tint = 0.5f;
+    fx.Source = new CompositionEffectSourceParameter("Input").ComCast&lt;IGraphicsEffectSource&gt;();
+
+    // build an effect graph
+    var fac = Compositor.CreateEffectFactory(fx.GetIGraphicsEffect());
+    var effect = fac.CreateBrush();
+
+    // use image as the source
+    var img = getEmbeddedImageAsBrush("rainier.jpg");
+    effect.SetSourceParameter("Input", img);
+
+    // set the visual's effect
+    visual.RenderBrush = effect;
+
+    // get an image as composition brush
+    CompositionSurfaceBrush getEmbeddedImageAsBrush(string name)
+    {
+        using (var im = ResourcesUtilities.GetWicBitmapSource(Assembly.GetExecutingAssembly(), n =&gt; n.EndsWith(name)))
+        {
+            // use image size to determine visual size
+            var size = im.GetSizeF();
+            visual.Width = 300;
+            visual.Height = visual.Width * size.height / size.width;
+
+            // create a drawing (D2D1) surface
+            var surface = Window.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            using (var dc = surface.BeginDraw())
+            {
+                // we don't need to clear the surface as we redraw it completely
+                using (var bmp = dc.CreateBitmapFromWicBitmap(im))
+                {
+                    dc.DrawBitmap(bmp);
+                }
+                surface.EndDraw();
+
+                // create a composition brush from the D2D1 surface
+                return Compositor.CreateSurfaceBrush(surface);
+            }
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Effects.Sepia.SepiaSample">void Layout(Visual parent)
+{
+    var visual = new Visual();
+    parent.Children.Add(visual);
+
+    // use the sepia effect
+    var fx = new SepiaEffect();
+    fx.Intensity = 1;
+    fx.Source = new CompositionEffectSourceParameter("Input").ComCast&lt;IGraphicsEffectSource&gt;();
+
+    // build an effect graph
+    var fac = Compositor.CreateEffectFactory(fx.GetIGraphicsEffect());
+    var effect = fac.CreateBrush();
+
+    // use image as the source
+    var img = getEmbeddedImageAsBrush("rainier.jpg");
+    effect.SetSourceParameter("Input", img);
+
+    // set the visual's effect
+    visual.RenderBrush = effect;
+
+    // get an image as composition brush
+    CompositionSurfaceBrush getEmbeddedImageAsBrush(string name)
+    {
+        using (var im = ResourcesUtilities.GetWicBitmapSource(Assembly.GetExecutingAssembly(), n =&gt; n.EndsWith(name)))
+        {
+            // use image size to determine visual size
+            var size = im.GetSizeF();
+            visual.Width = 300;
+            visual.Height = visual.Width * size.height / size.width;
+
+            // create a drawing (D2D1) surface
+            var surface = Window.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            using (var dc = surface.BeginDraw())
+            {
+                // we don't need to clear the surface as we redraw it completely
+                using (var bmp = dc.CreateBitmapFromWicBitmap(im))
+                {
+                    dc.DrawBitmap(bmp);
+                }
+                surface.EndDraw();
+
+                // create a composition brush from the D2D1 surface
+                return Compositor.CreateSurfaceBrush(surface);
+            }
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Effects.GaussianBlur.GaussianBlurSample">void Layout(Visual parent)
+{
+    var visual = new Visual();
+    parent.Children.Add(visual);
+
+    // use the sepia effect
+    var fx = new GaussianBlurEffect();
+    fx.StandardDeviation = 3;
+    fx.Source = new CompositionEffectSourceParameter("Input").ComCast&lt;IGraphicsEffectSource&gt;();
+
+    // build an effect graph
+    var fac = Compositor.CreateEffectFactory(fx.GetIGraphicsEffect());
+    var effect = fac.CreateBrush();
+
+    // use image as the source
+    var img = getEmbeddedImageAsBrush("rainier.jpg");
+    effect.SetSourceParameter("Input", img);
+
+    // set the visual's effect
+    visual.RenderBrush = effect;
+
+    // get an image as composition brush
+    CompositionSurfaceBrush getEmbeddedImageAsBrush(string name)
+    {
+        using (var im = ResourcesUtilities.GetWicBitmapSource(Assembly.GetExecutingAssembly(), n =&gt; n.EndsWith(name)))
+        {
+            // use image size to determine visual size
+            var size = im.GetSizeF();
+            visual.Width = 300;
+            visual.Height = visual.Width * size.height / size.width;
+
+            // create a drawing (D2D1) surface
+            var surface = Window.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            using (var dc = surface.BeginDraw())
+            {
+                // we don't need to clear the surface as we redraw it completely
+                using (var bmp = dc.CreateBitmapFromWicBitmap(im))
+                {
+                    dc.DrawBitmap(bmp);
+                }
+                surface.EndDraw();
+
+                // create a composition brush from the D2D1 surface
+                return Compositor.CreateSurfaceBrush(surface);
+            }
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Input.Button.ButtonDockSample">void Layout(Visual parent)
+{
+    var dock = new Dock();
+    dock.Height = 50;
+    dock.LastChildFill = false;
+    dock.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Olive.ToColor());
+    parent.Children.Add(dock);
+
+    var okButton = new Button();
+    okButton.Margin = 10;
+    okButton.MinWidth = 70;
+    okButton.Click += (s, e) =&gt; MessageBox.Show(parent.Window, "You pressed OK");
+    okButton.Text.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER;
+    okButton.Text.Text = "OK";
+    Dock.SetDockType(okButton, DockType.Right);
+    dock.Children.Add(okButton);
+
+    var cancelButton = new Button();
+    cancelButton.Margin = 3;
+    cancelButton.MinWidth = 70;
+    cancelButton.Click += (s, e) =&gt; MessageBox.Show(parent.Window, "You pressed Cancel");
+    cancelButton.Text.Text = "Cancel";
+    cancelButton.Icon.Text = MDL2GlyphResource.Cancel;
+    Dock.SetDockType(cancelButton, DockType.Right);
+    dock.Children.Add(cancelButton);
+}</sample>
+  <sample namespace="Samples.Input.Button.SimpleButtonSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Click += (s, e) =&gt; MessageBox.Show(parent.Window, "You clicked me!");
+    btn.Text.Text = "Click Me!";
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Input.CheckBox.ThreeStateCheckBoxSample">void Layout(Visual parent)
+{
+    // stack checkbox and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add nullable checkbox
+    var cb = new NullableCheckBox();
+    stack.Children.Add(cb);
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    stack.Children.Add(results);
+
+    cb.Click += (s, e) =&gt;
+    {
+        if (cb.Value == null)
+        {
+            results.Text = "CheckBox state is undetermined.";
+        }
+        else
+        {
+            results.Text = "CheckBox is " + (cb.Value.Value ? "Checked" : "Unchecked");
+        }
+    };
+}</sample>
+  <sample namespace="Samples.Input.CheckBox.TwoStateCheckBoxSample">void Layout(Visual parent)
+{
+    // stack checkbox and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add checkbox
+    var cb = new CheckBox();
+    stack.Children.Add(cb);
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    stack.Children.Add(results);
+
+    cb.Click += (s, e) =&gt;
+    {
+        results.Text = "CheckBox is " + (cb.Value ? "Checked" : "Unchecked");
+    };
+}</sample>
+  <sample namespace="Samples.Input.RadioButton.RadioButtonsSample">void Layout(Visual parent)
+{
+    // dock radio button and textbox
+    var dock = new Dock();
+    parent.Children.Add(dock);
+
+    // add radio buttons with texts
+    var rb0 = new RadioButton();
+    rb0.Name = "button 0";
+    rb0.Margin = D2D_RECT_F.Thickness(10, 0);
+    dock.Children.Add(rb0);
+
+    var rb1 = new RadioButton();
+    rb1.Name = "button 1";
+    rb1.Margin = D2D_RECT_F.Thickness(10, 0);
+    dock.Children.Add(rb1);
+
+    var rb2 = new RadioButton();
+    rb2.Name = "button 2";
+    rb2.Margin = D2D_RECT_F.Thickness(10, 0);
+    dock.Children.Add(rb2);
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    dock.Children.Add(results);
+
+    rb0.Click += onRadioButtonClick;
+    rb1.Click += onRadioButtonClick;
+    rb2.Click += onRadioButtonClick;
+
+    void onRadioButtonClick(object sender, EventArgs e)
+    {
+        var rb = (RadioButton)sender;
+        results.Text = "Selected RadioButton is " + rb.Name;
+
+        // use a method extension to deselect all other buttons
+        new[] { rb0, rb1, rb2 }.Select(rb);
+    }
+}</sample>
+  <sample namespace="Samples.Input.RadioButton.SimpleRadioButtonSample">void Layout(Visual parent)
+{
+    // stack radio button and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add radio button
+    var btn = new RadioButton();
+    stack.Children.Add(btn);
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    stack.Children.Add(results);
+
+    btn.Click += (s, e) =&gt;
+    {
+        results.Text = "RadioButton is " + (btn.Value ? "Checked" : "Unchecked");
+    };
+}</sample>
+  <sample namespace="Samples.Input.StateButton.CheckBoxStateButtonSample">void Layout(Visual parent)
+{
+    // stack state button and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add state button
+    var btn = new StateButton();
+    btn.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+
+    // add "true" / checked state
+    btn.AddState(new StateButtonState(true, (button, args, state) =&gt; new TextBox
+    {
+        ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White),
+        Text = "X",
+        VerticalAlignment = Alignment.Center,
+        HorizontalAlignment = Alignment.Center
+    })); ;
+
+    // add "false" / unchecked set
+    btn.AddState(new StateButtonState(false, (button, args, state) =&gt; new TextBox()));
+    btn.Width = 20;
+    btn.Height = 20;
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    results.HorizontalAlignment = Alignment.Center;
+    results.VerticalAlignment = Alignment.Center;
+    stack.Children.Add(results);
+
+    stack.Children.Add(btn);
+    btn.Click += (s, e) =&gt;
+    {
+        results.Text = "\"CheckBox\" StateButton is " + (((bool)btn.Value) ? "Checked" : "Unchecked");
+    };
+}</sample>
+  <sample namespace="Samples.Input.StateButton.SimpleStateButtonSample">void Layout(Visual parent)
+{
+    // stack state button and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add state button
+    var btn = new StateButton();
+    btn.Width = 100;
+    btn.Height = 100;
+    for (var i = 0; i &lt; 4; i++)
+    {
+        // second parameter defines the child visual, here just a textbox
+        btn.AddState(new StateButtonState("state " + i, (button, args, state) =&gt;
+        {
+            var tb = new TextBox();
+            tb.Text = state.ToString();
+            tb.HorizontalAlignment = Alignment.Center;
+            tb.VerticalAlignment = Alignment.Center;
+            return tb;
+        }));
+    }
+
+    // select one value
+    btn.Value = "state 0";
+    btn.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.OldLace.ToColor());
+    stack.Children.Add(btn);
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    results.HorizontalAlignment = Alignment.Center;
+    results.VerticalAlignment = Alignment.Center;
+    stack.Children.Add(results);
+
+    btn.Click += (s, e) =&gt;
+    {
+        results.Text = "StateButton value is " + btn.Value;
+    };
+}</sample>
+  <sample namespace="Samples.Input.ToggleSwitch.GroupedToggleSwitchesSample">void Layout(Visual parent)
+{
+    // dock toggle switches and textbox
+    var dock = new Dock();
+    parent.Children.Add(dock);
+
+    // add toggle switches
+    var list = new List&lt;ToggleSwitch&gt;();
+    for (var i = 0; i &lt; 3; i++)
+    {
+        var toggle = new ToggleSwitch();
+        toggle.Margin = D2D_RECT_F.Thickness(10, 0);
+        toggle.Name = "switch " + i;
+        dock.Children.Add(toggle);
+        list.Add(toggle);
+    }
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    dock.Children.Add(results);
+
+    // hook click events
+    list.ForEach(t =&gt; t.Click += onRadioButtonClick);
+
+    void onRadioButtonClick(object sender, EventArgs e)
+    {
+        var rb = (ToggleSwitch)sender;
+        results.Text = "Selected ToggleSwitch is " + rb.Name;
+
+        // use a method extension to deselect all other buttons
+        list.Select(rb);
+    }
+}</sample>
+  <sample namespace="Samples.Input.ToggleSwitch.ToggleSwitchSample">void Layout(Visual parent)
+{
+    // stack state button and textbox
+    var stack = new Stack();
+    stack.Orientation = Orientation.Horizontal;
+    parent.Children.Add(stack);
+
+    // add toggle switch button
+    var toggle = new ToggleSwitch();
+    stack.Children.Add(toggle);
+
+    // add results textbox
+    var results = new TextBox();
+    results.Margin = D2D_RECT_F.Thickness(10, 0);
+    results.HorizontalAlignment = Alignment.Center;
+    results.VerticalAlignment = Alignment.Center;
+    stack.Children.Add(results);
+
+    toggle.Click += (s, e) =&gt;
+    {
+        results.Text = "ToggleSwitch is " + (toggle.Value ? "Checked" : "Unchecked");
+    };
+}</sample>
+  <sample namespace="Samples.Layout.DockSplitter.SimpleDockSplitterSample">void Layout(Visual parent)
+{
+    var dock = new Dock();
+    parent.Children.Add(dock);
+    dock.Height = 200;
+
+    var b1 = new Border();
+    dock.Children.Add(b1);
+    Dock.SetDockType(b1, DockType.Top);
+    b1.MinHeight = 20;
+    b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+
+    var splitter1 = new DockSplitter();
+    splitter1.Name = nameof(splitter1);
+    dock.Children.Add(splitter1);
+    splitter1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+
+    var b2 = new Border();
+    dock.Children.Add(b2);
+    b2.MinHeight = 20;
+    Dock.SetDockType(b2, DockType.Bottom);
+    b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+
+    var splitter2 = new DockSplitter();
+    splitter2.Name = nameof(splitter2);
+    dock.Children.Add(splitter2);
+    splitter2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+
+    var b3 = new Border();
+    dock.Children.Add(b3);
+    b3.MinWidth = 20;
+    Dock.SetDockType(b3, DockType.Left);
+    b3.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+
+    var splitter3 = new DockSplitter();
+    splitter3.Name = nameof(splitter3);
+    dock.Children.Add(splitter3);
+    splitter3.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+
+    var b4 = new Border();
+    dock.Children.Add(b4);
+    b4.MinWidth = 20;
+    Dock.SetDockType(b4, DockType.Right);
+    b4.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
+
+    var splitter4 = new DockSplitter();
+    splitter4.Name = nameof(splitter4);
+    dock.Children.Add(splitter4);
+    splitter4.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+
+    var b5 = new Border();
+    dock.Children.Add(b5);
+    Dock.SetDockType(b5, DockType.Left);
+    b5.MinWidth = 10;
+    b5.MinHeight = 10;
+    b5.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Violet.ToColor());
+}</sample>
+  <sample namespace="Samples.Layout.GridSplitter.SimpleGridSplitterSample">void Layout(Visual parent)
+{
+}</sample>
+  <sample namespace="Samples.Layout.Grid.SimpleGridSample">void Layout(Visual parent)
+{
+    var grid = new Grid();
+    grid.Height = 100;
+    grid.Width = 100;
+    parent.Children.Add(grid);
+
+    // add 2 columns and 2 rows
+    grid.Columns.Add(new GridColumn());
+    grid.Columns.Add(new GridColumn());
+    grid.Rows.Add(new GridRow());
+    grid.Rows.Add(new GridRow());
+
+    var cell0 = new Border();
+    grid.Children.Add(cell0);
+    cell0.Margin = 10;
+    cell0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Purple.ToColor());
+
+    var cell1 = new Border();
+    grid.Children.Add(cell1);
+    cell1.Margin = 10;
+    cell1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
+
+    Grid.SetColumn(cell1, 2);
+    Grid.SetRow(cell1, 2);
+}</sample>
+  <sample namespace="Samples.Layout.Dock.SimpleDockSample">void Layout(Visual parent)
+{
+    var canvas = new Canvas();
+    canvas.Width = 120;
+    canvas.Height = 120;
+    canvas.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor());
+    parent.Children.Add(canvas);
+
+    var b0 = new Border();
+    b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+    b0.Width = 40;
+    b0.Height = 40;
+    Canvas.SetLeft(b0, 0);
+    Canvas.SetTop(b0, 0);
+    canvas.Children.Add(b0);
+
+    var b1 = new Border();
+    b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+    b1.Width = 40;
+    b1.Height = 40;
+    Canvas.SetLeft(b1, 0);
+    Canvas.SetBottom(b1, 0);
+    canvas.Children.Add(b1);
+
+    var b2 = new Border();
+    b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+    b2.Width = 40;
+    b2.Height = 40;
+    Canvas.SetRight(b2, 0);
+    Canvas.SetTop(b2, 0);
+    canvas.Children.Add(b2);
+
+    var b3 = new Border();
+    b3.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+    b3.Width = 40;
+    b3.Height = 40;
+    Canvas.SetRight(b3, 0);
+    Canvas.SetBottom(b3, 0);
+    canvas.Children.Add(b3);
+}</sample>
+  <sample namespace="Samples.Layout.ScrollViewer.ScrollViewerBasicSample">void Layout(Visual parent)
+{
+    // create a 300 pixels height scroll viewer
+    var scrollViewer = new ScrollViewer();
+    parent.Children.Add(scrollViewer);
+    scrollViewer.Height = 300;
+    scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+
+    // add an image
+    var img = new Image();
+    img.InterpolationMode = D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC;
+
+    // load from .NET embedded resource
+    img.Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.rainier.jpg");
+
+    // set the scroll viewer's content
+    scrollViewer.Viewer.Child = img;
+}</sample>
+  <sample namespace="Samples.Layout.Stack.SimpleHorizontalStackSample">void Layout(Visual parent)
+{
+    var stack = new Stack();
+    parent.Children.Add(stack);
+    stack.Orientation = Orientation.Horizontal;
+    stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+
+    var b0 = new Border();
+    stack.Children.Add(b0);
+    b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+    b0.Width = 100;
+    b0.Height = 100;
+
+    var b1 = new Border();
+    stack.Children.Add(b1);
+    b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+    b1.Width = 50;
+    b1.Height = 50;
+}</sample>
+  <sample namespace="Samples.Layout.Stack.BoxesStackSample">void Layout(Visual parent)
+{
+    var stack = new Stack();
+    parent.Children.Add(stack);
+    stack.Width = 150;
+    stack.Width = 150;
+    stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+
+    var b0 = new Border();
+    stack.Children.Add(b0);
+    b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+    b0.Width = 100;
+    b0.Height = 100;
+
+    var b1 = new Border();
+    stack.Children.Add(b1);
+    b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+    b1.Width = 50;
+    b1.Height = 50;
+}</sample>
+  <sample namespace="Samples.Layout.Stack.SimpleVerticalStackSample">void Layout(Visual parent)
+{
+    var stack = new Stack();
+    parent.Children.Add(stack);
+    stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+
+    var b0 = new Border();
+    stack.Children.Add(b0);
+    b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+    b0.Width = 100;
+    b0.Height = 100;
+
+    var b1 = new Border();
+    stack.Children.Add(b1);
+    b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+    b1.Width = 50;
+    b1.Height = 50;
+}</sample>
+  <sample namespace="Samples.Layout.UniformGrid.ShapesUniformGridSample">void Layout(Visual parent)
+{
+    var grid = new UniformGrid();
+    grid.BackgroundColor = D3DCOLORVALUE.Transparent;
+    grid.Rows = 10;
+    grid.Columns = grid.Rows;
+    parent.Children.Add(grid);
+    grid.Width = 300;
+    grid.Height = 300;
+
+    for (var i = 0; i &lt; grid.Rows; i++)
+    {
+        for (var j = 0; j &lt; grid.Columns; j++)
+        {
+            var shape = new Ellipse();
+            grid.Children.Add(shape);
+            var color = new D3DCOLORVALUE(0, i / (float)grid.Rows, j / (float)grid.Columns);
+            shape.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
+            shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
+            shape.Shape.StrokeThickness = 0.5f;
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Layout.UniformGrid.SimpleUniformGridSample">void Layout(Visual parent)
+{
+    var grid = new UniformGrid();
+    parent.Children.Add(grid);
+    grid.Columns = 2;
+    grid.Rows = 2;
+    grid.Width = 300;
+    grid.Height = 300;
+    grid.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
+
+    var b0 = new Border();
+    grid.Children.Add(b0);
+    b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+    b0.Width = 100;
+    b0.Height = 100;
+
+    var b1 = new Border();
+    grid.Children.Add(b1);
+    b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+    b1.Width = 50;
+    b1.Height = 50;
+
+    var b2 = new Border();
+    grid.Children.Add(b2);
+    b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+    b2.Width = 50;
+    b2.Height = 50;
+
+    var b3 = new Border();
+    grid.Children.Add(b3);
+    b3.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+    b3.Width = 100;
+    b3.Height = 100;
+}</sample>
+  <sample namespace="Samples.Layout.Border.BordersSample">void Layout(Visual parent)
+{
+    var canvas = new Canvas();
+    parent.Children.Add(canvas);
+
+    var rnd = new Random(Environment.TickCount);
+    for (var i = 0; i &lt; 10; i++)
+    {
+        var box = new Border();
+        // use composition brush
+        box.RenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)).ToColor());
+        box.Width = rnd.Next(10, 200);
+        box.Height = rnd.Next(10, 150);
+        canvas.Children.Add(box);
+        Canvas.SetLeft(box, rnd.Next(0, 200));
+        Canvas.SetTop(box, rnd.Next(0, 100));
+
+        // if you hover the mouse on a box, it's color will change
+        box.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)).ToColor());
+    }
+}</sample>
+  <sample namespace="Samples.Layout.Border.RoundBorderSample">void Layout(Visual parent)
+{
+    var border = new Border();
+    border.BorderThickness = 2.5f;
+    border.CornerRadius = new Vector2(5);
+    border.BorderBrush = new SolidColorBrush(D3DCOLORVALUE.YellowGreen); // well-known colors
+    parent.Children.Add(border);
+
+    var textBox = new TextBox();
+    textBox.Padding = 10;
+    border.Children.Add(textBox);
+    textBox.Text = "Text inside a round border";
+    textBox.FontSize = 18;
+}</sample>
+  <sample namespace="Samples.Layout.Border.SimpleBorderSample">void Layout(Visual parent)
+{
+    var border = new Border();
+    border.BorderThickness = 2;
+    border.HorizontalAlignment = Alignment.Near; // force border to use child's size (default is Stretch)
+    border.BorderBrush = new SolidColorBrush(new D3DCOLORVALUE(0xFFFFD700)); // by-value color
+    parent.Children.Add(border);
+
+    var textBox = new TextBox();
+    textBox.Padding = 10;
+    border.Children.Add(textBox);
+    textBox.Text = "Text inside a border";
+    textBox.FontSize = 18;
+}</sample>
+  <sample namespace="Samples.Layout.Canvas.BoundsCanvasSample">void Layout(Visual parent)
+{
+    var canvas = new Canvas();
+    canvas.Width = 120;
+    canvas.Height = 120;
+    canvas.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor());
+    parent.Children.Add(canvas);
+
+    var b0 = new Border();
+    b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+    b0.Width = 40;
+    b0.Height = 40;
+    Canvas.SetLeft(b0, 0);
+    Canvas.SetTop(b0, 0);
+    canvas.Children.Add(b0);
+
+    var b1 = new Border();
+    b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+    b1.Width = 40;
+    b1.Height = 40;
+    Canvas.SetLeft(b1, 0);
+    Canvas.SetBottom(b1, 0);
+    canvas.Children.Add(b1);
+
+    var b2 = new Border();
+    b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+    b2.Width = 40;
+    b2.Height = 40;
+    Canvas.SetRight(b2, 0);
+    Canvas.SetTop(b2, 0);
+    canvas.Children.Add(b2);
+
+    var b3 = new Border();
+    b3.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+    b3.Width = 40;
+    b3.Height = 40;
+    Canvas.SetRight(b3, 0);
+    Canvas.SetBottom(b3, 0);
+    canvas.Children.Add(b3);
+}</sample>
+  <sample namespace="Samples.Layout.Canvas.SimpleCanvasSample">void Layout(Visual parent)
+{
+    var canvas = new Canvas();
+    canvas.Width = 120;
+    canvas.Height = 120;
+    canvas.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor());
+    parent.Children.Add(canvas);
+
+    var b0 = new Border();
+    b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+    b0.Width = 40;
+    b0.Height = 40;
+    Canvas.SetLeft(b0, 0);
+    Canvas.SetTop(b0, 0);
+    canvas.Children.Add(b0);
+
+    var b1 = new Border();
+    b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+    b1.Width = 40;
+    b1.Height = 40;
+    Canvas.SetLeft(b1, 20);
+    Canvas.SetTop(b1, 20);
+    canvas.Children.Add(b1);
+
+    var b2 = new Border();
+    b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+    b2.Width = 40;
+    b2.Height = 40;
+    Canvas.SetLeft(b2, 40);
+    Canvas.SetTop(b2, 40);
+    canvas.Children.Add(b2);
+
+    var b3 = new Border();
+    b3.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+    b3.Width = 40;
+    b3.Height = 40;
+    Canvas.SetLeft(b3, 60);
+    Canvas.SetTop(b3, 60);
+    canvas.Children.Add(b3);
+}</sample>
+  <sample namespace="Samples.Layout.Wrap.SimpleWrapSample">void Layout(Visual parent)
+{
+    var wrap = new Wrap();
+    wrap.Orientation = Orientation.Horizontal;
+    parent.Children.Add(wrap);
+
+    var rnd = new Random(Environment.TickCount);
+    var max = 100;
+    for (var i = 0; i &lt; max; i++)
+    {
+        var border = new Border();
+        wrap.Children.Add(border);
+        var color = D3DCOLORVALUE.FromArgb(rnd.NextByte(), rnd.NextByte(), rnd.NextByte());
+        border.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
+        border.Width = rnd.Next(10, 60);
+        border.Height = rnd.Next(10, 60);
+    }
+}</sample>
+  <sample namespace="Samples.Media.Brush.Direct2DBrushSample">void Layout(Visual parent)
+{
+    var tb = new TextBox();
+    parent.Children.Add(tb);
+    tb.HorizontalAlignment = Alignment.Center;
+    tb.Padding = 5;
+    tb.Text = "This text is white";
+
+    // D3DCOLORVALUE is the base DirectX color using single/float (0 =&gt; 1) ARGB.
+    // redefined by Wice with .NET
+
+    // to create a composition brush, the visual must be attached to composition
+    // to be able to use the Compositor instance corresponding to its parent Window.
+    tb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.MediumAquamarine.ToColor());
+
+    // in contrast, a Direct2D brush can be created off ground.
+    // we need Direct2D colors when we use primitives that Windows composition doesn't support
+    // such as DirectWrite, Images, etc.
+    tb.ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White);
+}</sample>
+  <sample namespace="Samples.Media.Brush.CompositionBrushSample">void Layout(Visual parent)
+{
+    var box = new Border();
+    parent.Children.Add(box);
+    box.Width = 100;
+    box.Height = 100;
+
+    // to create a composition brush, the visual must be attached to composition
+    // to be able to use the Compositor instance corresponding to its parent Window.
+    box.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Aquamarine.ToColor());
+}</sample>
+  <sample namespace="Samples.Media.Image.BasicImageSample">void Layout(Visual parent)
+{
+    var img = new Image();
+    parent.Children.Add(img);
+    img.Width = 400;
+    img.Margin = 10;
+    img.InterpolationMode = D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC;
+
+    // load from .NET embedded resource
+    img.Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.rainier.jpg");
+}</sample>
+  <sample namespace="Samples.Media.Shape.LineShapeSample">void Layout(Visual parent)
+{
+    var line1 = new Line();
+    line1.Width = 200;
+    line1.Height = 100;
+    line1.StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Maroon.ToColor());
+    line1.StrokeThickness = 1;
+    parent.Children.Add(line1);
+    line1.Arranged += (s, e) =&gt;
+    {
+        line1.Geometry.End = Utilities.Extensions.ToVector2(line1.ArrangedRect.Size);
+    };
+
+    var line2 = new Line();
+    line2.Width = 200;
+    line2.Height = 100;
+    line2.StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.BlueViolet.ToColor());
+    line2.StrokeThickness = 4;
+    parent.Children.Add(line2);
+    line2.Arranged += (s, e) =&gt;
+    {
+        var ar = line2.ArrangedRect.Size;
+        line2.Geometry.Start = new Vector2(0, ar.height);
+        line2.Geometry.End = new Vector2(ar.width, 0);
+    };
+    Dock.SetDockType(line2, DockType.Top);
+}</sample>
+  <sample namespace="Samples.Media.Shape.EllipseRectangleShapeSample">void Layout(Visual parent)
+{
+    var ellipse = new Ellipse();
+    ellipse.Width = 300;
+    ellipse.Height = 100;
+    ellipse.Radius = new System.Numerics.Vector2(150, 50);
+    ellipse.StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+    ellipse.StrokeThickness = 2;
+    ellipse.StrokeDashArray = new float[] { 1, 2, 3 };
+    parent.Children.Add(ellipse);
+}</sample>
+  <sample namespace="Samples.Media.Shape.RoundedRectangleShapeSample">void Layout(Visual parent)
+{
+    var rectangle = new RoundedRectangle();
+    rectangle.CornerRadius = new System.Numerics.Vector2(50);
+    rectangle.Width = 100;
+    rectangle.Height = 100;
+    rectangle.StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+    rectangle.StrokeThickness = 20;
+    parent.Children.Add(rectangle);
+}</sample>
+  <sample namespace="Samples.Media.Shape.RectangleShapeSample">void Layout(Visual parent)
+{
+    var rectangle = new Rectangle();
+    rectangle.Width = 200;
+    rectangle.Height = 100;
+    rectangle.StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+    rectangle.StrokeThickness = 10;
+    parent.Children.Add(rectangle);
+}</sample>
+  <sample namespace="Samples.Media.SvgImage.BasicSvgImageSample">void Layout(Visual parent)
+{
+    var img = new SvgImage();
+    parent.Children.Add(img);
+    img.Width = 400;
+    img.Height = 400;
+    img.Margin = 10;
+
+    // load from .NET embedded resource
+    img.Document = new AssemblyResourceStreamer(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.tiger.svg");
+}</sample>
+  <sample namespace="Samples.Misc.Focus.FocusSample">void Layout(Visual parent)
+{
+    for (var i = 0; i &lt; 4; i++)
+    {
+        var btn = new Button();
+        btn.Margin = 5;
+        btn.FocusedChanged += (s, e) =&gt;
+        {
+            btn.Text.Text = e.Value ? "Focused" : "Unfocused";
+        };
+        btn.Text.Text = "Unfocused";
+        parent.Children.Add(btn);
+
+        // focus the first one
+        if (i == 0)
+        {
+            btn.Focus();
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Misc.Application.ApplicationSample">class Program
+{
+    static void Main()
+    {
+        // create application
+        using (var dw = new Application())
+        {
+            // add (main) window to application
+            var win = new Window { Title = "Wice" };
+            win.ResizeClient(400, 400);
+            win.Center();
+            win.Show();
+            dw.Run();
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Misc.TitleBar.TitleBarSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Click += (s, e) =&gt;
+    {
+        var window = new Window();
+
+        // we draw our own titlebar using Wice
+        window.WindowsFrameMode = WindowsFrameMode.None;
+        window.Center();
+        window.Show();
+
+        // add a Wice titlebar
+        var titleBar = new TitleBar { IsMain = true };
+        window.Children.Add(titleBar);
+        window.ResizeClient(400, 400);
+    };
+
+    btn.Text.Text = "Open new window";
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Misc.ToolTip.AdvancedToolTipSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Hover me!";
+    parent.Children.Add(btn);
+
+    // a tooltip content is created using a function
+    btn.ToolTipContentCreator = tt =&gt; createToolTipContent(tt, "hello world");
+
+    // here is a custom tooltip creator function
+    void createToolTipContent(ToolTip tt, string text)
+    {
+        // clear default tooltip shadow
+        tt.Content.RenderShadow = null;
+
+        // note we must use the tooltip's compositor, not our window's compositor
+        // as the tooltip has its own window
+        tt.Content.RenderBrush = tt.Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+
+        var tb = new TextBox();
+        tb.Margin = 4;
+        tb.Text = text;
+        tb.ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White);
+        tb.FontSize = 25;
+        tt.Content.Children.Add(tb);
+    }
+}</sample>
+  <sample namespace="Samples.Misc.ToolTip.ToolTipSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Hover me!";
+    parent.Children.Add(btn);
+
+    // a tooltip content is created using a function
+    // Wice provides a default function for default tooltips
+    btn.ToolTipContentCreator = tt =&gt; Window.CreateDefaultToolTipContent(tt, "hello world");
+}</sample>
+  <sample namespace="Samples.Misc.VisualsTree.VisualsTreeSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Open the VisualsTree Window";
+    btn.Click += (s, e) =&gt;
+    {
+        // note with .NET Framework you must reference Windows Forms to use the VisualsTree window
+        var vt = new Utilities.VisualsTree();
+        vt.SetCurrentWindow(parent.Window);
+        vt.Show(NativeWindow.FromHandle(parent.Window.Handle));
+    };
+
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Text.RichTextBox.RtfRichTextBoxSample">void Layout(Visual parent)
+{
+    parent.Children.Add(Rtb);
+    Dock.SetDockType(Rtb, DockType.Top);
+
+    Rtb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+    Rtb.Padding = D2D_RECT_F.Thickness(10);
+    Rtb.Margin = D2D_RECT_F.Thickness(10);
+
+    Rtb.RtfText = @"{\rtf1\ansi\deff0
+        {\coloRtbl;\red0\green0\blue0;\red255\green0\blue0;}
+        This line is the default color\line
+        \cf2
+        This line is red with special characters: éèà 😱 \line
+        \cf1
+        This line is the default color
+        }";
+}</sample>
+  <sample namespace="Samples.Text.RichTextBox.DocumentRichTextBoxSample">void Layout(Visual parent)
+{
+    parent.Children.Add(Rtb);
+    Dock.SetDockType(Rtb, DockType.Top);
+
+    Rtb.MaxWidth = 500;
+    Rtb.MaxHeight = 400;
+    Rtb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+    Rtb.Padding = D2D_RECT_F.Thickness(10);
+    Rtb.Margin = D2D_RECT_F.Thickness(10);
+
+    // Document is a COM IDispatch object. Cf https://docs.microsoft.com/en-us/windows/win32/api/tom/nf-tom-itextdocument-open
+    dynamic doc = Rtb.Document;
+
+    // load text from this assembly's resources
+    using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Samples.Gallery.Resources.wice.rtf"))
+    {
+        // we must force wrap it as IUnknown because for some reason, if it's in an outside assembly (DirectN.dll here)
+        // ManagedIStream is wrapped as IDispatch and this causes failure in dynamic DLR code
+        // "COMException: Cannot marshal 'parameter #1': Invalid managed/unmanaged type combination"
+        var unk = new UnknownWrapper(new ManagedIStream(stream));
+        doc.Open(unk, 0, 1200); // Flags = 0, CodePage = 1200 (unicode)
+    }
+}</sample>
+  <sample namespace="Samples.Text.RichTextBox.SimpleRichTextBoxSample">void Layout(Visual parent)
+{
+    parent.Children.Add(Rtb);
+    Dock.SetDockType(Rtb, DockType.Top);
+
+    Rtb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.GreenYellow.ToColor());
+    Rtb.Padding = D2D_RECT_F.Thickness(10);
+    Rtb.Margin = D2D_RECT_F.Thickness(10);
+    Rtb.Text = "Hello World";
+}</sample>
+  <sample namespace="Samples.Text.TextBox.EditableTextBoxSample">void Layout(Visual parent)
+{
+    var tb = new TextBox();
+    parent.Children.Add(tb);
+    Dock.SetDockType(tb, DockType.Top);
+    tb.IsEditable = true;
+
+    tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Green);
+    tb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightSalmon.ToColor());
+    tb.Padding = D2D_RECT_F.Thickness(10);
+    tb.Margin = D2D_RECT_F.Thickness(10);
+    tb.Text = "Click me and edit!";
+}</sample>
+  <sample namespace="Samples.Text.TextBox.ColorFontTextBoxSample">void Layout(Visual parent)
+{
+    var tb = new TextBox();
+    parent.Children.Add(tb);
+    Dock.SetDockType(tb, DockType.Top);
+
+    tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Yellow);
+    tb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
+    tb.Padding = D2D_RECT_F.Thickness(10);
+    tb.Margin = D2D_RECT_F.Thickness(10);
+
+    // note there can be difference between the source code (created with Windows' emoji editor) and the Wice's rendered text (from DirectWrite)
+    tb.Text = "These are colored emoji: 😝👸🎅👨‍👩‍👧‍👦";
+}</sample>
+  <sample namespace="Samples.Text.TextBox.UnicodeTextBoxSample">void Layout(Visual parent)
+{
+    var sv = new ScrollViewer();
+    sv.Height = 200;
+    sv.Width = 500;
+    parent.Children.Add(sv);
+    Dock.SetDockType(sv, DockType.Top);
+
+    var tb = new TextBox();
+    sv.Viewer.Child = tb;
+    tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Coral);
+    tb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.CornflowerBlue.ToColor());
+    tb.Padding = D2D_RECT_F.Thickness(10);
+    tb.Margin = D2D_RECT_F.Thickness(10);
+
+    tb.Text = getLorem();
+
+    string getLorem()
+    {
+        // load text from this assembly's resources
+        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Samples.Gallery.Resources.lorem-cn.txt"))
+        {
+            var br = new StreamReader(stream);
+            return br.ReadToEnd();
+        }
+    }
+}</sample>
+  <sample namespace="Samples.Text.TextBox.SimpleTextBoxSample">void Layout(Visual parent)
+{
+    var tb = new TextBox();
+    parent.Children.Add(tb);
+    Dock.SetDockType(tb, DockType.Top);
+
+    tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Red);
+    tb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.GreenYellow.ToColor());
+    tb.Padding = D2D_RECT_F.Thickness(10);
+    tb.Margin = D2D_RECT_F.Thickness(10);
+    tb.Text = "Hello World";
+}</sample>
+  <sample namespace="Samples.Windows.Dialog.DialogBoxSimpleSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Open a dialog box...";
+    btn.Click += (s, e) =&gt;
+    {
+        var dlg = new DialogBox();
+
+        // a dialog box is a children of a Window, it's not a standalone window
+        parent.Window.Children.Add(dlg);
+        dlg.Width = 300;
+        dlg.Height = 300;
+        dlg.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+
+        // add content to the dialog
+        dlg.DialogContent.Children.Add(new Border { Width = 200, Height = 100 });
+
+        // add standard (localized) buttons
+        dlg.AddCancelButton();
+        dlg.AddOkButton();
+    };
+
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Windows.Dialog.DialogSimpleSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Open a dialog...";
+    btn.Click += (s, e) =&gt;
+    {
+        var dlg = new Dialog();
+
+        // a dialog is a children of a Window, it's not a standalone window
+        parent.Window.Children.Add(dlg);
+        dlg.Width = 300;
+        dlg.Height = 300;
+        dlg.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+
+        var tb = new TextBox();
+        tb.Text = "Press ESC to close";
+        dlg.Content.Children.Add(tb);
+    };
+
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Windows.MessageBox.MessageBoxSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Open a MessageBox...";
+    btn.Click += (s, e) =&gt;
+    {
+        MessageBox.Show(parent.Window, "Hello world!");
+    };
+
+    parent.Children.Add(btn);
+}</sample>
+  <sample namespace="Samples.Windows.Window.WindowSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Open a new Window...";
+    btn.Click += (s, e) =&gt;
+    {
+        var window = new Window { Title = "Hello World" };
+        window.RenderBrush = window.Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+        window.ResizeClient(400, 400);
+        window.Center();
+        window.Show();
+
+        var close = new Button();
+        close.Text.Text = "Close me";
+        close.Click += (_, __) =&gt;
+        {
+            window.Destroy();
+        };
+
+        window.Children.Add(close);
+    };
+
+    parent.Children.Add(btn);
+}</sample>
+</samples>

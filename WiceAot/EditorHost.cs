@@ -49,7 +49,7 @@ public partial class EditorHost : HeaderedContent
     }
 
 #if DEBUG
-    public override string Name
+    public override string? Name
     {
         get => base.Name;
         set

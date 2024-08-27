@@ -4,7 +4,7 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
 {
     private static readonly ConcurrentHashSet<string> _classesNames = [];
 
-    public static WindowProc DefWindowdProc { get; } = GetDefWindowProc();
+    public static WindowProc DefWindowProc { get; } = GetDefWindowProc();
     private static WindowProc GetDefWindowProc() => Marshal.GetDelegateForFunctionPointer<WindowProc>(Functions.GetProcAddress(Functions.GetModuleHandleW(PWSTR.From("user32.dll")), PSTR.From("DefWindowProcW")));
 
     public static IEnumerable<NativeWindow> TopLevelWindows => EnumerateTopLevelWindows().Select(FromHandle).Where(w => w != null)!;
@@ -24,6 +24,9 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
     public RECT ClientRect { get { Functions.GetClientRect(Handle, out var rc); return rc; } }
     public HICON IconHandle { get => new() { Value = Functions.SendMessageW(Handle, MessageDecoder.WM_GETICON, new WPARAM { Value = Constants.ICON_BIG }, LPARAM.Null).Value }; set { var ptr = Functions.SendMessageW(Handle, MessageDecoder.WM_SETICON, new WPARAM { Value = Constants.ICON_BIG }, new LPARAM { Value = value.Value }); if (ptr.Value != 0) { Functions.DestroyIcon(new HICON { Value = ptr.Value }); } } }
     public uint Dpi { get { var dpi = Functions.GetDpiForWindow(Handle); if (dpi <= 0) return 96; return dpi; } }
+    public DPI_AWARENESS_CONTEXT DpiAwareness => DpiUtilities.GetWindowDpiAwarenessContext(Handle);
+    public string DpiAwarenessDescription => GetDpiAwarenessDescription(DpiAwareness);
+    public uint DpiFromDpiAwareness => Functions.GetDpiFromDpiAwarenessContext(DpiAwareness);
     public WINDOW_STYLE Style { get => (WINDOW_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_STYLE).ToInt64(); set => SetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_STYLE, new nint((int)value)); }
     public WINDOW_EX_STYLE ExtendedStyle { get => (WINDOW_EX_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE).ToInt64(); set => SetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, new nint((int)value)); }
     public bool IsEnabled { get => Functions.IsWindowEnabled(Handle); set => Functions.EnableWindow(Handle, value); }
@@ -368,9 +371,9 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
 
     internal static nint SetUserData(HWND hwnd, nint data) => SetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA, data);
     internal static nint GetUserData(HWND hwnd) => GetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA);
-    internal static nint SetWindowLong(HWND hwnd, WINDOW_LONG_PTR_INDEX nIndex, nint dwNewLong) => nint.Size == 8 ? Functions.SetWindowLongPtrW(hwnd, nIndex, dwNewLong) : Functions.SetWindowLongW(hwnd, nIndex, (int)dwNewLong);
-    internal static nint GetWindowLong(HWND hwnd, WINDOW_LONG_PTR_INDEX nIndex) => nint.Size == 8 ? Functions.GetWindowLongPtrW(hwnd, nIndex) : Functions.GetWindowLongW(hwnd, nIndex);
-    internal static string GetWindowText(HWND hwnd)
+    public static nint SetWindowLong(HWND hwnd, WINDOW_LONG_PTR_INDEX nIndex, nint dwNewLong) => nint.Size == 8 ? Functions.SetWindowLongPtrW(hwnd, nIndex, dwNewLong) : Functions.SetWindowLongW(hwnd, nIndex, (int)dwNewLong);
+    public static nint GetWindowLong(HWND hwnd, WINDOW_LONG_PTR_INDEX nIndex) => nint.Size == 8 ? Functions.GetWindowLongPtrW(hwnd, nIndex) : Functions.GetWindowLongW(hwnd, nIndex);
+    public static string GetWindowText(HWND hwnd)
     {
         using var p = new AllocPwstr(1024);
         Functions.GetWindowTextW(hwnd, p, (int)p.SizeInChars);
@@ -539,6 +542,35 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
     {
         var i = (int)policy;
         Functions.DwmSetWindowAttribute(hwnd, (uint)DWMWINDOWATTRIBUTE.DWMWA_NCRENDERING_POLICY, (nint)(&i), 4).ThrowOnError();
+    }
+
+    public static string GetDpiAwarenessDescription(DPI_AWARENESS_CONTEXT awareness)
+    {
+        if (awareness.Value == 0)
+            return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
+
+        if (WindowsVersionUtilities.KernelVersion >= new Version(10, 0, 14393))
+        {
+            if (Functions.AreDpiAwarenessContextsEqual(awareness, DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE))
+                return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE);
+
+            if (Functions.AreDpiAwarenessContextsEqual(awareness, DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE))
+                return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
+
+            if (Functions.AreDpiAwarenessContextsEqual(awareness, DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE))
+                return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
+
+            if (Functions.AreDpiAwarenessContextsEqual(awareness, DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2))
+                return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+
+            if (Functions.AreDpiAwarenessContextsEqual(awareness, DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED))
+                return nameof(DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE_GDISCALED);
+        }
+
+        if (nint.Size == 4)
+            return "0x" + awareness.Value.ToString("X8");
+
+        return "0x" + awareness.Value.ToString("X16");
     }
 
     //public void EnableBlurBehindWindow(bool enable = true) => EnableBlurBehindWindow(Handle, enable);

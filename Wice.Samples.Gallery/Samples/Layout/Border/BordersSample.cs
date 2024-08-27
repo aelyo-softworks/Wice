@@ -11,7 +11,9 @@ namespace Wice.Samples.Gallery.Samples.Layout.Border
 
         public override void Layout(Visual parent)
         {
+#pragma warning disable IDE0017 // Simplify object initialization
             var canvas = new Wice.Canvas();
+#pragma warning restore IDE0017 // Simplify object initialization
             canvas.Height = 200; // remove from display
             parent.Children.Add(canvas);
             Wice.Dock.SetDockType(canvas, DockType.Top); // remove from display

@@ -64,8 +64,8 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
         return [];
     }
 
-    public static BaseObjectProperty Add<T>(Type declaringType, string name, T? defaultValue = default, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null) => Add(declaringType, name, typeof(T), defaultValue, convert, changing, changed);
-    public static BaseObjectProperty Add(Type declaringType, string name, Type type, object? defaultValue = null, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null) => Add(new BaseObjectProperty(declaringType, name, type, defaultValue, convert, changing, changed));
+    public static BaseObjectProperty Add<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] T>(Type declaringType, string name, T? defaultValue = default, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null) => Add(declaringType, name, typeof(T), defaultValue, convert, changing, changed);
+    public static BaseObjectProperty Add(Type declaringType, string name, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type, object? defaultValue = null, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null) => Add(new BaseObjectProperty(declaringType, name, type, defaultValue, convert, changing, changed));
     public static BaseObjectProperty Add(BaseObjectProperty property)
     {
         ArgumentNullException.ThrowIfNull(property);
@@ -148,7 +148,7 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     private object? _defaultValue;
     private BaseObjectPropertyOptions _options;
 
-    public BaseObjectProperty(Type declaringType, string name, Type type, object? defaultValue = null, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null, BaseObjectPropertyOptions options = BaseObjectPropertyOptions.None)
+    public BaseObjectProperty(Type declaringType, string name, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type, object? defaultValue = null, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null, BaseObjectPropertyOptions options = BaseObjectPropertyOptions.None)
     {
         ArgumentNullException.ThrowIfNull(declaringType);
         if (!typeof(BaseObject).IsAssignableFrom(declaringType))

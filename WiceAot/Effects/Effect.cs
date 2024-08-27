@@ -6,6 +6,8 @@ namespace Wice.Effects;
 // https://github.com/microsoft/CsWinRT/issues/302
 // https://github.com/microsoft/CsWinRT/issues/799
 // etc.
+
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
 public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraphicsEffect, IGraphicsEffectSource, IGraphicsEffectD2D1Interop
 {
     private static readonly ConcurrentDictionary<Type, List<PropDef>> _properties = new();
@@ -14,7 +16,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     private string? _name;
 
     public uint MaximumSourcesCount { get; } = sourcesCount;
-    public override string Name { get => _name ?? string.Empty; set => _name = value; } // *must* not be null for IGraphicsEffectD2D1Interop
+    public override string? Name { get => _name ?? string.Empty; set => _name = value; } // *must* not be null for IGraphicsEffectD2D1Interop
     public virtual bool Cached { get; set; }
     public virtual D2D1_BUFFER_PRECISION Precision { get; set; }
     public IList<IGraphicsEffectSource?> Sources => _sources;

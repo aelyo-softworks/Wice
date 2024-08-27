@@ -119,7 +119,7 @@ public partial class Dialog : Popup
 
     protected virtual void OnContentChildAdded(object? sender, ValueEventArgs<Visual> e)
     {
-        if (e.Value is TitleBar tb)
+        if (e.Value is TitleBar tb && tb.CloseButton != null)
         {
             _closeButtonClickHandler = tb.CloseButton.AddOnClick(OnCloseButtonClick);
         }
@@ -127,7 +127,7 @@ public partial class Dialog : Popup
 
     protected virtual void OnContentChildRemoved(object? sender, ValueEventArgs<Visual> e)
     {
-        if (_closeButtonClickHandler != null && e.Value is TitleBar tb)
+        if (_closeButtonClickHandler != null && e.Value is TitleBar tb && tb.CloseButton != null)
         {
             tb.CloseButton.RemoveOnClick(_closeButtonClickHandler);
         }

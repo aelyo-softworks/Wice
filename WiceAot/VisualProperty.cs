@@ -2,13 +2,13 @@
 {
     public class VisualProperty : BaseObjectProperty
     {
-        public static VisualProperty Add<T>(Type declaringType, string name, VisualPropertyInvalidateModes modes, T? defaultValue = default, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null, BaseObjectPropertyOptions options = BaseObjectPropertyOptions.WriteRequiresMainThread) => Add(declaringType, name, typeof(T), modes, defaultValue, convert, changing, changed, options);
-        public static VisualProperty Add(Type declaringType, string name, Type type, VisualPropertyInvalidateModes modes, object? defaultValue = null, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null, BaseObjectPropertyOptions options = BaseObjectPropertyOptions.WriteRequiresMainThread) => Add(new VisualProperty(declaringType, name, type, modes, defaultValue, convert, changing, changed, options));
+        public static VisualProperty Add<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] T>(Type declaringType, string name, VisualPropertyInvalidateModes modes, T? defaultValue = default, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null, BaseObjectPropertyOptions options = BaseObjectPropertyOptions.WriteRequiresMainThread) => Add(declaringType, name, typeof(T), modes, defaultValue, convert, changing, changed, options);
+        public static VisualProperty Add(Type declaringType, string name, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type, VisualPropertyInvalidateModes modes, object? defaultValue = null, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null, BaseObjectPropertyOptions options = BaseObjectPropertyOptions.WriteRequiresMainThread) => Add(new VisualProperty(declaringType, name, type, modes, defaultValue, convert, changing, changed, options));
         public static VisualProperty Add(VisualProperty property) => (VisualProperty)Add((BaseObjectProperty)property);
 
         private VisualPropertyInvalidateModes _invalidateModes;
 
-        public VisualProperty(Type declaringType, string name, Type type, VisualPropertyInvalidateModes modes, object? defaultValue = null, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null, BaseObjectPropertyOptions options = BaseObjectPropertyOptions.WriteRequiresMainThread)
+        public VisualProperty(Type declaringType, string name, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type, VisualPropertyInvalidateModes modes, object? defaultValue = null, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null, BaseObjectPropertyOptions options = BaseObjectPropertyOptions.WriteRequiresMainThread)
             : base(declaringType, name, type, defaultValue, convert, changing, changed, options)
         {
             ArgumentNullException.ThrowIfNull(declaringType);

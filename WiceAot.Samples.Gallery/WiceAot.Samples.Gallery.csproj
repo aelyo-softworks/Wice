@@ -1,0 +1,90 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PublishAot>true</PublishAot>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<WindowsSdkPackageVersion>10.0.26100.42</WindowsSdkPackageVersion>
+		<RootNamespace>Wice.Samples.Gallery</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <NoWarn>1701;1702;IDE0130</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <NoWarn>1701;1702;IDE0130</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\aelyo_flat.png" />
+	  <None Remove="Resources\lorem-cn.txt" />
+	  <None Remove="Resources\rainier.jpg" />
+	  <None Remove="Resources\samples.xml" />
+	  <None Remove="Resources\tiger.svg" />
+	  <None Remove="Resources\wice.rtf" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\aelyo_flat.png" />
+	  <EmbeddedResource Include="Resources\lorem-cn.txt" />
+	  <EmbeddedResource Include="Resources\rainier.jpg" />
+	  <EmbeddedResource Include="Resources\samples.xml" />
+	  <EmbeddedResource Include="Resources\tiger.svg" />
+	  <EmbeddedResource Include="Resources\wice.rtf" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\WiceAot\WiceAot.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="System.Collections.Concurrent" />
+		<Using Include="System.ComponentModel" />
+		<Using Include="System.Diagnostics" />
+		<Using Include="System.Diagnostics.CodeAnalysis" />
+		<Using Include="System.Numerics" />
+		<Using Include="System.Reflection" />
+		<Using Include="System.Runtime.Versioning" />
+		<Using Include="System.Runtime.InteropServices" />
+		<Using Include="System.Text" />
+		<Using Include="System.Xml" />
+		<Using Include="ColorCode" />
+		<Using Include="DirectN" />
+		<Using Include="DirectN.Extensions" />
+		<Using Include="DirectN.Extensions.Com" />
+		<Using Include="DirectN.Extensions.Utilities" />
+		<Using Include="Wice" />
+		<Using Include="Wice.Animation" />
+		<Using Include="Wice.Effects" />
+		<Using Include="Wice.Utilities" />
+		<Using Include="Wice.Samples.Gallery.Pages" />
+		<Using Include="Wice.Samples.Gallery.Samples" />
+		<Using Include="Wice.Samples.Gallery.Utilities" />
+		<Using Include="Windows.UI.Composition" />
+		<Using Include="Windows.Graphics.DirectX" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="DirectN">
+			<HintPath>..\WiceAot\External\DirectN.dll</HintPath>
+		</Reference>
+		<Reference Include="DirectN.Extensions">
+			<HintPath>..\WiceAot\External\DirectN.Extensions.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+</Project>
