@@ -90,4 +90,4 @@ And last but not least, the "snoop"-like feature (press F9 anytime when compiled
 
 ![Wice](Assets/wice_snoop.jpg)
 
-Note: that sole part uses Winforms (another framework to avoid chicken and egg effect!) but you can remove that piece of code if you don't need it.
+Note: that sole part uses Winforms (another framework to avoid chicken and egg effect!) but you can remove that piece of code if you don't need it. It's not currently available in Wice AOT.
