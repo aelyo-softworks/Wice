@@ -50,7 +50,7 @@ public class DiagnosticsInformation(Assembly? assembly = null, Window? window = 
     public string Bitness => GetBitness();
 
     [Category("Process")]
-    public string Culture => CultureInfo.CurrentCulture.Name + ", UI: " + CultureInfo.CurrentUICulture.Name + ", Installed: " + CultureInfo.InstalledUICulture.Name;
+    public string Culture => CultureInfo.CurrentCulture.Name.Nullify() ?? CultureInfo.CurrentCulture.NativeName.Nullify() ?? CultureInfo.CurrentCulture.TwoLetterISOLanguageName + ", UI: " + CultureInfo.CurrentUICulture.Name.Nullify() ?? CultureInfo.CurrentUICulture.NativeName.Nullify() ?? CultureInfo.CurrentUICulture.TwoLetterISOLanguageName + ", Installed: " + CultureInfo.InstalledUICulture.Name;
 
     [Category("Process")]
     public string Now => DateTime.Now + ", Utc: " + DateTime.UtcNow;

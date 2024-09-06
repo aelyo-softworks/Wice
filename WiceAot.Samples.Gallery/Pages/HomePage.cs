@@ -29,12 +29,11 @@ public partial class HomePage : Page, IDisposable
             // https://docs.microsoft.com/en-us/windows/win32/api/tom/nn-tom-itextdocument
 
             // ITextDocument.Open supports a VARIANT of type IStream, we use ManagedIStream to handle this
-            //const int CP_UNICODE = 1200;
 
-            //using var mis = new ManagedIStream(stream);
-            //var unk = ComObject.GetOrCreateComInstance<IStream>(mis);
-            //using var v = new Variant(unk);
-            //_rtb.Document!.Object.Open(v.Detached, 0, CP_UNICODE);
+            using var mis = new ManagedIStream(stream);
+            var unk = ComObject.GetOrCreateComInstance<IStream>(mis);
+            var v = new Variant(unk);
+            _rtb.Document!.Object.Open(v.Detach(), 0, (int)DXC_CP.DXC_CP_UTF16);
         }
 
         sv.Viewer.Child = _rtb;
@@ -43,5 +42,9 @@ public partial class HomePage : Page, IDisposable
     public override string IconText => MDL2GlyphResource.Home;
     public override int SortOrder => 0;
 
-    public void Dispose() => _rtb?.Dispose();
+    public void Dispose()
+    {
+        _rtb?.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }

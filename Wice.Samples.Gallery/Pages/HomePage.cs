@@ -15,8 +15,7 @@ namespace Wice.Samples.Gallery.Pages
             Title.IsVisible = false;
 
             // add a rich text box in a scroll viewer
-            var sv = new ScrollViewer();
-            sv.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            var sv = new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto };
             sv.Viewer.IsWidthUnconstrained = false;
             Children.Add(sv);
 
@@ -46,6 +45,10 @@ namespace Wice.Samples.Gallery.Pages
         public override string IconText => MDL2GlyphResource.Home;
         public override int SortOrder => 0;
 
-        public void Dispose() => _rtb?.Dispose();
+        public void Dispose()
+        {
+            _rtb?.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 }

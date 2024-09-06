@@ -116,8 +116,8 @@
             }
         }
 
-        protected virtual TextBox CreateTitle() => new TextBox();
-        protected virtual Visual CreatePadding() => new Visual();
+        protected virtual TextBox CreateTitle() => new();
+        protected virtual Visual CreatePadding() => new();
         protected virtual Visual CreateMinButton() => new TitleBarButton { ButtonType = TitleBarButtonType.Minimize };
         protected virtual Visual CreateMaxButton() => new TitleBarButton { ButtonType = TitleBarButtonType.Maximize };
         protected virtual Visual CreateCloseButton() => new TitleBarButton { ButtonType = TitleBarButtonType.Close };

@@ -4,7 +4,6 @@ public class RtfFormatter : CodeColorizerBase
 {
     private readonly static ConcurrentDictionary<string, ColorIndex> _scopeNames = new(StringComparer.OrdinalIgnoreCase);
 
-    [UnconditionalSuppressMessage("AOT", "IL3050:Calling members annotated with 'RequiresDynamicCodeAttribute' may break functionality when AOT compiling.", Justification = "<Pending>")]
     public RtfFormatter(TextWriter writer, string? fontName = null, IDictionary<string, D3DCOLORVALUE>? colors = null, D3DCOLORVALUE? defaultColor = null)
         : base(null, null)
     {
@@ -20,7 +19,7 @@ public class RtfFormatter : CodeColorizerBase
         defaultColor ??= D3DCOLORVALUE.Black;
         DefaultColor = defaultColor.Value;
         var defColors = GetDefaultColors(DefaultColor);
-        var values = Enum.GetValues(typeof(ColorIndex));
+        var values = Enum.GetValues<ColorIndex>();
         var names = Enum.GetNames(typeof(ColorIndex));
         for (var i = 0; i < names.Length; i++)
         {

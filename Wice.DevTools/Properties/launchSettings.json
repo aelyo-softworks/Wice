@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Wice.DevTools": {
+      "commandName": "Project",
+      "commandLineArgs": "UpdateWiceSamplesGalleryCode"
+    }
+  }
+}

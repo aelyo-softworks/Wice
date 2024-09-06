@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WiceAot.Samples.Gallery": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

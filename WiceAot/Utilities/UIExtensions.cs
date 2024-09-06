@@ -161,44 +161,44 @@ public static class UIExtensions
     //    return (T)tag;
     //}
 
-    //public static void CopyFrom(this TextBox target, BaseObject source)
-    //{
-    //    if (target == null || source == null)
-    //        return;
+    public static void CopyFrom(this TextBox? target, BaseObject? source)
+    {
+        if (target == null || source == null)
+            return;
 
-    //    CopyFrom((ITextBoxProperties)target, source);
-    //    CopyFrom((ITextFormat)target, source);
-    //    target.ForegroundBrush = (Brush)TextBox.ForegroundBrushProperty.GetValue(source);
-    //}
+        CopyFrom((ITextBoxProperties)target, source);
+        CopyFrom((ITextFormat)target, source);
+        target.ForegroundBrush = (Brush)TextBox.ForegroundBrushProperty.GetValue(source)!;
+    }
 
-    //public static void CopyFrom(this ITextBoxProperties target, BaseObject source)
-    //{
-    //    if (target == null || source == null)
-    //        return;
+    public static void CopyFrom(this ITextBoxProperties? target, BaseObject? source)
+    {
+        if (target == null || source == null)
+            return;
 
-    //    target.AntiAliasingMode = (D2D1_TEXT_ANTIALIAS_MODE)TextBox.AntiAliasingModeProperty.GetValue(source);
-    //    target.DrawOptions = (D2D1_DRAW_TEXT_OPTIONS)TextBox.DrawOptionsProperty.GetValue(source);
-    //    target.TextRenderingParameters = (TextRenderingParameters)TextBox.TextRenderingParametersProperty.GetValue(source);
-    //}
+        target.AntiAliasingMode = (D2D1_TEXT_ANTIALIAS_MODE)TextBox.AntiAliasingModeProperty.GetValue(source)!;
+        target.DrawOptions = (D2D1_DRAW_TEXT_OPTIONS)TextBox.DrawOptionsProperty.GetValue(source)!;
+        target.TextRenderingParameters = (TextRenderingParameters)TextBox.TextRenderingParametersProperty.GetValue(source)!;
+    }
 
-    //public static void CopyFrom(this ITextFormat target, BaseObject source)
-    //{
-    //    if (target == null || source == null)
-    //        return;
+    public static void CopyFrom(this ITextFormat? target, BaseObject? source)
+    {
+        if (target == null || source == null)
+            return;
 
-    //    target.FontFamilyName = (string)TextBox.FontFamilyNameProperty.GetValue(source);
-    //    target.FontCollection = (IComObject<IDWriteFontCollection>)TextBox.FontCollectionProperty.GetValue(source);
-    //    target.FontSize = (float?)TextBox.FontSizeProperty.GetValue(source);
-    //    target.FontWeight = (DWRITE_FONT_WEIGHT)TextBox.FontWeightProperty.GetValue(source);
-    //    target.FontStyle = (DWRITE_FONT_STYLE)TextBox.FontStyleProperty.GetValue(source);
-    //    target.FontStretch = (DWRITE_FONT_STRETCH)TextBox.FontStretchProperty.GetValue(source);
-    //    target.ParagraphAlignment = (DWRITE_PARAGRAPH_ALIGNMENT)TextBox.ParagraphAlignmentProperty.GetValue(source);
-    //    target.Alignment = (DWRITE_TEXT_ALIGNMENT)TextBox.AlignmentProperty.GetValue(source);
-    //    target.FlowDirection = (DWRITE_FLOW_DIRECTION)TextBox.FlowDirectionProperty.GetValue(source);
-    //    target.ReadingDirection = (DWRITE_READING_DIRECTION)TextBox.ReadingDirectionProperty.GetValue(source);
-    //    target.WordWrapping = (DWRITE_WORD_WRAPPING)TextBox.WordWrappingProperty.GetValue(source);
-    //    target.TrimmingGranularity = (DWRITE_TRIMMING_GRANULARITY)TextBox.TrimmingGranularityProperty.GetValue(source);
-    //}
+        target.FontFamilyName = (string?)TextBox.FontFamilyNameProperty.GetValue(source);
+        target.FontCollection = (IComObject<IDWriteFontCollection>?)TextBox.FontCollectionProperty.GetValue(source);
+        target.FontSize = (float?)TextBox.FontSizeProperty.GetValue(source);
+        target.FontWeight = (DWRITE_FONT_WEIGHT)TextBox.FontWeightProperty.GetValue(source)!;
+        target.FontStyle = (DWRITE_FONT_STYLE)TextBox.FontStyleProperty.GetValue(source)!;
+        target.FontStretch = (DWRITE_FONT_STRETCH)TextBox.FontStretchProperty.GetValue(source)!;
+        target.ParagraphAlignment = (DWRITE_PARAGRAPH_ALIGNMENT)TextBox.ParagraphAlignmentProperty.GetValue(source)!;
+        target.Alignment = (DWRITE_TEXT_ALIGNMENT)TextBox.AlignmentProperty.GetValue(source)!;
+        target.FlowDirection = (DWRITE_FLOW_DIRECTION)TextBox.FlowDirectionProperty.GetValue(source)!;
+        target.ReadingDirection = (DWRITE_READING_DIRECTION)TextBox.ReadingDirectionProperty.GetValue(source)!;
+        target.WordWrapping = (DWRITE_WORD_WRAPPING)TextBox.WordWrappingProperty.GetValue(source)!;
+        target.TrimmingGranularity = (DWRITE_TRIMMING_GRANULARITY)TextBox.TrimmingGranularityProperty.GetValue(source)!;
+    }
 
     public static void AddEvent<T>(ref EventHandler<T> handlerMember, EventHandler<T> value)
     {

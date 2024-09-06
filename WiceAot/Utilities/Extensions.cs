@@ -17,4 +17,41 @@ public static class Extensions
         bitmap.GetSize(out var width, out var height);
         return new Size(width, height);
     }
+
+    public static T? GetAttribute<T>(this MemberDescriptor descriptor) where T : Attribute
+    {
+        if (descriptor == null)
+            return null;
+
+        return GetAttribute<T>(descriptor.Attributes);
+    }
+
+    public static T? GetAttribute<T>(this AttributeCollection attributes) where T : Attribute
+    {
+        if (attributes == null)
+            return null;
+
+        foreach (var att in attributes)
+        {
+            if (typeof(T).IsAssignableFrom(att.GetType()))
+                return (T)att;
+        }
+        return null;
+    }
+
+    public static bool IsEmpty<T>(this T[]? enumerable)
+    {
+        if (enumerable == null)
+            return true;
+
+        return enumerable.Length == 0;
+    }
+
+    public static Type GetEnumUnderlyingType(int enumMaxPower) => enumMaxPower switch
+    {
+        8 => typeof(sbyte),
+        16 => typeof(short),
+        64 => typeof(long),
+        _ => typeof(int),
+    };
 }

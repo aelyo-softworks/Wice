@@ -65,7 +65,8 @@ namespace Wice.DevTools
                     break;
 
                 case CommandType.UpdateWiceSamplesGalleryCode:
-                    UpdateWiceSamplesGalleryCode();
+                    UpdateWiceSamplesGalleryCode(@"..\..\..\..\Wice.Samples.Gallery");
+                    UpdateWiceSamplesGalleryCode(@"..\..\..\..\WiceAot.Samples.Gallery");
                     UpdateWiceCoreSamplesGallery();
                     break;
 
@@ -74,13 +75,13 @@ namespace Wice.DevTools
             }
         }
 
-        static void UpdateWiceSamplesGalleryCode()
+        static void UpdateWiceSamplesGalleryCode(string csProj)
         {
-            var source = new CSharpProject(@"..\..\..\Wice.Samples.Gallery\Wice.Samples.Gallery.csproj");
+            var fp = IOPath.GetFullPath(csProj);
             var samplesFile = new XmlDocument();
             samplesFile.LoadXml("<samples/>");
 
-            foreach (var path in source.IncludedFilePaths)
+            foreach (var path in Directory.EnumerateFiles(fp, "*.cs", SearchOption.AllDirectories).OrderBy(f => f))
             {
                 var name = IOPath.GetFileName(path);
                 const string sampleToken = "Sample.cs";
@@ -92,7 +93,7 @@ namespace Wice.DevTools
                 string tabs = null;
                 var index = -1;
                 var wholeRemark = false;
-                foreach (var line in File.ReadAllLines(IOPath.Combine(source.ProjectDirectoryPath, path)))
+                foreach (var line in File.ReadAllLines(IOPath.Combine(fp, path)))
                 {
                     if (tabs == null)
                     {
@@ -152,35 +153,37 @@ namespace Wice.DevTools
 
                 var element = samplesFile.CreateElement("sample");
                 samplesFile.DocumentElement.AppendChild(element);
-                var ns = IOPath.ChangeExtension(path, string.Empty);
+
+                var nsPath = path.Substring(fp.Length + 1);
+                var ns = IOPath.ChangeExtension(nsPath, string.Empty);
                 ns = ns.Substring(0, ns.Length - 1);
                 ns = ns.Replace(IOPath.DirectorySeparatorChar, '.');
                 element.SetAttribute("namespace", ns);
                 element.InnerText = string.Join(Environment.NewLine, lines);
             }
 
-            var resourcesPath = IOPath.Combine(source.ProjectDirectoryPath, "Resources", "samples.xml");
+            var resourcesPath = IOPath.Combine(fp, "Resources", "samples.xml");
             samplesFile.Save(resourcesPath);
         }
 
         static void UpdateWiceCore()
         {
-            var source = new CSharpProject(@"..\..\..\Wice\Wice.csproj");
-            var target = new CSharpProject(@"..\..\..\WiceCore\WiceCore.csproj");
+            var source = new CSharpProject(@"..\..\..\..\Wice\Wice.csproj");
+            var target = new CSharpProject(@"..\..\..\..\WiceCore\WiceCore.csproj");
             UpdateCoreProject(source, target, @"..\Wice\", false);
         }
 
         static void UpdateWiceCoreTests()
         {
-            var source = new CSharpProject(@"..\..\..\Wice.Tests\Wice.Tests.csproj");
-            var target = new CSharpProject(@"..\..\..\WiceCore.Tests\WiceCore.Tests.csproj");
+            var source = new CSharpProject(@"..\..\..\..\Wice.Tests\Wice.Tests.csproj");
+            var target = new CSharpProject(@"..\..\..\..\WiceCore.Tests\WiceCore.Tests.csproj");
             UpdateCoreProject(source, target, @"..\Wice.Tests\", false);
         }
 
         static void UpdateWiceCoreSamplesGallery()
         {
-            var source = new CSharpProject(@"..\..\..\Wice.Samples.Gallery\Wice.Samples.Gallery.csproj");
-            var target = new CSharpProject(@"..\..\..\WiceCore.Samples.Gallery\WiceCore.Samples.Gallery.csproj");
+            var source = new CSharpProject(@"..\..\..\..\Wice.Samples.Gallery\Wice.Samples.Gallery.csproj");
+            var target = new CSharpProject(@"..\..\..\..\WiceCore.Samples.Gallery\WiceCore.Samples.Gallery.csproj");
             UpdateCoreProject(source, target, @"..\Wice.Samples.Gallery\", false);
         }
 

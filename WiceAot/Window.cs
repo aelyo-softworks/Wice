@@ -149,7 +149,7 @@ public partial class Window : Canvas, ITitleBarParent
     public HMONITOR MonitorHandle { get; private set; }
 
     [Browsable(false)]
-    public DirectN.Extensions.Utilities.Monitor? Monitor => MonitorHandle != IntPtr.Zero ? new DirectN.Extensions.Utilities.Monitor(MonitorHandle) : null;
+    public DirectN.Extensions.Utilities.Monitor? Monitor => MonitorHandle != 0 ? new DirectN.Extensions.Utilities.Monitor(MonitorHandle) : null;
 
     [Category(CategoryLayout)]
     public RECT WindowRect => Native.WindowRect;

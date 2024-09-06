@@ -112,9 +112,8 @@ public partial class SvgImage : RenderVisual, IDisposable
         if (svg == null)
             return;
 
-        using var document = new ComObject<ID2D1SvgDocument>(svg);
         //Application.Trace("draw");
-        dc.DrawSvgDocument(document);
+        dc.DrawSvgDocument(svg);
     }
 
     protected virtual void Dispose(bool disposing)

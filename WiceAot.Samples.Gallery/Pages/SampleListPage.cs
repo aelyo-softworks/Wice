@@ -2,7 +2,6 @@
 
 public abstract class SampleListPage : Page
 {
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
     protected SampleListPage()
     {
         // add a wrap that holds all sample lists

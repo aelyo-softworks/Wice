@@ -30,6 +30,7 @@
 		<Using Include="System.Collections" />
 		<Using Include="System.Collections.Concurrent" />
 		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Collections.ObjectModel" />
 		<Using Include="System.Collections.Specialized" />
 		<Using Include="System.Diagnostics" />
 		<Using Include="System.Diagnostics.CodeAnalysis" />

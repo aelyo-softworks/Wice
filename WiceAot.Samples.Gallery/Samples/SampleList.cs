@@ -1,5 +1,4 @@
-﻿
-namespace Wice.Samples.Gallery.Samples;
+﻿namespace Wice.Samples.Gallery.Samples;
 
 public abstract class SampleList
 {
@@ -26,15 +25,8 @@ public abstract class SampleList
         }
     }
 
-    // load all samples in this assembly and folder, using reflection
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
-#pragma warning disable IL2067 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The parameter of method does not have matching annotations.
-    public IEnumerable<Sample> Samples => GetType().Assembly.GetTypes()
-            .Where(t => typeof(Sample).IsAssignableFrom(t) && !t.IsAbstract && t.Namespace == GetType().Namespace + "." + TypeName)
-            .Select(t => (Sample)Activator.CreateInstance(t)!)
-            .Where(t => t.IsEnabled)
-            .OrderBy(t => t.SortOrder);
-#pragma warning restore IL2067 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The parameter of method does not have matching annotations.
+    protected abstract IEnumerable<Sample> Types { get; }
+    public IEnumerable<Sample> Samples => Types.Where(t => t.IsEnabled).OrderBy(t => t.SortOrder);
 
     public override string ToString() => Title;
 }

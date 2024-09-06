@@ -9,8 +9,8 @@ namespace Wice.Samples.Gallery.Utilities
 {
     public class CodeBox : RichTextBox
     {
-        public static VisualProperty CodeLanguageProperty = VisualProperty.Add<string>(typeof(CodeBox), nameof(CodeLanguage), VisualPropertyInvalidateModes.Measure, convert: ValidateNonNullString);
-        public static VisualProperty CodeTextProperty = VisualProperty.Add<string>(typeof(CodeBox), nameof(CodeText), VisualPropertyInvalidateModes.Measure, convert: ValidateNonNullString);
+        public static VisualProperty CodeLanguageProperty { get; } = VisualProperty.Add<string>(typeof(CodeBox), nameof(CodeLanguage), VisualPropertyInvalidateModes.Measure, convert: ValidateNonNullString);
+        public static VisualProperty CodeTextProperty { get; } = VisualProperty.Add<string>(typeof(CodeBox), nameof(CodeText), VisualPropertyInvalidateModes.Measure, convert: ValidateNonNullString);
 
         private Lazy<ILanguage> _language;
 

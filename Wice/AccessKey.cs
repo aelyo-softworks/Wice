@@ -14,8 +14,8 @@ namespace Wice
             Key = key;
         }
 
-        public static AccessKey Enter = new AccessKey(VirtualKeys.Enter);
-        public static AccessKey Escape = new AccessKey(VirtualKeys.Escape);
+        public static AccessKey Enter { get; } = new AccessKey(VirtualKeys.Enter);
+        public static AccessKey Escape { get; } = new AccessKey(VirtualKeys.Escape);
 
         public virtual VirtualKeys Key { get; set; }
         public virtual bool WithShift { get; set; }
