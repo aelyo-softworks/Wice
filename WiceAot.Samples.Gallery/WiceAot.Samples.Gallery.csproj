@@ -11,6 +11,7 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<WindowsSdkPackageVersion>10.0.26100.42</WindowsSdkPackageVersion>
 		<RootNamespace>Wice.Samples.Gallery</RootNamespace>
+		<ApplicationIcon>wice_color.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -32,6 +33,10 @@
 
 	<ItemGroup>
 	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="wice_color.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
