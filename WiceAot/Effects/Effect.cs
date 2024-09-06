@@ -1,14 +1,7 @@
-﻿using IGraphicsEffectD2D1Interop = Windows.Graphics.Effects.IGraphicsEffectD2D1Interop;
-
-namespace Wice.Effects;
-
-// if you find this code is an absolute mess (because of combined .NET Framework & .NET 5+ support), you're 100% right and you should talk to Microsoft because they broke everything
-// https://github.com/microsoft/CsWinRT/issues/302
-// https://github.com/microsoft/CsWinRT/issues/799
-// etc.
+﻿namespace Wice.Effects;
 
 [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
-public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraphicsEffect, IGraphicsEffectSource, IGraphicsEffectD2D1Interop
+public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraphicsEffect, IGraphicsEffectSource, Windows.Graphics.Effects.IGraphicsEffectD2D1Interop
 {
     private static readonly ConcurrentDictionary<Type, List<PropDef>> _properties = new();
     private readonly List<IGraphicsEffectSource?> _sources = [];
@@ -198,13 +191,13 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return list;
     }
 
-    HRESULT IGraphicsEffectD2D1Interop.GetEffectId(out Guid id)
+    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetEffectId(out Guid id)
     {
         id = Clsid;
         return Constants.S_OK;
     }
 
-    HRESULT IGraphicsEffectD2D1Interop.GetNamedPropertyMapping(PWSTR name, out uint index, out GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
+    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetNamedPropertyMapping(PWSTR name, out uint index, out GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
     {
         //Application.Trace(this + "name:" + name);
 
@@ -224,7 +217,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return Constants.S_OK;
     }
 
-    HRESULT IGraphicsEffectD2D1Interop.GetPropertyCount(out uint count)
+    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetPropertyCount(out uint count)
     {
         var defs = GetPropDefs(GetType());
         count = (uint)defs.Count;
@@ -232,7 +225,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return Constants.S_OK;
     }
 
-    HRESULT IGraphicsEffectD2D1Interop.GetProperty(uint index, out nint value)
+    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetProperty(uint index, out nint value)
     {
         try
         {
@@ -255,7 +248,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         }
     }
 
-    HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource? source)
+    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource? source)
     {
         //Application.Trace(this + " index:" + index);
         if (index >= MaximumSourcesCount || index >= _sources.Count)
@@ -269,7 +262,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return Constants.S_OK;
     }
 
-    HRESULT IGraphicsEffectD2D1Interop.GetSourceCount(out uint count)
+    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetSourceCount(out uint count)
     {
         if (MaximumSourcesCount == int.MaxValue)
         {

@@ -1,17 +1,16 @@
 ﻿namespace Wice.PropertyGrid;
 
-public partial class PropertyGridCategorySource : BaseObject
+public partial class PropertyGridCategorySource<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : BaseObject
 {
-    public PropertyGridCategorySource(PropertyGrid grid)
+    public PropertyGridCategorySource(PropertyGrid<T> grid)
     {
         ArgumentNullException.ThrowIfNull(grid);
-
         Grid = grid;
         AddCategories();
     }
 
-    public PropertyGrid Grid { get; }
-    public virtual ObservableCollection<PropertyGridCategory> Categories { get; } = [];
+    public PropertyGrid<T> Grid { get; }
+    public virtual ObservableCollection<PropertyGridCategory<T>> Categories { get; } = [];
 
     public virtual void AddCategories()
     {
@@ -22,10 +21,10 @@ public partial class PropertyGridCategorySource : BaseObject
 
         if (Grid.GroupByCategory)
         {
-            var dic = new Dictionary<string, List<PropertyGridProperty>>(StringComparer.OrdinalIgnoreCase);
+            var dic = new Dictionary<string, List<PropertyGridProperty<T>>>(StringComparer.OrdinalIgnoreCase);
             foreach (var prop in source.Properties)
             {
-                var name = (prop.Category.Nullify() ?? Grid.UnspecifiedCategoryName) ?? PropertyGridCategory.MiscCategoryName;
+                var name = (prop.Category.Nullify() ?? Grid.UnspecifiedCategoryName) ?? PropertyGridCategory<T>.MiscCategoryName;
                 if (!dic.TryGetValue(name, out var props))
                 {
                     props = [];
@@ -35,7 +34,7 @@ public partial class PropertyGridCategorySource : BaseObject
                 props.Add(prop);
             }
 
-            var list = new List<PropertyGridCategory>();
+            var list = new List<PropertyGridCategory<T>>();
             foreach (var kv in dic)
             {
                 var cat = CreateCategory();
@@ -52,11 +51,11 @@ public partial class PropertyGridCategorySource : BaseObject
         }
         else
         {
-            var cat = new PropertyGridCategory(this)
+            var cat = new PropertyGridCategory<T>(this)
             {
                 Name = "All"
             };
-            var list = new List<PropertyGridProperty>();
+            var list = new List<PropertyGridProperty<T>>();
             foreach (var prop in source.Properties)
             {
                 // in this mode, we group by name
@@ -70,5 +69,5 @@ public partial class PropertyGridCategorySource : BaseObject
         }
     }
 
-    protected virtual PropertyGridCategory CreateCategory() => new(this);
+    protected virtual PropertyGridCategory<T> CreateCategory() => new(this);
 }

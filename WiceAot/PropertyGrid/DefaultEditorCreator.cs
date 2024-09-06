@@ -1,8 +1,8 @@
 ﻿namespace Wice.PropertyGrid;
 
-public class DefaultEditorCreator : IEditorCreator
+public class DefaultEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : IEditorCreator<T>
 {
-    public object? CreateEditor(PropertyValueVisual value)
+    public object? CreateEditor(PropertyValueVisual<T> value)
     {
         ArgumentNullException.ThrowIfNull(value);
 
@@ -24,7 +24,7 @@ public class DefaultEditorCreator : IEditorCreator
         return text;
     }
 
-    public object? UpdateEditor(PropertyValueVisual value, object? editor)
+    public object? UpdateEditor(PropertyValueVisual<T> value, object? editor)
     {
         ArgumentNullException.ThrowIfNull(value);
         if (editor is TextBox tb)

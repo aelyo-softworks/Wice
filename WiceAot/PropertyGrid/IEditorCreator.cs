@@ -1,7 +1,7 @@
 ﻿namespace Wice.PropertyGrid;
 
-public interface IEditorCreator
+public interface IEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>
 {
-    object? CreateEditor(PropertyValueVisual value);
-    object? UpdateEditor(PropertyValueVisual value, object? editor);
+    object? CreateEditor(PropertyValueVisual<T> value);
+    object? UpdateEditor(PropertyValueVisual<T> value, object? editor);
 }

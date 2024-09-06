@@ -1,8 +1,8 @@
 ﻿namespace Wice.PropertyGrid;
 
-public class BooleanEditorCreator : IEditorCreator
+public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : IEditorCreator<T>
 {
-    public object? CreateEditor(PropertyValueVisual value)
+    public object? CreateEditor(PropertyValueVisual<T> value)
     {
         ArgumentNullException.ThrowIfNull(value);
 
@@ -14,7 +14,7 @@ public class BooleanEditorCreator : IEditorCreator
         return toggle;
     }
 
-    public object? UpdateEditor(PropertyValueVisual value, object? editor)
+    public object? UpdateEditor(PropertyValueVisual<T> value, object? editor)
     {
         ArgumentNullException.ThrowIfNull(value);
         return editor;

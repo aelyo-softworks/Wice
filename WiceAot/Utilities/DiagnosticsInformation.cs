@@ -1,6 +1,4 @@
-﻿using DirectN.Utilities;
-
-namespace Wice.Utilities;
+﻿namespace Wice.Utilities;
 
 #pragma warning disable CA1822 // Mark members as static
 public class DiagnosticsInformation(Assembly? assembly = null, Window? window = null)

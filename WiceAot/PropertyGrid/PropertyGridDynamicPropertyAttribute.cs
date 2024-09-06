@@ -13,7 +13,7 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
     public Type? Type { get; set; }
     public override object TypeId => Name ?? string.Empty;
 
-    public static string? GetNullifiedValueFromProperty(PropertyGridProperty property, string name)
+    public static string? GetNullifiedValueFromProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyGridProperty<T> property, string name)
     {
         var att = FromProperty(property, name);
         if (att == null)
@@ -25,7 +25,7 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
         return null;
     }
 
-    public static T? GetValueFromProperty<T>(PropertyGridProperty property, string name, T? defaultValue = default)
+    public static T? GetValueFromProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyGridProperty<T> property, string name, T? defaultValue = default)
     {
         var att = FromProperty(property, name);
         if (att == null)
@@ -37,12 +37,12 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
         return value;
     }
 
-    public static PropertyGridDynamicPropertyAttribute? FromProperty(PropertyGridProperty property, string name)
+    public static PropertyGridDynamicPropertyAttribute? FromProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyGridProperty<T> property, string name)
     {
         ArgumentNullException.ThrowIfNull(property);
-        if (property.Descriptor != null)
+        if (property.Info != null)
         {
-            var att = property.Descriptor.Attributes.OfType<PropertyGridDynamicPropertyAttribute>().FirstOrDefault(a => a.Name.EqualsIgnoreCase(name));
+            var att = property.Info.GetCustomAttributes<PropertyGridDynamicPropertyAttribute>().FirstOrDefault(a => a.Name.EqualsIgnoreCase(name));
             if (att != null)
                 return att;
         }

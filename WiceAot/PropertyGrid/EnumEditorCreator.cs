@@ -1,8 +1,8 @@
 ﻿namespace Wice.PropertyGrid;
 
-public class EnumEditorCreator : IEditorCreator
+public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : IEditorCreator<T>
 {
-    public object? CreateEditor(PropertyValueVisual value)
+    public object? CreateEditor(PropertyValueVisual<T> value)
     {
         ArgumentNullException.ThrowIfNull(value);
 
@@ -77,7 +77,7 @@ public class EnumEditorCreator : IEditorCreator
         return editor;
     }
 
-    public object? UpdateEditor(PropertyValueVisual value, object? editor)
+    public object? UpdateEditor(PropertyValueVisual<T> value, object? editor)
     {
         ArgumentNullException.ThrowIfNull(value);
         return editor;

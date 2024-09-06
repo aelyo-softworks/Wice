@@ -106,7 +106,7 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
 #if DEBUG
     public override string ToString() => Name.Nullify() ?? GetType().Name;
 #else
-    public override string ToString() => Name;
+    public override string ToString() => Name ?? string.Empty;
 #endif
 
     protected virtual void OnErrorsChanged(object sender, DataErrorsChangedEventArgs e) => ErrorsChanged?.Invoke(sender, e);

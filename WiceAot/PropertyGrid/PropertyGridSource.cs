@@ -1,11 +1,8 @@
 ﻿namespace Wice.PropertyGrid;
 
-public partial class PropertyGridSource : BaseObject
+public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : BaseObject
 {
-    [UnconditionalSuppressMessage("Trimming",
-        "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code",
-        Justification = "The purpose of property grid is to scan any object for its properties")]
-    public PropertyGridSource(PropertyGrid grid, object? value)
+    public PropertyGridSource(PropertyGrid<T> grid, T? value)
     {
         ArgumentNullException.ThrowIfNull(grid);
 
@@ -15,10 +12,10 @@ public partial class PropertyGridSource : BaseObject
         AddProperties();
     }
 
-    public PropertyGrid Grid { get; }
-    public object? Value { get; }
-    public virtual ObservableCollection<PropertyGridProperty> Properties { get; } = [];
-    public bool IsValid => !Properties.Cast<PropertyGridProperty>().Any(p => !p.IsValid);
+    public PropertyGrid<T> Grid { get; }
+    public T? Value { get; }
+    public virtual ObservableCollection<PropertyGridProperty<T>> Properties { get; } = [];
+    public bool IsValid => !Properties.Cast<PropertyGridProperty<T>>().Any(p => !p.IsValid);
     public bool IsInvalid => !IsValid;
     public bool IsAnyPropertyReadWrite => Properties.Any(p => p.IsReadWrite);
     public bool AreAllPropertiesReadOnly => !IsAnyPropertyReadWrite;
@@ -44,7 +41,7 @@ public partial class PropertyGridSource : BaseObject
         prop.UpdateValueFromSource();
     }
 
-    public PropertyGridProperty? GetProperty(string name)
+    public PropertyGridProperty<T>? GetProperty(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
         return Properties.FirstOrDefault(p => string.Compare(p.Name, name, StringComparison.Ordinal) == 0);
@@ -61,13 +58,13 @@ public partial class PropertyGridSource : BaseObject
         return ret;
     }
 
-    public virtual T? GetPropertyValue<T>(string name, T? defaultValue = default)
+    public virtual TValue? GetPropertyValue<TValue>(string name, TValue? defaultValue = default)
     {
         var prop = GetProperty(name);
         if (prop == null)
             return defaultValue;
 
-        if (!Conversions.TryChangeType(prop.Value, null, out T? value))
+        if (!Conversions.TryChangeType(prop.Value, null, out TValue? value))
             return defaultValue;
 
         return value;
@@ -82,38 +79,20 @@ public partial class PropertyGridSource : BaseObject
         return defaultValue;
     }
 
-    //public virtual void CommitChanges()
-    //{
-    //    foreach (var prop in Properties.Where(p => p.HasChanged))
-    //    {
-    //        prop.CommitChanges();
-    //    }
-    //}
-
-    //public virtual void RollbackChanges()
-    //{
-    //    foreach (var prop in Properties.Where(p => p.HasChanged))
-    //    {
-    //        prop.RollbackChanges();
-    //    }
-    //}
-
-    [UnconditionalSuppressMessage("Trimming",
-        "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code",
-        Justification = "The purpose of property grid is to scan any object for its properties")]
     public virtual void AddProperties()
     {
         Properties.Clear();
         if (Value == null)
             return;
 
-        var props = new List<PropertyGridProperty>();
-        foreach (var descriptor in TypeDescriptor.GetProperties(Value).Cast<PropertyDescriptor>())
+        var props = new List<PropertyGridProperty<T>>();
+        foreach (var info in typeof(T).GetProperties())
         {
-            if (!descriptor.IsBrowsable)
+            var browsable = info.GetCustomAttribute<BrowsableAttribute>();
+            if (browsable != null && !browsable.Browsable)
                 continue;
 
-            var property = CreateProperty(descriptor);
+            var property = CreateProperty(info);
             if (property != null)
             {
                 props.Add(property);
@@ -124,7 +103,7 @@ public partial class PropertyGridSource : BaseObject
         Properties.AddRange(props);
     }
 
-    public virtual void OnPropertyChanged(PropertyGridProperty property)
+    public virtual void OnPropertyChanged(PropertyGridProperty<T> property)
     {
         ArgumentNullException.ThrowIfNull(property);
 
@@ -137,5 +116,5 @@ public partial class PropertyGridSource : BaseObject
         OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsValidAndAnyPropertyReadWrite)));
     }
 
-    protected virtual PropertyGridProperty CreateProperty(PropertyDescriptor descriptor) => new(this, descriptor);
+    protected virtual PropertyGridProperty<T> CreateProperty(PropertyInfo info) => new(this, info);
 }

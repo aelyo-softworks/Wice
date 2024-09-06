@@ -1,8 +1,8 @@
 ﻿namespace Wice.PropertyGrid;
 
-public partial class PropertyValueVisual : Border
+public partial class PropertyValueVisual<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : Border
 {
-    public PropertyValueVisual(PropertyGridProperty property)
+    public PropertyValueVisual(PropertyGridProperty<T> property)
     {
         ArgumentNullException.ThrowIfNull(property);
 
@@ -14,16 +14,16 @@ public partial class PropertyValueVisual : Border
     }
 
     [Browsable(false)]
-    public new PropertyGrid? Parent => (PropertyGrid?)base.Parent;
+    public new PropertyGrid<T>? Parent => (PropertyGrid<T>?)base.Parent;
 
     [Browsable(false)]
-    public PropertyGridProperty Property { get; }
+    public PropertyGridProperty<T> Property { get; }
 
     [Browsable(false)]
     public object? Editor { get; private set; }
 
     [Browsable(false)]
-    public IEditorCreator? EditorCreator { get; private set; }
+    public IEditorCreator<T>? EditorCreator { get; private set; }
 
     public override string ToString() => base.ToString() + " | [" + Property.DisplayName + "='" + Property.TextValue + " ']";
 
@@ -44,15 +44,15 @@ public partial class PropertyValueVisual : Border
         }
     }
 
-    public virtual IEditorCreator CreateEditorCreator()
+    public virtual IEditorCreator<T> CreateEditorCreator()
     {
         if (typeof(bool).IsAssignableFrom(Property.Type))
-            return new BooleanEditorCreator();
+            return new BooleanEditorCreator<T>();
 
         if (Property.Type?.IsEnum == true && Property.IsReadWrite)
-            return new EnumEditorCreator();
+            return new EnumEditorCreator<T>();
 
-        return new DefaultEditorCreator();
+        return new DefaultEditorCreator<T>();
     }
 
     public virtual object? CreateDefaultEditor()

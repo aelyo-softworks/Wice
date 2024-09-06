@@ -8,17 +8,17 @@ namespace Wice.PropertyGrid
 {
     public class PropertyGridProperty : BaseObject, IComparable, IComparable<PropertyGridProperty>
     {
-        public static VisualProperty LiveSyncProperty = VisualProperty.Add(typeof(PropertyGridProperty), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
-        public static VisualProperty IsReadOnlyProperty = VisualProperty.Add(typeof(PropertyGridProperty), nameof(IsReadOnly), VisualPropertyInvalidateModes.Render, false);
-        public static VisualProperty DefaultValueProperty = VisualProperty.Add<object>(typeof(PropertyGridProperty), nameof(DefaultValue), VisualPropertyInvalidateModes.Measure, null);
-        public static VisualProperty ValueProperty = VisualProperty.Add<object>(typeof(PropertyGridProperty), nameof(Value), VisualPropertyInvalidateModes.Measure, null);
-        public static VisualProperty NameProperty = VisualProperty.Add<string>(typeof(PropertyGridProperty), nameof(Name), VisualPropertyInvalidateModes.Render, null);
-        public static VisualProperty SortOrderProperty = VisualProperty.Add(typeof(PropertyGridProperty), nameof(SortOrder), VisualPropertyInvalidateModes.Render, 0);
-        public static VisualProperty HasDefaultValueProperty = VisualProperty.Add(typeof(PropertyGridProperty), nameof(HasDefaultValue), VisualPropertyInvalidateModes.Render, false);
-        public static VisualProperty DisplayNameProperty = VisualProperty.Add<string>(typeof(PropertyGridProperty), nameof(DisplayName), VisualPropertyInvalidateModes.Render);
-        public static VisualProperty DescriptionProperty = VisualProperty.Add<string>(typeof(PropertyGridProperty), nameof(Description), VisualPropertyInvalidateModes.Render);
-        public static VisualProperty TypeProperty = VisualProperty.Add<Type>(typeof(PropertyGridProperty), nameof(Type), VisualPropertyInvalidateModes.Render);
-        public static VisualProperty CategoryProperty = VisualProperty.Add<string>(typeof(PropertyGridProperty), nameof(Category), VisualPropertyInvalidateModes.Render);
+        public static VisualProperty LiveSyncProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
+        public static VisualProperty IsReadOnlyProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(IsReadOnly), VisualPropertyInvalidateModes.Render, false);
+        public static VisualProperty DefaultValueProperty { get; } = VisualProperty.Add<object>(typeof(PropertyGridProperty), nameof(DefaultValue), VisualPropertyInvalidateModes.Measure, null);
+        public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(PropertyGridProperty), nameof(Value), VisualPropertyInvalidateModes.Measure, null);
+        public static VisualProperty NameProperty { get; } = VisualProperty.Add<string>(typeof(PropertyGridProperty), nameof(Name), VisualPropertyInvalidateModes.Render, null);
+        public static VisualProperty SortOrderProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(SortOrder), VisualPropertyInvalidateModes.Render, 0);
+        public static VisualProperty HasDefaultValueProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(HasDefaultValue), VisualPropertyInvalidateModes.Render, false);
+        public static VisualProperty DisplayNameProperty { get; } = VisualProperty.Add<string>(typeof(PropertyGridProperty), nameof(DisplayName), VisualPropertyInvalidateModes.Render);
+        public static VisualProperty DescriptionProperty { get; } = VisualProperty.Add<string>(typeof(PropertyGridProperty), nameof(Description), VisualPropertyInvalidateModes.Render);
+        public static VisualProperty TypeProperty { get; } = VisualProperty.Add<Type>(typeof(PropertyGridProperty), nameof(Type), VisualPropertyInvalidateModes.Render);
+        public static VisualProperty CategoryProperty { get; } = VisualProperty.Add<string>(typeof(PropertyGridProperty), nameof(Category), VisualPropertyInvalidateModes.Render);
 
         public PropertyGridProperty(PropertyGridSource source, PropertyDescriptor descriptor)
         {

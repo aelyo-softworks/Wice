@@ -1,14 +1,14 @@
 ﻿namespace Wice.PropertyGrid;
 
-public partial class PropertyGrid : Grid
+public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : Grid
 {
-    public static VisualProperty LiveSyncProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
-    public static VisualProperty IsReadOnlyProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(IsReadOnly), VisualPropertyInvalidateModes.Render, false);
-    public static VisualProperty GroupByCategoryProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(GroupByCategory), VisualPropertyInvalidateModes.Render, false);
-    public static VisualProperty SelectedObjectProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGrid), nameof(SelectedObject), VisualPropertyInvalidateModes.Measure, null);
-    public static VisualProperty CellMarginProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(CellMargin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
+    public static VisualProperty LiveSyncProperty { get; } = VisualProperty.Add(typeof(PropertyGrid<T>), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
+    public static VisualProperty IsReadOnlyProperty { get; } = VisualProperty.Add(typeof(PropertyGrid<T>), nameof(IsReadOnly), VisualPropertyInvalidateModes.Render, false);
+    public static VisualProperty GroupByCategoryProperty { get; } = VisualProperty.Add(typeof(PropertyGrid<T>), nameof(GroupByCategory), VisualPropertyInvalidateModes.Render, false);
+    public static VisualProperty SelectedObjectProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGrid<T>), nameof(SelectedObject), VisualPropertyInvalidateModes.Measure, null);
+    public static VisualProperty CellMarginProperty { get; } = VisualProperty.Add(typeof(PropertyGrid<T>), nameof(CellMargin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
 
-    private readonly ConcurrentDictionary<string, PropertyVisuals> _propertyVisuals = new();
+    private readonly ConcurrentDictionary<string, PropertyVisuals<T>> _propertyVisuals = new();
     //private EditorHost _openedHost;
 
     public PropertyGrid()
@@ -47,10 +47,10 @@ public partial class PropertyGrid : Grid
     public string? UnspecifiedCategoryName { get; set; }
 
     [Browsable(false)]
-    public PropertyGridSource? Source { get; private set; }
+    public PropertyGridSource<T>? Source { get; private set; }
 
     [Browsable(false)]
-    public PropertyGridCategorySource? CategorySource { get; private set; }
+    public PropertyGridCategorySource<T>? CategorySource { get; private set; }
 
     [Category(CategoryBehavior)]
     public bool IsReadOnly { get => (bool)GetPropertyValue(IsReadOnlyProperty)!; set => SetPropertyValue(IsReadOnlyProperty, value); }
@@ -65,9 +65,7 @@ public partial class PropertyGrid : Grid
     public bool LiveSync { get => (bool)GetPropertyValue(LiveSyncProperty)!; set => SetPropertyValue(LiveSyncProperty, value); }
 
     [Category(CategoryLive)]
-    public object? SelectedObject { get => GetPropertyValue(SelectedObjectProperty); set => SetPropertyValue(SelectedObjectProperty, value); }
-
-    //public float RowSize { get => (float)GetPropertyValue(RowSizeProperty); set => SetPropertyValue(RowSizeProperty, value); }
+    public T? SelectedObject { get => (T?)GetPropertyValue(SelectedObjectProperty); set => SetPropertyValue(SelectedObjectProperty, value); }
 
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
@@ -127,15 +125,15 @@ public partial class PropertyGrid : Grid
 
     protected virtual void OnSelectedObjectPropertyChanged(object? sender, PropertyChangedEventArgs e) => GetVisuals(e.PropertyName ?? string.Empty)?.ValueVisual?.UpdateEditor();
 
-    public PropertyVisuals? GetVisuals(string propertyName)
+    public PropertyVisuals<T>? GetVisuals(string propertyName)
     {
         ArgumentNullException.ThrowIfNull(propertyName);
         _propertyVisuals.TryGetValue(propertyName, out var prop);
         return prop;
     }
 
-    protected virtual PropertyGridSource CreateSource() => new(this, SelectedObject);
-    protected virtual PropertyGridCategorySource CreateCategorySource() => new(this);
+    protected virtual PropertyGridSource<T> CreateSource() => new(this, SelectedObject);
+    protected virtual PropertyGridCategorySource<T> CreateCategorySource() => new(this);
     protected virtual void BindSelectedObject()
     {
         Source = CreateSource();
@@ -143,7 +141,7 @@ public partial class PropertyGrid : Grid
         BindDimensions();
     }
 
-    public virtual EditorHost CreateEditorHost(PropertyValueVisual visual)
+    public virtual EditorHost CreateEditorHost(PropertyValueVisual<T> visual)
     {
         ArgumentNullException.ThrowIfNull(visual);
 
@@ -180,11 +178,11 @@ public partial class PropertyGrid : Grid
         return host;
     }
 
-    protected virtual PropertyValueVisual CreatePropertyValueVisual(PropertyGridProperty property)
+    protected virtual PropertyValueVisual<T> CreatePropertyValueVisual(PropertyGridProperty<T> property)
     {
         ArgumentNullException.ThrowIfNull(property);
 
-        var value = new PropertyValueVisual(property)
+        var value = new PropertyValueVisual<T>(property)
         {
             Margin = CellMargin,
             RenderBrush = RenderBrush
@@ -193,7 +191,7 @@ public partial class PropertyGrid : Grid
         return value;
     }
 
-    protected virtual Visual CreatePropertyTextVisual(PropertyGridProperty property)
+    protected virtual Visual CreatePropertyTextVisual(PropertyGridProperty<T> property)
     {
         ArgumentNullException.ThrowIfNull(property);
 
@@ -229,7 +227,7 @@ public partial class PropertyGrid : Grid
 
             Rows[rowIndex].Size = float.NaN;
 
-            var visuals = new PropertyVisuals
+            var visuals = new PropertyVisuals<T>
             {
                 Text = CreatePropertyTextVisual(property)
             };

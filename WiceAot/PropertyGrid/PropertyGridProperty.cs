@@ -1,29 +1,28 @@
 ﻿namespace Wice.PropertyGrid;
 
-public partial class PropertyGridProperty : BaseObject, IComparable, IComparable<PropertyGridProperty>
+public partial class PropertyGridProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : BaseObject, IComparable, IComparable<PropertyGridProperty<T>>
 {
-    public static VisualProperty LiveSyncProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
-    public static VisualProperty IsReadOnlyProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(IsReadOnly), VisualPropertyInvalidateModes.Render, false);
-    public static VisualProperty DefaultValueProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGridProperty), nameof(DefaultValue), VisualPropertyInvalidateModes.Measure, null);
-    public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGridProperty), nameof(Value), VisualPropertyInvalidateModes.Measure, null);
-    public static VisualProperty NameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty), nameof(Name), VisualPropertyInvalidateModes.Render, null);
-    public static VisualProperty SortOrderProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(SortOrder), VisualPropertyInvalidateModes.Render, 0);
-    public static VisualProperty HasDefaultValueProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(HasDefaultValue), VisualPropertyInvalidateModes.Render, false);
-    public static VisualProperty DisplayNameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty), nameof(DisplayName), VisualPropertyInvalidateModes.Render);
-    public static VisualProperty DescriptionProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty), nameof(Description), VisualPropertyInvalidateModes.Render);
-    public static VisualProperty TypeProperty { get; } = VisualProperty.Add<Type>(typeof(PropertyGridProperty), nameof(Type), VisualPropertyInvalidateModes.Render);
-    public static VisualProperty CategoryProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty), nameof(Category), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty LiveSyncProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty<T>), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
+    public static VisualProperty IsReadOnlyProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty<T>), nameof(IsReadOnly), VisualPropertyInvalidateModes.Render, false);
+    public static VisualProperty DefaultValueProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGridProperty<T>), nameof(DefaultValue), VisualPropertyInvalidateModes.Measure, null);
+    public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGridProperty<T>), nameof(Value), VisualPropertyInvalidateModes.Measure, null);
+    public static VisualProperty NameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty<T>), nameof(Name), VisualPropertyInvalidateModes.Render, null);
+    public static VisualProperty SortOrderProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty<T>), nameof(SortOrder), VisualPropertyInvalidateModes.Render, 0);
+    public static VisualProperty HasDefaultValueProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty<T>), nameof(HasDefaultValue), VisualPropertyInvalidateModes.Render, false);
+    public static VisualProperty DisplayNameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty<T>), nameof(DisplayName), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty DescriptionProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty<T>), nameof(Description), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty TypeProperty { get; } = VisualProperty.Add<Type>(typeof(PropertyGridProperty<T>), nameof(Type), VisualPropertyInvalidateModes.Render);
+    public static VisualProperty CategoryProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty<T>), nameof(Category), VisualPropertyInvalidateModes.Render);
 
-    public PropertyGridProperty(PropertyGridSource source, PropertyDescriptor descriptor)
+    public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
     {
         ArgumentNullException.ThrowIfNull(source);
-
-        ArgumentNullException.ThrowIfNull(descriptor);
+        ArgumentNullException.ThrowIfNull(info);
 
         Source = source;
-        Descriptor = descriptor;
+        Info = info;
         LiveSync = source.Grid.LiveSync;
-        var options = Descriptor.GetAttribute<PropertyGridPropertyOptionsAttribute>();
+        var options = Info.GetCustomAttribute<PropertyGridPropertyOptionsAttribute>();
         if (options != null)
         {
             SortOrder = options.SortOrder;
@@ -34,27 +33,27 @@ public partial class PropertyGridProperty : BaseObject, IComparable, IComparable
             Options = new PropertyGridPropertyOptionsAttribute();
         }
 
-        Name = descriptor.Name;
-        Category = descriptor.GetAttribute<CategoryAttribute>()?.Category.Nullify();
-        DisplayName = descriptor.GetAttribute<DisplayNameAttribute>()?.DisplayName.Nullify();
+        Name = info.Name;
+        Category = info.GetCustomAttribute<CategoryAttribute>()?.Category.Nullify();
+        DisplayName = info.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName.Nullify();
         DisplayName ??= Conversions.Decamelize(Name);
-        Description = descriptor.GetAttribute<DescriptionAttribute>()?.Description.Nullify();
-        IsReadOnly = descriptor.IsReadOnly;
+        Description = info.GetCustomAttribute<DescriptionAttribute>()?.Description.Nullify();
+        IsReadOnly = !info.CanWrite;
 
-        var dva = descriptor.GetAttribute<DefaultValueAttribute>();
+        var dva = info.GetCustomAttribute<DefaultValueAttribute>();
         if (dva != null)
         {
             HasDefaultValue = true;
             DefaultValue = dva.Value;
         }
 
-        Type = descriptor.PropertyType;
-        OriginalValue = Descriptor.GetValue(Source.Value);
+        Type = info.PropertyType;
+        OriginalValue = Info.GetValue(Source.Value);
         Value = OriginalValue;
     }
 
-    public PropertyGridSource Source { get; }
-    public PropertyDescriptor Descriptor { get; }
+    public PropertyGridSource<T> Source { get; }
+    public PropertyInfo Info { get; }
     public object? OriginalValue { get; protected set; }
     public bool IsValid => Error == null;
     public bool IsInvalid => !IsValid;
@@ -90,7 +89,7 @@ public partial class PropertyGridProperty : BaseObject, IComparable, IComparable
         return false;
     }
 
-    public bool TryGetTargetValue<T>(out T? value)
+    public bool TryGetTargetValue<TValue>(out TValue? value)
     {
         if (Conversions.TryChangeType(Value, out value))
             return true;
@@ -155,7 +154,7 @@ public partial class PropertyGridProperty : BaseObject, IComparable, IComparable
         if (TryGetTargetValue(out var value))
         {
             SetDescriptorValue(value);
-            OriginalValue = Descriptor.GetValue(Source.Value);
+            OriginalValue = Info.GetValue(Source.Value);
             return true;
         }
 
@@ -166,14 +165,14 @@ public partial class PropertyGridProperty : BaseObject, IComparable, IComparable
 
     public virtual void UpdateValueFromSource()
     {
-        OriginalValue = Descriptor.GetValue(Source.Value);
+        OriginalValue = Info.GetValue(Source.Value);
         Value = OriginalValue;
     }
 
     protected virtual void SetDescriptorValue(object? value)
     {
-        var cv = Conversions.ChangeType(value, Descriptor.PropertyType);
-        Descriptor.SetValue(Source.Value, cv);
+        var cv = Conversions.ChangeType(value, Info.PropertyType);
+        Info.SetValue(Source.Value, cv);
     }
 
     protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -190,7 +189,7 @@ public partial class PropertyGridProperty : BaseObject, IComparable, IComparable
     {
         if (propertyName == null || propertyName == nameof(Value))
         {
-            if (Source.Value is IPropertyGridPropertyValidator validator)
+            if (Source.Value is IPropertyGridPropertyValidator<T> validator)
             {
                 foreach (var error in validator.ValidateValue(this))
                 {
@@ -205,8 +204,8 @@ public partial class PropertyGridProperty : BaseObject, IComparable, IComparable
         }
     }
 
-    int IComparable.CompareTo(object? obj) => CompareTo(obj as PropertyGridProperty);
-    public virtual int CompareTo(PropertyGridProperty? other)
+    int IComparable.CompareTo(object? obj) => CompareTo(obj as PropertyGridProperty<T>);
+    public virtual int CompareTo(PropertyGridProperty<T>? other)
     {
         ArgumentNullException.ThrowIfNull(other);
         var cmp = -SortOrder.CompareTo(other.SortOrder);

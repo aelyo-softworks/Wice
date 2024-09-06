@@ -2,8 +2,11 @@
 
 public partial class AboutPage : Page
 {
+    private readonly Lazy<DiagnosticsInformation> _info;
+
     public AboutPage()
     {
+        _info = new Lazy<DiagnosticsInformation>(() => new DiagnosticsInformation(null, Window));
         var stack = new Stack { Orientation = Orientation.Horizontal };
         SetDockType(stack, DockType.Top);
         Children.Add(stack);
@@ -81,13 +84,13 @@ public partial class AboutPage : Page
             tlb.MinButton!.IsVisible = false;
             dlg.Content.Children.Add(tlb);
 
-            var pg = new PropertyGrid.PropertyGrid
+            var pg = new PropertyGrid.PropertyGrid<DiagnosticsInformation>
             {
                 CellMargin = D2D_RECT_F.Thickness(5, 0),
                 //pg.MaxWidth = 600;
                 //TextBox.WordWrappingProperty.SetValue(pg, DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER);
                 Margin = D2D_RECT_F.Thickness(10),
-                SelectedObject = new DiagnosticsInformation(null, Window)
+                SelectedObject = _info.Value
             };
             dlg.Content.Children.Add(pg);
         };
