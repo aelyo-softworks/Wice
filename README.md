@@ -43,12 +43,12 @@ Please post an issue if you have a problem or a question, using sample reproduci
 * **WiceCore.Samples.Gallery**: this is the same as Wice.Samples.Gallery but compiled for .NET 6. All sources are linked to Wice.Samples.Gallery.
 * WiceCore.Tests: this is the same as Wice.Tests but compiled for .NET 6 All sources are linked to Wice.Tests. 
 
-✨ NEW 2024 / 05 ! ✨ .NET 8 AOT-friendly projects:
+✨ NEW 2024 / 09 ! ✨ .NET 8 AOT-friendly projects:
 * **WiceAot**: this is the same as Wice but compiled for .NET 8, AOT friendly. Source has been adapted and project is using [DirectNAot](https://github.com/smourier/DirectNAot).
 * WiceAot.Tests: this is simple sample code for WiceAot
 
-⚠️ Wice AOT doesn't work yet and has been put on pause since C#/WinRT doesn't support AOT yet: https://github.com/microsoft/CsWinRT/discussions/1590
-Also the project has lots of warnings, you can just avoid compiling it if you don't want to be bothered by these.
+![image](https://github.com/user-attachments/assets/e409f674-60eb-4374-b0fe-813abbb81dc2)
+
 
 # Screenshots
 
