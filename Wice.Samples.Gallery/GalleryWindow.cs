@@ -34,6 +34,8 @@ namespace Wice.Samples.Gallery
             var monitor = GetMonitor().Bounds;
             ResizeClient(monitor.Width * 2 / 3, monitor.Height * 2 / 3);
 
+            var windows11 = WindowsVersionUtilities.KernelVersion > new Version(10, 0, 22000);
+
             // the EnableBlurBehind call may be necessary when using the Windows' acrylic depending on Windows version
             // otherwise the window will be (almost) black
             Native.EnableBlurBehind();
@@ -41,7 +43,7 @@ namespace Wice.Samples.Gallery
                 CompositionDevice,
                 _D3DCOLORVALUE.White,
                 0.2f,
-                useWindowsAcrylic: true
+                useWindowsAcrylic: windows11
                 );
 
             // uncomment this to enable Pointer messages at startup time

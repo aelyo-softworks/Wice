@@ -515,7 +515,7 @@ public partial class ScrollViewer : Dock, IOneChildParent
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {
         float offset;
-        if (e.Keys.HasFlag(POINTER_MOD.POINTER_MOD_SHIFT))
+        if (NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT))
         {
             offset = e.Delta * VerticalScrollBar.Thumb.ArrangedRect.Height;
         }

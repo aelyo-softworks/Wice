@@ -100,6 +100,38 @@ public class DiagnosticsInformation(Assembly? assembly = null, Window? window = 
         }
     }
 
+    [Category("Graphics")]
+    [DisplayName("Graphic Adapter(s)")]
+    public string Adapters => GetAdapters();
+
+    [Category("Graphics")]
+    [DisplayName("Display(s)")]
+    public string Displays => string.Join(Environment.NewLine, DisplayConfigQuery());
+
+    [Category("Software")]
+    public Version AssemblyInformationalVersion
+    {
+        get
+        {
+            var v = Assembly.GetInformationalVersion();
+            if (v != null)
+            {
+                try
+                {
+                    return new Version(v);
+                }
+                catch
+                {
+                    // do nothing
+                }
+            }
+            return new Version(0, 0);
+        }
+    }
+
+    [Category("Software")]
+    public string AssemblyConfiguration => Assembly.GetConfiguration() ?? string.Empty;
+
     private static string GetAdapters()
     {
         using var fac = DXGIFunctions.CreateDXGIFactory1();
@@ -133,38 +165,6 @@ public class DiagnosticsInformation(Assembly? assembly = null, Window? window = 
             yield return tar.monitorFriendlyDeviceName + " " + display.CurrentSettings + dpi;
         }
     }
-
-    [Category("Graphics")]
-    [DisplayName("Graphic Adapter(s)")]
-    public string Adapters => GetAdapters();
-
-    [Category("Graphics")]
-    [DisplayName("Display(s)")]
-    public string Displays => string.Join(Environment.NewLine, DisplayConfigQuery());
-
-    [Category("Software")]
-    public Version AssemblyInformationalVersion
-    {
-        get
-        {
-            var v = Assembly.GetInformationalVersion();
-            if (v != null)
-            {
-                try
-                {
-                    return new Version(v);
-                }
-                catch
-                {
-                    // do nothing
-                }
-            }
-            return new Version(0, 0);
-        }
-    }
-
-    [Category("Software")]
-    public string AssemblyConfiguration => Assembly.GetConfiguration() ?? string.Empty;
 
     public static string GetBitness()
     {

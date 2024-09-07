@@ -350,7 +350,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
     public static string GetDefaultTextServicesGeneratorVersion()
     {
-        using var rtb = new RichTextBox();
+        var rtb = new RichTextBox();
         return rtb.GeneratorVersion;
     }
 }

@@ -2,11 +2,8 @@
 
 public partial class AboutPage : Page
 {
-    private readonly Lazy<DiagnosticsInformation> _info;
-
     public AboutPage()
     {
-        _info = new Lazy<DiagnosticsInformation>(() => new DiagnosticsInformation(null, Window));
         var stack = new Stack { Orientation = Orientation.Horizontal };
         SetDockType(stack, DockType.Top);
         Children.Add(stack);
@@ -90,7 +87,7 @@ public partial class AboutPage : Page
                 //pg.MaxWidth = 600;
                 //TextBox.WordWrappingProperty.SetValue(pg, DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER);
                 Margin = D2D_RECT_F.Thickness(10),
-                SelectedObject = _info.Value
+                SelectedObject = new DiagnosticsInformation(null, Window)
             };
             dlg.Content.Children.Add(pg);
         };

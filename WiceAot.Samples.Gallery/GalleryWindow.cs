@@ -24,6 +24,8 @@ public sealed partial class GalleryWindow : Window, IDisposable
             ResizeClient(bounds.Width * 2 / 3, bounds.Height * 2 / 3);
         }
 
+        var windows11 = WindowsVersionUtilities.KernelVersion > new Version(10, 0, 22000);
+
         // the EnableBlurBehind call may be necessary when using the Windows' acrylic depending on Windows version
         // otherwise the window will be (almost) black
         Native.EnableBlurBehind();
@@ -31,7 +33,7 @@ public sealed partial class GalleryWindow : Window, IDisposable
             CompositionDevice,
             D3DCOLORVALUE.White,
             0.2f,
-            useWindowsAcrylic: true
+            useWindowsAcrylic: windows11
             );
 
         // uncomment this to enable Pointer messages at startup time

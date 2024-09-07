@@ -614,8 +614,8 @@ namespace Wice
         }
 
 
-        public void EnableAcrylicBlurBehind() => EnableAcrylicBlurBehind(Handle);
-        public static void EnableAcrylicBlurBehind(IntPtr hwnd)
+        public HRESULT EnableAcrylicBlurBehind() => EnableAcrylicBlurBehind(Handle);
+        public static HRESULT EnableAcrylicBlurBehind(IntPtr hwnd)
         {
             var accent = new ACCENT_POLICY();
             accent.AccentState = ACCENT_STATE.ACCENT_ENABLE_ACRYLICBLURBEHIND;
@@ -626,12 +626,12 @@ namespace Wice
             {
                 data.cbData = new IntPtr(mem.Size);
                 data.pvData = mem.Pointer;
-                WindowsFunctions.SetWindowCompositionAttribute(hwnd, ref data).ThrowOnError();
+                return WindowsFunctions.SetWindowCompositionAttribute(hwnd, ref data).ThrowOnError();
             }
         }
 
-        public void EnableBlurBehind() => EnableBlurBehind(Handle);
-        public static void EnableBlurBehind(IntPtr hwnd)
+        public HRESULT EnableBlurBehind() => EnableBlurBehind(Handle);
+        public static HRESULT EnableBlurBehind(IntPtr hwnd)
         {
             var accent = new ACCENT_POLICY();
             accent.AccentState = ACCENT_STATE.ACCENT_ENABLE_BLURBEHIND;
@@ -642,7 +642,7 @@ namespace Wice
             {
                 data.cbData = new IntPtr(mem.Size);
                 data.pvData = mem.Pointer;
-                WindowsFunctions.SetWindowCompositionAttribute(hwnd, ref data).ThrowOnError();
+                return WindowsFunctions.SetWindowCompositionAttribute(hwnd, ref data).ThrowOnError();
             }
         }
     }
