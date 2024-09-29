@@ -81,13 +81,13 @@ public partial class AboutPage : Page
             tlb.MinButton!.IsVisible = false;
             dlg.Content.Children.Add(tlb);
 
-            var pg = new PropertyGrid.PropertyGrid<DiagnosticsInformation>
+            var pg = new PropertyGrid.PropertyGrid<SystemInformation>
             {
                 CellMargin = D2D_RECT_F.Thickness(5, 0),
                 //pg.MaxWidth = 600;
                 //TextBox.WordWrappingProperty.SetValue(pg, DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER);
                 Margin = D2D_RECT_F.Thickness(10),
-                SelectedObject = new DiagnosticsInformation(null, Window)
+                SelectedObject = new SystemInformation(null)
             };
             dlg.Content.Children.Add(pg);
         };

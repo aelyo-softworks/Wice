@@ -3272,12 +3272,15 @@ public partial class Window : Canvas, ITitleBarParent
                 if (win == null)
                     break;
 
-                var newDpi = new D2D_SIZE_U(wParam.Value.LOWORD(), wParam.Value.HIWORD());
-                var rc = Marshal.PtrToStructure<RECT>(lParam);
-                var dpic = new DpiChangedEventArgs(newDpi, rc);
-                win.OnDpiChanged(win, dpic);
-                if (dpic.Handled)
-                    break;
+                unsafe
+                {
+                    var newDpi = new D2D_SIZE_U(wParam.Value.LOWORD(), wParam.Value.HIWORD());
+                    var rc = *(RECT*)lParam.Value;
+                    var dpic = new DpiChangedEventArgs(newDpi, rc);
+                    win.OnDpiChanged(win, dpic);
+                    if (dpic.Handled)
+                        break;
+                }
 
                 win.Invalidate(VisualPropertyInvalidateModes.Measure, new InvalidateReason(win.GetType()));
                 return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);

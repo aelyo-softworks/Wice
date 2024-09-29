@@ -79,6 +79,19 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
         return defaultValue;
     }
 
+    protected IReadOnlyList<PropertyInfo> EnumerateProperties()
+    {
+        var list = new List<PropertyInfo>(typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
+        foreach (var info in typeof(T).GetProperties())
+        {
+            if (list.Any(p => p.Name == info.Name))
+                continue;
+
+            list.Add(info);
+        }
+        return list.AsReadOnly();
+    }
+
     public virtual void AddProperties()
     {
         Properties.Clear();
@@ -86,7 +99,7 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
             return;
 
         var props = new List<PropertyGridProperty<T>>();
-        foreach (var info in typeof(T).GetProperties())
+        foreach (var info in EnumerateProperties())
         {
             var browsable = info.GetCustomAttribute<BrowsableAttribute>();
             if (browsable != null && !browsable.Browsable)
@@ -106,7 +119,6 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     public virtual void OnPropertyChanged(PropertyGridProperty<T> property)
     {
         ArgumentNullException.ThrowIfNull(property);
-
         OnPropertyChanged(this, new PropertyChangedEventArgs(property.Name));
         OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsValid)));
         OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsInvalid)));

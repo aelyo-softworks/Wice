@@ -1,5 +1,4 @@
-﻿
-namespace Wice.Samples.Gallery.Utilities;
+﻿namespace Wice.Samples.Gallery.Utilities;
 
 public partial class CodeBox : RichTextBox
 {
