@@ -7,7 +7,7 @@ Windows Interface Composition Engine ("Wice") is a .NET UI engine for creating W
 Here are the key points for Wice:
 
 * It's available for the .NET Framework 4.7.2 and higher (use the "Wice" project).
-* It's available for .NET 5/6/7+ (use the "WiceCore" project).
+* It's available for .NET 5/6/7/8+ if you use the "WiceCore" project, or for .NET 8 AOT if you use the "WiceAot" project.
 * It requires Windows 10 version 1809 ("Redstone 5").
 * It's not cross-platform and was never intended to be.
 * It's not dependent on WPF nor Winforms, nor WinUI 2 nor 3, nor Windows XAML, nor UWP, **it's another UI Framework**. The way it works is somewhat inspired from WPF, but there is no technical dependency over it.
@@ -20,16 +20,14 @@ But... why Wice?
 * It **still support .NET Framework 4.7.2**.
 * It's **100% open source C# code**, with something like 50000 lines of code (which is a relatively small code base).
 * It's more modern than Winforms (GDI/GDI+) and WPF (which is still based on DirectX 9 and that causes lots of issues).
-* It has **no sandbox like UWP**, and **doesn't require Win2D**  (it's too complex to use and requires all sort off painful MSVC dependencies).
-* It **compiles much faster than UWP or WinUI** projects because the tooling is the standard .NET "old" tooling we all love an cherish.
-* It has no external dependencies, so it's **free from deployment pain** (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" my apps at all?`</rant>`). Using .NET 5/6/7+, you can even publish your app as a *really single* zero-dependency .exe!
+* It has **no sandbox like UWP**, and **doesn't require Win2D**  (it's too complex to use and requires all sort of painful MSVC dependencies).
+* It **compiles much faster than UWP or WinUI** projects because the tooling is the standard .NET "old" tooling we all love and cherish.
+* It has no external dependencies, so it's **free from deployment pain** (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" my apps at all?`</rant>`). Using .NET 5/6/7/8+, you can even publish your app as a *really single* zero-dependency .exe, and if you use WiceAOT and .NET 8 it's even better!
 * It has the real Windows Acrylic (no hack!) brush w/o the need for UWP.
-* It ships with an integrated in-process (Snoop-like for people familiar with WPF) visual "Spy" utility (just press F9 in debug mode, actually, this sole part uses Winforms, but it's not necessary for Wice, it's more like an external embedded tool).
+* Unless you use WiceAOT, Wice ships with an integrated in-process (Snoop-like for people familiar with WPF) visual "Spy" utility (just press F9 in debug mode, actually, this sole part uses Winforms, but it's not necessary for Wice, it's more like an external embedded tool).
 
 # Status
-Wice is still a work in progress. The base system is working quite well but it's not 100% finished.
-
-Please post an issue if you have a problem or a question, using sample reproducible code.
+Wice is always a work in progress. Please post an issue if you have a problem or a question, using sample reproducible code.
 
 # List of projects
 .NET Standard & Framework projects:
