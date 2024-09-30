@@ -19,6 +19,7 @@ namespace Wice.Samples.Gallery.Pages
             sv.Viewer.IsWidthUnconstrained = false;
             Children.Add(sv);
 
+            _rtb.Padding = D2D_RECT_F.Thickness(0, 0, 20, 0);
             _rtb.VerticalAlignment = Alignment.Near;
             _rtb.Options |= TextHostOptions.WordWrap;
             SetDockType(_rtb, DockType.Top);

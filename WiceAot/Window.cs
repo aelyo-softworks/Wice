@@ -718,10 +718,10 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual void OnMoved(object? sender, EventArgs e) => Moved?.Invoke(sender, e);
     protected virtual void OnMonitorChanged(object? sender, EventArgs e) => MonitorChanged?.Invoke(sender, e);
     protected virtual void OnHandleCreated(object? sender, EventArgs e) => HandleCreated?.Invoke(sender, e);
-    protected virtual void OnDpiChanged(object sender, DpiChangedEventArgs e) => DpiChanged?.Invoke(sender, e);
     protected virtual void OnDpiChangedAfterParent(object sender, EventArgs e) => DpiChangedAfterParent?.Invoke(sender, e);
     protected virtual void OnDpiChangedBeforeParent(object sender, EventArgs e) => DpiChangedBeforeParent?.Invoke(sender, e);
     protected virtual void OnClosing(object? sender, ClosingEventArgs e) => Closing?.Invoke(sender, e);
+    protected virtual void OnDpiChanged(object sender, DpiChangedEventArgs e) => DpiChanged?.Invoke(sender, e);
 
     public virtual bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOW) => Native.Show(command);
     public bool Hide() => Native.Show(SHOW_WINDOW_CMD.SW_HIDE);
@@ -3280,9 +3280,10 @@ public partial class Window : Canvas, ITitleBarParent
                     win.OnDpiChanged(win, dpic);
                     if (dpic.Handled)
                         break;
+
+                    win.Invalidate(VisualPropertyInvalidateModes.Measure, new DpiChangedInvalidateReason(newDpi));
                 }
 
-                win.Invalidate(VisualPropertyInvalidateModes.Measure, new InvalidateReason(win.GetType()));
                 return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_DPICHANGED_AFTERPARENT:
