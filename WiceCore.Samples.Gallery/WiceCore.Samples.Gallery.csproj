@@ -159,7 +159,7 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Text\RichTextBox\RichTextBoxSample.cs" Link="Samples\Text\RichTextBox\RichTextBoxSample.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DirectNCore" Version="1.16.1.2" />
+    <PackageReference Include="DirectNCore" Version="1.17.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WiceCore\WiceCore.csproj" />
