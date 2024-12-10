@@ -191,7 +191,6 @@ public class WiceLanguage : ILanguage
             nameof(ResourcesUtilities),
             nameof(UIExtensions),
             nameof(WicUtilities),
-            nameof(ICompositionTargetz),
             nameof(IPropertyValueStatics),
             nameof(IPropertyValueStaticsExtensions),
             nameof(AcrylicBrush),

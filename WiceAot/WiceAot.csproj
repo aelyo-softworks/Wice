@@ -9,15 +9,17 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<PublishAot>true</PublishAot>
 		<IsAotCompatible>true</IsAotCompatible>
-		<WindowsSdkPackageVersion>10.0.26100.42</WindowsSdkPackageVersion>
+		<WindowsSdkPackageVersion>10.0.26100.57</WindowsSdkPackageVersion>
+		<!-- https://github.com/microsoft/CsWinRT/blob/master/docs/aot-trimming.md -->
+		<CsWinRTAotOptimizerEnabled>Auto</CsWinRTAotOptimizerEnabled>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Resources\NoiseAsset_256X256.png" />
+		<None Remove="Resources\NoiseAsset_256X256.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Resources\NoiseAsset_256X256.png" />
+		<EmbeddedResource Include="Resources\NoiseAsset_256X256.png" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -58,20 +60,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="External\" />
+		<Folder Include="External\" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.6" />
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="DirectN">
-	    <HintPath>External\DirectN.dll</HintPath>
-	  </Reference>
-	  <Reference Include="DirectN.Extensions">
-	    <HintPath>External\DirectN.Extensions.dll</HintPath>
-	  </Reference>
+		<Reference Include="DirectN">
+			<HintPath>External\DirectN.dll</HintPath>
+		</Reference>
+		<Reference Include="DirectN.Extensions">
+			<HintPath>External\DirectN.Extensions.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 </Project>

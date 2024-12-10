@@ -9,7 +9,7 @@
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<WindowsSdkPackageVersion>10.0.26100.42</WindowsSdkPackageVersion>
+		<WindowsSdkPackageVersion>10.0.26100.57</WindowsSdkPackageVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -35,7 +35,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.1.6" />
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>
