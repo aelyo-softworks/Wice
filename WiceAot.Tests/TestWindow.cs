@@ -1,4 +1,6 @@
-﻿namespace WiceAot.Tests;
+﻿using System.Numerics;
+
+namespace WiceAot.Tests;
 
 internal partial class TestWindow : Window
 {
@@ -8,7 +10,7 @@ internal partial class TestWindow : Window
         Style |= WINDOW_STYLE.WS_THICKFRAME | WINDOW_STYLE.WS_CAPTION | WINDOW_STYLE.WS_SYSMENU | WINDOW_STYLE.WS_MAXIMIZEBOX | WINDOW_STYLE.WS_MINIMIZEBOX;
         //SizeToContent = DimensionOptions.WidthAndHeight;
         //Native.EnableBlurBehind();
-        RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+        //RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
         //RenderBrush = AcrylicBrush.CreateAcrylicBrush(
         //    CompositionDevice,
         //    D3DCOLORVALUE.White,
@@ -16,7 +18,12 @@ internal partial class TestWindow : Window
         //    useWindowsAcrylic: false
         //    );
 
-        AddEditableTexts();
+        //AddEditableTexts();
+        //AddUniformGridShapes(20);
+        AddUniformColorGrid(20);
+        //AddUniformGridImmersiveColors();
+        //AddUniformGridSysColors();
+
         DisplayTime();
     }
 
@@ -38,6 +45,213 @@ internal partial class TestWindow : Window
             });
         }, null, 0, 1000);
     }
+
+    public void AddUniformGridSysColors()
+    {
+        var grid = new UniformGrid
+        {
+            BackgroundColor = D3DCOLORVALUE.Transparent,
+            Name = "ugrid"
+        };
+        Children.Add(grid);
+
+        var colors = DirectN.Extensions.Utilities.ColorUtilities.SysColors.ToArray();
+        grid.Rows = colors.Length;
+        grid.Columns = 3;
+
+        foreach (var color in colors)
+        {
+            var text = new TextBox();
+            grid.Children.Add(text);
+            //var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            //text.BackgroundColor = _D3DCOLORVALUE.Transparent;
+            //text.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.LightGoldenrodYellow);
+            text.Text = color.Item1.ToString();
+
+            var html = new TextBox();
+            grid.Children.Add(html);
+            //var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            html.BackgroundColor = D3DCOLORVALUE.Transparent;
+            html.ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.Gold);
+            html.Text = color.Item2.ToString();
+
+            var border = new Border();
+            grid.Children.Add(border);
+            border.RenderBrush = Compositor!.CreateColorBrush(color.Item2.ToColor());
+        }
+    }
+
+
+    public void AddUniformGridImmersiveColors()
+    {
+        var grid = new UniformGrid
+        {
+            BackgroundColor = D3DCOLORVALUE.Transparent,
+            Name = "ugrid"
+        };
+        Children.Add(grid);
+
+        var max = 50;
+        var colors = DirectN.Extensions.Utilities.ColorUtilities.ImmersiveColors;
+        grid.Rows = max;
+        grid.Columns = 3;
+
+        int i = 0;
+        foreach (var color in colors)
+        {
+            var text = new TextBox();
+            grid.Children.Add(text);
+            //var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            //text.BackgroundColor = _D3DCOLORVALUE.Transparent;
+            //text.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.LightGoldenrodYellow);
+            text.FontSize = 10;
+            text.Text = color.Value.Name;
+
+            var html = new TextBox();
+            grid.Children.Add(html);
+            //var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            html.FontSize = text.FontSize;
+            html.Text = color.Value.Color.HtmlString;
+
+            var border = new Border();
+            grid.Children.Add(border);
+            border.RenderBrush = Compositor!.CreateColorBrush(color.Value.Color.ToColor());
+            i++;
+            if (i == max)
+                break;
+        }
+    }
+
+    public void AddUniformColorGrid(int size)
+    {
+        var visual = new UniformGrid
+        {
+            Name = "ugrid",
+            Rows = size
+        };
+        visual.Columns = visual.Rows;
+        Children.Add(visual);
+
+        for (var i = 0; i < visual.Rows; i++)
+        {
+            for (var j = 0; j < visual.Columns; j++)
+            {
+                addCell(i, j);
+            }
+        }
+
+        KeyDown += (s, e) =>
+        {
+            if (e.Key == VIRTUAL_KEY.VK_R)
+            {
+                visual.Rows++;
+            }
+            else if (e.Key == VIRTUAL_KEY.VK_C)
+            {
+                visual.Columns++;
+            }
+            else if (e.Key == VIRTUAL_KEY.VK_A)
+            {
+                var i = visual.Children.Count / visual.Rows;
+                var j = visual.Children.Count % visual.Columns;
+                addCell(i, j);
+            }
+        };
+
+        void addCell(int i, int j)
+        {
+            var cell = new Border
+            {
+                Name = "cell " + i + "x" + j
+            };
+            visual.Children.Add(cell);
+            var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            cell.RenderBrush = Compositor!.CreateColorBrush(color.ToColor());
+        }
+    }
+
+    public void AddUniformGridShapes(int size)
+    {
+        var visual = new UniformGrid
+        {
+            BackgroundColor = D3DCOLORVALUE.Transparent,
+            Name = "ugrid",
+            Rows = size
+        };
+        visual.Columns = visual.Rows;
+        Children.Add(visual);
+
+        for (var i = 0; i < visual.Rows; i++)
+        {
+            for (var j = 0; j < visual.Columns; j++)
+            {
+                addLine(i, j);
+                //addEllipse(i, j);
+            }
+        }
+
+        KeyDown += (s, e) =>
+        {
+            var i = visual.Children.Count / visual.Rows;
+            var j = visual.Children.Count % visual.Columns;
+            if (e.Key == VIRTUAL_KEY.VK_R)
+            {
+                visual.Rows++;
+            }
+            else if (e.Key == VIRTUAL_KEY.VK_C)
+            {
+                visual.Columns++;
+            }
+            else if (e.Key == VIRTUAL_KEY.VK_T)
+            {
+                addRoundedRectangle(i, j);
+            }
+            else if (e.Key == VIRTUAL_KEY.VK_L)
+            {
+                addLine(i, j);
+            }
+            else
+            {
+                addEllipse(i, j);
+            }
+        };
+
+        void addEllipse(int i, int j)
+        {
+            var shape = new Ellipse();
+            visual.Children.Add(shape);
+            var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            shape.RenderBrush = Compositor!.CreateColorBrush(color.ToColor());
+            shape.Shape!.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
+            shape.Shape.StrokeThickness = 0.5f;
+        }
+
+        void addLine(int i, int j)
+        {
+            var shape = new Line();
+            visual.Children.Add(shape);
+            var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            shape.RenderBrush = Compositor!.CreateColorBrush(color.ToColor());
+            shape.Shape!.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
+            shape.Shape.StrokeThickness = 0.5f;
+            shape.Arranged += (s, e) =>
+            {
+                shape.Geometry!.End = shape.ArrangedRect.Size.ToVector2();
+            };
+        }
+
+        void addRoundedRectangle(int i, int j)
+        {
+            var shape = new RoundedRectangle();
+            visual.Children.Add(shape);
+            var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            shape.Geometry!.CornerRadius = new Vector2(10);
+            shape.RenderBrush = Compositor!.CreateColorBrush(color.ToColor());
+            shape.Shape!.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
+            shape.Shape.StrokeThickness = 0.5f;
+        }
+    }
+
 
     public void AddEditableTexts()
     {

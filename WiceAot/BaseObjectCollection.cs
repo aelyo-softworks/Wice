@@ -4,6 +4,9 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
 {
     private readonly List<T> _list = [];
 
+    // speed-up if many many objects
+    // private readonly Dictionary<T, int> _dic = [];
+
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
     public int MaxChildrenCount { get; } = maxChildrenCount;
@@ -45,6 +48,7 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
 
         OnItemsChanged(() =>
         {
+            //_dic[item] = _list.Count;
             _list.Add(item);
             OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _list.Count - 1));
         });
@@ -54,6 +58,7 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
     {
         var index = _list.IndexOf(after);
         if (index < 0)
+        //if (!_dic.TryGetValue(after, out var index))
         {
             Add(item);
             return;
@@ -66,6 +71,7 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
     {
         var index = _list.IndexOf(before);
         if (index < 0)
+        //if (!_dic.TryGetValue(before, out var index))
         {
             Insert(0, item);
             return;
@@ -95,6 +101,7 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
             {
                 RemoveAt(_list.Count - 1);
             }
+            //_dic.Clear();
             OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         });
     }
@@ -111,10 +118,18 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
     }
 
     public bool Contains(T item) => _list.Contains(item);
+    //public bool Contains(T item) => _dic.ContainsKey(item);
     public void CopyTo(T[] array, int arrayIndex) => _list.CopyTo(array, arrayIndex);
     public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     public int IndexOf(T item) => _list.IndexOf(item);
+    //public int IndexOf(T item)
+    //{
+    //    if (!_dic.TryGetValue(item, out var index))
+    //        return -1;
+
+    //    return index;
+    //}
 
     public void Insert(int index, T item)
     {
@@ -135,11 +150,12 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         if (Count == MaxChildrenCount)
             throw new WiceException("0004: Collection has a maximum of " + MaxChildrenCount + " children.");
 
-        if (_list.Contains(item))
+        if (Contains(item))
             throw new WiceException("0005: Element named '" + item.Name + "' of type '" + item.GetType().Name + "' has already been added as a children.");
 
         OnItemsChanged(() =>
         {
+            //_dic[item] = index;
             _list.Insert(index, item);
             OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
         });
@@ -161,6 +177,7 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
 
         OnItemsChanged(() =>
         {
+            //_dic.Remove(item);
             _list.RemoveAt(index);
             OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
         });
@@ -186,6 +203,7 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         OnItemsChanged(() =>
         {
             var item = _list[index];
+            //_dic.Remove(item);
             _list.RemoveAt(index);
             OnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
         });
