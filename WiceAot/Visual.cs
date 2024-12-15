@@ -2141,7 +2141,7 @@ public partial class Visual : BaseObject
         value = MaxWidth;
         if (value.IsSet() && value < childConstraint.width)
         {
-            childConstraint.height = value;
+            childConstraint.width = value;
         }
 
         value = MinWidth;
