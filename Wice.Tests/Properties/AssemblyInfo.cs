@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Wice.Tests")]
-[assembly: AssemblyCopyright("Copyright ©  2020-2024")]
+[assembly: AssemblyCopyright("Copyright ©  2020-2025")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

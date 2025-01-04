@@ -6,7 +6,7 @@
 [assembly: AssemblyTitle("Windows Interface Composition Engine")]
 [assembly: AssemblyCompany("Aelyo Softworks")]
 [assembly: AssemblyProduct("Wice")]
-[assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks 2020-2024. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks 2020-2025. All rights reserved.")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 [assembly: Guid("fe0b95cf-3e69-4592-9a0f-b2c1925a1ce9")]

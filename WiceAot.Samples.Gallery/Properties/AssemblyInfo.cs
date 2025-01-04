@@ -6,7 +6,7 @@
 [assembly: AssemblyTitle("Wice AOT - Samples - Gallery")]
 [assembly: AssemblyCompany("Aelyo Softworks")]
 [assembly: AssemblyProduct("Wice AOT")]
-[assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks 2020-2024. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks 2020-2025. All rights reserved.")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
 
