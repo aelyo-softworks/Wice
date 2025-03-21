@@ -555,7 +555,7 @@ public partial class ResourceManager
         string Key { get; }
     }
 
-    private sealed partial class KeyComObject<T>(T comObject, string key) : ComObject<T>(comObject), IKeyable
+    private sealed partial class KeyComObject<T>(T comObject, string key) : ComObject<T>(comObject!), IKeyable
     {
         public string Key { get; } = key;
     }
@@ -565,9 +565,8 @@ public partial class ResourceManager
         void BaseDispose();
     }
 
-    private sealed partial class RenderComObject<T>(ResourceManager mgr, Window window, T comObject) : ComObject<T>(comObject), IBaseDisposable
+    private sealed partial class RenderComObject<T>(ResourceManager mgr, Window window, T comObject) : ComObject<T>(comObject!), IBaseDisposable
     {
-
         // don't call the real dispose now
         protected override void Dispose(bool disposing) => mgr._windowsResources[window]._renderDisposables.Add(this);
         public void BaseDispose() => base.Dispose(true);

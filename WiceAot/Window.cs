@@ -11,7 +11,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     private readonly ConcurrentList<Task> _tasks = [];
     private readonly List<WindowTimer> _timers = [];
-    private readonly WindowProc _windowProc;
+    private readonly WNDPROC _windowProc;
     private int _animating;
     private Icon? _icon;
     private D2D_RECT_F _lastClientRect;

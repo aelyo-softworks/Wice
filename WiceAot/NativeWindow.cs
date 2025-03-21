@@ -4,8 +4,8 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
 {
     private static readonly ConcurrentHashSet<string> _classesNames = [];
 
-    public static WindowProc DefWindowProc { get; } = GetDefWindowProc();
-    private static WindowProc GetDefWindowProc() => Marshal.GetDelegateForFunctionPointer<WindowProc>(Functions.GetProcAddress(Functions.GetModuleHandleW(PWSTR.From("user32.dll")), PSTR.From("DefWindowProcW")));
+    public static WNDPROC DefWindowProc { get; } = GetDefWindowProc();
+    private static WNDPROC GetDefWindowProc() => Marshal.GetDelegateForFunctionPointer<WNDPROC>(Functions.GetProcAddress(Functions.GetModuleHandleW(PWSTR.From("user32.dll")), PSTR.From("DefWindowProcW")));
 
     public static IEnumerable<NativeWindow> TopLevelWindows => EnumerateTopLevelWindows().Select(FromHandle).Where(w => w != null)!;
 
