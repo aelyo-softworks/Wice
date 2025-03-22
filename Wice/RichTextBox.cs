@@ -283,6 +283,12 @@ namespace Wice
 
             context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_DIPS);
             _host.Draw(context.DeviceContext.Object, rc);
+
+            // TODO when DirectN nuget is updated, uncomment these lines and remove the one above
+            //var rr = RelativeRenderRect;
+            //var urc = rc;
+            //urc.top = -(int)rr.top;
+            //host.Draw(context.DeviceContext.Object, rc, urc);
         }
 
         // seems like richedit is relative to primary monitor's dpi

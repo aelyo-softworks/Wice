@@ -285,7 +285,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
         rc.Height = rc.Height * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor;
 
         context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_PIXELS);
-        host.Draw(context.DeviceContext.Object, rc);
+        var rr = RelativeRenderRect;
+        var urc = rc;
+        urc.top = -(int)rr.top;
+        host.Draw(context.DeviceContext.Object, rc, urc);
     }
 
     // seems like richedit is relative to primary monitor's dpi

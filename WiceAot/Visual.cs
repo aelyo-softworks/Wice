@@ -2283,7 +2283,7 @@ public partial class Visual : BaseObject
         OnRendered(this, EventArgs.Empty);
     }
 
-    // this must be called event for non visible visuals
+    // this must be called even for non visible visuals
     protected virtual void Render()
     {
         ResetState(InvalidateMode.Render);
@@ -2401,7 +2401,6 @@ public partial class Visual : BaseObject
         var renderBounds = AbsoluteRenderRect;
         if (renderBounds.IsSet)
         {
-
             // transform bounds using render/composition transformations
             // note we don't support full hittesting (rotation, geometries, etc.)
 
