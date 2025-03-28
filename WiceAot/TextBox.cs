@@ -1571,32 +1571,30 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         if (string.IsNullOrEmpty(text))
             return;
 
-        throw new NotImplementedException();
-        //TaskUtilities.RunWithSTAThread(() => System.Windows.Forms.Clipboard.SetText(text));
+        TaskUtilities.RunWithSTAThread(() => Clipboard.SetText(text));
     }
 
     public virtual void PasteFromClipboard()
     {
-        throw new NotImplementedException();
-        //var text = TaskUtilities.RunWithSTAThread(() => System.Windows.Forms.Clipboard.GetText()).Result;
-        //if (text == null)
-        //    return;
+        var text = TaskUtilities.RunWithSTAThread(Clipboard.GetText).Result;
+        if (text == null)
+            return;
 
-        //if (!AcceptsReturn)
-        //{
-        //    var pos = text.IndexOfAny(new[] { '\r', '\n' });
-        //    if (pos == 0)
-        //        return;
+        if (!AcceptsReturn)
+        {
+            var pos = text.IndexOfAny(['\r', '\n']);
+            if (pos == 0)
+                return;
 
-        //    if (pos > 0)
-        //    {
-        //        text = text.Substring(0, pos);
-        //    }
-        //}
+            if (pos > 0)
+            {
+                text = text.Substring(0, pos);
+            }
+        }
 
-        //DeleteSelection();
-        //InsertTextAt(_charPosition + _charPositionOffset, text);
-        //SetSelection(TextBoxSetSelection.RightChar, (uint)text.Length, false);
+        DeleteSelection();
+        InsertTextAt(_charPosition + _charPositionOffset, text);
+        SetSelection(TextBoxSetSelection.RightChar, (uint)text.Length, false);
     }
 
     //private int MirrorXCoordinate(int x, float paddingRight)

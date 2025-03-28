@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Drawing.Design;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -192,6 +194,7 @@ namespace Wice
         public DWRITE_TRIMMING_GRANULARITY TrimmingGranularity { get => (DWRITE_TRIMMING_GRANULARITY)GetPropertyValue(TrimmingGranularityProperty); set => SetPropertyValue(TrimmingGranularityProperty, value); }
 
         [Category(CategoryLayout)]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string Text { get => (string)GetPropertyValue(TextProperty) ?? string.Empty; set => SetPropertyValue(TextProperty, value); }
 
         [Category(CategoryLayout)]

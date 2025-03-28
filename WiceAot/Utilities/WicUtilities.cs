@@ -23,4 +23,24 @@ public class WicUtilities
         converter.Object.Initialize(frame.Object, format, WICBitmapDitherType.WICBitmapDitherTypeNone, null!, 0, WICBitmapPaletteType.WICBitmapPaletteTypeCustom).ThrowOnError();
         return converter.As<IWICBitmapSource>()!;
     }
+
+    public static IComObject<IWICBitmapSource> LoadBitmapSource(nint pointer, long byteLength)
+    {
+        ArgumentNullException.ThrowIfNull(pointer);
+        using var stream = new System.IO.UnmanagedMemoryStream(new IntPtrBuffer(pointer, byteLength), 0, byteLength);
+        return LoadBitmapSource(stream, WICDecodeOptions.WICDecodeMetadataCacheOnLoad);
+    }
+
+    public static IComObject<IWICBitmapSource> LoadBitmapSourceFromMemory(
+        uint width,
+        uint height,
+        Guid pixelFormat,
+        uint stride,
+        uint bufferSize,
+        nint pointer) => WicImagingFactory.WithFactory(factory =>
+    {
+        ArgumentNullException.ThrowIfNull(pointer);
+        factory.Object.CreateBitmapFromMemory(width, height, pixelFormat, stride, bufferSize, pointer, out var bmp).ThrowOnError();
+        return new ComObject<IWICBitmapSource>(bmp);
+    });
 }

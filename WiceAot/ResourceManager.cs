@@ -209,6 +209,27 @@ public partial class ResourceManager
         return Get(null, Domain.WICBitmapSource, uniqueKey, () => WicUtilities.LoadBitmapSource(stream, options));
     }
 
+    public virtual IComObject<IWICBitmapSource>? GetWicBitmapSource(nint pointer, long byteLength, string uniqueKey)
+    {
+        ArgumentNullException.ThrowIfNull(pointer);
+        ArgumentNullException.ThrowIfNull(uniqueKey);
+        return Get(null, Domain.WICBitmapSource, uniqueKey, () => WicUtilities.LoadBitmapSource(pointer, byteLength));
+    }
+
+    public virtual IComObject<IWICBitmapSource>? GetWicBitmapSourceFromMemory(
+        uint width,
+        uint height,
+        Guid pixelFormat,
+        uint stride,
+        uint bufferSize,
+        nint pointer,
+        string uniqueKey)
+    {
+        ArgumentNullException.ThrowIfNull(pointer);
+        ArgumentNullException.ThrowIfNull(uniqueKey);
+        return Get(null, Domain.WICBitmapSource, uniqueKey, () => WicUtilities.LoadBitmapSourceFromMemory(width, height, pixelFormat, stride, bufferSize, pointer));
+    }
+
     public virtual IComObject<IDWriteTextFormat>? GetSymbolFormat(float fontSize = 0) => GetTextFormat(Theme.SymbolFontName, fontSize);
     public virtual IComObject<IDWriteTextFormat>? GetTextFormat(
         string? fontFamilyName = null,

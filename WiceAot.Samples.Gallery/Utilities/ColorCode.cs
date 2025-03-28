@@ -4,7 +4,6 @@
 // amalgamified using https://github.com/smourier/CSharpMerge from https://github.com/CommunityToolkit/ColorCode-Universal
 //
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Text.RegularExpressions;
 
 #pragma warning disable CA2211 // Non-constant fields should not be visible

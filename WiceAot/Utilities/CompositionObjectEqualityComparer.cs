@@ -1,6 +1,4 @@
-﻿using Windows.UI.Composition;
-
-namespace Wice.Utilities;
+﻿namespace Wice.Utilities;
 
 public class CompositionObjectEqualityComparer : IEqualityComparer<CompositionObject>
 {

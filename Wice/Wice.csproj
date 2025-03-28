@@ -22,6 +22,7 @@
 
 	<ItemGroup>
 		<Reference Include="Microsoft.CSharp" />
+		<Reference Include="System.Design" />
 		<Reference Include="System.Management" />
 	</ItemGroup>
 

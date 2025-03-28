@@ -10,7 +10,7 @@ namespace Wice.Animation
 
         public AnimationGroup AnimationGroup => Parent as AnimationGroup;
         public Window Window => Storyboard?.Window;
-        
+
         public Storyboard Storyboard
         {
             get
@@ -26,7 +26,7 @@ namespace Wice.Animation
         }
 
         public TimeSpan Duration { get; protected set; }
-        
+
         public AnimationState State
         {
             get => _state;

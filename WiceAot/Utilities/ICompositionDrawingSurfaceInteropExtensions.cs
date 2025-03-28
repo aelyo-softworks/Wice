@@ -1,6 +1,4 @@
-﻿using WinRT;
-
-namespace Wice.Utilities;
+﻿namespace Wice.Utilities;
 
 public static class ICompositionDrawingSurfaceInteropExtensions
 {

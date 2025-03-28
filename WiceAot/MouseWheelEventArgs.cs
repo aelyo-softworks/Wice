@@ -1,6 +1,4 @@
-﻿using DirectN;
-
-namespace Wice
+﻿namespace Wice
 {
     public class MouseWheelEventArgs(int x, int y, POINTER_MOD vk, int delta, Orientation orientation) : MouseEventArgs(x, y, vk)
     {
