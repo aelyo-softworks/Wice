@@ -128,58 +128,5 @@ namespace Wice
                 }
             }
         }
-
-        protected internal override void RenderOverChildren(RenderContext context)
-        {
-            if (Rows > 0 || Columns > 0)
-            {
-                var rowsLine = RowsLineWidth;
-                var colsLine = ColumnsLineWidth;
-                if (rowsLine > 0 || colsLine > 0)
-                {
-                    var brush = LineBrush?.GetBrush(context);
-                    if (brush != null)
-                    {
-                        var rc = RelativeRenderRect;
-                        var strokeWidth = LineStrokeWidth;
-                        var stroke = GetLinesStroke();
-                        var start = new D2D_POINT_2F();
-                        var end = new D2D_POINT_2F();
-
-                        var rows = Rows;
-                        if (rows > 1 && rowsLine > 0)
-                        {
-                            var height = rc.Height / rows;
-                            start.x = 0;
-                            start.y = height;
-                            end.x = rc.Width;
-                            end.y = start.y;
-                            for (var i = 0; i < rows - 1; i++)
-                            {
-                                context.DeviceContext.Object.DrawLine(start.Floor(), end.Ceiling(), brush.Object, strokeWidth, stroke?.Object);
-                                start.y += height + rowsLine;
-                                end.y = start.y;
-                            }
-                        }
-
-                        var cols = Columns;
-                        if (cols > 1 && colsLine > 0)
-                        {
-                            var width = rc.Width / cols;
-                            start.x = width;
-                            start.y = 0;
-                            end.x = start.x;
-                            end.y = rc.Height;
-                            for (var i = 0; i < cols - 1; i++)
-                            {
-                                context.DeviceContext.Object.DrawLine(start.Floor(), end.Ceiling(), brush.Object, strokeWidth, stroke?.Object);
-                                start.x += width + colsLine;
-                                end.x = start.x;
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Wice.Tests": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}

@@ -139,5 +139,15 @@ namespace Wice.Utilities
         public static _D3DCOLORVALUE ToColor(this System.Drawing.Color color) => _D3DCOLORVALUE.FromArgb(color.A, color.R, color.G, color.B);
         public static Color ToColor(this _D3DCOLORVALUE value) => Color.FromArgb(value.BA, value.BR, value.BG, value.BB);
         public static _D3DCOLORVALUE ToColor(this Color value) => _D3DCOLORVALUE.FromArgb(value.A, value.R, value.G, value.B);
+
+        public static DWRITE_MATRIX ToMatrix(this D2D_MATRIX_3X2_F value) => new DWRITE_MATRIX
+        {
+            m11 = value._11,
+            m12 = value._12,
+            m21 = value._21,
+            m22 = value._22,
+            dx = value._31,
+            dy = value._32,
+        };
     }
 }

@@ -101,8 +101,6 @@ namespace Wice.Utilities
 
         public bool IntersectsWithNodes(D2D_RECT_F bounds)
         {
-            // TODO: add a cache?
-
             lock (_lock)
             {
                 return _root.GetIntersectingNodes(bounds).Any();
@@ -111,8 +109,6 @@ namespace Wice.Utilities
 
         public virtual IEnumerable<T> GetIntersectingNodes(D2D_RECT_F bounds)
         {
-            // TODO: add a cache?
-
             T[] nodes;
             lock (_lock)
             {

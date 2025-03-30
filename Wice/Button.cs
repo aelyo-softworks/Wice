@@ -107,6 +107,7 @@ namespace Wice
             var tb = new TextBox();
             tb.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
             tb.DrawOptions = D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT;
+            tb.IsEnabled = false;
             return tb;
         }
     }

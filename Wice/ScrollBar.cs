@@ -23,7 +23,7 @@ namespace Wice
 
             SmallDecrease.Click += OnSmallDecreaseClick;
             SmallDecrease.FocusIndex = 0;
-            SmallDecrease.HandleOnClick = false;
+            //SmallDecrease.HandleOnClick = false;
             Children.Add(SmallDecrease);
 
             LargeDecrease = CreateLargeDecrease();
@@ -32,7 +32,7 @@ namespace Wice
 
             LargeDecrease.Click += OnLargeDecreaseClick;
             LargeDecrease.FocusIndex = 1;
-            LargeDecrease.HandleOnClick = false;
+            //LargeDecrease.HandleOnClick = false;
             Children.Add(LargeDecrease);
 #if DEBUG
             LargeDecrease.Name = nameof(LargeDecrease);
@@ -44,7 +44,7 @@ namespace Wice
 
             SmallIncrease.Click += OnSmallIncreaseClick;
             SmallIncrease.FocusIndex = 4;
-            SmallIncrease.HandleOnClick = false;
+            //SmallIncrease.HandleOnClick = false;
             Children.Add(SmallIncrease);
 
             LargeIncrease = CreateLargeIncrease();
@@ -53,7 +53,7 @@ namespace Wice
 
             LargeIncrease.Click += OnLargeIncreaseClick;
             LargeIncrease.FocusIndex = 3;
-            LargeIncrease.HandleOnClick = false;
+            //LargeIncrease.HandleOnClick = false;
             Children.Add(LargeIncrease);
 #if DEBUG
             LargeIncrease.Name = nameof(LargeIncrease);

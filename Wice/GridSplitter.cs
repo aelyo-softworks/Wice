@@ -197,7 +197,7 @@ namespace Wice
             base.OnKeyDown(sender, e);
         }
 
-        private class SplitDragState : DragState
+        private sealed class SplitDragState : DragState
         {
             public float _previousSize;
             public float _previousStars;

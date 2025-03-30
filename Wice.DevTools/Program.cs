@@ -43,14 +43,15 @@ namespace Wice.DevTools
                 return;
             }
 
-            var type = CommandLine.GetArgument(0, CommandType.Unknown);
-            if (type == CommandType.Unknown)
+            var command = CommandLine.GetArgument(0, CommandType.Unknown);
+            if (command == CommandType.Unknown)
             {
                 Help();
                 return;
             }
 
-            switch (type)
+            Console.WriteLine("Running command: " + command);
+            switch (command)
             {
                 case CommandType.UpdateWiceCore:
                     UpdateWiceCore();
@@ -170,21 +171,21 @@ namespace Wice.DevTools
         {
             var source = new CSharpProject(@"..\..\..\..\Wice\Wice.csproj");
             var target = new CSharpProject(@"..\..\..\..\WiceCore\WiceCore.csproj");
-            UpdateCoreProject(source, target, @"..\Wice\", false);
+            UpdateCoreProject(source, target, @"..\Wice\", true);
         }
 
         static void UpdateWiceCoreTests()
         {
             var source = new CSharpProject(@"..\..\..\..\Wice.Tests\Wice.Tests.csproj");
             var target = new CSharpProject(@"..\..\..\..\WiceCore.Tests\WiceCore.Tests.csproj");
-            UpdateCoreProject(source, target, @"..\Wice.Tests\", false);
+            UpdateCoreProject(source, target, @"..\Wice.Tests\", true);
         }
 
         static void UpdateWiceCoreSamplesGallery()
         {
             var source = new CSharpProject(@"..\..\..\..\Wice.Samples.Gallery\Wice.Samples.Gallery.csproj");
             var target = new CSharpProject(@"..\..\..\..\WiceCore.Samples.Gallery\WiceCore.Samples.Gallery.csproj");
-            UpdateCoreProject(source, target, @"..\Wice.Samples.Gallery\", false);
+            UpdateCoreProject(source, target, @"..\Wice.Samples.Gallery\", true);
         }
 
         static bool AddFile(string path)
@@ -232,7 +233,18 @@ namespace Wice.DevTools
         {
             var implicits = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var file in useImplicits ? source.ImplicitIncludedFilePaths : source.IncludedFilePaths)
+            if (useImplicits)
+            {
+                foreach (var file in source.ImplicitIncludedFilePaths)
+                {
+                    if (AddFile(file))
+                    {
+                        implicits.Add(relativePath + file);
+                    }
+                }
+            }
+
+            foreach (var file in source.IncludedFilePaths)
             {
                 if (AddFile(file))
                 {

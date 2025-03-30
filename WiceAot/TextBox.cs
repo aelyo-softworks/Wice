@@ -47,7 +47,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     private float _lastCaretX;
     private bool _selecting;
     private FontRanges[]? _finalRanges;
-    private TextBoxRenderMode _renderMode;
     private readonly UndoStack<UndoState> _undoStack = new();
     private EventHandler<ValueEventArgs>? _valueChanged;
     private bool _textHasChanged;
@@ -145,20 +144,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     [Browsable(false)]
     public virtual EventTrigger TextChangedTrigger { get; set; }
-
-    [Category(CategoryBehavior)]
-    public virtual TextBoxRenderMode RenderMode
-    {
-        get => _renderMode;
-        set
-        {
-            if (_renderMode == value)
-                return;
-
-            _rendered = false;
-            _renderMode = value;
-        }
-    }
 
     [Category(CategoryLayout)]
     public Brush ForegroundBrush { get => (Brush)GetPropertyValue(ForegroundBrushProperty)!; set => SetPropertyValue(ForegroundBrushProperty, value); }
@@ -758,12 +743,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     // if float.MaxValue is not set, we always report the text metrics (the place we take)
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
-        if (RenderMode == TextBoxRenderMode.DrawText)
-        {
-            _rendered = false;
-            return new D2D_SIZE_F();
-        }
-
         var padding = Padding;
         var leftPadding = padding.left.IsSet() && padding.left > 0;
         if (leftPadding && constraint.width.IsSet())
@@ -843,50 +822,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
-        //Application.Trace(this.ToString());
-
-        if (RenderMode == TextBoxRenderMode.DrawText)
-        {
-            _rendered = false;
-            return;
-        }
-
-        var padding = Padding;
-        if (padding.left.IsSet() && padding.left > 0)
-        {
-            finalRect.left += padding.left;
-        }
-
-        if (padding.top.IsSet() && padding.top > 0)
-        {
-            finalRect.top += padding.top;
-        }
-
-        if (padding.right.IsSet() && padding.right > 0)
-        {
-            finalRect.right = Math.Max(finalRect.left, finalRect.right - padding.right);
-        }
-
-        if (padding.bottom.IsSet() && padding.bottom > 0)
-        {
-            finalRect.bottom = Math.Max(finalRect.top, finalRect.bottom - padding.bottom);
-        }
-
-        var finalSize = finalRect.Size;
-        var layout = GetLayout(finalSize.width, finalSize.height).Object;
-        var metrics = layout.GetMetrics1();
-
-        var size = new D2D_SIZE_F(metrics.Base.widthIncludingTrailingWhitespace, metrics.Base.height);
-        if (HorizontalAlignment == Wice.Alignment.Stretch)
-        {
-            size.width = finalSize.width;
-        }
-
-        if (VerticalAlignment == Wice.Alignment.Stretch)
-        {
-            size.height = finalSize.height;
-        }
-
         SetCaretLocation();
     }
 
@@ -1009,20 +944,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         {
             rr.height = Math.Max(0, rr.height - padding.bottom);
             clip.bottom = Math.Max(clip.top, clip.bottom - padding.bottom);
-        }
-
-        if (RenderMode == TextBoxRenderMode.DrawText)
-        {
-            var text = PasswordText;
-            if (string.IsNullOrEmpty(text))
-            {
-                Application.Trace(this + " has no text defined.");
-                return;
-            }
-
-            context.DeviceContext.DrawText(text, GetFormat()!, new D2D_RECT_F(rr), brush, DrawOptions, DWRITE_MEASURING_MODE.DWRITE_MEASURING_MODE_NATURAL);
-            _rendered = true;
-            return;
         }
 
         var layout = GetLayout(rr.width, rr.height);

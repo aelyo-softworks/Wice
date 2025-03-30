@@ -152,7 +152,7 @@ namespace Wice.Effects
             }
         }
 
-        private class PropDef
+        private sealed class PropDef
         {
             public PropertyInfo Property;
             public int Index;

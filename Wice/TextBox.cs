@@ -51,6 +51,7 @@ namespace Wice
         private bool _rendered;
 
         // many edit code here is taken from the PadWrite sample https://github.com/microsoft/Windows-classic-samples/tree/main/Samples/Win7Samples/multimedia/DirectWrite/PadWrite
+
         private uint _charAnchor;
         private uint _charPosition;
         private uint _charPositionOffset;
@@ -60,7 +61,6 @@ namespace Wice
         private float _lastCaretX;
         private bool _selecting;
         private FontRanges[] _finalRanges;
-        private TextBoxRenderMode _renderMode;
         private readonly UndoStack<UndoState> _undoStack = new UndoStack<UndoState>();
         private EventHandler<ValueEventArgs> _valueChanged;
         private bool _textHasChanged;
@@ -88,7 +88,7 @@ namespace Wice
             return true;
         }
 
-        private class UndoState
+        private sealed class UndoState
         {
             public static UndoState From(TextBox tb)
             {
@@ -139,20 +139,6 @@ namespace Wice
 
         [Browsable(false)]
         public virtual EventTrigger TextChangedTrigger { get; set; }
-
-        [Category(CategoryBehavior)]
-        public virtual TextBoxRenderMode RenderMode
-        {
-            get => _renderMode;
-            set
-            {
-                if (_renderMode == value)
-                    return;
-
-                _rendered = false;
-                _renderMode = value;
-            }
-        }
 
         [Category(CategoryLayout)]
         public Brush ForegroundBrush { get => (Brush)GetPropertyValue(ForegroundBrushProperty); set => SetPropertyValue(ForegroundBrushProperty, value); }
@@ -475,7 +461,6 @@ namespace Wice
 
                 caret.Location = new D2D_POINT_2F(x, y);
                 caret.IsVisible = true;
-                //Application.Trace(this + " origin: " + _origin + " caret.Location: " + caret.Location);
             }
         }
 
@@ -559,11 +544,11 @@ namespace Wice
         {
             isTrailingHit = false;
             isInside = false;
-            var layout = _layout;
+            var layout = CheckLayout(false);
             if (layout == null)
                 return null;
 
-            _layout.Object.HitTestPoint(x, y, out isTrailingHit, out isInside, out var metrics);
+            layout.Object.HitTestPoint(x, y, out isTrailingHit, out isInside, out var metrics);
             return metrics;
         }
 
@@ -622,6 +607,10 @@ namespace Wice
             if (_finalRanges == null)
                 return;
 
+            var layout = CheckLayout(false);
+            if (layout == null)
+                return;
+
             foreach (var fr in _finalRanges)
             {
                 switch (fr.Type)
@@ -629,84 +618,84 @@ namespace Wice
                     case FontRangeType.FontWeight:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetFontWeight((DWRITE_FONT_WEIGHT)range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetFontWeight((DWRITE_FONT_WEIGHT)range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
                     case FontRangeType.FontStretch:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetFontStretch((DWRITE_FONT_STRETCH)range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetFontStretch((DWRITE_FONT_STRETCH)range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
                     case FontRangeType.FontStyle:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetFontStyle((DWRITE_FONT_STYLE)range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetFontStyle((DWRITE_FONT_STYLE)range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
                     case FontRangeType.LocaleName:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetLocaleName((string)range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetLocaleName((string)range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
                     case FontRangeType.Strikethrough:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetStrikethrough((bool)range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetStrikethrough((bool)range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
                     case FontRangeType.Underline:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetUnderline((bool)range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetUnderline((bool)range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
                     case FontRangeType.FontSize:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetFontSize((float)range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetFontSize((float)range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
                     case FontRangeType.FontFamilyName:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetFontFamilyName((string)range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetFontFamilyName((string)range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
                     case FontRangeType.FontCollection:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetFontCollection((IDWriteFontCollection)range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetFontCollection((IDWriteFontCollection)range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
                     case FontRangeType.DrawingEffect:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetDrawingEffect(range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetDrawingEffect(range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
                     case FontRangeType.Typography:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetTypography((IDWriteTypography)range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetTypography((IDWriteTypography)range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
                     case FontRangeType.InlineObject:
                         foreach (var range in fr.Ranges)
                         {
-                            _layout.Object.SetInlineObject((IDWriteInlineObject)range.Value, range.Range).ThrowOnError();
+                            layout.Object.SetInlineObject((IDWriteInlineObject)range.Value, range.Range).ThrowOnError();
                         }
                         break;
 
@@ -725,6 +714,10 @@ namespace Wice
             if (_finalRanges == null)
                 return;
 
+            var layout = CheckLayout(false);
+            if (layout == null)
+                return;
+
             foreach (var fr in _finalRanges)
             {
                 switch (fr.Type)
@@ -735,7 +728,7 @@ namespace Wice
                             var color = (_D3DCOLORVALUE)range.Value;
                             using (var brush = context.DeviceContext.CreateSolidColorBrush(color))
                             {
-                                _layout.Object.SetDrawingEffect(brush.Object, range.Range).ThrowOnError();
+                                layout.Object.SetDrawingEffect(brush.Object, range.Range).ThrowOnError();
                             }
                         }
                         break;
@@ -747,12 +740,6 @@ namespace Wice
         // if float.MaxValue is not set, we always report the text metrics (the place we take)
         protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
         {
-            if (RenderMode == TextBoxRenderMode.DrawText)
-            {
-                _rendered = false;
-                return new D2D_SIZE_F();
-            }
-
             var padding = Padding;
             var leftPadding = padding.left.IsSet() && padding.left > 0;
             if (leftPadding && constraint.width.IsSet())
@@ -832,50 +819,6 @@ namespace Wice
 
         protected override void ArrangeCore(D2D_RECT_F finalRect)
         {
-            //Application.Trace(this.ToString());
-
-            if (RenderMode == TextBoxRenderMode.DrawText)
-            {
-                _rendered = false;
-                return;
-            }
-
-            var padding = Padding;
-            if (padding.left.IsSet() && padding.left > 0)
-            {
-                finalRect.left += padding.left;
-            }
-
-            if (padding.top.IsSet() && padding.top > 0)
-            {
-                finalRect.top += padding.top;
-            }
-
-            if (padding.right.IsSet() && padding.right > 0)
-            {
-                finalRect.right = Math.Max(finalRect.left, finalRect.right - padding.right);
-            }
-
-            if (padding.bottom.IsSet() && padding.bottom > 0)
-            {
-                finalRect.bottom = Math.Max(finalRect.top, finalRect.bottom - padding.bottom);
-            }
-
-            var finalSize = finalRect.Size;
-            var layout = GetLayout(finalSize.width, finalSize.height)?.Object;
-            var metrics = layout.GetMetrics1();
-
-            var size = new D2D_SIZE_F(metrics.widthIncludingTrailingWhitespace, metrics.height);
-            if (HorizontalAlignment == Wice.Alignment.Stretch)
-            {
-                size.width = finalSize.width;
-            }
-
-            if (VerticalAlignment == Wice.Alignment.Stretch)
-            {
-                size.height = finalSize.height;
-            }
-
             SetCaretLocation();
         }
 
@@ -1000,20 +943,6 @@ namespace Wice
                 clip.bottom = Math.Max(clip.top, clip.bottom - padding.bottom);
             }
 
-            if (RenderMode == TextBoxRenderMode.DrawText)
-            {
-                var text = PasswordText;
-                if (string.IsNullOrEmpty(text))
-                {
-                    Application.Trace(this + " has no text defined.");
-                    return;
-                }
-
-                context.DeviceContext.DrawText(text, GetFormat(), new D2D_RECT_F(rr), brush, DrawOptions, DWRITE_MEASURING_MODE.DWRITE_MEASURING_MODE_NATURAL);
-                _rendered = true;
-                return;
-            }
-
             var layout = GetLayout(rr.width, rr.height);
 
             ApplyRanges(context);
@@ -1092,19 +1021,15 @@ namespace Wice
         protected override void OnKeyUp(object sender, KeyEventArgs e)
         {
             base.OnKeyUp(sender, e);
-            if (IsFocused)
+            if (IsFocused && IsEditable)
             {
-                var caret = Window.Caret;
-                if (caret != null)
-                {
-                    caret.StartBlinking();
-                }
+                Window.Caret?.StartBlinking();
             }
         }
 
         private void PostponeCaret()
         {
-            if (IsFocused)
+            if (IsFocused && IsEditable)
             {
                 var caret = Window.Caret;
                 if (caret != null)
@@ -1118,12 +1043,12 @@ namespace Wice
         protected override void OnKeyDown(object sender, KeyEventArgs e)
         {
             base.OnKeyDown(sender, e);
-            if (!IsEditable || !IsEnabled || !IsFocused)
-                return;
-
             var shift = NativeWindow.IsKeyPressed(VirtualKeys.ShiftKey);
             var control = NativeWindow.IsKeyPressed(VirtualKeys.ControlKey);
             var key = e.Key;
+
+            if (!IsEnabled || !IsFocused)
+                return;
 
             // paste is special as it uses an STA thread first
             if (IsEditable && ((control && key == VirtualKeys.V) || (shift && key == VirtualKeys.Insert)))
@@ -1152,7 +1077,6 @@ namespace Wice
         private void OnKeyDown(KeyEventArgs e, bool shift, bool control)
         {
             var absolutePosition = _charPosition + _charPositionOffset;
-
             switch (e.Key)
             {
                 case VirtualKeys.Left:
@@ -1352,17 +1276,21 @@ namespace Wice
                     }
                     else
                     {
+                        var layout = CheckLayout(false);
                         // Get the size of the following cluster.
-                        _layout.Object.HitTestTextPosition(
-                            absolutePosition,
-                            false,
-                            out _,
-                            out _,
-                            out var hitTestMetrics
-                            ).ThrowOnError();
+                        if (layout != null)
+                        {
+                            layout.Object.HitTestTextPosition(
+                                absolutePosition,
+                                false,
+                                out _,
+                                out _,
+                                out var hitTestMetrics
+                                ).ThrowOnError();
 
-                        RemoveTextAt(hitTestMetrics.textPosition, hitTestMetrics.length);
-                        SetSelection(TextBoxSetSelection.AbsoluteLeading, hitTestMetrics.textPosition, false);
+                            RemoveTextAt(hitTestMetrics.textPosition, hitTestMetrics.length);
+                            SetSelection(TextBoxSetSelection.AbsoluteLeading, hitTestMetrics.textPosition, false);
+                        }
                     }
 
                     e.Handled = true;
@@ -1482,7 +1410,7 @@ namespace Wice
             }
         }
 
-        private bool HandleChar(KeyPressEventArgs e)
+        private static bool HandleChar(KeyPressEventArgs e)
         {
             //if (e.UTF32Character == '\t' && AcceptsTab)
             //    return true;
@@ -1553,11 +1481,7 @@ namespace Wice
 
         public virtual void CopyToClipboard()
         {
-            var selection = GetSelectionRange();
-            if (selection.length == 0)
-                return;
-
-            var text = Text?.Substring((int)selection.startPosition, (int)selection.length);
+            var text = GetSelectionText();
             if (string.IsNullOrEmpty(text))
                 return;
 
@@ -1679,12 +1603,13 @@ namespace Wice
 
         private IComObject<IDWriteTextLayout> RecreateLayout(string text)
         {
-            var w = _layout.Object.GetMaxWidth();
-            var h = _layout.Object.GetMaxHeight();
-            return Application.Current.ResourceManager.GetTextLayout(_layout.Object, text, maxWidth: w, maxHeight: h);
+            var layout = CheckLayout(true);
+            var w = layout.Object.GetMaxWidth();
+            var h = layout.Object.GetMaxHeight();
+            return Application.Current.ResourceManager.GetTextLayout(layout.Object, text, maxWidth: w, maxHeight: h);
         }
 
-        private void CopyGlobalProperties(IDWriteTextLayout oldLayout, IDWriteTextLayout newLayout)
+        private static void CopyGlobalProperties(IDWriteTextLayout oldLayout, IDWriteTextLayout newLayout)
         {
             // Copies global properties that are not range based.
             newLayout.SetTextAlignment(oldLayout.GetTextAlignment());
@@ -1705,7 +1630,7 @@ namespace Wice
             newLayout.SetLineSpacing(lineSpacingMethod, lineSpacing, baseline);
         }
 
-        private uint CalculateRangeLengthAt(IDWriteTextLayout layout, uint pos)
+        private static uint CalculateRangeLengthAt(IDWriteTextLayout layout, uint pos)
         {
             // Determines the length of a block of similarly formatted properties.
             // Use the first getter to get the range to increment the current position.
@@ -1859,7 +1784,8 @@ namespace Wice
         // x and y are client coords
         private bool SetSelectionFromPoint(MouseEventArgs e, bool extendSelection)
         {
-            if (_layout == null || _layout.IsDisposed)
+            var layout = CheckLayout(false);
+            if (layout == null)
                 return false;
 
             // Returns the text position corresponding to the mouse x,y.
@@ -1887,7 +1813,7 @@ namespace Wice
             pos.x -= (int)_origin.x;
             pos.y -= (int)_origin.y;
 
-            _layout.Object.HitTestPoint(
+            layout.Object.HitTestPoint(
                 pos.x,
                 pos.y,
                 out var isTrailingHit,
@@ -1909,11 +1835,15 @@ namespace Wice
         private bool SetSelection(TextBoxSetSelection moveMode, uint? advance, bool extendSelection, bool updateCaretFormat = true)
         {
             Application.CheckRunningAsMainThread();
+            var layout = CheckLayout(false);
+            if (layout == null)
+                return false;
+
             // Moves the caret relatively or absolutely, optionally extending the selection range (for example, when shift is held).
             uint line;// = uint.MaxValue; // current line number, needed by a few modes
-            uint absolutePosition = _charPosition + _charPositionOffset;
-            uint oldAbsolutePosition = absolutePosition;
-            uint oldCaretAnchor = _charAnchor;
+            var absolutePosition = _charPosition + _charPositionOffset;
+            var oldAbsolutePosition = absolutePosition;
+            var oldCaretAnchor = _charAnchor;
             DWRITE_HIT_TEST_METRICS hitTestMetrics;
             DWRITE_LINE_METRICS[] lineMetrics;
             float caretX;
@@ -1970,7 +1900,7 @@ namespace Wice
                     _charPositionOffset = 0;
                     {
                         // Use hit-testing to limit text position.
-                        _layout.Object.HitTestTextPosition(_charPosition, false, out _, out _, out hitTestMetrics).ThrowOnError();
+                        layout.Object.HitTestTextPosition(_charPosition, false, out _, out _, out hitTestMetrics).ThrowOnError();
                         _charPosition = Math.Min(_charPosition, hitTestMetrics.textPosition + hitTestMetrics.length);
                     }
                     break;
@@ -1980,7 +1910,7 @@ namespace Wice
                     // Retrieve the line metrics to figure out what line we are on.
                     lineMetrics = GetLineMetrics();
 
-                    GetLineFromPosition(lineMetrics, (uint)lineMetrics.Length, _charPosition, out line, out var linePosition);
+                    GetLineFromPosition(lineMetrics, _charPosition, out line, out var linePosition);
 
                     // Move up a line or down
                     if (moveMode == TextBoxSetSelection.Up)
@@ -2006,7 +1936,7 @@ namespace Wice
                     // This is because the characters are variable size.
 
                     // Get x of current text position
-                    _layout.Object.HitTestTextPosition(
+                    layout.Object.HitTestTextPosition(
                         _charPosition,
                         _charPositionOffset > 0, // trailing if nonzero, else leading edge
                         out caretX,
@@ -2015,7 +1945,7 @@ namespace Wice
                         ).ThrowOnError();
 
                     // Get y of new position
-                    _layout.Object.HitTestTextPosition(
+                    layout.Object.HitTestTextPosition(
                         linePosition,
                         false, // leading edge
                         out _,
@@ -2024,7 +1954,7 @@ namespace Wice
                         ).ThrowOnError();
 
                     // Now get text position of new x,y.
-                    _layout.Object.HitTestPoint(
+                    layout.Object.HitTestPoint(
                         Math.Max(caretX, _lastCaretX), // use last horizontal caret position (like many editors, not notepad)
                         caretY,
                         out isTrailingHit,
@@ -2038,10 +1968,20 @@ namespace Wice
 
                 case TextBoxSetSelection.PageUp:
                 case TextBoxSetSelection.PageDown:
-                    var pos = RelativeRenderRect - Margin;
+                    D2D_RECT_F pos;
+                    var sv = GetViewerParent();
+                    if (sv != null)
+                    {
+                        // page is viewer's height if under a scroll viewer
+                        pos = sv.Viewer.RelativeRenderRect - Margin;
+                    }
+                    else
+                    {
+                        pos = RelativeRenderRect - Margin;
+                    }
                     var crc = GetCaretRect();
                     var top = crc.top + (moveMode == TextBoxSetSelection.PageUp ? -pos.Height : +pos.Height);
-                    _layout.Object.HitTestPoint(
+                    layout.Object.HitTestPoint(
                         Math.Max(crc.left, _lastCaretX),
                         top,
                         out isTrailingHit,
@@ -2057,13 +1997,13 @@ namespace Wice
                 case TextBoxSetSelection.RightWord:
                     // To navigate by whole words, we look for the canWrapLineAfter flag in the cluster metrics.
                     // First need to know how many clusters there are.
-                    _layout.Object.GetClusterMetrics(null, 0, out var clusterCount); // don't check error by design
+                    layout.Object.GetClusterMetrics(null, 0, out var clusterCount); // don't check error by design
                     if (clusterCount == 0)
                         break;
 
                     // Now we actually read them.
                     var clusterMetrics = new DWRITE_CLUSTER_METRICS[clusterCount];
-                    _layout.Object.GetClusterMetrics(clusterMetrics, (int)clusterCount, out _).ThrowOnError();
+                    layout.Object.GetClusterMetrics(clusterMetrics, (int)clusterCount, out _).ThrowOnError();
 
                     _charPosition = absolutePosition;
 
@@ -2093,7 +2033,7 @@ namespace Wice
                         // Read through the clusters, looking for the first stopping point after the old position.
                         for (uint cluster = 0; cluster < clusterCount; ++cluster)
                         {
-                            uint clusterLength = clusterMetrics[cluster].length;
+                            var clusterLength = clusterMetrics[cluster].length;
                             _charPosition = clusterPosition;
                             _charPositionOffset = clusterLength; // trailing edge
                             if (clusterPosition >= oldCaretPosition && clusterMetrics[cluster].canWrapLineAfter != 0)
@@ -2109,13 +2049,14 @@ namespace Wice
                     // Retrieve the line metrics to know first and last positionon the current line.
                     lineMetrics = GetLineMetrics();
 
-                    GetLineFromPosition(lineMetrics, (uint)lineMetrics.Length, _charPosition, out line, out _charPosition);
+                    GetLineFromPosition(lineMetrics, _charPosition, out line, out var cp);
+                    _charPosition = cp;
 
                     _charPositionOffset = 0;
                     if (moveMode == TextBoxSetSelection.End)
                     {
                         // Place the caret at the last character on the line, excluding line breaks. In the case of wrapped lines, newlineLength will be 0.
-                        uint lineLength = lineMetrics[line].length - lineMetrics[line].newlineLength;
+                        var lineLength = lineMetrics[line].length - lineMetrics[line].newlineLength;
                         _charPositionOffset = Math.Min(lineLength, 1u);
                         _charPosition += lineLength - _charPositionOffset;
                         AlignCaretToNearestCluster(true);
@@ -2166,10 +2107,10 @@ namespace Wice
             if (!caretMoved)
                 return false;
 
-            if (moveMode != TextBoxSetSelection.Up && moveMode != TextBoxSetSelection.Down && _layout != null && !_layout.IsDisposed)
+            if (moveMode != TextBoxSetSelection.Up && moveMode != TextBoxSetSelection.Down && layout != null)
             {
                 // remember max last horizontal position (mimic many editors, not like notepad/standard editbox)
-                _layout.Object.HitTestTextPosition(
+                layout.Object.HitTestTextPosition(
                         _charPosition,
                         _charPositionOffset > 0,
                         out _lastCaretX,
@@ -2228,11 +2169,39 @@ namespace Wice
             {
                 SetOriginX(-caretRc.left + (leftPadding ? padding.left : 0));
             }
+
+            var sv = GetViewerParent();
+            if (sv != null)
+            {
+                var ar = sv.Viewer.ArrangedRect;
+                if (caretRc.top < sv.VerticalOffset)
+                {
+                    sv.VerticalOffset = caretRc.top;
+                }
+
+                if (caretRc.bottom > sv.VerticalOffset + ar.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
+                {
+                    sv.VerticalOffset = caretRc.bottom - ar.Height + (bottomPadding ? padding.bottom : 0) + (topPadding ? padding.top : 0);
+                }
+
+                if (caretRc.left < sv.HorizontalOffset)
+                {
+                    sv.HorizontalOffset = caretRc.left;
+                }
+
+                if (caretRc.right > sv.HorizontalOffset + ar.Width - (rightPadding ? padding.right : 0) - (leftPadding ? padding.left : 0))
+                {
+                    sv.HorizontalOffset = caretRc.right - ar.Width + (rightPadding ? padding.right : 0) + (leftPadding ? padding.left : 0);
+                }
+            }
         }
+
+        private IViewerParent GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;
 
         private void UpdateCaretFormatting()
         {
-            if (_layout == null || _layout.IsDisposed)
+            var layout = CheckLayout(false);
+            if (layout == null)
                 return;
 
             uint currentPos = _charPosition + _charPositionOffset;
@@ -2244,16 +2213,16 @@ namespace Wice
 
             _caretFormat = _caretFormat ?? new CaretFormat();
 
-            _caretFormat.fontFamilyName = _layout.Object.GetFontFamilyName(currentPos);
-            _caretFormat.localeName = _layout.Object.GetLocaleName(currentPos);
+            _caretFormat.fontFamilyName = layout.Object.GetFontFamilyName(currentPos);
+            _caretFormat.localeName = layout.Object.GetLocaleName(currentPos);
 
-            _layout.Object.GetFontWeight(currentPos, out _caretFormat.fontWeight, IntPtr.Zero).ThrowOnError();
-            _layout.Object.GetFontStyle(currentPos, out _caretFormat.fontStyle, IntPtr.Zero).ThrowOnError();
-            _layout.Object.GetFontStretch(currentPos, out _caretFormat.fontStretch, IntPtr.Zero).ThrowOnError();
-            _layout.Object.GetFontSize(currentPos, out _caretFormat.fontSize, IntPtr.Zero).ThrowOnError();
-            _layout.Object.GetUnderline(currentPos, out _caretFormat.hasUnderline, IntPtr.Zero).ThrowOnError();
-            _layout.Object.GetStrikethrough(currentPos, out _caretFormat.hasStrikethrough, IntPtr.Zero).ThrowOnError();
-            _layout.Object.GetDrawingEffect(currentPos, out var drawingEffect, IntPtr.Zero).ThrowOnError();
+            layout.Object.GetFontWeight(currentPos, out _caretFormat.fontWeight, IntPtr.Zero).ThrowOnError();
+            layout.Object.GetFontStyle(currentPos, out _caretFormat.fontStyle, IntPtr.Zero).ThrowOnError();
+            layout.Object.GetFontStretch(currentPos, out _caretFormat.fontStretch, IntPtr.Zero).ThrowOnError();
+            layout.Object.GetFontSize(currentPos, out _caretFormat.fontSize, IntPtr.Zero).ThrowOnError();
+            layout.Object.GetUnderline(currentPos, out _caretFormat.hasUnderline, IntPtr.Zero).ThrowOnError();
+            layout.Object.GetStrikethrough(currentPos, out _caretFormat.hasStrikethrough, IntPtr.Zero).ThrowOnError();
+            layout.Object.GetDrawingEffect(currentPos, out var drawingEffect, IntPtr.Zero).ThrowOnError();
 
             // TODO! change this color
             _caretFormat.color = _D3DCOLORVALUE.Pink;
@@ -2268,15 +2237,17 @@ namespace Wice
 
         private D2D_RECT_F GetCaretRect()
         {
+            var layout = CheckLayout(false);
+
             // Gets the current caret position (in untransformed space).
             var caretX = 0f;
             var caretY = 0f;
             var caretMetrics = new DWRITE_HIT_TEST_METRICS();
             caretMetrics.height = GetFontSize(); // just for default
-            if (_layout != null)
+            if (layout != null)
             {
                 // Translate text character offset to point x,y.
-                _layout.Object.HitTestTextPosition(
+                layout.Object.HitTestTextPosition(
                     _charPosition,
                     _charPositionOffset > 0, // trailing if nonzero, else leading edge
                     out caretX,
@@ -2289,7 +2260,7 @@ namespace Wice
                 if (selection.length > 0)
                 {
                     var metrics = new DWRITE_HIT_TEST_METRICS[1];
-                    _layout.Object.HitTestTextRange(
+                    layout.Object.HitTestTextRange(
                         _charPosition,
                         0, // length
                         0, // x
@@ -2331,7 +2302,16 @@ namespace Wice
             return rc;
         }
 
-        private DWRITE_TEXT_RANGE GetSelectionRange()
+        public string GetSelectionText()
+        {
+            var selection = GetSelectionRange();
+            if (selection.length == 0)
+                return string.Empty;
+
+            return Text?.Substring((int)selection.startPosition, (int)selection.length) ?? string.Empty;
+        }
+
+        public DWRITE_TEXT_RANGE GetSelectionRange()
         {
             // Returns a valid range of the current selection, regardless of whether the caret or anchor is first.
             var caretBegin = _charAnchor;
@@ -2350,31 +2330,34 @@ namespace Wice
             return new DWRITE_TEXT_RANGE(caretBegin, caretEnd - caretBegin);
         }
 
-        private void CheckLayout()
+        private IComObject<IDWriteTextLayout> CheckLayout(bool throwIfNull)
         {
-            if (_layout == null)
+            var layout = _layout;
+            if ((layout == null || layout.IsDisposed) && throwIfNull)
                 throw new WiceException("0023: Operation on '" + Name + "' of type '" + GetType().FullName + "' is invalid as it was not measured.");
+
+            return layout;
         }
 
         private DWRITE_LINE_METRICS[] GetLineMetrics()
         {
-            CheckLayout();
+            var layout = CheckLayout(true);
 
             // Retrieves the line metrics, used for caret navigation, up/down and home/end.
-            var textMetrics = _layout.GetMetrics1();
+            var textMetrics = layout.GetMetrics1();
             var lineMetrics = new DWRITE_LINE_METRICS[textMetrics.lineCount];
-            _layout.Object.GetLineMetrics(lineMetrics, lineMetrics.Length, out _).ThrowOnError();
+            layout.Object.GetLineMetrics(lineMetrics, lineMetrics.Length, out _).ThrowOnError();
             return lineMetrics;
         }
 
-        private void GetLineFromPosition(DWRITE_LINE_METRICS[] lineMetrics, uint lineCount, uint textPosition, out uint lineOut, out uint linePositionOut)
+        private static void GetLineFromPosition(DWRITE_LINE_METRICS[] lineMetrics, uint textPosition, out uint lineOut, out uint linePositionOut)
         {
             // Given the line metrics, determines the current line and starting text position of that line by summing up the lengths.
             // When the startingline position is beyond the given text position, we have our line.
             uint line = 0;
             uint linePosition = 0;
             uint nextLinePosition = 0;
-            for (; line < lineCount; ++line)
+            for (; line < lineMetrics.Length; ++line)
             {
                 linePosition = nextLinePosition;
                 nextLinePosition = linePosition + lineMetrics[line].length;
@@ -2385,7 +2368,7 @@ namespace Wice
             }
 
             linePositionOut = linePosition;
-            lineOut = Math.Min(line, lineCount - 1);
+            lineOut = Math.Min(line, (uint)(lineMetrics.Length - 1));
         }
 
         private void AlignCaretToNearestCluster(bool isTrailingHit = false, bool skipZeroWidth = false)
@@ -2393,9 +2376,10 @@ namespace Wice
             // Uses hit-testing to align the current caret position to a whole cluster, rather than residing in the middle of a base character + diacritic, surrogate pair, or character + UVS.
             // Align the caret to the nearest whole cluster.
             var hitTestMetrics = new DWRITE_HIT_TEST_METRICS { length = 1 };
-            if (_layout != null && !_layout.IsDisposed)
+            var layout = CheckLayout(false);
+            if (layout != null)
             {
-                _layout.Object.HitTestTextPosition(_charPosition, false, out _, out _, out hitTestMetrics).ThrowOnError();
+                layout.Object.HitTestTextPosition(_charPosition, false, out _, out _, out hitTestMetrics).ThrowOnError();
             }
 
             // The caret position itself is always the leading edge.
@@ -2444,7 +2428,7 @@ namespace Wice
             FontRanges[] list = null;
             lock (_rangesLock)
             {
-                bool changed = false;
+                var changed = false;
                 foreach (var range in ranges)
                 {
                     var newFontRange = new FontRange { Range = range, Value = value };
@@ -2467,7 +2451,7 @@ namespace Wice
                     var currentRange = range;
                     var merged = false;
                     var array = fontRanges.Ranges.ToArray();
-                    int i = 0;
+                    var i = 0;
                     int? insertPos = null;
                     for (; i < array.Length; i++)
                     {
@@ -2601,7 +2585,7 @@ namespace Wice
             }
         }
 
-        private class FontRange
+        private sealed class FontRange
         {
             public DWRITE_TEXT_RANGE Range;
             public object Value;
@@ -2617,7 +2601,7 @@ namespace Wice
             public override string ToString() => Range + " => " + Value;
         }
 
-        private class FontRanges
+        private sealed class FontRanges
         {
             public FontRangeType Type;
             public List<FontRange> Ranges = new List<FontRange>(); // note this should always sorted by construction
@@ -2645,7 +2629,12 @@ namespace Wice
             }
         }
 
-        private class CaretFormat
+        private sealed class AnalyzedText
+        {
+            public string Text { get; }
+        }
+
+        private sealed class CaretFormat
         {
             // the important range based properties for the current caret.
             // note these are stored outside the layout, since the current caret actually has a format, independent of the text it lies between.

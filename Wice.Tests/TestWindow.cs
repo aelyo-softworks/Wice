@@ -10,6 +10,7 @@ using Wice.Effects;
 using Wice.Utilities;
 using Windows.UI.Composition;
 
+
 #if NET
 using IGraphicsEffectSource = Wice.Interop.IGraphicsEffectSourceWinRT;
 #else
@@ -48,8 +49,10 @@ namespace Wice.Tests
             //AddDrawText(this);
             //AddReadOnlyText();
             //AddReadOnlyTexts();
-            AddEditableTexts();
-            DisplayTime();
+            //AddEditableTexts();
+            //BigText();
+            BigTextSv();
+            //DisplayTime();
             //AddTextWithSpaces(this);
 
             //AddRtb();
@@ -154,6 +157,57 @@ namespace Wice.Tests
                     label.Text = DateTime.Now.ToString();
                 });
             }, null, 0, 1000);
+        }
+
+        public void BigText()
+        {
+            var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
+            var tb = new TextBox
+            {
+                Text = text,
+                IsEditable = true,
+            };
+            Children.Add(tb);
+        }
+
+        public void BigTextSv()
+        {
+            var sv = new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Visible };
+            sv.Viewer.IsWidthUnconstrained = false;
+            //sv.Viewer.IsHeightUnconstrained = false;
+
+            var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
+            //text = File.ReadAllText(@"Resources\MobyDickNumbered.txt");
+            //text = "These are colored emoji: 😝👸🎅👨‍👩‍👧‍👦";
+
+            var txt = new TextBox
+            {
+                FontSize = 16,
+                Padding = D2D_RECT_F.Thickness(10, 10, 10, 10),
+                VerticalAlignment = Alignment.Near,
+                //WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER,
+
+                FontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_ULTRA_CONDENSED,
+
+                IsEditable = true,
+                AcceptsReturn = true,
+                AcceptsTab = true,
+                Text = text,
+                Name = "txt",
+            };
+
+            sv.Viewer.Child = txt;
+            sv.Margin = D2D_RECT_F.Thickness(10, 10, 10, 10);
+
+            Dock.SetDockType(sv, DockType.Top);
+            Children.Add(sv);
+            //Children.Add(TbxPageContent);
+
+            var btn = new Button();
+            btn.VerticalAlignment = Alignment.Near;
+            btn.Name = "btn";
+            btn.Text.Text = "click";
+            Children.Add(btn);
         }
 
         public void TestEffect()
@@ -797,7 +851,7 @@ namespace Wice.Tests
             lb.DataSource = words;
         }
 
-        private class TestPg
+        private sealed class TestPg
         {
             public string Text1 { get; internal set; }
             public string Text2 { get; internal set; }
@@ -1108,7 +1162,6 @@ namespace Wice.Tests
         {
             var text = new TextBox();
             //text.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green);
-            text.RenderMode = TextBoxRenderMode.DrawText;
             Children.Add(text);
 
             text.Text = Environment.TickCount.ToString();
@@ -1237,7 +1290,7 @@ namespace Wice.Tests
         public void AddSvg()
         {
             var svg = new SvgImage();
-            svg.Document = new FileStreamer("tiger.svg");
+            svg.Document = new FileStreamer(@"Resources\tiger.svg");
             Children.Add(svg);
         }
 
@@ -1293,7 +1346,7 @@ namespace Wice.Tests
             var rtf = new RichTextBox();
             Children.Add(rtf);
 
-            rtf.RtfText = File.ReadAllText(@"wice.rtf");
+            rtf.RtfText = File.ReadAllText(@"resources\wice.rtf");
         }
 
         public void AddScrollableRtbRtfFile()
@@ -1305,7 +1358,7 @@ namespace Wice.Tests
             var rtf = new RichTextBox();
             rtf.Width = 500;
             rtf.Options |= TextHostOptions.WordWrap;
-            rtf.RtfText = File.ReadAllText(@"wice.rtf");
+            rtf.RtfText = File.ReadAllText(@"resources\wice.rtf");
             sv.Viewer.Child = rtf;
         }
 
@@ -1369,7 +1422,6 @@ namespace Wice.Tests
         public static void AddDrawText(Visual parent)
         {
             var text = new TextBox();
-            text.RenderMode = TextBoxRenderMode.DrawText;
             text.Margin = 10;
             text.Name = "text";
             text.BackgroundColor = _D3DCOLORVALUE.Blue;

@@ -154,7 +154,6 @@ public class WiceLanguage : ILanguage
             nameof(SymbolHeader),
             nameof(SymbolHeaderedContent),
             nameof(TextBox),
-            nameof(TextBoxRenderMode),
             nameof(TextBoxSetSelection),
             nameof(TextFormat),
             nameof(TextRenderingParameters),

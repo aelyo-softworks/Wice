@@ -21,20 +21,72 @@
     <Compile Include="..\Wice.Tests\Border2.cs" Link="Border2.cs" />
     <Compile Include="..\Wice.Tests\Program.cs" Link="Program.cs" />
     <Compile Include="..\Wice.Tests\TestWindow.cs" Link="TestWindow.cs" />
-    <EmbeddedResource Include="..\Wice.Tests\Resources\aelyo_flat.png" Link="Resources\aelyo_flat.png" />
-    <EmbeddedResource Include="..\Wice.Tests\Resources\calibrate.jpeg" Link="Resources\calibrate.jpeg" />
-    <EmbeddedResource Include="..\Wice.Tests\Resources\rainier.jpg" Link="Resources\rainier.jpg" />
-    <Content Include="..\Wice.Tests\wice.rtf" Link="wice.rtf" />
-    <Content Include="..\Wice.Tests\tiger.svg" Link="tiger.svg">
+    <EmbeddedResource Include="..\Wice.Tests\Resources\calibrate.jpeg" Link="Resources\calibrate.jpeg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Compile Include="..\Wice.Tests\..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="Samples\Collections\PropertyGrid\SampleModel.cs" />
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\rainier.jpg" Link="Resources\rainier.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\aelyo_flat.png" Link="Resources\aelyo_flat.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\long1.txt" Link="Resources\long1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\long2.txt" Link="Resources\long2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\lorem.txt" Link="Resources\lorem.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\lorem-cn.txt" Link="Resources\lorem-cn.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\AliceInWonderland.txt" Link="Resources\AliceInWonderland.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\AliceInWonderlandNoWrap.txt" Link="Resources\AliceInWonderlandNoWrap.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\AliceInWonderlandNumbered.txt" Link="Resources\AliceInWonderlandNumbered.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\Frankenstein.txt" Link="Resources\Frankenstein.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\FrankensteinNoWrap.txt" Link="Resources\FrankensteinNoWrap.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\FrankensteinNumbered.txt" Link="Resources\FrankensteinNumbered.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\MobyDick.txt" Link="Resources\MobyDick.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\MobyDickNoWrap.txt" Link="Resources\MobyDickNoWrap.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\MobyDickNumbered.txt" Link="Resources\MobyDickNumbered.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Compile Include="..\Wice.Tests\Properties\AssemblyInfo.cs" Link="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="..\Wice.Tests\long1.txt" Link="long1.txt" />
-    <EmbeddedResource Include="..\Wice.Tests\long2.txt" Link="long2.txt" />
-    <EmbeddedResource Include="..\Wice.Tests\lorem-cn.txt" Link="lorem-cn.txt" />
-    <EmbeddedResource Include="..\Wice.Tests\lorem.txt" Link="lorem.txt" />
-    <EmbeddedResource Include="..\Wice.Tests\pg61797.txt" Link="pg61797.txt" />
+    <EmbeddedResource Include="..\Wice.Tests\Resources\AliceInWonderlandNoWrapNumbered.txt" Link="Resources\AliceInWonderlandNoWrapNumbered.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\FrankensteinNoWrapNumbered.txt" Link="Resources\FrankensteinNoWrapNumbered.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\MobyDickNoWrapNumbered.txt" Link="Resources\MobyDickNoWrapNumbered.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\tiger.svg" Link="Resources\tiger.svg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\Wice.Tests\Resources\wice.rtf" Link="Resources\wice.rtf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Compile Include="..\Wice.Tests\..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="Samples\Collections\PropertyGrid\SampleModel.cs" />
+    <Compile Include="..\Wice.Tests\..\Wice\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.17.2" />

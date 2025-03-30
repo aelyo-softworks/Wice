@@ -6,7 +6,7 @@ using DirectN;
 
 namespace Wice
 {
-    public class ScrollViewer : Dock, IOneChildParent
+    public class ScrollViewer : Dock, IOneChildParent, IViewerParent
     {
         // values from https://github.com/wine-mirror/wine/blob/master/dlls/user32/scroll.c
         // don't know where to get that from Windows api?

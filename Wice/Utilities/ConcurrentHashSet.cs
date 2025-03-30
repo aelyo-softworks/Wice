@@ -466,7 +466,7 @@ namespace Wice.Utilities
             }
         }
 
-        private class Tables
+        private sealed class Tables
         {
             public readonly Node[] Buckets;
             public readonly object[] Locks;
@@ -480,7 +480,7 @@ namespace Wice.Utilities
             }
         }
 
-        private class Node
+        private sealed class Node
         {
             public readonly T Item;
             public readonly int Hashcode;

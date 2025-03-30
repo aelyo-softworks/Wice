@@ -2890,7 +2890,7 @@ namespace ZeroDep
             return t.Length == 0 ? null : t;
         }
 
-        private class KeyValueTypeEnumerator : IDictionaryEnumerator
+        private sealed class KeyValueTypeEnumerator : IDictionaryEnumerator
         {
             private readonly IEnumerator _enumerator;
             private PropertyInfo _keyProp;
@@ -2922,7 +2922,7 @@ namespace ZeroDep
             public void Reset() => _enumerator.Reset();
         }
 
-        private class KeyValueTypeDictionary : IDictionary
+        private sealed class KeyValueTypeDictionary : IDictionary
         {
             private readonly KeyValueTypeEnumerator _enumerator;
 
@@ -2949,13 +2949,13 @@ namespace ZeroDep
             IEnumerator IEnumerable.GetEnumerator() => throw new NotSupportedException();
         }
 
-        private class KeyValueType
+        private sealed class KeyValueType
         {
             public Type KeyType;
             public Type ValueType;
         }
 
-        private class TypeDef
+        private sealed class TypeDef
         {
             private static readonly Dictionary<string, TypeDef> _defs = new Dictionary<string, TypeDef>();
             private static readonly Dictionary<Type, KeyValueType> _iskvpe = new Dictionary<Type, KeyValueType>();
@@ -3361,7 +3361,7 @@ namespace ZeroDep
             }
         }
 
-        private class ReferenceComparer : IEqualityComparer<object>
+        private sealed class ReferenceComparer : IEqualityComparer<object>
         {
             internal static readonly ReferenceComparer _current = new ReferenceComparer();
 
@@ -3369,7 +3369,7 @@ namespace ZeroDep
             int IEqualityComparer<object>.GetHashCode(object obj) => RuntimeHelpers.GetHashCode(obj);
         }
 
-        private class ICollectionTObject<T> : ListObject
+        private sealed class ICollectionTObject<T> : ListObject
         {
             private ICollection<T> _coll;
 
@@ -3395,7 +3395,7 @@ namespace ZeroDep
             }
         }
 
-        private class IListObject : ListObject
+        private sealed class IListObject : ListObject
         {
             private IList _list;
 
@@ -3413,7 +3413,7 @@ namespace ZeroDep
             public override void Add(object value, JsonOptions options = null) => _list.Add(value);
         }
 
-        private class FieldInfoAccessor : IMemberAccessor
+        private sealed class FieldInfoAccessor : IMemberAccessor
         {
             private readonly FieldInfo _fi;
 
@@ -3426,7 +3426,7 @@ namespace ZeroDep
             public void Set(object component, object value) => _fi.SetValue(component, value);
         }
 
-        private class PropertyDescriptorAccessor : IMemberAccessor
+        private sealed class PropertyDescriptorAccessor : IMemberAccessor
         {
             private readonly PropertyDescriptor _pd;
 
@@ -3449,7 +3449,7 @@ namespace ZeroDep
         private delegate TResult JFunc<T, TResult>(T arg);
         private delegate void JAction<T1, T2>(T1 arg1, T2 arg2);
 
-        private class PropertyInfoAccessor<TComponent, TMember> : IMemberAccessor
+        private sealed class PropertyInfoAccessor<TComponent, TMember> : IMemberAccessor
         {
             private readonly JFunc<TComponent, TMember> _get;
             private readonly JAction<TComponent, TMember> _set;

@@ -484,7 +484,7 @@ namespace Wice.Utilities
             }
         }
 
-        private class VisualDescriptionProvider<T> : TypeDescriptionProvider
+        private sealed class VisualDescriptionProvider<T> : TypeDescriptionProvider
         {
             public VisualDescriptionProvider()
                 : base(TypeDescriptor.GetProvider(typeof(T)))
@@ -494,7 +494,7 @@ namespace Wice.Utilities
             public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance) => new VisualTypeDescriptor<T>(base.GetTypeDescriptor(objectType, instance));
         }
 
-        private class VisualTypeDescriptor<T> : CustomTypeDescriptor
+        private sealed class VisualTypeDescriptor<T> : CustomTypeDescriptor
         {
             public VisualTypeDescriptor(ICustomTypeDescriptor parent)
                 : base(parent)
@@ -559,7 +559,7 @@ namespace Wice.Utilities
             return prop.Name;
         }
 
-        private class ValuesConverter : TypeConverter
+        private sealed class ValuesConverter : TypeConverter
         {
             public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
             {
@@ -573,7 +573,7 @@ namespace Wice.Utilities
             }
         }
 
-        private class ValueObject
+        private sealed class ValueObject
         {
             internal readonly IPropertyOwner _owner;
 
@@ -609,7 +609,7 @@ namespace Wice.Utilities
             }
         }
 
-        private class ValueConverter : TypeConverter
+        private sealed class ValueConverter : TypeConverter
         {
             public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => base.CanConvertFrom(context, sourceType) || sourceType == typeof(string);
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
@@ -619,7 +619,7 @@ namespace Wice.Utilities
             }
         }
 
-        private class ValuesEditor : UITypeEditor
+        private sealed class ValuesEditor : UITypeEditor
         {
             public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context) => UITypeEditorEditStyle.Modal;
             public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
@@ -636,7 +636,7 @@ namespace Wice.Utilities
             }
         }
 
-        private class ReflectionTypeDescriptor : ICustomTypeDescriptor
+        private sealed class ReflectionTypeDescriptor : ICustomTypeDescriptor
         {
             private readonly List<PropertyDescriptor> _properties = new List<PropertyDescriptor>();
             private readonly string _toString;
@@ -708,7 +708,7 @@ namespace Wice.Utilities
             }
         }
 
-        private class CollectionEditor : UITypeEditor
+        private sealed class CollectionEditor : UITypeEditor
         {
             public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context) => UITypeEditorEditStyle.Modal;
             public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
@@ -725,7 +725,7 @@ namespace Wice.Utilities
             }
         }
 
-        private class CollectionForm : Form
+        private sealed class CollectionForm : Form
         {
             public CollectionForm(IEnumerable enumerable)
             {
@@ -756,7 +756,7 @@ namespace Wice.Utilities
             }
         }
 
-        private class ReflectionPropertyDescriptor : PropertyDescriptor
+        private sealed class ReflectionPropertyDescriptor : PropertyDescriptor
         {
             private readonly object _instance;
             private readonly bool _hasInstance;
@@ -840,7 +840,7 @@ namespace Wice.Utilities
             }
         }
 
-        private class WinRTPropertyDescriptor : PropertyDescriptor
+        private sealed class WinRTPropertyDescriptor : PropertyDescriptor
         {
             public WinRTPropertyDescriptor(Type componentType, string name, Type propertyType)
                 : base(name, new Attribute[]
@@ -865,7 +865,7 @@ namespace Wice.Utilities
             public override object GetValue(object component) => ReflectionTypeDescriptor.WrapWinRT(UIExtensions.GetUnambiguousProperty(component, Name).GetValue(component));
         }
 
-        private class D2D_RECT_F_Provider : TypeDescriptionProvider
+        private sealed class D2D_RECT_F_Provider : TypeDescriptionProvider
         {
             public D2D_RECT_F_Provider()
                 : base(TypeDescriptor.GetProvider(typeof(D2D_RECT_F)))
@@ -875,12 +875,12 @@ namespace Wice.Utilities
             public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance) => new D2D_RECT_F_Descriptor();
         }
 
-        private class D2D_RECT_F_Descriptor : CustomTypeDescriptor
+        private sealed class D2D_RECT_F_Descriptor : CustomTypeDescriptor
         {
             public override TypeConverter GetConverter() => new D2D_RECT_F_Converter();
         }
 
-        private class D2D_RECT_F_Converter : TypeConverter
+        private sealed class D2D_RECT_F_Converter : TypeConverter
         {
             public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => base.CanConvertFrom(context, sourceType) || sourceType == typeof(string);
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object input)

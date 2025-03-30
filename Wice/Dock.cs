@@ -107,17 +107,6 @@ namespace Wice
             height = Math.Max(height, childrenHeight);
 
             return new D2D_SIZE_F(width, height);
-            //var finalSize = constraint;
-            //if (!finalSize.width.IsSet() || HorizontalAlignment != Alignment.Stretch)
-            //{
-            //    finalSize.width = width;
-            //}
-
-            //if (!finalSize.height.IsSet() || VerticalAlignment != Alignment.Stretch)
-            //{
-            //    finalSize.height = height;
-            //}
-            //return finalSize;
         }
 
         protected override void ArrangeCore(D2D_RECT_F finalRect)
@@ -195,16 +184,6 @@ namespace Wice
                             throw new NotSupportedException();
                     }
                 }
-
-                //if (child.HorizontalAlignment != Alignment.Stretch)
-                //{
-                //    rc.Width = childSize.width;
-                //}
-
-                //if (child.VerticalAlignment != Alignment.Stretch)
-                //{
-                //    rc.Height = childSize.height;
-                //}
 
                 if (i < noFillCount)
                 {
@@ -310,7 +289,7 @@ namespace Wice
             }
         }
 
-        private class Docked
+        private sealed class Docked
         {
             public Visual Left;
             public Visual Right;

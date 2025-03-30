@@ -2,7 +2,7 @@
   "profiles": {
     "Wice.DevTools": {
       "commandName": "Project",
-      "commandLineArgs": "UpdateWiceSamplesGalleryCode"
+      "commandLineArgs": "UpdateWiceCoreTests"
     }
   }
 }

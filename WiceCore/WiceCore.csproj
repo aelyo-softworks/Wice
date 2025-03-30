@@ -128,7 +128,6 @@
     <Compile Include="..\Wice\SymbolHeader.cs" Link="SymbolHeader.cs" />
     <Compile Include="..\Wice\SymbolHeaderedContent.cs" Link="SymbolHeaderedContent.cs" />
     <Compile Include="..\Wice\TextBox.cs" Link="TextBox.cs" />
-    <Compile Include="..\Wice\TextBoxRenderMode.cs" Link="TextBoxRenderMode.cs" />
     <Compile Include="..\Wice\TextBoxSetSelection.cs" Link="TextBoxSetSelection.cs" />
     <Compile Include="..\Wice\TextFormat.cs" Link="TextFormat.cs" />
     <Compile Include="..\Wice\TextRenderingParameters.cs" Link="TextRenderingParameters.cs" />
@@ -331,6 +330,7 @@
     <Compile Include="..\Wice\Interop\IGraphicsEffectWinRT.cs" Link="Interop\IGraphicsEffectWinRT.cs" />
     <Compile Include="..\Wice\PointerUpdateEventArgs.cs" Link="PointerUpdateEventArgs.cs" />
     <Compile Include="..\Wice\DpiChangedEventArgs.cs" Link="DpiChangedEventArgs.cs" />
+    <Compile Include="..\Wice\IViewerParent.cs" Link="IViewerParent.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.17.2" />

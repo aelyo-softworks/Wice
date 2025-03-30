@@ -17,6 +17,7 @@ namespace Wice
             if (e == null)
                 throw new ArgumentNullException(nameof(e));
 
+            e.Handled = true;
             if (e.Button == MouseButton.Left)
             {
                 var state = DragMove(e);

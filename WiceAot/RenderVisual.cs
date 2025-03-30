@@ -85,10 +85,6 @@ public abstract class RenderVisual : Visual
         visual.DrawOnSurface(win.CompositionDevice, dc => RenderContext.WithRenderContext(dc, rc => RenderCore(rc), creationOptions, rect), creationOptions, rect);
     }
 
-    protected internal virtual void RenderOverChildren(RenderContext context)
-    {
-    }
-
     protected internal virtual void RenderCore(RenderContext context) => RenderBackgroundCore(context);
     protected virtual void RenderBackgroundCore(RenderContext context)
     {

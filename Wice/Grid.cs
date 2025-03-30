@@ -47,7 +47,7 @@ namespace Wice
         [Category(CategoryLayout)]
         public BaseObjectCollection<GridColumn> Columns { get; }
 
-        private class RowCollection : BaseObjectCollection<GridRow>
+        private sealed class RowCollection : BaseObjectCollection<GridRow>
         {
             private readonly Grid _grid;
 
@@ -104,7 +104,7 @@ namespace Wice
             }
         }
 
-        private class ColumnCollection : BaseObjectCollection<GridColumn>
+        private sealed class ColumnCollection : BaseObjectCollection<GridColumn>
         {
             private readonly Grid _grid;
 
@@ -780,7 +780,7 @@ namespace Wice
             return Rows[index];
         }
 
-        private class GridSet
+        private sealed class GridSet
         {
             public int ColIndex;
             public int ColSpan;

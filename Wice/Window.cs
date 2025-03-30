@@ -517,7 +517,7 @@ namespace Wice
             }
         }
 
-        private class WindowBaseObjectCollection : BaseObjectCollection<Visual>
+        private sealed class WindowBaseObjectCollection : BaseObjectCollection<Visual>
         {
             private readonly Window _window;
 
@@ -675,7 +675,7 @@ namespace Wice
             return list.AsReadOnly();
         }
 
-        private class VisualDepthComparer : IComparer<Visual>
+        private sealed class VisualDepthComparer : IComparer<Visual>
         {
             public int Compare(Visual x, Visual y)
             {
@@ -857,6 +857,19 @@ namespace Wice
         {
             handled = false;
             return IntPtr.Zero;
+        }
+
+        public static void ClampMaxBitmapSize(ref float width, ref float height)
+        {
+            if (width > MaximumBitmapSize)
+            {
+                width = MaximumBitmapSize;
+            }
+
+            if (height > MaximumBitmapSize)
+            {
+                height = MaximumBitmapSize;
+            }
         }
 
         public static void ClampMaxBitmapSize(ref Vector2 bounds)
@@ -1630,7 +1643,7 @@ namespace Wice
             }
         }
 
-        private void RenderVisualAndChildren(Visual visual)
+        private static void RenderVisualAndChildren(Visual visual)
         {
             visual.InternalRender();
             if (visual.CompositionVisual?.IsVisible == false)
@@ -1935,8 +1948,10 @@ namespace Wice
             CheckVisualsTree();
 #endif
             var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
-            foreach (var visual in GetIntersectingVisuals(rc))
+            var ivisuals = GetIntersectingVisuals(rc);
+            for (var i = 0; i < ivisuals.Count; i++)
             {
+                var visual = ivisuals[i];
                 if (visual == this)
                     continue;
 
@@ -1957,8 +1972,10 @@ namespace Wice
             CheckVisualsTree();
 #endif
             var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
-            foreach (var visual in GetIntersectingVisuals(rc))
+            var ivisuals = GetIntersectingVisuals(rc);
+            for (var i = 0; i < ivisuals.Count; i++)
             {
+                var visual = ivisuals[i];
                 if (visual == this)
                     continue;
 
@@ -1999,8 +2016,10 @@ namespace Wice
             //                i++;
             //            }
             //#endif
-            foreach (var visual in GetIntersectingVisuals(rc))
+            var ivisuals = GetIntersectingVisuals(rc);
+            for (var i = 0; i < ivisuals.Count; i++)
             {
+                var visual = ivisuals[i];
                 if (visual.DisablePointerEvents)
                     continue;
 
@@ -2046,8 +2065,10 @@ namespace Wice
             //                i++;
             //            }
             //#endif
-            foreach (var visual in GetIntersectingVisuals(rc))
+            var ivisuals = GetIntersectingVisuals(rc);
+            for (var i = 0; i < ivisuals.Count; i++)
             {
+                var visual = ivisuals[i];
                 if (visual.DisablePointerEvents)
                     continue;
 
@@ -2104,8 +2125,11 @@ namespace Wice
 #endif
                 var cursorSet = false;
                 var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
-                foreach (var visual in GetIntersectingVisuals(rc))
+                var ivisuals = GetIntersectingVisuals(rc);
+                //Application.Trace("visuals:" + string.Join(", ", ivisuals.Select(v => v.Name)));
+                for (var i = 0; i < ivisuals.Count; i++)
                 {
+                    var visual = ivisuals[i];
                     if (visual.DisablePointerEvents)
                         continue;
 
@@ -2115,7 +2139,7 @@ namespace Wice
                         visual.OnMouseEvent(WM_MOUSEENTER, e);
                     }
 
-                    if (CanReceiveInput(visual) && visual.Cursor != null)
+                    if (!cursorSet && CanReceiveInput(visual) && visual.Cursor != null)
                     {
                         Cursor.Set(visual.Cursor);
                         cursorSet = true;
@@ -2214,8 +2238,10 @@ namespace Wice
 #endif
             var cursorSet = false;
             var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
-            foreach (var visual in GetIntersectingVisuals(rc))
+            var ivisuals = GetIntersectingVisuals(rc);
+            for (var i = 0; i < ivisuals.Count; i++)
             {
+                var visual = ivisuals[i];
                 if (visual.DisablePointerEvents)
                     continue;
 
@@ -2225,7 +2251,7 @@ namespace Wice
                     visual.OnPointerEnter(new PointerEnterEventArgs(e.PointerId, e.X, e.Y, e.Flags));
                 }
 
-                if (CanReceiveInput(visual) && visual.Cursor != null)
+                if (!cursorSet && CanReceiveInput(visual) && visual.Cursor != null)
                 {
                     Cursor.Set(visual.Cursor);
                     cursorSet = true;
@@ -2660,7 +2686,7 @@ namespace Wice
             NativeWindow.SetCaretPosition((int)Math.Round(rc.left), (int)Math.Round(rc.top));
         }
 
-        private class Scheduler : TaskScheduler
+        private sealed class Scheduler : TaskScheduler
         {
             public Scheduler(Window window)
             {

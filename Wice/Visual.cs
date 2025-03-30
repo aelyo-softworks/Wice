@@ -1681,11 +1681,7 @@ namespace Wice
                         return;
                 }
 
-                if (IsFocusedOrAnyChildrenFocused)
-                {
-                    //Application.Trace("this: " + this + " e: " + e + " focused:" + IsFocused);
-                    OnKeyDown(this, e);
-                }
+                OnKeyDown(this, e);
                 return;
             }
             OnKeyUp(this, e);
@@ -2321,10 +2317,37 @@ namespace Wice
             return visible;
         }
 
+        protected virtual internal void BeforeRenderChildCore(RenderContext context, RenderVisual child)
+        {
+            // do nothing by default
+        }
+
+        protected virtual internal void AfterRenderChildCore(RenderContext context, RenderVisual child)
+        {
+            // do nothing by default
+        }
+
         internal void InternalRender()
         {
             Render();
             OnRendered(this, EventArgs.Empty);
+        }
+
+        protected virtual void SetCompositionVisualSizeAndOffset(ContainerVisual visual)
+        {
+            if (visual == null)
+                throw new ArgumentNullException(nameof(visual));
+
+            var rr = RelativeRenderRect;
+            if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Size))
+            {
+                visual.Size = rr.Size.ToVector2();
+            }
+
+            if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Offset))
+            {
+                visual.Offset = RenderOffset + new Vector3(rr.left, rr.top, 0);
+            }
         }
 
         // this must be called event for non visible visuals
@@ -2346,15 +2369,7 @@ namespace Wice
             var rr = new D2D_RECT_F(withoutMargin.left, withoutMargin.top, withoutMarginSize);
             RelativeRenderRect = rr;
 
-            if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Offset))
-            {
-                cv.Offset = RenderOffset + new Vector3(withoutMargin.left, withoutMargin.top, 0);
-            }
-
-            if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Size))
-            {
-                cv.Size = rr.Size.ToVector2();
-            }
+            SetCompositionVisualSizeAndOffset(cv);
 
             if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Clip) && FinalClipFromParent)
             {

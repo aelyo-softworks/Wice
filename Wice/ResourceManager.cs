@@ -591,7 +591,7 @@ namespace Wice
             string Key { get; }
         }
 
-        private class KeyComObject<T> : ComObject<T>, IKeyable
+        private sealed class KeyComObject<T> : ComObject<T>, IKeyable
         {
             public KeyComObject(T comObject, string key)
                 : base(comObject)
@@ -607,7 +607,7 @@ namespace Wice
             void BaseDispose();
         }
 
-        private class RenderComObject<T> : ComObject<T>, IBaseDisposable
+        private sealed class RenderComObject<T> : ComObject<T>, IBaseDisposable
         {
             private readonly Window _window;
             private readonly ResourceManager _mgr;
@@ -624,7 +624,7 @@ namespace Wice
             public void BaseDispose() => base.Dispose(true);
         }
 
-        private class RenderDisposable : IBaseDisposable
+        private sealed class RenderDisposable : IBaseDisposable
         {
             private readonly IDisposable _disposable;
 
@@ -637,7 +637,7 @@ namespace Wice
             public override string ToString() => _disposable.ToString();
         }
 
-        private class WindowResources
+        private sealed class WindowResources
         {
             public WindowResources(Window window)
             {
@@ -659,7 +659,7 @@ namespace Wice
             }
         }
 
-        private class Resource : IDisposable
+        private sealed class Resource : IDisposable
         {
             public Resource()
             {
