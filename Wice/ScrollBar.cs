@@ -17,6 +17,7 @@ namespace Wice
 
         protected ScrollBar()
         {
+            HandlePointerEvents = true;
             SmallDecrease = CreateSmallDecrease();
             if (SmallDecrease == null)
                 throw new InvalidOperationException();
@@ -99,6 +100,7 @@ namespace Wice
         protected virtual void OnLargeIncreaseClick(object sender, EventArgs e) => LargeIncreaseClick?.Invoke(sender, e);
         protected virtual void OnLargeDecreaseClick(object sender, EventArgs e) => LargeDecreaseClick?.Invoke(sender, e);
 
+        [Category(CategoryLayout)]
         public ScrollBarMode Mode { get => (ScrollBarMode)GetPropertyValue(ModeProperty); set => SetPropertyValue(ModeProperty, value); }
 
         protected internal virtual void UpdateCorner(ScrollViewer view)

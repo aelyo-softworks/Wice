@@ -15,6 +15,7 @@ namespace Wice
         {
             IsFocusable = true;
             HandleOnClick = true;
+            HandlePointerEvents = true;
             DoWhenAttachedToComposition(UpdateStyle);
         }
 

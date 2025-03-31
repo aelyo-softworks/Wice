@@ -939,12 +939,12 @@ namespace Wice
 
         private Caret GetCaret()
         {
-            //if (!HasCaret)
-            //    return null;
-
             var caret = CreateCaret();
-            caret.IsVisible = false;
-            Children.Add(caret);
+            if (caret != null)
+            {
+                caret.IsVisible = false;
+                Children.Add(caret);
+            }
             return caret;
         }
 
@@ -2148,6 +2148,9 @@ namespace Wice
                     visual.OnMouseEvent(msg, e);
                     if (e.Handled)
                         break;
+
+                    if (visual.IsActuallyVisible && visual.HandlePointerEvents)
+                        break;
                 }
 
                 foreach (var visual in _mousedEnteredVisuals)
@@ -2259,6 +2262,9 @@ namespace Wice
 
                 visual.OnPointerUpdate(e);
                 if (e.Handled)
+                    break;
+
+                if (visual.IsActuallyVisible && visual.HandlePointerEvents)
                     break;
             }
 

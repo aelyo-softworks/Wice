@@ -944,6 +944,7 @@ namespace Wice
             }
 
             var layout = GetLayout(rr.width, rr.height);
+            //Application.Trace("origin:" + _origin);
 
             ApplyRanges(context);
             context.DeviceContext.PushAxisAlignedClip(clip);
@@ -1975,10 +1976,15 @@ namespace Wice
                         // page is viewer's height if under a scroll viewer
                         pos = sv.Viewer.RelativeRenderRect - Margin;
                     }
+                    else if (Parent != null)
+                    {
+                        pos = Parent.ArrangedRect - Margin;
+                    }
                     else
                     {
                         pos = RelativeRenderRect - Margin;
                     }
+
                     var crc = GetCaretRect();
                     var top = crc.top + (moveMode == TextBoxSetSelection.PageUp ? -pos.Height : +pos.Height);
                     layout.Object.HitTestPoint(
@@ -2170,28 +2176,57 @@ namespace Wice
                 SetOriginX(-caretRc.left + (leftPadding ? padding.left : 0));
             }
 
+            var horizontalHandled = false;
+            var verticalHandled = false;
             var sv = GetViewerParent();
             if (sv != null)
             {
                 var ar = sv.Viewer.ArrangedRect;
-                if (caretRc.top < sv.VerticalOffset)
+                if (sv.IsVerticalScrollBarVisible)
                 {
-                    sv.VerticalOffset = caretRc.top;
+                    if (caretRc.top < sv.VerticalOffset)
+                    {
+                        sv.VerticalOffset = caretRc.top;
+                        verticalHandled = true;
+                    }
+
+                    if (caretRc.bottom > sv.VerticalOffset + ar.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
+                    {
+                        sv.VerticalOffset = caretRc.bottom - ar.Height + (bottomPadding ? padding.bottom : 0) + (topPadding ? padding.top : 0);
+                        verticalHandled = true;
+                    }
                 }
 
-                if (caretRc.bottom > sv.VerticalOffset + ar.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
+                if (sv.IsHorizontalScrollBarVisible)
                 {
-                    sv.VerticalOffset = caretRc.bottom - ar.Height + (bottomPadding ? padding.bottom : 0) + (topPadding ? padding.top : 0);
-                }
+                    if (caretRc.left < sv.HorizontalOffset)
+                    {
+                        sv.HorizontalOffset = caretRc.left;
+                        horizontalHandled = true;
+                    }
 
-                if (caretRc.left < sv.HorizontalOffset)
-                {
-                    sv.HorizontalOffset = caretRc.left;
+                    if (caretRc.right > sv.HorizontalOffset + ar.Width - (rightPadding ? padding.right : 0) - (leftPadding ? padding.left : 0))
+                    {
+                        sv.HorizontalOffset = caretRc.right - ar.Width + (rightPadding ? padding.right : 0) + (leftPadding ? padding.left : 0);
+                        horizontalHandled = true;
+                    }
                 }
+            }
 
-                if (caretRc.right > sv.HorizontalOffset + ar.Width - (rightPadding ? padding.right : 0) - (leftPadding ? padding.left : 0))
+            if (!horizontalHandled || !verticalHandled)
+            {
+                var par = Parent?.ArrangedRect;
+                if (par != null)
                 {
-                    sv.HorizontalOffset = caretRc.right - ar.Width + (rightPadding ? padding.right : 0) + (leftPadding ? padding.left : 0);
+                    if (!verticalHandled)
+                    {
+                        if (caretRc.bottom > par.Value.Height - _origin.y - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
+                        {
+                            SetOriginY(par.Value.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0) - caretRc.bottom);
+                        }
+                    }
+
+
                 }
             }
         }

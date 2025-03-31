@@ -172,7 +172,7 @@ namespace Wice.Tests
 
         public void BigTextSv()
         {
-            var sv = new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Visible };
+            var sv = new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Visible, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled };
             sv.Viewer.IsWidthUnconstrained = false;
             //sv.Viewer.IsHeightUnconstrained = false;
 
@@ -185,6 +185,7 @@ namespace Wice.Tests
                 FontSize = 16,
                 Padding = D2D_RECT_F.Thickness(10, 10, 10, 10),
                 VerticalAlignment = Alignment.Near,
+                //HorizontalAlignment = Alignment.Near,
                 //WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER,
 
                 FontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_ULTRA_CONDENSED,
@@ -199,15 +200,15 @@ namespace Wice.Tests
             sv.Viewer.Child = txt;
             sv.Margin = D2D_RECT_F.Thickness(10, 10, 10, 10);
 
-            Dock.SetDockType(sv, DockType.Top);
+            //Dock.SetDockType(sv, DockType.Top);
             Children.Add(sv);
-            //Children.Add(TbxPageContent);
+            //Children.Add(txt);
 
             var btn = new Button();
             btn.VerticalAlignment = Alignment.Near;
             btn.Name = "btn";
             btn.Text.Text = "click";
-            Children.Add(btn);
+            //Children.Add(btn);
         }
 
         public void TestEffect()
