@@ -47,4 +47,13 @@
 	  </Reference>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="Resources\AliceInWonderlandNumbered.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Resources\MobyDickNumbered.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>

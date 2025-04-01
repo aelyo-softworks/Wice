@@ -11,20 +11,24 @@ internal partial class TestWindow : Window
         //SizeToContent = DimensionOptions.WidthAndHeight;
         //Native.EnableBlurBehind();
         //RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
-        //RenderBrush = AcrylicBrush.CreateAcrylicBrush(
-        //    CompositionDevice,
-        //    D3DCOLORVALUE.White,
-        //    0.2f,
-        //    useWindowsAcrylic: false
-        //    );
+        RenderBrush = AcrylicBrush.CreateAcrylicBrush(
+            CompositionDevice,
+            D3DCOLORVALUE.White,
+            0.2f,
+            useWindowsAcrylic: false
+            );
 
         //AddEditableTexts();
         //AddUniformGridShapes(20);
-        AddUniformColorGrid(20);
+        //AddUniformColorGrid(20);
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
-        DisplayTime();
+        LongRunWithCursor();
+        //BigText();
+        //BigTextSv();
+
+        //DisplayTime();
     }
 
 #pragma warning disable IDE0052 // Remove unread private members
@@ -42,6 +46,87 @@ internal partial class TestWindow : Window
             RunTaskOnMainThread(() =>
             {
                 label.Text = DateTime.Now.ToString();
+            });
+        }, null, 0, 1000);
+    }
+
+    public void BigText()
+    {
+        var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
+        var tb = new TextBox
+        {
+            FontFamilyName = "Consolas",
+            Text = text,
+            IsEditable = true,
+        };
+        Children.Add(tb);
+    }
+
+    public void BigTextSv()
+    {
+        var sv = new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
+        //sv.Viewer.IsWidthUnconstrained = false;
+        //sv.Viewer.IsHeightUnconstrained = false;
+
+        var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
+        //text = File.ReadAllText(@"Resources\MobyDickNumbered.txt");
+        //text = "These are colored emoji: 😝👸🎅👨‍👩‍👧‍👦";
+
+        var txt = new TextBox
+        {
+            FontSize = 16,
+            Padding = D2D_RECT_F.Thickness(10, 10, 10, 10),
+            VerticalAlignment = Alignment.Near,
+            HorizontalAlignment = Alignment.Near,
+            //WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER,
+
+            FontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_ULTRA_CONDENSED,
+
+            IsEditable = true,
+            AcceptsReturn = true,
+            AcceptsTab = true,
+            Text = text,
+            Name = "txt",
+        };
+
+        sv.Viewer.Child = txt;
+        sv.Margin = D2D_RECT_F.Thickness(10, 10, 10, 10);
+
+        Children.Add(sv);
+        //Children.Add(txt);
+
+        var btn = new Button();
+        btn.VerticalAlignment = Alignment.Near;
+        btn.Name = "btn";
+        btn.Text.Text = "click";
+        //Children.Add(btn);
+    }
+
+    public void LongRunWithCursor()
+    {
+        var label = new TextBox();
+
+        SetRight(label, 15);
+        SetBottom(label, 15);
+        Children.Add(label);
+
+        Cursor = DirectN.Extensions.Utilities.Cursor.Wait;
+        var seconds = 5;
+        _timer = new Timer(state =>
+        {
+            RunTaskOnMainThread(() =>
+            {
+                if (seconds == 0)
+                {
+                    label.Text = string.Empty;
+                    _timer?.Dispose();
+                    Cursor = null;
+                }
+                else
+                {
+                    label.Text = seconds.ToString();
+                    seconds--;
+                }
             });
         }, null, 0, 1000);
     }
