@@ -312,6 +312,20 @@ namespace Wice
             _textHasChanged = false;
         }
 
+        protected internal override void IsFocusedChanged(bool newValue)
+        {
+            base.IsFocusedChanged(newValue);
+            if (!newValue)
+            {
+                HideCaret();
+                if (_textHasChanged)
+                {
+                    OnTextChanged(this, new ValueEventArgs<string>(Text));
+                    _textHasChanged = false;
+                }
+            }
+        }
+
         public override void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason reason)
         {
             if (modes != VisualPropertyInvalidateModes.None)
@@ -325,20 +339,6 @@ namespace Wice
         {
             base.OnDetachingFromComposition(sender, e);
             Reset();
-        }
-
-        protected internal override void IsFocusedChanged(bool newValue)
-        {
-            base.IsFocusedChanged(newValue);
-            if (!newValue)
-            {
-                HideCaret();
-                if (_textHasChanged)
-                {
-                    OnTextChanged(this, new ValueEventArgs<string>(Text));
-                    _textHasChanged = false;
-                }
-            }
         }
 
         protected override void IsMouseOverChanged(bool newValue)
@@ -2211,6 +2211,7 @@ namespace Wice
                         horizontalHandled = true;
                     }
                 }
+                return;
             }
 
             if (!horizontalHandled || !verticalHandled)
@@ -2225,8 +2226,6 @@ namespace Wice
                             SetOriginY(par.Value.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0) - caretRc.bottom);
                         }
                     }
-
-
                 }
             }
         }

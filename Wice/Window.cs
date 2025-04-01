@@ -1155,13 +1155,15 @@ namespace Wice
             }
         }
 
-        public virtual void Invalidate(Visual visual, VisualPropertyInvalidateModes modes, InvalidateReason reason)
+        public virtual void Invalidate(Visual visual, VisualPropertyInvalidateModes modes, InvalidateReason reason = null)
         {
             if (visual == null)
                 throw new ArgumentNullException(nameof(visual));
 
             if (reason == null)
-                throw new ArgumentNullException(nameof(reason));
+            {
+                reason = new InvalidateReason(GetType());
+            }
 
             PrivateInvalidate(visual, modes, reason);
             if (_invalidations.Count > 0)
@@ -2082,6 +2084,34 @@ namespace Wice
                 visual.OnPointerContactChangedEvent(e);
                 if (e.Handled)
                     break;
+            }
+        }
+
+        public void UpdateCursor()
+        {
+            var cursorSet = false;
+            var pos = NativeWindow.GetCursorPosition();
+            var rc = D2D_RECT_F.Sized(pos.x, pos.y, 1, 1);
+            var ivisuals = GetIntersectingVisuals(rc);
+            for (var i = 0; i < ivisuals.Count; i++)
+            {
+                var visual = ivisuals[i];
+                if (visual.DisablePointerEvents)
+                    continue;
+
+                if (!cursorSet && CanReceiveInput(visual) && visual.Cursor != null)
+                {
+                    Cursor.Set(visual.Cursor);
+                    cursorSet = true;
+                }
+
+                if (visual.IsActuallyVisible && visual.HandlePointerEvents)
+                    break;
+            }
+
+            if (!cursorSet)
+            {
+                Cursor.Set(null);
             }
         }
 

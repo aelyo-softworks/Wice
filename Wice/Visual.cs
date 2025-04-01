@@ -1909,6 +1909,11 @@ namespace Wice
                 Window?.SetFocusable(this, (bool)value);
             }
 
+            if (property == CursorProperty)
+            {
+                Window?.UpdateCursor();
+            }
+
             if (im != VisualPropertyInvalidateModes.None)
             {
                 Invalidate(im, new PropertyInvalidateReason(property));
@@ -1916,7 +1921,7 @@ namespace Wice
             return true;
         }
 
-        public virtual void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason reason) => Window?.Invalidate(this, modes, reason);
+        public virtual void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason reason = null) => Window?.Invalidate(this, modes, reason);
 
         protected virtual void OnDetachingFromParent(object sender, EventArgs e) => DetachingFromParent?.Invoke(sender, e);
         protected virtual void OnDetachedFromParent(object sender, EventArgs e) => DetachedFromParent?.Invoke(sender, e);

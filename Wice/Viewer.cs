@@ -9,6 +9,8 @@ namespace Wice
         public static VisualProperty IsWidthUnconstrainedProperty = VisualProperty.Add(typeof(Viewer), nameof(IsWidthUnconstrained), VisualPropertyInvalidateModes.Measure, true);
         public static VisualProperty IsHeightUnconstrainedProperty = VisualProperty.Add(typeof(Viewer), nameof(IsHeightUnconstrained), VisualPropertyInvalidateModes.Measure, true);
         public static VisualProperty KeepProportionsProperty = VisualProperty.Add(typeof(Viewer), nameof(KeepProportions), VisualPropertyInvalidateModes.Measure, false);
+        private float _childOffsetLeft;
+        private float _childOffsetTop;
 
         protected override BaseObjectCollection<Visual> CreateChildren() => new BaseObjectCollection<Visual>(1);
 
@@ -40,10 +42,34 @@ namespace Wice
         public bool KeepProportions { get => (bool)GetPropertyValue(KeepProportionsProperty); set => SetPropertyValue(KeepProportionsProperty, value); }
 
         [Category(CategoryLayout)]
-        public virtual float ChildOffsetLeft { get; set; }
+        public virtual float ChildOffsetLeft
+        {
+            get => _childOffsetLeft;
+            set
+            {
+                if (_childOffsetLeft == value)
+                    return;
+
+                _childOffsetLeft = value;
+                OnPropertyChanged();
+                Child?.Invalidate(VisualPropertyInvalidateModes.Render);
+            }
+        }
 
         [Category(CategoryLayout)]
-        public virtual float ChildOffsetTop { get; set; }
+        public virtual float ChildOffsetTop
+        {
+            get => _childOffsetTop;
+            set
+            {
+                if (_childOffsetTop == value)
+                    return;
+
+                _childOffsetTop = value;
+                OnPropertyChanged();
+                Child?.Invalidate(VisualPropertyInvalidateModes.Render);
+            }
+        }
 
         [Category(CategoryLayout)]
         public float BaseChildOffsetLeft { get; private set; }
