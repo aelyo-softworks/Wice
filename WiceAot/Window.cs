@@ -1463,7 +1463,7 @@ public partial class Window : Canvas, ITitleBarParent
         Task[] tasks;
         lock (_lock)
         {
-            tasks = [.. _tasks];
+            tasks = _tasks.ToArray(false);
             _tasks.Clear();
         }
 

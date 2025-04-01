@@ -1518,7 +1518,7 @@ namespace Wice
             Task[] tasks;
             lock (_lock)
             {
-                tasks = _tasks.ToArray();
+                tasks = _tasks.ToArray(false);
                 _tasks.Clear();
             }
 
