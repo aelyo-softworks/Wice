@@ -287,6 +287,8 @@ public class WiceLanguage : ILanguage
             nameof(Vector3PropertyAnimation),
             nameof(VerticalBlankStoryboard),
 
+            nameof(Samples.Collections.FlagsEnumListBox.FlagsEnumListBoxSample.SampleDaysOfWeek),
+
             // usual external types
             nameof(D3DCOLORVALUE),
             nameof(D2D_RECT_F),
