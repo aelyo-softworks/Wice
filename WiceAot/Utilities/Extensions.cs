@@ -54,4 +54,14 @@ public static class Extensions
         64 => typeof(long),
         _ => typeof(int),
     };
+
+    public static DWRITE_MATRIX ToMatrix(this D2D_MATRIX_3X2_F value) => new()
+    {
+        m11 = value._11,
+        m12 = value._12,
+        m21 = value._21,
+        m22 = value._22,
+        dx = value._31,
+        dy = value._32,
+    };
 }

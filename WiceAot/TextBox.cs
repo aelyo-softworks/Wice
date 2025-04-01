@@ -548,7 +548,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     {
         isTrailingHit = false;
         isInside = false;
-        var layout = _layout;
+        var layout = CheckLayout(false);
         if (layout == null)
             return null;
 
@@ -608,7 +608,11 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     private void ApplyRanges()
     {
-        if (_finalRanges == null || _layout == null)
+        if (_finalRanges == null)
+            return;
+
+        var layout = CheckLayout(false);
+        if (layout == null)
             return;
 
         foreach (var fr in _finalRanges)
@@ -618,63 +622,63 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 case FontRangeType.FontWeight:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetFontWeight((DWRITE_FONT_WEIGHT)range.Value!, range.Range).ThrowOnError();
+                        layout.Object.SetFontWeight((DWRITE_FONT_WEIGHT)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.FontStretch:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetFontStretch((DWRITE_FONT_STRETCH)range.Value!, range.Range).ThrowOnError();
+                        layout.Object.SetFontStretch((DWRITE_FONT_STRETCH)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.FontStyle:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetFontStyle((DWRITE_FONT_STYLE)range.Value!, range.Range).ThrowOnError();
+                        layout.Object.SetFontStyle((DWRITE_FONT_STYLE)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.LocaleName:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetLocaleName(PWSTR.From((string)range.Value!), range.Range).ThrowOnError();
+                        layout.Object.SetLocaleName(PWSTR.From((string)range.Value!), range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.Strikethrough:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetStrikethrough((bool)range.Value!, range.Range).ThrowOnError();
+                        layout.Object.SetStrikethrough((bool)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.Underline:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetUnderline((bool)range.Value!, range.Range).ThrowOnError();
+                        layout.Object.SetUnderline((bool)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.FontSize:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetFontSize((float)range.Value!, range.Range).ThrowOnError();
+                        layout.Object.SetFontSize((float)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.FontFamilyName:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetFontFamilyName(PWSTR.From((string)range.Value!), range.Range).ThrowOnError();
+                        layout.Object.SetFontFamilyName(PWSTR.From((string)range.Value!), range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.FontCollection:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetFontCollection((IDWriteFontCollection)range.Value!, range.Range).ThrowOnError();
+                        layout.Object.SetFontCollection((IDWriteFontCollection)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
@@ -683,7 +687,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                     {
                         ComObject.WithComInstance(range.Value, ptr =>
                         {
-                            _layout.Object.SetDrawingEffect(ptr, range.Range).ThrowOnError();
+                            layout.Object.SetDrawingEffect(ptr, range.Range).ThrowOnError();
                         });
                     }
                     break;
@@ -691,14 +695,14 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 case FontRangeType.Typography:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetTypography((IDWriteTypography)range.Value!, range.Range).ThrowOnError();
+                        layout.Object.SetTypography((IDWriteTypography)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
                 case FontRangeType.InlineObject:
                     foreach (var range in fr.Ranges)
                     {
-                        _layout.Object.SetInlineObject((IDWriteInlineObject)range.Value!, range.Range).ThrowOnError();
+                        layout.Object.SetInlineObject((IDWriteInlineObject)range.Value!, range.Range).ThrowOnError();
                     }
                     break;
 
@@ -714,7 +718,11 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     private void ApplyRanges(RenderContext context)
     {
-        if (_finalRanges == null || _layout == null)
+        if (_finalRanges == null)
+            return;
+
+        var layout = CheckLayout(false);
+        if (layout == null)
             return;
 
         foreach (var fr in _finalRanges)
@@ -730,7 +738,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                         {
                             ComObject.WithComInstance(brush, unk =>
                             {
-                                _layout.Object.SetDrawingEffect(unk, range.Range).ThrowOnError();
+                                layout.Object.SetDrawingEffect(unk, range.Range).ThrowOnError();
                             });
                         }
                     }
@@ -1024,16 +1032,15 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     protected override void OnKeyUp(object? sender, KeyEventArgs e)
     {
         base.OnKeyUp(sender, e);
-        if (IsFocused)
+        if (IsFocused && IsEditable)
         {
-            var caret = Window?.Caret;
-            caret?.StartBlinking();
+            Window?.Caret?.StartBlinking();
         }
     }
 
     private void PostponeCaret()
     {
-        if (IsFocused)
+        if (IsFocused && IsEditable)
         {
             var caret = Window?.Caret;
             if (caret != null)
@@ -1047,12 +1054,12 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         base.OnKeyDown(sender, e);
-        if (!IsEditable || !IsEnabled || !IsFocused)
-            return;
-
         var shift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
         var control = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
         var key = e.Key;
+
+        if (!IsEnabled || !IsFocused)
+            return;
 
         // paste is special as it uses an STA thread first
         if (IsEditable && ((control && key == VIRTUAL_KEY.VK_V) || (shift && key == VIRTUAL_KEY.VK_INSERT)))
@@ -1282,9 +1289,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 else
                 {
                     // Get the size of the following cluster.
-                    if (_layout != null)
+                    var layout = CheckLayout(false);
+                    if (layout != null)
                     {
-                        _layout.Object.HitTestTextPosition(
+                        layout.Object.HitTestTextPosition(
                             absolutePosition,
                             false,
                             out _,
@@ -1484,11 +1492,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     public virtual void CopyToClipboard()
     {
-        var selection = GetSelectionRange();
-        if (selection.length == 0)
-            return;
-
-        var text = Text?.Substring((int)selection.startPosition, (int)selection.length);
+        var text = GetSelectionText();
         if (string.IsNullOrEmpty(text))
             return;
 
@@ -1610,9 +1614,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     private IComObject<IDWriteTextLayout>? RecreateLayout(string text)
     {
-        var w = _layout!.Object.GetMaxWidth();
-        var h = _layout.Object.GetMaxHeight();
-        return Application.Current.ResourceManager.GetTextLayout(_layout.Object, text, maxWidth: w, maxHeight: h);
+        var layout = CheckLayout(true)!;
+        var w = layout.Object.GetMaxWidth();
+        var h = layout.Object.GetMaxHeight();
+        return Application.Current.ResourceManager.GetTextLayout(layout.Object, text, maxWidth: w, maxHeight: h);
     }
 
     private static void CopyGlobalProperties(IDWriteTextLayout oldLayout, IDWriteTextLayout newLayout)
@@ -1783,7 +1788,8 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     // x and y are client coords
     private bool SetSelectionFromPoint(MouseEventArgs e, bool extendSelection)
     {
-        if (_layout == null || _layout.IsDisposed)
+        var layout = CheckLayout(false);
+        if (layout == null)
             return false;
 
         // Returns the text position corresponding to the mouse x,y.
@@ -1811,7 +1817,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         pos.x -= (int)_origin.x;
         pos.y -= (int)_origin.y;
 
-        _layout.Object.HitTestPoint(
+        layout.Object.HitTestPoint(
             pos.x,
             pos.y,
             out var isTrailingHit,
@@ -1892,9 +1898,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 _charPositionOffset = 0;
                 {
                     // Use hit-testing to limit text position.
-                    if (_layout != null)
+                    var layout1 = CheckLayout(false);
+                    if (layout1 != null)
                     {
-                        _layout.Object.HitTestTextPosition(_charPosition, false, out _, out _, out hitTestMetrics).ThrowOnError();
+                        layout1.Object.HitTestTextPosition(_charPosition, false, out _, out _, out hitTestMetrics).ThrowOnError();
                         _charPosition = Math.Min(_charPosition, hitTestMetrics.textPosition + hitTestMetrics.length);
                     }
                 }
@@ -1905,7 +1912,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 // Retrieve the line metrics to figure out what line we are on.
                 lineMetrics = GetLineMetrics();
 
-                GetLineFromPosition(lineMetrics, (uint)lineMetrics.Length, _charPosition, out line, out var linePosition);
+                GetLineFromPosition(lineMetrics, _charPosition, out line, out var linePosition);
 
                 // Move up a line or down
                 if (moveMode == TextBoxSetSelection.Up)
@@ -1931,9 +1938,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 // This is because the characters are variable size.
 
                 // Get x of current text position
-                if (_layout != null)
+                var layout = CheckLayout(false);
+                if (layout != null)
                 {
-                    _layout.Object.HitTestTextPosition(
+                    layout.Object.HitTestTextPosition(
                         _charPosition,
                         _charPositionOffset > 0, // trailing if nonzero, else leading edge
                         out float caretX,
@@ -1942,7 +1950,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                         ).ThrowOnError();
 
                     // Get y of new position
-                    _layout.Object.HitTestTextPosition(
+                    layout.Object.HitTestTextPosition(
                         linePosition,
                         false, // leading edge
                         out _,
@@ -1951,7 +1959,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                         ).ThrowOnError();
 
                     // Now get text position of new x,y.
-                    _layout.Object.HitTestPoint(
+                    layout.Object.HitTestPoint(
                         Math.Max(caretX, _lastCaretX), // use last horizontal caret position (like many editors, not notepad)
                         caretY,
                         out isTrailingHit,
@@ -1966,12 +1974,24 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
             case TextBoxSetSelection.PageUp:
             case TextBoxSetSelection.PageDown:
-                var pos = RelativeRenderRect - Margin;
+                D2D_RECT_F pos;
+                var sv = GetViewerParent();
+                if (sv != null)
+                {
+                    // page is viewer's height if under a scroll viewer
+                    pos = sv.Viewer.RelativeRenderRect - Margin;
+                }
+                else
+                {
+                    pos = RelativeRenderRect - Margin;
+                }
+
                 var crc = GetCaretRect();
                 var top = crc.top + (moveMode == TextBoxSetSelection.PageUp ? -pos.Height : +pos.Height);
-                if (_layout != null)
+                var layout2 = CheckLayout(false);
+                if (layout2 != null)
                 {
-                    _layout.Object.HitTestPoint(
+                    layout2.Object.HitTestPoint(
                         Math.Max(crc.left, _lastCaretX),
                         top,
                         out isTrailingHit,
@@ -1988,16 +2008,17 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             case TextBoxSetSelection.RightWord:
                 // To navigate by whole words, we look for the canWrapLineAfter flag in the cluster metrics.
                 // First need to know how many clusters there are.
-                if (_layout == null)
+                var layout3 = CheckLayout(false);
+                if (layout3 == null)
                     break;
 
-                _layout.Object.GetClusterMetrics(0, 0, out var clusterCount); // don't check error by design
+                layout3.Object.GetClusterMetrics(0, 0, out var clusterCount); // don't check error by design
                 if (clusterCount == 0)
                     break;
 
                 // Now we actually read them.
                 var clusterMetrics = new DWRITE_CLUSTER_METRICS[clusterCount];
-                _layout.Object.GetClusterMetrics(clusterMetrics.AsPointer(), clusterCount, out _).ThrowOnError();
+                layout3.Object.GetClusterMetrics(clusterMetrics.AsPointer(), clusterCount, out _).ThrowOnError();
 
                 _charPosition = absolutePosition;
 
@@ -2027,7 +2048,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                     // Read through the clusters, looking for the first stopping point after the old position.
                     for (uint cluster = 0; cluster < clusterCount; ++cluster)
                     {
-                        uint clusterLength = clusterMetrics[cluster].length;
+                        var clusterLength = clusterMetrics[cluster].length;
                         _charPosition = clusterPosition;
                         _charPositionOffset = clusterLength; // trailing edge
                         if (clusterPosition >= oldCaretPosition && clusterMetrics[cluster].canWrapLineAfter)
@@ -2043,13 +2064,13 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 // Retrieve the line metrics to know first and last positionon the current line.
                 lineMetrics = GetLineMetrics();
 
-                GetLineFromPosition(lineMetrics, (uint)lineMetrics.Length, _charPosition, out line, out _charPosition);
+                GetLineFromPosition(lineMetrics, _charPosition, out line, out _charPosition);
 
                 _charPositionOffset = 0;
                 if (moveMode == TextBoxSetSelection.End)
                 {
                     // Place the caret at the last character on the line, excluding line breaks. In the case of wrapped lines, newlineLength will be 0.
-                    uint lineLength = lineMetrics[line].length - lineMetrics[line].newlineLength;
+                    var lineLength = lineMetrics[line].length - lineMetrics[line].newlineLength;
                     _charPositionOffset = Math.Min(lineLength, 1u);
                     _charPosition += lineLength - _charPositionOffset;
                     AlignCaretToNearestCluster(true);
@@ -2100,10 +2121,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         if (!caretMoved)
             return false;
 
-        if (moveMode != TextBoxSetSelection.Up && moveMode != TextBoxSetSelection.Down && _layout != null && !_layout.IsDisposed)
+        if (moveMode != TextBoxSetSelection.Up && moveMode != TextBoxSetSelection.Down)
         {
             // remember max last horizontal position (mimic many editors, not like notepad/standard editbox)
-            _layout.Object.HitTestTextPosition(
+            CheckLayout(false)?.Object.HitTestTextPosition(
                     _charPosition,
                     _charPositionOffset > 0,
                     out _lastCaretX,
@@ -2162,15 +2183,73 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         {
             SetOriginX(-caretRc.left + (leftPadding ? padding.left : 0));
         }
+
+
+        var horizontalHandled = false;
+        var verticalHandled = false;
+        var sv = GetViewerParent();
+        if (sv != null)
+        {
+            var ar = sv.Viewer.ArrangedRect;
+            if (sv.IsVerticalScrollBarVisible)
+            {
+                if (caretRc.top < sv.VerticalOffset)
+                {
+                    sv.VerticalOffset = caretRc.top;
+                    verticalHandled = true;
+                }
+
+                if (caretRc.bottom > sv.VerticalOffset + ar.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
+                {
+                    sv.VerticalOffset = caretRc.bottom - ar.Height + (bottomPadding ? padding.bottom : 0) + (topPadding ? padding.top : 0);
+                    verticalHandled = true;
+                }
+            }
+
+            if (sv.IsHorizontalScrollBarVisible)
+            {
+                if (caretRc.left < sv.HorizontalOffset)
+                {
+                    sv.HorizontalOffset = caretRc.left;
+                    horizontalHandled = true;
+                }
+
+                if (caretRc.right > sv.HorizontalOffset + ar.Width - (rightPadding ? padding.right : 0) - (leftPadding ? padding.left : 0))
+                {
+                    sv.HorizontalOffset = caretRc.right - ar.Width + (rightPadding ? padding.right : 0) + (leftPadding ? padding.left : 0);
+                    horizontalHandled = true;
+                }
+            }
+            return;
+        }
+
+        if (!horizontalHandled || !verticalHandled)
+        {
+            var par = Parent?.ArrangedRect;
+            if (par != null)
+            {
+                if (!verticalHandled)
+                {
+                    if (caretRc.bottom > par.Value.Height - _origin.y - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
+                    {
+                        SetOriginY(par.Value.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0) - caretRc.bottom);
+                    }
+                }
+
+
+            }
+        }
     }
+
+    private IViewerParent? GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;
 
     private void UpdateCaretFormatting()
     {
-        if (_layout == null || _layout.IsDisposed)
+        var layout = CheckLayout(false);
+        if (layout == null)
             return;
 
-        uint currentPos = _charPosition + _charPositionOffset;
-
+        var currentPos = _charPosition + _charPositionOffset;
         if (currentPos > 0)
         {
             --currentPos; // Always adopt the trailing properties.
@@ -2178,16 +2257,16 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
         _caretFormat ??= new CaretFormat();
 
-        _caretFormat.fontFamilyName = _layout.Object.GetFontFamilyName(currentPos);
-        _caretFormat.localeName = _layout.Object.GetLocaleName(currentPos);
+        _caretFormat.fontFamilyName = layout.Object.GetFontFamilyName(currentPos);
+        _caretFormat.localeName = layout.Object.GetLocaleName(currentPos);
 
-        _layout.Object.GetFontWeight(currentPos, out _caretFormat.fontWeight, 0).ThrowOnError();
-        _layout.Object.GetFontStyle(currentPos, out _caretFormat.fontStyle, 0).ThrowOnError();
-        _layout.Object.GetFontStretch(currentPos, out _caretFormat.fontStretch, 0).ThrowOnError();
-        _layout.Object.GetFontSize(currentPos, out _caretFormat.fontSize, 0).ThrowOnError();
-        _layout.Object.GetUnderline(currentPos, out _caretFormat.hasUnderline, 0).ThrowOnError();
-        _layout.Object.GetStrikethrough(currentPos, out _caretFormat.hasStrikethrough, 0).ThrowOnError();
-        _layout.Object.GetDrawingEffect(currentPos, out var drawingEffect, 0).ThrowOnError();
+        layout.Object.GetFontWeight(currentPos, out _caretFormat.fontWeight, 0).ThrowOnError();
+        layout.Object.GetFontStyle(currentPos, out _caretFormat.fontStyle, 0).ThrowOnError();
+        layout.Object.GetFontStretch(currentPos, out _caretFormat.fontStretch, 0).ThrowOnError();
+        layout.Object.GetFontSize(currentPos, out _caretFormat.fontSize, 0).ThrowOnError();
+        layout.Object.GetUnderline(currentPos, out _caretFormat.hasUnderline, 0).ThrowOnError();
+        layout.Object.GetStrikethrough(currentPos, out _caretFormat.hasStrikethrough, 0).ThrowOnError();
+        layout.Object.GetDrawingEffect(currentPos, out var drawingEffect, 0).ThrowOnError();
 
         // TODO! change this color
         _caretFormat.color = D3DCOLORVALUE.Pink;
@@ -2210,10 +2289,12 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         {
             height = GetFontSize() // just for default
         };
-        if (_layout != null)
+
+        var layout = CheckLayout(false);
+        if (layout != null)
         {
             // Translate text character offset to point x,y.
-            _layout.Object.HitTestTextPosition(
+            layout.Object.HitTestTextPosition(
                 _charPosition,
                 _charPositionOffset > 0, // trailing if nonzero, else leading edge
                 out caretX,
@@ -2226,7 +2307,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             if (selection.length > 0)
             {
                 var metrics = new DWRITE_HIT_TEST_METRICS[1];
-                _layout.Object.HitTestTextRange(
+                layout.Object.HitTestTextRange(
                     _charPosition,
                     0, // length
                     0, // x
@@ -2270,7 +2351,16 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return rc;
     }
 
-    private DWRITE_TEXT_RANGE GetSelectionRange()
+    public string GetSelectionText()
+    {
+        var selection = GetSelectionRange();
+        if (selection.length == 0)
+            return string.Empty;
+
+        return Text?.Substring((int)selection.startPosition, (int)selection.length) ?? string.Empty;
+    }
+
+    public DWRITE_TEXT_RANGE GetSelectionRange()
     {
         // Returns a valid range of the current selection, regardless of whether the caret or anchor is first.
         var caretBegin = _charAnchor;
@@ -2287,32 +2377,39 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return new DWRITE_TEXT_RANGE(caretBegin, caretEnd - caretBegin);
     }
 
-    [MemberNotNull(nameof(_layout))]
-    private void CheckLayout()
+    private IComObject<IDWriteTextLayout>? CheckLayout(bool throwIfNull = true)
     {
-        if (_layout == null)
-            throw new WiceException("0023: Operation on '" + Name + "' of type '" + GetType().FullName + "' is invalid as it was not measured.");
+        var layout = _layout;
+        if (layout == null || layout.IsDisposed)
+        {
+            if (throwIfNull)
+                throw new WiceException("0023: Operation on '" + Name + "' of type '" + GetType().FullName + "' is invalid as it was not measured.");
+
+            return layout;
+        }
+
+        return layout;
     }
 
     private DWRITE_LINE_METRICS[] GetLineMetrics()
     {
-        CheckLayout();
+        var layout = CheckLayout()!;
 
         // Retrieves the line metrics, used for caret navigation, up/down and home/end.
-        var textMetrics = _layout.GetMetrics1();
+        var textMetrics = layout.GetMetrics1();
         var lineMetrics = new DWRITE_LINE_METRICS[textMetrics.Base.lineCount];
-        _layout.Object.GetLineMetrics(lineMetrics.AsPointer(), lineMetrics.Length(), out _).ThrowOnError();
+        layout.Object.GetLineMetrics(lineMetrics.AsPointer(), lineMetrics.Length(), out _).ThrowOnError();
         return lineMetrics;
     }
 
-    private static void GetLineFromPosition(DWRITE_LINE_METRICS[] lineMetrics, uint lineCount, uint textPosition, out uint lineOut, out uint linePositionOut)
+    private static void GetLineFromPosition(DWRITE_LINE_METRICS[] lineMetrics, uint textPosition, out uint lineOut, out uint linePositionOut)
     {
         // Given the line metrics, determines the current line and starting text position of that line by summing up the lengths.
         // When the startingline position is beyond the given text position, we have our line.
         uint line = 0;
         uint linePosition = 0;
         uint nextLinePosition = 0;
-        for (; line < lineCount; ++line)
+        for (; line < lineMetrics.Length; ++line)
         {
             linePosition = nextLinePosition;
             nextLinePosition = linePosition + lineMetrics[line].length;
@@ -2323,7 +2420,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
 
         linePositionOut = linePosition;
-        lineOut = Math.Min(line, lineCount - 1);
+        lineOut = Math.Min(line, (uint)(lineMetrics.Length - 1));
     }
 
     private void AlignCaretToNearestCluster(bool isTrailingHit = false, bool skipZeroWidth = false)
@@ -2331,10 +2428,8 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         // Uses hit-testing to align the current caret position to a whole cluster, rather than residing in the middle of a base character + diacritic, surrogate pair, or character + UVS.
         // Align the caret to the nearest whole cluster.
         var hitTestMetrics = new DWRITE_HIT_TEST_METRICS { length = 1 };
-        if (_layout != null && !_layout.IsDisposed)
-        {
-            _layout.Object.HitTestTextPosition(_charPosition, false, out _, out _, out hitTestMetrics).ThrowOnError();
-        }
+        var layout = CheckLayout(false);
+        layout?.Object.HitTestTextPosition(_charPosition, false, out _, out _, out hitTestMetrics).ThrowOnError();
 
         // The caret position itself is always the leading edge.
         // An additional offset indicates a trailing edge when non-zero.
@@ -2406,7 +2501,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 var currentRange = range;
                 var merged = false;
                 var array = fontRanges.Ranges.ToArray();
-                int i = 0;
+                var i = 0;
                 int? insertPos = null;
                 for (; i < array.Length; i++)
                 {

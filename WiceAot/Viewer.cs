@@ -8,6 +8,9 @@ public partial class Viewer : Visual, IOneChildParent
 
     protected override BaseObjectCollection<Visual> CreateChildren() => new(1);
 
+    private float _childOffsetLeft;
+    private float _childOffsetTop;
+
     [Browsable(false)]
     public Visual? Child
     {
@@ -40,10 +43,34 @@ public partial class Viewer : Visual, IOneChildParent
     public bool KeepProportions { get => (bool)GetPropertyValue(KeepProportionsProperty)!; set => SetPropertyValue(KeepProportionsProperty, value); }
 
     [Category(CategoryLayout)]
-    public virtual float ChildOffsetLeft { get; set; }
+    public virtual float ChildOffsetLeft
+    {
+        get => _childOffsetLeft;
+        set
+        {
+            if (_childOffsetLeft == value)
+                return;
+
+            _childOffsetLeft = value;
+            OnPropertyChanged();
+            Child?.Invalidate(VisualPropertyInvalidateModes.Render);
+        }
+    }
 
     [Category(CategoryLayout)]
-    public virtual float ChildOffsetTop { get; set; }
+    public virtual float ChildOffsetTop
+    {
+        get => _childOffsetTop;
+        set
+        {
+            if (_childOffsetTop == value)
+                return;
+
+            _childOffsetTop = value;
+            OnPropertyChanged();
+            Child?.Invalidate(VisualPropertyInvalidateModes.Render);
+        }
+    }
 
     [Category(CategoryLayout)]
     public float BaseChildOffsetLeft { get; private set; }

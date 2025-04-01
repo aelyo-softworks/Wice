@@ -4,6 +4,9 @@ public abstract class RenderVisual : Visual
 {
     public static VisualProperty BackgroundColorProperty { get; } = VisualProperty.Add<D3DCOLORVALUE?>(typeof(RenderVisual), nameof(BackgroundColor), VisualPropertyInvalidateModes.Render);
 
+    private float? _widthMaxed;
+    private float? _heightMaxed;
+
     protected RenderVisual()
     {
     }
@@ -82,7 +85,23 @@ public abstract class RenderVisual : Visual
         if (win == null || !ShouldRender)
             return;
 
-        visual.DrawOnSurface(win.CompositionDevice, dc => RenderContext.WithRenderContext(dc, rc => RenderCore(rc), creationOptions, rect), creationOptions, rect);
+        visual.DrawOnSurface(win.CompositionDevice, dc => RenderContext.WithRenderContext(dc, rc =>
+        {
+            var transform = dc.GetTransform();
+            if (_widthMaxed.HasValue && _heightMaxed.HasValue)
+            {
+                dc.SetTransform(transform * D2D_MATRIX_3X2_F.Translation(_widthMaxed.Value, _heightMaxed.Value));
+            }
+
+            Parent?.BeforeRenderChildCore(rc, this);
+            RenderCore(rc);
+            Parent?.AfterRenderChildCore(rc, this);
+
+            if (_widthMaxed.HasValue && _heightMaxed.HasValue)
+            {
+                dc.SetTransform(transform);
+            }
+        }, creationOptions, rect), creationOptions, rect);
     }
 
     protected internal virtual void RenderCore(RenderContext context) => RenderBackgroundCore(context);
@@ -100,6 +119,52 @@ public abstract class RenderVisual : Visual
         else if (FallbackToTransparentBackground)
         {
             context.DeviceContext.Clear(D3DCOLORVALUE.Transparent);
+        }
+    }
+
+    protected override void SetCompositionVisualSizeAndOffset(ContainerVisual visual)
+    {
+        ArgumentNullException.ThrowIfNull(visual);
+
+        // I don't think it's documented but experience shows sprite visuals (backed by DirectX texture) width or height
+        // must be below D2D bitmap limit (which is 16384), with a slight 2px offset
+        // (if we declare a visual of 16384, max DirectX, it becomes 16386 at DirectX11 level for some reason...)
+        // So if with or height are over this limit, we must use a transform to scale the visual instead of DComp's offset
+
+        var rr = RelativeRenderRect;
+        var maxed = false;
+        if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Size))
+        {
+            var max = Window.MaximumBitmapSize - 2;
+            var size = rr.Size;
+            if (size.width > max)
+            {
+                size.width = max;
+                maxed = true;
+            }
+
+            if (size.height > max)
+            {
+                size.height = max;
+                maxed = true;
+            }
+
+            visual.Size = size.ToVector2();
+        }
+
+        if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Offset))
+        {
+            var offset = RenderOffset + new Vector3(rr.left, rr.top, 0);
+            if (maxed)
+            {
+                // this must be handled by a D2D transform
+                _widthMaxed = offset.X;
+                _heightMaxed = offset.Y;
+            }
+            else
+            {
+                visual.Offset = offset;
+            }
         }
     }
 }

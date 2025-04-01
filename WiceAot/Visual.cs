@@ -281,8 +281,9 @@ public partial class Visual : BaseObject
     [Category(CategoryBehavior)]
     public CompositionEasingFunction? ColorAnimationEasingFunction { get; set; }
 
-    protected internal bool DisablePointerEvents { get; set; }
+    protected internal virtual bool DisablePointerEvents { get; set; }
     protected internal virtual bool DisableKeyEvents { get; set; }
+    protected internal virtual bool HandlePointerEvents { get; set; }
 
     protected D2D_SIZE_F? LastMeasureSize => _lastMeasureSize;
     protected D2D_RECT_F? LastArrangeRect => _lastArrangeRect;
@@ -1634,11 +1635,7 @@ public partial class Visual : BaseObject
                     return;
             }
 
-            if (IsFocusedOrAnyChildrenFocused)
-            {
-                //Application.Trace("this: " + this + " e: " + e + " focused:" + IsFocused);
-                OnKeyDown(this, e);
-            }
+            OnKeyDown(this, e);
             return;
         }
         OnKeyUp(this, e);
@@ -1863,6 +1860,11 @@ public partial class Visual : BaseObject
             Window?.SetFocusable(this, (bool)value!);
         }
 
+        if (property == CursorProperty)
+        {
+            Window?.UpdateCursor();
+        }
+
         if (im != VisualPropertyInvalidateModes.None)
         {
             Invalidate(im, new PropertyInvalidateReason(property));
@@ -1870,7 +1872,7 @@ public partial class Visual : BaseObject
         return true;
     }
 
-    public virtual void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason reason) => Window?.Invalidate(this, modes, reason);
+    public virtual void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason? reason = null) => Window?.Invalidate(this, modes, reason);
 
     protected virtual void OnDetachingFromParent(object? sender, EventArgs e) => DetachingFromParent?.Invoke(sender, e);
     protected virtual void OnDetachedFromParent(object? sender, EventArgs e) => DetachedFromParent?.Invoke(sender, e);
@@ -2277,6 +2279,32 @@ public partial class Visual : BaseObject
         return visible;
     }
 
+    protected virtual internal void BeforeRenderChildCore(RenderContext context, RenderVisual child)
+    {
+        // do nothing by default
+    }
+
+    protected virtual internal void AfterRenderChildCore(RenderContext context, RenderVisual child)
+    {
+        // do nothing by default
+    }
+
+    protected virtual void SetCompositionVisualSizeAndOffset(ContainerVisual visual)
+    {
+        ArgumentNullException.ThrowIfNull(visual);
+
+        var rr = RelativeRenderRect;
+        if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Size))
+        {
+            visual.Size = rr.Size.ToVector2();
+        }
+
+        if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Offset))
+        {
+            visual.Offset = RenderOffset + new Vector3(rr.left, rr.top, 0);
+        }
+    }
+
     internal void InternalRender()
     {
         Render();
@@ -2302,15 +2330,7 @@ public partial class Visual : BaseObject
         var rr = new D2D_RECT_F(withoutMargin.left, withoutMargin.top, withoutMarginSize);
         RelativeRenderRect = rr;
 
-        if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Offset))
-        {
-            cv.Offset = RenderOffset + new Vector3(withoutMargin.left, withoutMargin.top, 0);
-        }
-
-        if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Size))
-        {
-            cv.Size = rr.Size.ToVector2();
-        }
+        SetCompositionVisualSizeAndOffset(cv);
 
         if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Clip) && FinalClipFromParent)
         {

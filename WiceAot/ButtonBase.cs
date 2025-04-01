@@ -10,6 +10,7 @@ public partial class ButtonBase : Border, IAccessKeyParent, IClickable
     {
         IsFocusable = true;
         HandleOnClick = true;
+        HandlePointerEvents = true;
         DoWhenAttachedToComposition(UpdateStyle);
     }
 

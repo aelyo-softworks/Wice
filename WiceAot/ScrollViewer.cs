@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public partial class ScrollViewer : Dock, IOneChildParent
+public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent
 {
     // values from https://github.com/wine-mirror/wine/blob/master/dlls/user32/scroll.c
     // don't know where to get that from Windows api?

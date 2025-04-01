@@ -8,6 +8,7 @@ public class ColorFontTextBoxSample : Sample
     public override void Layout(Visual parent)
     {
         var tb = new Wice.TextBox();
+        tb.IsFocusable = true;
         parent.Children.Add(tb);
         Dock.SetDockType(tb, DockType.Top);
 

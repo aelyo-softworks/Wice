@@ -13,6 +13,8 @@ public partial class Thumb : RoundedRectangle
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         ArgumentNullException.ThrowIfNull(e);
+
+        e.Handled = true;
         if (e.Button == MouseButton.Left)
         {
             var state = DragMove(e);

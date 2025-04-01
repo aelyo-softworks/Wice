@@ -825,6 +825,19 @@ public partial class Window : Canvas, ITitleBarParent
         return LRESULT.Null;
     }
 
+    public static void ClampMaxBitmapSize(ref float width, ref float height)
+    {
+        if (width > MaximumBitmapSize)
+        {
+            width = MaximumBitmapSize;
+        }
+
+        if (height > MaximumBitmapSize)
+        {
+            height = MaximumBitmapSize;
+        }
+    }
+
     public static void ClampMaxBitmapSize(ref Vector2 bounds)
     {
         if (bounds.X > MaximumBitmapSize)
@@ -892,9 +905,6 @@ public partial class Window : Canvas, ITitleBarParent
 
     private Caret GetCaret()
     {
-        //if (!HasCaret)
-        //    return null;
-
         var caret = CreateCaret();
         caret.IsVisible = false;
         Children.Add(caret);
@@ -1096,10 +1106,10 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
-    public virtual void Invalidate(Visual visual, VisualPropertyInvalidateModes modes, InvalidateReason reason)
+    public virtual void Invalidate(Visual visual, VisualPropertyInvalidateModes modes, InvalidateReason? reason = null)
     {
         ArgumentNullException.ThrowIfNull(visual);
-        ArgumentNullException.ThrowIfNull(reason);
+        reason ??= new InvalidateReason(GetType());
         PrivateInvalidate(visual, modes, reason);
         if (!_invalidations.IsEmpty)
         {
@@ -1529,7 +1539,7 @@ public partial class Window : Canvas, ITitleBarParent
 
                     if (!visual._lastMeasureSize.HasValue)
                     {
-                        Application.Trace("Visual " + visual + " has never been measured since parented.");
+                        //Application.Trace("Visual " + visual + " has never been measured since parented.");
                         break;
                     }
 
@@ -2018,6 +2028,34 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    public void UpdateCursor()
+    {
+        var cursorSet = false;
+        var pos = NativeWindow.GetCursorPosition();
+        var rc = D2D_RECT_F.Sized(pos.x, pos.y, 1, 1);
+        var ivisuals = GetIntersectingVisuals(rc);
+        for (var i = 0; i < ivisuals.Count; i++)
+        {
+            var visual = ivisuals[i];
+            if (visual.DisablePointerEvents)
+                continue;
+
+            if (!cursorSet && CanReceiveInput(visual) && visual.Cursor != null)
+            {
+                Cursor.Set(visual.Cursor);
+                cursorSet = true;
+            }
+
+            if (visual.IsActuallyVisible && visual.HandlePointerEvents)
+                break;
+        }
+
+        if (!cursorSet)
+        {
+            Cursor.Set(null);
+        }
+    }
+
     private new void OnMouseEvent(uint msg, MouseEventArgs e)
     {
         //Application.Trace("msg:" + msg + " e: " + e);
@@ -2069,7 +2107,7 @@ public partial class Window : Canvas, ITitleBarParent
                     visual.OnMouseEvent(WM_MOUSEENTER, e);
                 }
 
-                if (CanReceiveInput(visual) && visual.Cursor != null)
+                if (!cursorSet && CanReceiveInput(visual) && visual.Cursor != null)
                 {
                     Cursor.Set(visual.Cursor);
                     cursorSet = true;
@@ -2077,6 +2115,9 @@ public partial class Window : Canvas, ITitleBarParent
 
                 visual.OnMouseEvent(msg, e);
                 if (e.Handled)
+                    break;
+
+                if (visual.IsActuallyVisible && visual.HandlePointerEvents)
                     break;
             }
 
@@ -2179,7 +2220,7 @@ public partial class Window : Canvas, ITitleBarParent
                 visual.OnPointerEnter(new PointerEnterEventArgs(e.PointerId, e.X, e.Y, e.Flags));
             }
 
-            if (CanReceiveInput(visual) && visual.Cursor != null)
+            if (!cursorSet && CanReceiveInput(visual) && visual.Cursor != null)
             {
                 Cursor.Set(visual.Cursor);
                 cursorSet = true;
@@ -2187,6 +2228,9 @@ public partial class Window : Canvas, ITitleBarParent
 
             visual.OnPointerUpdate(e);
             if (e.Handled)
+                break;
+
+            if (visual.IsActuallyVisible && visual.HandlePointerEvents)
                 break;
         }
 
@@ -2596,7 +2640,7 @@ public partial class Window : Canvas, ITitleBarParent
         var rc = (D2D_RECT_F)h.Target!;
         h.Free();
 
-        Application.Trace("rc: " + rc.ToRECT());
+        //Application.Trace("rc: " + rc.ToRECT());
 
         Native.CreateCaret((int)Math.Round(rc.Width), (int)Math.Round(rc.Height));
         NativeWindow.SetCaretPosition((int)Math.Round(rc.left), (int)Math.Round(rc.top));

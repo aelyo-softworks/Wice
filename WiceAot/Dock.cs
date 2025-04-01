@@ -84,19 +84,7 @@ public partial class Dock : Visual
 
         width = Math.Max(width, childrenWidth);
         height = Math.Max(height, childrenHeight);
-
         return new D2D_SIZE_F(width, height);
-        //var finalSize = constraint;
-        //if (!finalSize.width.IsSet() || HorizontalAlignment != Alignment.Stretch)
-        //{
-        //    finalSize.width = width;
-        //}
-
-        //if (!finalSize.height.IsSet() || VerticalAlignment != Alignment.Stretch)
-        //{
-        //    finalSize.height = height;
-        //}
-        //return finalSize;
     }
 
     protected override void ArrangeCore(D2D_RECT_F finalRect)

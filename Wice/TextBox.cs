@@ -2055,8 +2055,7 @@ namespace Wice
                     // Retrieve the line metrics to know first and last positionon the current line.
                     lineMetrics = GetLineMetrics();
 
-                    GetLineFromPosition(lineMetrics, _charPosition, out line, out var cp);
-                    _charPosition = cp;
+                    GetLineFromPosition(lineMetrics, _charPosition, out line, out _charPosition);
 
                     _charPositionOffset = 0;
                     if (moveMode == TextBoxSetSelection.End)
@@ -2661,11 +2660,6 @@ namespace Wice
                     return Ranges[Ranges.Count - 1].Range.EndPosition;
                 }
             }
-        }
-
-        private sealed class AnalyzedText
-        {
-            public string Text { get; }
         }
 
         private sealed class CaretFormat
