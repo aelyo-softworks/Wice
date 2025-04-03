@@ -24,8 +24,9 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
-        LongRunWithCursor();
-        //BigText();
+        //ShowProgressBar();
+        //LongRunWithCursor();
+        BigText();
         //BigTextSv();
 
         //DisplayTime();
@@ -56,9 +57,18 @@ internal partial class TestWindow : Window
         var tb = new TextBox
         {
             FontFamilyName = "Consolas",
-            Text = text,
             IsEditable = true,
         };
+
+        tb.PropertyChanged += (s, e) =>
+        {
+            if (TextBox.TextProperty.Name == e.PropertyName)
+            {
+            }
+        };
+
+        tb.Text = text;
+
         Children.Add(tb);
     }
 
@@ -100,6 +110,66 @@ internal partial class TestWindow : Window
         btn.Name = "btn";
         btn.Text.Text = "click";
         //Children.Add(btn);
+    }
+
+    public void ShowProgressBar()
+    {
+        // do something in background
+        var clock = new TextBox
+        {
+            HorizontalAlignment = Alignment.Center,
+            FontSize = 40
+        };
+        Children.Add(clock);
+
+        var timer = new Timer((state) => RunTaskOnMainThread(() =>
+        {
+            clock.Text = DateTime.Now.ToString();
+        }), null, 0, 1000);
+
+        var cancelled = false;
+
+        // show progress bar like (modal)
+        var dlg = new DialogBox();
+        dlg.TitleBar.IsVisible = false;
+        var cancel = dlg.AddCancelButton();
+        cancel.Click += (s, e) => cancelled = true;
+
+        // add some visual in the dialog box
+        var bar = new Border
+        {
+            BorderThickness = 1,
+            BackgroundColor = D3DCOLORVALUE.Green,
+            Width = 200,
+            Height = 20,
+            Padding = 5
+        };
+        dlg.DialogContent.Children.Add(bar);
+
+        // make sure user can't close while we're processing
+        Closing += (s, e) => e.Cancel = !cancelled;
+
+        // do our processing in background
+        Task.Run(async () =>
+        {
+            do
+            {
+                // some delay
+                await Task.Delay(1000);
+                _ = RunTaskOnMainThread(() =>
+                {
+                    // rotate color
+                    var hsv = Hsv.From(bar.BackgroundColor.Value);
+                    hsv.Hue += 10;
+                    bar.BackgroundColor = hsv.ToD3DCOLORVALUE();
+                });
+            }
+            while (!cancelled);
+            timer.Dispose();
+            _ = RunTaskOnMainThread(() => clock.Text = "Cancelled");
+        });
+
+        Children.Add(dlg);
     }
 
     public void LongRunWithCursor()

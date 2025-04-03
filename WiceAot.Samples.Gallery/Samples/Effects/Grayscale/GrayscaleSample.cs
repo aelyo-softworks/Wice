@@ -34,13 +34,14 @@ public class GrayscaleSample : Sample
 
             // create a drawing (D2D1) surface
             var surface = Window!.CompositionDevice.CreateDrawingSurface(Wice.Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
-            using var dc = surface.BeginDraw();
+            using var interop = surface.AsComObject<ICompositionDrawingSurfaceInterop>();
+            using var dc = interop.BeginDraw();
             // we don't need to clear the surface as we redraw it completely
             using (var bmp = dc.CreateBitmapFromWicBitmap(im))
             {
                 dc.DrawBitmap(bmp);
             }
-            surface.EndDraw();
+            interop.EndDraw();
 
             // create a composition brush from the D2D1 surface
             return Compositor.CreateSurfaceBrush(surface);

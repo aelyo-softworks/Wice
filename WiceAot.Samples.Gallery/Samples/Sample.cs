@@ -33,7 +33,9 @@ public abstract class Sample
                     if (string.IsNullOrWhiteSpace(ns))
                         continue;
 
+#pragma warning disable IL2057 // Unrecognized value passed to the parameter of method. It's not possible to guarantee the availability of the target type.
                     var type = Type.GetType(typeof(Program).Namespace + "." + ns, false);
+#pragma warning restore IL2057 // Unrecognized value passed to the parameter of method. It's not possible to guarantee the availability of the target type.
                     if (type == null)
                         continue;
 

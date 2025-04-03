@@ -321,7 +321,7 @@ public static class UIExtensions
         if (surface == null)
             return;
 
-        var interop = surface.As<ICompositionDrawingSurfaceInterop>();
+        using var interop = surface.AsComObject<ICompositionDrawingSurfaceInterop>();
         using (var dc = interop.BeginDraw<ID2D1DeviceContext>(rect))
         {
             drawAction(dc);
@@ -340,7 +340,7 @@ public static class UIExtensions
         if (surface == null)
             return default;
 
-        var interop = surface.As<ICompositionDrawingSurfaceInterop>();
+        using var interop = surface.AsComObject<ICompositionDrawingSurfaceInterop>();
         using (var dc = interop.BeginDraw<ID2D1DeviceContext>())
         {
             item = drawAction(dc);

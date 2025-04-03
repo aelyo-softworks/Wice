@@ -173,14 +173,15 @@ public static class AcrylicBrush
             throw new WiceException("0025: Cannot find embedded noise resource '" + name + "'.");
 
         var noiseDrawingSurface = device.CreateDrawingSurface(im.GetWinSize(), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
-        using var dc = noiseDrawingSurface.BeginDraw();
+        using var interop = noiseDrawingSurface.AsComObject<ICompositionDrawingSurfaceInterop>();
+        using var dc = interop.BeginDraw();
         dc.Clear(D3DCOLORVALUE.Transparent);
         using (var bmp = dc.CreateBitmapFromWicBitmap(im))
         {
             dc.DrawBitmap(bmp);
         }
 
-        noiseDrawingSurface.EndDraw();
+        interop.EndDraw();
         var brush = device.Compositor.CreateSurfaceBrush(noiseDrawingSurface);
         brush.Stretch = CompositionStretch.None;
         brush.HorizontalAlignmentRatio = 0;

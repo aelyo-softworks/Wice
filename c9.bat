@@ -1,0 +1,2 @@
+copy E:\smo\GitHub\DirectNAot\DirectN.Extensions\bin\Debug\net9.0\DirectN.Extensions.* E:\Aelyo\Github\Wice\WiceAot\External
+copy E:\smo\GitHub\DirectNAot\DirectN\bin\Debug\net9.0\DirectN.* E:\Aelyo\Github\Wice\WiceAot\External

@@ -932,7 +932,7 @@ public partial class Window : Canvas, ITitleBarParent
         }
 
         var surface = window.CompositionDevice.CreateDrawingSurface(new Size(1, 1), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
-        var interop = surface.As<ICompositionDrawingSurfaceInterop>();
+        using var interop = surface.AsComObject<ICompositionDrawingSurfaceInterop>();
         using var dc = interop.BeginDraw<ID2D1DeviceContext>();
         var size = dc.Object.GetMaximumBitmapSize();
         interop.EndDraw();
@@ -978,11 +978,11 @@ public partial class Window : Canvas, ITitleBarParent
 
     protected virtual CompositionGraphicsDevice CreateCompositionDevice()
     {
-        var interop = CompositorController.Compositor.As<ICompositorInterop>();
+        using var interop = CompositorController.Compositor.AsComObject<ICompositorInterop>();
         var d2d1 = _d2D1Device.Value;
         return ComObject.WithComInstance(d2d1.Object, devUnk =>
         {
-            var hr = interop.CreateGraphicsDevice(devUnk, out var unk);
+            var hr = interop.Object.CreateGraphicsDevice(devUnk, out var unk);
             var dev = MarshalInterface<CompositionGraphicsDevice>.FromAbi(unk);
             if (hr.Value < 0)
             {
@@ -1008,8 +1008,8 @@ public partial class Window : Canvas, ITitleBarParent
         var controller = new CompositorController();
         controller.CommitNeeded += OnCompositorControllerCommitNeeded;
 
-        var interop = controller.Compositor.As<ICompositorDesktopInterop>();
-        interop.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
+        using var interop = controller.Compositor.AsComObject<ICompositorDesktopInterop>();
+        interop.Object.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
         _compositionTarget = MarshalInspectable<CompositionTarget>.FromAbi(target);
         CompositionVisual = CreateWindowVisual(controller.Compositor);
         if (CompositionVisual == null)
@@ -1067,8 +1067,8 @@ public partial class Window : Canvas, ITitleBarParent
 
         var fs = FrameSize;
         var surface = CompositionDevice.CreateDrawingSurface(cs.ToSize(), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
-        var interop = surface.As<ICompositionDrawingSurfaceInterop>();
-        using (var dc = interop.BeginDraw<ID2D1DeviceContext>())
+        var interop = surface.AsComObject<ICompositionDrawingSurfaceInterop>();
+        using (var dc = interop.BeginDraw())
         {
             var rc = cr.ToD2D_RECT_F();
             RenderContext.WithRenderContext(dc, context =>
@@ -1078,12 +1078,11 @@ public partial class Window : Canvas, ITitleBarParent
 
                 if (fs > 0)
                 {
-                    //Application.Trace("rc:" + rc + " wr:" + WindowRect + " size:" + sprite.Size + " cs: " + cs.ToSize() + " fs:" + FrameVisual.Size);
                     dc.Object.DrawRectangle(rc, context.CreateSolidColorBrush(FrameColor).Object, fs * 2, null);
                 }
             });
+            interop.EndDraw();
         }
-        interop.EndDraw();
 
         if (Compositor != null)
         {

@@ -64,4 +64,19 @@ public static class Extensions
         dx = value._31,
         dy = value._32,
     };
+
+    // this is to replace the As<T> on C#/WinRT object which doesn't work well under AOT...
+    [return: NotNullIfNotNull(nameof(winRTObject))]
+    public static IComObject<T>? AsComObject<T>(this object? winRTObject, CreateObjectFlags flags = CreateObjectFlags.UniqueInstance)
+    {
+        if (winRTObject == null)
+            return null;
+
+        var ptr = MarshalInspectable<object>.FromManaged(winRTObject);
+        var obj = ComObject.FromPointer<T>(ptr, flags);
+        if (obj == null)
+            throw new InvalidCastException($"Object of type '{winRTObject.GetType().FullName}' is not of type '{typeof(T).FullName}'.");
+
+        return obj;
+    }
 }
