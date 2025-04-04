@@ -48,11 +48,11 @@ public partial class Viewer : Visual, IOneChildParent
         get => _childOffsetLeft;
         set
         {
-            if (_childOffsetLeft == value)
-                return;
-
-            _childOffsetLeft = value;
-            OnPropertyChanged();
+            if (_childOffsetLeft != value)
+            {
+                _childOffsetLeft = value;
+                OnPropertyChanged();
+            }
             Child?.Invalidate(VisualPropertyInvalidateModes.Render);
         }
     }
@@ -63,11 +63,11 @@ public partial class Viewer : Visual, IOneChildParent
         get => _childOffsetTop;
         set
         {
-            if (_childOffsetTop == value)
-                return;
-
-            _childOffsetTop = value;
-            OnPropertyChanged();
+            if (_childOffsetTop != value)
+            {
+                _childOffsetTop = value;
+                OnPropertyChanged();
+            }
             Child?.Invalidate(VisualPropertyInvalidateModes.Render);
         }
     }
