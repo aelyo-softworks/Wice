@@ -3,7 +3,7 @@
 public class UnicodeTextBoxSample : Sample
 {
     public override string Description => "A non editable text box that demonstrates the use of chinese characters.";
-    public override int SortOrder => 3;
+    public override int SortOrder => 4;
 
     public override void Layout(Visual parent)
     {

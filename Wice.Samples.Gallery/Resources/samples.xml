@@ -1333,6 +1333,7 @@ warning restore IDE0017 // Simplify object initialization
   <sample namespace="Samples.Text.TextBox.ColorFontTextBoxSample">void Layout(Visual parent)
 {
     var tb = new TextBox();
+    tb.IsFocusable = true;
     parent.Children.Add(tb);
     Dock.SetDockType(tb, DockType.Top);
 
@@ -1356,6 +1357,48 @@ warning restore IDE0017 // Simplify object initialization
     tb.Padding = D2D_RECT_F.Thickness(10);
     tb.Margin = D2D_RECT_F.Thickness(10);
     tb.Text = "Click me and edit!";
+}</sample>
+  <sample namespace="Samples.Text.TextBox.FormattedTextBoxSample">void Layout(Visual parent)
+{
+    var tb = new TextBox
+    {
+        FontFamilyName = "Gabriola",
+        FontSize = 72,
+        Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
+        ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+        Padding = D2D_RECT_F.Thickness(10, 10, 10, 50),
+        ClipText = false,
+        Text = "Hello World using   DirectWrite!"
+    };
+
+    // format the "DirectWrite" substring to be of font size 100.
+    tb.SetFontSize(100, new DWRITE_TEXT_RANGE(
+        20,     // Index where "DirectWrite" appears.
+        6       // Length of the substring "Direct" in "DirectWrite".
+    ));
+
+    // format the word "DWrite" to be underlined.
+    tb.SetUnderline(true, new DWRITE_TEXT_RANGE(
+        20,     // index where "DirectWrite" appears.
+        11      // length of the substring "DirectWrite".
+    ));
+
+    // format the word "DWrite" to be bold.
+    tb.SetFontWeight(DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_BOLD, new DWRITE_TEXT_RANGE(
+        20,     // index where "DirectWrite" appears.
+        11      // length of the substring "DirectWrite".
+    ));
+
+    // declare a typography stylistic set.
+    var typography = new Typography(new DWRITE_FONT_FEATURE
+    {
+        nameTag = DWRITE_FONT_FEATURE_TAG.DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_7,
+        parameter = 1
+    });
+
+    tb.SetTypography(typography.DWriteTypography.Object);
+
+    parent.Children.Add(tb);
 }</sample>
   <sample namespace="Samples.Text.TextBox.SimpleTextBoxSample">void Layout(Visual parent)
 {

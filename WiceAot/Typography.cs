@@ -39,5 +39,5 @@ public class Typography
 
     internal string CacheKey => string.Join("\0", Features.Select(f => ((int)f.nameTag).ToString() + "\0" + f.parameter));
     public virtual IList<DWRITE_FONT_FEATURE> Features { get; }
-    public IComObject<IDWriteTypography>? DWriteTypography => Application.Current.ResourceManager.GetTypography(this);
+    public IComObject<IDWriteTypography> DWriteTypography => Application.Current.ResourceManager.GetTypography(this)!;
 }

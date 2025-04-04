@@ -15,8 +15,13 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public static VisualProperty ReadingDirectionProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(ReadingDirection), VisualPropertyInvalidateModes.Measure, DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_LEFT_TO_RIGHT);
     public static VisualProperty WordWrappingProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(WordWrapping), VisualPropertyInvalidateModes.Measure, DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_NO_WRAP);
     public static VisualProperty TrimmingGranularityProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(TrimmingGranularity), VisualPropertyInvalidateModes.Measure, DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_NONE);
+    public static VisualProperty IsLastLineWrappingEnabledProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(IsLastLineWrappingEnabled), VisualPropertyInvalidateModes.Measure, false);
+    public static VisualProperty LineSpacingProperty { get; } = VisualProperty.Add<DWRITE_LINE_SPACING?>(typeof(TextBox), nameof(LineSpacing), VisualPropertyInvalidateModes.Measure, null);
+    public static VisualProperty OpticalAlignmentProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(OpticalAlignment), VisualPropertyInvalidateModes.Measure, DWRITE_OPTICAL_ALIGNMENT.DWRITE_OPTICAL_ALIGNMENT_NONE);
+    public static VisualProperty VerticalGlyphOrientationProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(VerticalGlyphOrientation), VisualPropertyInvalidateModes.Measure, DWRITE_VERTICAL_GLYPH_ORIENTATION.DWRITE_VERTICAL_GLYPH_ORIENTATION_DEFAULT);
     public static VisualProperty TextProperty { get; } = VisualProperty.Add<string>(typeof(TextBox), nameof(Text), VisualPropertyInvalidateModes.Measure, convert: ValidateNonNullString);
     public static VisualProperty FontCollectionProperty { get; } = VisualProperty.Add<IComObject<IDWriteFontCollection>>(typeof(TextBox), nameof(FontCollection), VisualPropertyInvalidateModes.Measure);
+    public static VisualProperty FontFallbackProperty { get; } = VisualProperty.Add<IComObject<IDWriteFontFallback>>(typeof(TextBox), nameof(FontFallback), VisualPropertyInvalidateModes.Measure);
     public static VisualProperty DrawOptionsProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(DrawOptions), VisualPropertyInvalidateModes.Render, D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
     public static VisualProperty AntiAliasingModeProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(AntiAliasingMode), VisualPropertyInvalidateModes.Render, D2D1_TEXT_ANTIALIAS_MODE.D2D1_TEXT_ANTIALIAS_MODE_DEFAULT);
     public static VisualProperty IsEditableProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(IsEditable), VisualPropertyInvalidateModes.Render, false);
@@ -26,6 +31,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public static VisualProperty FontSizeProperty { get; } = VisualProperty.Add<float?>(typeof(TextBox), nameof(FontSize), VisualPropertyInvalidateModes.Measure);
     public static VisualProperty TextRenderingParametersProperty { get; } = VisualProperty.Add<TextRenderingParameters>(typeof(TextBox), nameof(TextRenderingParameters), VisualPropertyInvalidateModes.Render);
     public static VisualProperty PasswordCharProperty { get; } = VisualProperty.Add<char?>(typeof(TextBox), nameof(PasswordCharacter), VisualPropertyInvalidateModes.Measure);
+    public static VisualProperty ClipTextProperty = VisualProperty.Add(typeof(Visual), nameof(ClipText), VisualPropertyInvalidateModes.Render, true);
 
     private readonly object _rangesLock = new();
     private readonly ConcurrentDictionary<FontRangeType, FontRanges> _ranges = new();
@@ -196,6 +202,21 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     [Category(CategoryLayout)]
     public D2D1_TEXT_ANTIALIAS_MODE AntiAliasingMode { get => (D2D1_TEXT_ANTIALIAS_MODE)GetPropertyValue(AntiAliasingModeProperty)!; set => SetPropertyValue(AntiAliasingModeProperty, value); }
 
+    [Category(CategoryLayout)]
+    public DWRITE_OPTICAL_ALIGNMENT OpticalAlignment { get => (DWRITE_OPTICAL_ALIGNMENT)GetPropertyValue(OpticalAlignmentProperty)!; set => SetPropertyValue(OpticalAlignmentProperty, value); }
+
+    [Category(CategoryLayout)]
+    public DWRITE_VERTICAL_GLYPH_ORIENTATION VerticalGlyphOrientation { get => (DWRITE_VERTICAL_GLYPH_ORIENTATION)GetPropertyValue(VerticalGlyphOrientationProperty)!; set => SetPropertyValue(VerticalGlyphOrientationProperty, value); }
+
+    [Category(CategoryLayout)]
+    public DWRITE_LINE_SPACING? LineSpacing { get => (DWRITE_LINE_SPACING?)GetPropertyValue(LineSpacingProperty)!; set => SetPropertyValue(LineSpacingProperty, value); }
+
+    [Category(CategoryLayout)]
+    public IComObject<IDWriteFontFallback>? FontFallback { get => (IComObject<IDWriteFontFallback>?)GetPropertyValue(FontFallbackProperty)!; set => SetPropertyValue(FontFallbackProperty, value); }
+
+    [Category(CategoryLayout)]
+    public bool IsLastLineWrappingEnabled { get => (bool)GetPropertyValue(IsLastLineWrappingEnabledProperty)!; set => SetPropertyValue(IsLastLineWrappingEnabledProperty, value); }
+
     [Category(CategoryBehavior)]
     public bool IsEditable { get => (bool)GetPropertyValue(IsEditableProperty)!; set => SetPropertyValue(IsEditableProperty, value); }
 
@@ -216,6 +237,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     [Category(CategoryBehavior)]
     public char? PasswordCharacter { get => (char?)GetPropertyValue(PasswordCharProperty); set => SetPropertyValue(PasswordCharProperty, value); }
+
+    [Category(CategoryRender)]
+    public bool ClipText { get => (bool)GetPropertyValue(ClipTextProperty)!; set => SetPropertyValue(ClipTextProperty, value); }
 
     public void SetFontWeight(DWRITE_FONT_WEIGHT weight) => SetFontWeight(weight, new DWRITE_TEXT_RANGE(0));
     public void SetFontWeight(DWRITE_FONT_WEIGHT weight, DWRITE_TEXT_RANGE range) => SetFontWeight(weight, [range]);
@@ -269,6 +293,20 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public void SetSolidColor(D3DCOLORVALUE color, DWRITE_TEXT_RANGE range) => SetSolidColor(color, [range]);
     public virtual void SetSolidColor(D3DCOLORVALUE color, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.SolidColor, color, ranges);
 
+    public void SetPairKerning(bool pairKerning) => SetPairKerning(pairKerning, new DWRITE_TEXT_RANGE(0));
+    public void SetPairKerning(bool pairKerning, DWRITE_TEXT_RANGE range) => SetPairKerning(pairKerning, [range]);
+    public virtual void SetPairKerning(bool pairKerning, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.PairKerning, pairKerning, ranges);
+
+    public void SetCharacterSpacing(float leadingSpacing, float trailingSpacing, float minimumAdvanceWidth) => SetCharacterSpacing(leadingSpacing, trailingSpacing, minimumAdvanceWidth, new DWRITE_TEXT_RANGE(0));
+    public void SetCharacterSpacing(float leadingSpacing, float trailingSpacing, float minimumAdvanceWidth, DWRITE_TEXT_RANGE range) => SetCharacterSpacing(leadingSpacing, trailingSpacing, minimumAdvanceWidth, [range]);
+    public virtual void SetCharacterSpacing(float leadingSpacing, float trailingSpacing, float minimumAdvanceWidth, DWRITE_TEXT_RANGE[] ranges)
+        => SetFontRangeValue(FontRangeType.CharacterSpacing, new CharacterSpacing
+        {
+            leadingSpacing = leadingSpacing,
+            trailingSpacing = trailingSpacing,
+            minimumAdvanceWidth = minimumAdvanceWidth
+        }, ranges);
+
     private string PasswordText
     {
         get
@@ -316,7 +354,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         _textHasChanged = false;
     }
 
-    public override void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason reason)
+    public override void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason? reason = null)
     {
         if (modes != VisualPropertyInvalidateModes.None)
         {
@@ -400,7 +438,8 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         if (property == FontSizeProperty || property == FontFamilyNameProperty || property == FontCollectionProperty ||
             property == ParagraphAlignmentProperty || property == AlignmentProperty || property == FlowDirectionProperty ||
             property == ReadingDirectionProperty || property == WordWrappingProperty || property == TrimmingGranularityProperty ||
-            property == PasswordCharProperty)
+            property == PasswordCharProperty || property == IsLastLineWrappingEnabledProperty || property == LineSpacingProperty ||
+            property == OpticalAlignmentProperty || property == VerticalGlyphOrientationProperty)
         {
             Interlocked.Exchange(ref _layout, null)?.Dispose();
         }
@@ -597,6 +636,28 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         _rendered = false;
         _layout?.Dispose();
         _layout = Application.Current.ResourceManager.CreateTextLayout(GetFormat(), text, 0, maxWidth, maxHeight);
+
+        if (_layout.Object is IDWriteTextLayout2 layout2)
+        {
+            layout2.SetLastLineWrapping(IsLastLineWrappingEnabled).ThrowOnError();
+            layout2.SetOpticalAlignment(OpticalAlignment).ThrowOnError();
+            layout2.SetVerticalGlyphOrientation(VerticalGlyphOrientation).ThrowOnError();
+            var ff = FontFallback;
+            if (ff != null)
+            {
+                layout2.SetFontFallback(ff.Object).ThrowOnError();
+            }
+
+            var ls = LineSpacing;
+            if (ls != null)
+            {
+                if (_layout.Object is IDWriteTextLayout3 layout3)
+                {
+                    layout3.SetLineSpacing(ls.Value).ThrowOnError();
+                }
+            }
+        }
+
         //Application.Trace(this + " CreateTextLayout max:" + maxWidth + "x" + maxHeight);
         ApplyRanges();
         _maxWidth = maxWidth;
@@ -614,6 +675,12 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         var layout = CheckLayout(false);
         if (layout == null)
             return;
+
+        IDWriteTextLayout1? layout1 = null;
+        if (_finalRanges.Any(p => p.Type == FontRangeType.PairKerning || p.Type == FontRangeType.CharacterSpacing))
+        {
+            layout1 = layout.Object as IDWriteTextLayout1;
+        }
 
         foreach (var fr in _finalRanges)
         {
@@ -710,10 +777,38 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                     // needs device context
                     break;
 
+                case FontRangeType.PairKerning:
+                    if (layout1 != null)
+                    {
+                        foreach (var range in fr.Ranges)
+                        {
+                            layout1.SetPairKerning((bool)range.Value!, range.Range).ThrowOnError();
+                        }
+                    }
+                    break;
+
+                case FontRangeType.CharacterSpacing:
+                    if (layout1 != null)
+                    {
+                        foreach (var range in fr.Ranges)
+                        {
+                            var cs = (CharacterSpacing)range.Value!;
+                            layout1.SetCharacterSpacing(cs.leadingSpacing, cs.trailingSpacing, cs.minimumAdvanceWidth, range.Range).ThrowOnError();
+                        }
+                    }
+                    break;
+
                 default:
                     throw new NotSupportedException();
             }
         }
+    }
+
+    private sealed class CharacterSpacing
+    {
+        public float leadingSpacing;
+        public float trailingSpacing;
+        public float minimumAdvanceWidth;
     }
 
     private void ApplyRanges(RenderContext context)
@@ -957,7 +1052,12 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         var layout = GetLayout(rr.width, rr.height);
 
         ApplyRanges(context);
-        context.DeviceContext.PushAxisAlignedClip(clip);
+        var clipText = ClipText;
+        if (clipText)
+        {
+            context.DeviceContext.PushAxisAlignedClip(clip);
+        }
+
         try
         {
             // draw selection
@@ -1008,6 +1108,8 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 trp.Set(Window.MonitorHandle, context.DeviceContext.Object);
             }
 
+            //context.DeviceContext.DrawRectangle(new D2D_RECT_F(origin, rr), brush);
+
             var options = DrawOptions;
             var aa = AntiAliasingMode;
             if (!trpMode && aa != D2D1_TEXT_ANTIALIAS_MODE.D2D1_TEXT_ANTIALIAS_MODE_DEFAULT)
@@ -1024,7 +1126,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
         finally
         {
-            context.DeviceContext.PopAxisAlignedClip();
+            if (clipText)
+            {
+                context.DeviceContext.PopAxisAlignedClip();
+            }
         }
         _rendered = true;
     }
@@ -1639,6 +1744,27 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
         oldLayout.GetLineSpacing(out var lineSpacingMethod, out var lineSpacing, out var baseline);
         newLayout.SetLineSpacing(lineSpacingMethod, lineSpacing, baseline);
+
+        if (oldLayout is IDWriteTextLayout2 layout2 && newLayout is IDWriteTextLayout2 newLayout2)
+        {
+            newLayout2.SetLastLineWrapping(layout2.GetLastLineWrapping());
+            newLayout2.SetOpticalAlignment(layout2.GetOpticalAlignment());
+            newLayout2.SetVerticalGlyphOrientation(layout2.GetVerticalGlyphOrientation());
+            layout2.GetFontFallback(out var fontFallback);
+            if (fontFallback != null)
+            {
+                newLayout2.SetFontFallback(fontFallback);
+                fontFallback.FinalRelease();
+            }
+
+            if (oldLayout is IDWriteTextLayout3 layout3 && newLayout is IDWriteTextLayout3 newLayout3)
+            {
+                if (layout3.GetLineSpacing(out var spacing).IsSuccess)
+                {
+                    newLayout3.SetLineSpacing(spacing);
+                }
+            }
+        }
     }
 
     private static uint CalculateRangeLengthAt(IDWriteTextLayout layout, uint pos)
@@ -1659,7 +1785,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         var currentPos = startPos;
         while (currentPos < endPos)
         {
-            uint rangeLength = CalculateRangeLengthAt(oldLayout, currentPos);
+            var rangeLength = CalculateRangeLengthAt(oldLayout, currentPos);
             rangeLength = Math.Min(rangeLength, endPos - currentPos);
             if (isOffsetNegative)
             {
@@ -1695,6 +1821,20 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             newLayout.SetFontSize(caretFormat.fontSize, range);
             newLayout.SetUnderline(caretFormat.hasUnderline, range);
             newLayout.SetStrikethrough(caretFormat.hasStrikethrough, range);
+
+            if (newLayout is IDWriteTextLayout2 newLayout2)
+            {
+                newLayout2.SetOpticalAlignment(caretFormat.opticalAlignment);
+                newLayout2.SetLastLineWrapping(caretFormat.isLastLineWrapping);
+                newLayout2.SetVerticalGlyphOrientation(caretFormat.verticalGlyphOrientation);
+                if (caretFormat.lineSpacing != null)
+                {
+                    if (newLayout is IDWriteTextLayout3 newLayout3)
+                    {
+                        newLayout3.SetLineSpacing(caretFormat.lineSpacing.Value);
+                    }
+                }
+            }
         }
         else
         {
@@ -1756,7 +1896,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             newLayout.SetDrawingEffect(drawingEffect, range);
             if (drawingEffect != 0)
             {
-                Marshal.ReleaseComObject(drawingEffect);
+                Marshal.Release(drawingEffect);
             }
         }
 
@@ -2185,8 +2325,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
 
 
-        var horizontalHandled = false;
-        var verticalHandled = false;
         var sv = GetViewerParent();
         if (sv != null)
         {
@@ -2196,13 +2334,11 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 if (caretRc.top < sv.VerticalOffset)
                 {
                     sv.VerticalOffset = caretRc.top;
-                    verticalHandled = true;
                 }
 
                 if (caretRc.bottom > sv.VerticalOffset + ar.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
                 {
                     sv.VerticalOffset = caretRc.bottom - ar.Height + (bottomPadding ? padding.bottom : 0) + (topPadding ? padding.top : 0);
-                    verticalHandled = true;
                 }
             }
 
@@ -2211,32 +2347,22 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 if (caretRc.left < sv.HorizontalOffset)
                 {
                     sv.HorizontalOffset = caretRc.left;
-                    horizontalHandled = true;
                 }
 
                 if (caretRc.right > sv.HorizontalOffset + ar.Width - (rightPadding ? padding.right : 0) - (leftPadding ? padding.left : 0))
                 {
                     sv.HorizontalOffset = caretRc.right - ar.Width + (rightPadding ? padding.right : 0) + (leftPadding ? padding.left : 0);
-                    horizontalHandled = true;
                 }
             }
             return;
         }
 
-        if (!horizontalHandled || !verticalHandled)
+        var par = Parent?.ArrangedRect;
+        if (par != null)
         {
-            var par = Parent?.ArrangedRect;
-            if (par != null)
+            if (caretRc.bottom > par.Value.Height - _origin.y - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
             {
-                if (!verticalHandled)
-                {
-                    if (caretRc.bottom > par.Value.Height - _origin.y - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
-                    {
-                        SetOriginY(par.Value.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0) - caretRc.bottom);
-                    }
-                }
-
-
+                SetOriginY(par.Value.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0) - caretRc.bottom);
             }
         }
     }
@@ -2268,8 +2394,22 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         layout.Object.GetStrikethrough(currentPos, out _caretFormat.hasStrikethrough, 0).ThrowOnError();
         layout.Object.GetDrawingEffect(currentPos, out var drawingEffect, 0).ThrowOnError();
 
-        // TODO! change this color
-        _caretFormat.color = D3DCOLORVALUE.Pink;
+        if (layout.Object is IDWriteTextLayout2 layout2)
+        {
+            _caretFormat.isLastLineWrapping = layout2.GetLastLineWrapping();
+            _caretFormat.opticalAlignment = layout2.GetOpticalAlignment();
+            _caretFormat.verticalGlyphOrientation = layout2.GetVerticalGlyphOrientation();
+
+            if (layout.Object is IDWriteTextLayout3 layout3)
+            {
+                if (layout3.GetLineSpacing(out var lineSpacing).IsSuccess)
+                {
+                    _caretFormat.lineSpacing = lineSpacing;
+                }
+            }
+        }
+
+        _caretFormat.color = D3DCOLORVALUE.Gray;
         if (drawingEffect != 0)
         {
             using var brush = ComObject.FromPointer<ID2D1SolidColorBrush>(drawingEffect);
@@ -2459,7 +2599,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         Typography,
         InlineObject,
         DrawingEffect,
-        SolidColor
+        SolidColor,
+        PairKerning,
+        CharacterSpacing
     }
 
     private void SetFontRangeValue(FontRangeType type, object? value, DWRITE_TEXT_RANGE[] ranges)
@@ -2692,5 +2834,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         public D3DCOLORVALUE color;
         public BOOL hasUnderline;
         public BOOL hasStrikethrough;
+        public BOOL isLastLineWrapping;
+        public DWRITE_OPTICAL_ALIGNMENT opticalAlignment;
+        public DWRITE_VERTICAL_GLYPH_ORIENTATION verticalGlyphOrientation;
+        public DWRITE_LINE_SPACING? lineSpacing;
     }
 }

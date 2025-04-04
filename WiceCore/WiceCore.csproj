@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
@@ -331,6 +331,7 @@
     <Compile Include="..\Wice\PointerUpdateEventArgs.cs" Link="PointerUpdateEventArgs.cs" />
     <Compile Include="..\Wice\DpiChangedEventArgs.cs" Link="DpiChangedEventArgs.cs" />
     <Compile Include="..\Wice\IViewerParent.cs" Link="IViewerParent.cs" />
+    <Compile Include="..\Wice\SimpleText.cs" Link="SimpleText.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.17.2" />

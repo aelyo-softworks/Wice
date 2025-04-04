@@ -26,8 +26,8 @@ internal partial class TestWindow : Window
 
         //ShowProgressBar();
         //LongRunWithCursor();
-        BigText();
-        //BigTextSv();
+        //BigText();
+        BigTextSv();
 
         //DisplayTime();
     }
@@ -96,6 +96,7 @@ internal partial class TestWindow : Window
             AcceptsReturn = true,
             AcceptsTab = true,
             Text = text,
+            //LineSpacing = new DWRITE_LINE_SPACING { baseline = 16, height = 16, method = DWRITE_LINE_SPACING_METHOD.DWRITE_LINE_SPACING_METHOD_UNIFORM },
             Name = "txt",
         };
 

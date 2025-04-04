@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ApplicationManifest>..\Wice.Samples.Gallery\app.manifest</ApplicationManifest>
@@ -157,6 +157,7 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Effects\ContrastSampleList.cs" Link="Samples\Effects\ContrastSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\..\Wice\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Text\RichTextBox\RichTextBoxSample.cs" Link="Samples\Text\RichTextBox\RichTextBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Text\TextBox\FormattedTextBoxSample.cs" Link="Samples\Text\TextBox\FormattedTextBoxSample.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.17.2" />
