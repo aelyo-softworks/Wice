@@ -81,8 +81,10 @@ A mouse-controlled **Dock Splitter** visual:
 ![Wice](Assets/wice_dock_splitter.jpg)
 
 An automatic [Flags] enum to **Checkable List Box** visual, very useful when combined with the property grid:
-
 ![Wice](Assets/wice_flags_enum_listbox.jpg)
+
+A textbox displaying **advanced Direct Write** stylistic feature set with Gabriola font, over a beautiful acrylic background
+![Wice](https://github.com/user-attachments/assets/3a024150-b3d0-4c05-a6cd-1ea38270bbc6)
 
 And last but not least, the "snoop"-like feature (press F9 anytime when compiled in DEBUG), that shows all the details of the visuals tree and also allow you to modify values in real-time:
 
