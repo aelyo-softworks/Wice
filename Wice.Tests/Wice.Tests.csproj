@@ -9,6 +9,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<None Remove="Resources\100mb.txt" />
 		<None Remove="Resources\aelyo_flat.png" />
 	</ItemGroup>
 
@@ -36,9 +37,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="Resources\100mb.txt">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 		<None Update="Resources\AliceInWonderland.txt">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

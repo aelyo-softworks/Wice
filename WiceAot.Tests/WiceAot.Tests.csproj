@@ -13,6 +13,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\100mb.txt" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
 	</ItemGroup>
 
@@ -48,9 +52,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="Resources\100mb.txt">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
 	  <None Update="Resources\AliceInWonderlandNumbered.txt">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
