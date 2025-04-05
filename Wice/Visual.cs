@@ -659,10 +659,10 @@ namespace Wice
         public Alignment HorizontalAlignment { get => (Alignment)GetPropertyValue(HorizontalAlignmentProperty); set => SetPropertyValue(HorizontalAlignmentProperty, value); }
 
         [Category(CategoryBehavior)]
-        public bool IsFocusable { get => (bool)GetPropertyValue(IsFocusableProperty); set => SetPropertyValue(IsFocusableProperty, value); }
+        public virtual bool IsFocusable { get => (bool)GetPropertyValue(IsFocusableProperty); set => SetPropertyValue(IsFocusableProperty, value); }
 
         [Category(CategoryBehavior)]
-        public bool IsEnabled { get => (bool)GetPropertyValue(IsEnabledProperty); set => SetPropertyValue(IsEnabledProperty, value); }
+        public virtual bool IsEnabled { get => (bool)GetPropertyValue(IsEnabledProperty); set => SetPropertyValue(IsEnabledProperty, value); }
 
         [Category(CategoryLayout)]
         public bool UseLayoutRounding { get => (bool)GetPropertyValue(UseLayoutRoundingProperty); set => SetPropertyValue(UseLayoutRoundingProperty, value); }

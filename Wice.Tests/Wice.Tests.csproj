@@ -36,6 +36,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="Resources\100mb.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Resources\AliceInWonderland.txt">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
@@ -89,6 +92,9 @@
 		</None>
 		<None Update="Resources\calibrate.jpeg">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\pi.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Resources\rainier.jpg">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

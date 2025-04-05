@@ -4,7 +4,7 @@ public class ValueEventArgs(object? value, bool isValueReadOnly = true, bool isC
 {
     private object? _value = value;
 
-    public virtual bool Cancellable { get; } = isCancellable;
+    public virtual bool IsCancellable { get; } = isCancellable;
     public virtual bool IsValueReadOnly { get; } = isValueReadOnly;
     public virtual object? Value { get => _value; set { if (IsValueReadOnly) throw new ArgumentException(null, nameof(Value)); _value = value; } }
 }

@@ -144,6 +144,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     protected override bool FallbackToTransparentBackground => true;
     protected override bool ShouldRender => !_rendered;
+    protected virtual string RenderedText => Text;
 
     [Browsable(false)]
     public virtual bool RaiseTextChanged { get; set; }
@@ -191,7 +192,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public DWRITE_TRIMMING_GRANULARITY TrimmingGranularity { get => (DWRITE_TRIMMING_GRANULARITY)GetPropertyValue(TrimmingGranularityProperty)!; set => SetPropertyValue(TrimmingGranularityProperty, value); }
 
     [Category(CategoryLayout)]
-    public string Text { get => (string?)GetPropertyValue(TextProperty)! ?? string.Empty; set => SetPropertyValue(TextProperty, value); }
+    public virtual string Text { get => (string?)GetPropertyValue(TextProperty)! ?? string.Empty; set => SetPropertyValue(TextProperty, value); }
 
     [Category(CategoryLayout)]
     public IComObject<IDWriteFontCollection>? FontCollection { get => (IComObject<IDWriteFontCollection>?)GetPropertyValue(FontCollectionProperty)!; set => SetPropertyValue(FontCollectionProperty, value); }
@@ -218,7 +219,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public bool IsLastLineWrappingEnabled { get => (bool)GetPropertyValue(IsLastLineWrappingEnabledProperty)!; set => SetPropertyValue(IsLastLineWrappingEnabledProperty, value); }
 
     [Category(CategoryBehavior)]
-    public bool IsEditable { get => (bool)GetPropertyValue(IsEditableProperty)!; set => SetPropertyValue(IsEditableProperty, value); }
+    public virtual bool IsEditable { get => (bool)GetPropertyValue(IsEditableProperty)!; set => SetPropertyValue(IsEditableProperty, value); }
 
     [Category(CategoryBehavior)]
     public bool IsWheelZoomEnabled { get => (bool)GetPropertyValue(IsWheelZoomEnabledProperty)!; set => SetPropertyValue(IsWheelZoomEnabledProperty, value); }
@@ -411,7 +412,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         {
             if (IsEditable)
             {
-                Edit(); // TODO : ??
+                Edit();
                 IsFocusable = true;
             }
             else
@@ -597,14 +598,14 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return metrics;
     }
 
-    private IComObject<IDWriteTextFormat> GetFormat()
+    internal IComObject<IDWriteTextFormat> GetFormat()
     {
         var format = Application.Current.ResourceManager.GetTextFormat(this)!;
         //Application.Trace(this + " fontsize:" + format.Object.GetFontSize());
         return format;
     }
 
-    private IComObject<IDWriteTextLayout> GetLayout(float maxWidth, float maxHeight)
+    protected virtual IComObject<IDWriteTextLayout>? GetLayout(float maxWidth, float maxHeight)
     {
 #if DEBUG
         ArgumentOutOfRangeException.ThrowIfNegative(maxWidth);
@@ -842,9 +843,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    // note we don't honor width & height = float.PositiveInfinity if layout is not null (which is generally the case)
-    // if float.MaxValue is not set, we always report the text metrics (the place we take)
-    protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
+    internal D2D_SIZE_F MeasureWithPadding(D2D_SIZE_F constraint, Func<D2D_SIZE_F, D2D_SIZE_F> action)
     {
         var padding = Padding;
         var leftPadding = padding.left.IsSet() && padding.left > 0;
@@ -852,31 +851,26 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         {
             constraint.width = Math.Max(0, constraint.width - padding.left);
         }
-
         var topPadding = padding.top.IsSet() && padding.top > 0;
         if (topPadding && constraint.height.IsSet())
         {
             constraint.height = Math.Max(0, constraint.height - padding.top);
         }
-
         var rightPadding = padding.right.IsSet() && padding.right > 0;
         if (rightPadding && constraint.width.IsSet())
         {
             constraint.width = Math.Max(0, constraint.width - padding.right);
         }
-
         var bottomPadding = padding.bottom.IsSet() && padding.bottom > 0;
         if (bottomPadding && constraint.height.IsSet())
         {
             constraint.height = Math.Max(0, constraint.height - padding.bottom);
         }
 
-        var layout = GetLayout(constraint.width, constraint.height);
-        var metrics = layout.GetMetrics1();
-
+        var size = action(constraint);
         // note: always return integral w & h when computed by dwrite
-        var width = metrics.Base.widthIncludingTrailingWhitespace.Ceiling();
-        var height = metrics.Base.height.Ceiling();
+        var width = size.width.Ceiling();
+        var height = size.height.Ceiling();
 
         if (IsEditable && IsFocused)
         {
@@ -919,9 +913,20 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             height += padding.bottom;
         }
 
-        //Application.Trace("w:" + width + " h:" + height);
         return new D2D_SIZE_F(width, height);
     }
+
+    // note we don't honor width & height = float.PositiveInfinity if layout is not null (which is generally the case)
+    // if float.MaxValue is not set, we always report the text metrics (the place we take)
+    protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => MeasureWithPadding(constraint, c =>
+    {
+        var layout = GetLayout(c.width, c.height);
+        if (layout == null)
+            throw new InvalidOperationException();
+
+        var metrics = layout.GetMetrics1();
+        return new D2D_SIZE_F(metrics.Base.widthIncludingTrailingWhitespace, metrics.Base.height);
+    });
 
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
@@ -1050,6 +1055,8 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
 
         var layout = GetLayout(rr.width, rr.height);
+        if (layout == null)
+            return;
 
         ApplyRanges(context);
         var clipText = ClipText;
@@ -1988,7 +1995,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         DWRITE_LINE_METRICS[] lineMetrics;
         BOOL isTrailingHit;
 
-        var text = Text ?? string.Empty;
+        var text = RenderedText ?? string.Empty;
         switch (moveMode)
         {
             case TextBoxSetSelection.Left:
@@ -2497,7 +2504,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         if (selection.length == 0)
             return string.Empty;
 
-        return Text?.Substring((int)selection.startPosition, (int)selection.length) ?? string.Empty;
+        return RenderedText?.Substring((int)selection.startPosition, (int)selection.length) ?? string.Empty;
     }
 
     public DWRITE_TEXT_RANGE GetSelectionRange()
@@ -2511,13 +2518,13 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
 
         // Limit to actual text length.
-        var textLength = (uint)(Text?.Length).GetValueOrDefault();
+        var textLength = (uint)(RenderedText?.Length).GetValueOrDefault();
         caretBegin = Math.Min(caretBegin, textLength);
         caretEnd = Math.Min(caretEnd, textLength);
         return new DWRITE_TEXT_RANGE(caretBegin, caretEnd - caretBegin);
     }
 
-    private IComObject<IDWriteTextLayout>? CheckLayout(bool throwIfNull = true)
+    protected virtual IComObject<IDWriteTextLayout>? CheckLayout(bool throwIfNull = true)
     {
         var layout = _layout;
         if (layout == null || layout.IsDisposed)

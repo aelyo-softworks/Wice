@@ -11,10 +11,10 @@ namespace Wice
         {
             _value = value;
             IsValueReadOnly = isValueReadOnly;
-            Cancellable = isCancellable;
+            IsCancellable = isCancellable;
         }
 
-        public virtual bool Cancellable { get; }
+        public virtual bool IsCancellable { get; }
         public virtual bool IsValueReadOnly { get; }
         public virtual object Value { get => _value; set { if (IsValueReadOnly) throw new ArgumentException(null, nameof(Value)); _value = value; } }
     }

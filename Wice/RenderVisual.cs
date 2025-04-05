@@ -23,6 +23,9 @@ namespace Wice
         protected virtual bool ShouldRender => true;
         protected virtual bool FallbackToTransparentBackground => false;
         protected virtual bool RenderSnapToPixels => true;
+        protected virtual bool TransformMaxed => true;
+        protected float? CompositionWidthMaxed => _widthMaxed;
+        protected float? CompositionHeightMaxed => _heightMaxed;
 
         [Category(CategoryRender)]
         public _D3DCOLORVALUE? BackgroundColor { get => (_D3DCOLORVALUE?)GetPropertyValue(BackgroundColorProperty); set => SetPropertyValue(BackgroundColorProperty, value); }
@@ -96,7 +99,7 @@ namespace Wice
             visual.DrawOnSurface(win.CompositionDevice, dc => RenderContext.WithRenderContext(dc, rc =>
             {
                 var transform = dc.GetTransform();
-                if (_widthMaxed.HasValue && _heightMaxed.HasValue)
+                if (TransformMaxed && _widthMaxed.HasValue && _heightMaxed.HasValue)
                 {
                     dc.SetTransform(transform * D2D_MATRIX_3X2_F.Translation(_widthMaxed.Value, _heightMaxed.Value));
                 }
@@ -106,7 +109,7 @@ namespace Wice
                 RenderCore(rc);
                 parent.AfterRenderChildCore(rc, this);
 
-                if (_widthMaxed.HasValue && _heightMaxed.HasValue)
+                if (TransformMaxed && _widthMaxed.HasValue && _heightMaxed.HasValue)
                 {
                     dc.SetTransform(transform);
                 }
@@ -141,6 +144,7 @@ namespace Wice
             var maxed = false;
             if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Size))
             {
+                // MaximumBitmapSize is 16384, remove 2 to be sure we are below internal DComp limit
                 var max = Window.MaximumBitmapSize - 2;
                 var size = rr.Size;
                 if (size.width > max)

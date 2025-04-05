@@ -196,22 +196,36 @@ namespace Wice.Tests
         public void LargeText()
         {
             var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
-            var tb = new TextBox
+            var tb = new FastTextBox
             {
+                VerticalAlignment = Alignment.Near,
                 Text = text,
+                IsFocusable = true,
             };
             Children.Add(tb);
         }
 
         public void LargeTextSv()
         {
+            //var sv = new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
             var sv = new ScrollViewer();
             sv.Viewer.IsWidthUnconstrained = false;
 
-            var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
-            var tb = new TextBox
+            //var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
+            //var text = File.ReadAllText(@"Resources\MobyDickNumbered.txt");
+            var text = File.ReadAllText(@"Resources\100mb.txt");
+            //var text = File.ReadAllText(@"Resources\pi.txt");
+            var tb = new FastTextBox
             {
+                VerticalAlignment = Alignment.Near,
+                HorizontalAlignment = Alignment.Near,
+                FontFamilyName = "Cascadia Mono",
+                FontSize = 12,
                 Text = text,
+                //IsFocusable = true,
+                //Text = "Did you know that one of the longest words in English is supercalifragilisticexpialidocious?. It was made popular in \"Mary Poppins\" movie.",
+                //WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WRAP,
+                //IsEditable = true,
             };
 
             sv.Viewer.Child = tb;

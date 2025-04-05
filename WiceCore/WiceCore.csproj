@@ -331,6 +331,8 @@
     <Compile Include="..\Wice\PointerUpdateEventArgs.cs" Link="PointerUpdateEventArgs.cs" />
     <Compile Include="..\Wice\DpiChangedEventArgs.cs" Link="DpiChangedEventArgs.cs" />
     <Compile Include="..\Wice\IViewerParent.cs" Link="IViewerParent.cs" />
+    <Compile Include="..\Wice\FastTextBox.cs" Link="FastTextBox.cs" />
+    <Compile Include="..\Wice\LoadEventArgs.cs" Link="LoadEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.17.2" />

@@ -139,6 +139,7 @@ namespace Wice
 
         protected override bool FallbackToTransparentBackground => true;
         protected override bool ShouldRender => !_rendered;
+        protected virtual string RenderedText => Text;
 
         [Browsable(false)]
         public virtual bool RaiseTextChanged { get; set; }
@@ -187,7 +188,7 @@ namespace Wice
 
         [Category(CategoryLayout)]
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
-        public string Text { get => (string)GetPropertyValue(TextProperty) ?? string.Empty; set => SetPropertyValue(TextProperty, value); }
+        public virtual string Text { get => (string)GetPropertyValue(TextProperty) ?? string.Empty; set => SetPropertyValue(TextProperty, value); }
 
         [Category(CategoryLayout)]
         public IComObject<IDWriteFontCollection> FontCollection { get => (IComObject<IDWriteFontCollection>)GetPropertyValue(FontCollectionProperty); set => SetPropertyValue(FontCollectionProperty, value); }
@@ -214,7 +215,7 @@ namespace Wice
         public bool IsLastLineWrappingEnabled { get => (bool)GetPropertyValue(IsLastLineWrappingEnabledProperty); set => SetPropertyValue(IsLastLineWrappingEnabledProperty, value); }
 
         [Category(CategoryBehavior)]
-        public bool IsEditable { get => (bool)GetPropertyValue(IsEditableProperty); set => SetPropertyValue(IsEditableProperty, value); }
+        public virtual bool IsEditable { get => (bool)GetPropertyValue(IsEditableProperty); set => SetPropertyValue(IsEditableProperty, value); }
 
         [Category(CategoryBehavior)]
         public bool IsWheelZoomEnabled { get => (bool)GetPropertyValue(IsWheelZoomEnabledProperty); set => SetPropertyValue(IsWheelZoomEnabledProperty, value); }
@@ -382,7 +383,7 @@ namespace Wice
             }
         }
 
-        public override void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason reason)
+        public override void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason reason = null)
         {
             if (modes != VisualPropertyInvalidateModes.None)
             {
@@ -609,14 +610,14 @@ namespace Wice
             return metrics;
         }
 
-        private IComObject<IDWriteTextFormat> GetFormat()
+        internal IComObject<IDWriteTextFormat> GetFormat()
         {
             var format = Application.Current.ResourceManager.GetTextFormat(this);
             //Application.Trace(this + " fontsize:" + format.Object.GetFontSize());
             return format;
         }
 
-        private IComObject<IDWriteTextLayout> GetLayout(float maxWidth, float maxHeight)
+        protected virtual IComObject<IDWriteTextLayout> GetLayout(float maxWidth, float maxHeight)
         {
 #if DEBUG
             if (maxWidth < 0)
@@ -848,9 +849,7 @@ namespace Wice
             }
         }
 
-        // note we don't honor width & height = float.PositiveInfinity if layout is not null (which is generally the case)
-        // if float.MaxValue is not set, we always report the text metrics (the place we take)
-        protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
+        internal D2D_SIZE_F MeasureWithPadding(D2D_SIZE_F constraint, Func<D2D_SIZE_F, D2D_SIZE_F> action)
         {
             var padding = Padding;
             var leftPadding = padding.left.IsSet() && padding.left > 0;
@@ -858,31 +857,26 @@ namespace Wice
             {
                 constraint.width = Math.Max(0, constraint.width - padding.left);
             }
-
             var topPadding = padding.top.IsSet() && padding.top > 0;
             if (topPadding && constraint.height.IsSet())
             {
                 constraint.height = Math.Max(0, constraint.height - padding.top);
             }
-
             var rightPadding = padding.right.IsSet() && padding.right > 0;
             if (rightPadding && constraint.width.IsSet())
             {
                 constraint.width = Math.Max(0, constraint.width - padding.right);
             }
-
             var bottomPadding = padding.bottom.IsSet() && padding.bottom > 0;
             if (bottomPadding && constraint.height.IsSet())
             {
                 constraint.height = Math.Max(0, constraint.height - padding.bottom);
             }
 
-            var layout = GetLayout(constraint.width, constraint.height);
-            var metrics = layout.GetMetrics1();
-
+            var size = action(constraint);
             // note: always return integral w & h when computed by dwrite
-            var width = metrics.widthIncludingTrailingWhitespace.Ceiling();
-            var height = metrics.height.Ceiling();
+            var width = size.width.Ceiling();
+            var height = size.height.Ceiling();
 
             if (IsEditable && IsFocused)
             {
@@ -925,9 +919,20 @@ namespace Wice
                 height += padding.bottom;
             }
 
-            //Application.Trace("w:" + width + " h:" + height);
             return new D2D_SIZE_F(width, height);
         }
+
+        // note we don't honor width & height = float.PositiveInfinity if layout is not null (which is generally the case)
+        // if float.MaxValue is not set, we always report the text metrics (the place we take)
+        protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => MeasureWithPadding(constraint, c =>
+        {
+            var layout = GetLayout(c.width, c.height);
+            if (layout == null)
+                throw new InvalidOperationException();
+
+            var metrics = layout.GetMetrics1();
+            return new D2D_SIZE_F(metrics.widthIncludingTrailingWhitespace, metrics.height);
+        });
 
         protected override void ArrangeCore(D2D_RECT_F finalRect)
         {
@@ -1057,6 +1062,8 @@ namespace Wice
             }
 
             var layout = GetLayout(rr.width, rr.height);
+            if (layout == null)
+                return;
 
             ApplyRanges(context);
             var clipText = ClipText;
@@ -2008,7 +2015,7 @@ namespace Wice
             float caretY;
             bool isTrailingHit;
 
-            var text = Text ?? string.Empty;
+            var text = RenderedText ?? string.Empty;
             switch (moveMode)
             {
                 case TextBoxSetSelection.Left:
@@ -2332,8 +2339,6 @@ namespace Wice
                 SetOriginX(-caretRc.left + (leftPadding ? padding.left : 0));
             }
 
-            var horizontalHandled = false;
-            var verticalHandled = false;
             var sv = GetViewerParent();
             if (sv != null)
             {
@@ -2343,13 +2348,11 @@ namespace Wice
                     if (caretRc.top < sv.VerticalOffset)
                     {
                         sv.VerticalOffset = caretRc.top;
-                        verticalHandled = true;
                     }
 
                     if (caretRc.bottom > sv.VerticalOffset + ar.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
                     {
                         sv.VerticalOffset = caretRc.bottom - ar.Height + (bottomPadding ? padding.bottom : 0) + (topPadding ? padding.top : 0);
-                        verticalHandled = true;
                     }
                 }
 
@@ -2358,30 +2361,22 @@ namespace Wice
                     if (caretRc.left < sv.HorizontalOffset)
                     {
                         sv.HorizontalOffset = caretRc.left;
-                        horizontalHandled = true;
                     }
 
                     if (caretRc.right > sv.HorizontalOffset + ar.Width - (rightPadding ? padding.right : 0) - (leftPadding ? padding.left : 0))
                     {
                         sv.HorizontalOffset = caretRc.right - ar.Width + (rightPadding ? padding.right : 0) + (leftPadding ? padding.left : 0);
-                        horizontalHandled = true;
                     }
                 }
                 return;
             }
 
-            if (!horizontalHandled || !verticalHandled)
+            var par = Parent?.ArrangedRect;
+            if (par != null)
             {
-                var par = Parent?.ArrangedRect;
-                if (par != null)
+                if (caretRc.bottom > par.Value.Height - _origin.y - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
                 {
-                    if (!verticalHandled)
-                    {
-                        if (caretRc.bottom > par.Value.Height - _origin.y - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0))
-                        {
-                            SetOriginY(par.Value.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0) - caretRc.bottom);
-                        }
-                    }
+                    SetOriginY(par.Value.Height - (bottomPadding ? padding.bottom : 0) - (topPadding ? padding.top : 0) - caretRc.bottom);
                 }
             }
         }
@@ -2512,7 +2507,7 @@ namespace Wice
             if (selection.length == 0)
                 return string.Empty;
 
-            return Text?.Substring((int)selection.startPosition, (int)selection.length) ?? string.Empty;
+            return RenderedText?.Substring((int)selection.startPosition, (int)selection.length) ?? string.Empty;
         }
 
         public DWRITE_TEXT_RANGE GetSelectionRange()
@@ -2528,13 +2523,13 @@ namespace Wice
             }
 
             // Limit to actual text length.
-            var textLength = (uint)(Text?.Length).GetValueOrDefault();
+            var textLength = (uint)(RenderedText?.Length).GetValueOrDefault();
             caretBegin = Math.Min(caretBegin, textLength);
             caretEnd = Math.Min(caretEnd, textLength);
             return new DWRITE_TEXT_RANGE(caretBegin, caretEnd - caretBegin);
         }
 
-        private IComObject<IDWriteTextLayout> CheckLayout(bool throwIfNull)
+        protected virtual IComObject<IDWriteTextLayout> CheckLayout(bool throwIfNull)
         {
             var layout = _layout;
             if ((layout == null || layout.IsDisposed) && throwIfNull)
