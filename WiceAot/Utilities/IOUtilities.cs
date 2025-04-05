@@ -47,10 +47,8 @@ public static partial class IOUtilities
             return null;
 
         var bytes = new byte[256];
-        using (var file = File.OpenRead(filePath))
-        {
-            file.Read(bytes, 0, bytes.Length);
-        }
+        using var file = File.OpenRead(filePath);
+        _ = file.Read(bytes, 0, bytes.Length);
         return FindContentType(bytes);
     }
 

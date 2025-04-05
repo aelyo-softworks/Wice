@@ -56,7 +56,9 @@ public class DataSource
         if (member == null || item == null)
             return item;
 
+#pragma warning disable IL2075 // 'this' argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
         var pi = item.GetType().GetProperties().FirstOrDefault(p => p.CanRead && p.Name == member);
+#pragma warning restore IL2075 // 'this' argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
         if (pi == null)
             return item;
 
@@ -77,7 +79,9 @@ public class DataSource
         }
         else
         {
+#pragma warning disable IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
             enumerable = source.GetType().GetUnambiguousProperty(MemberName)?.GetValue(source) as IEnumerable;
+#pragma warning restore IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
         }
 
         if (enumerable != null)

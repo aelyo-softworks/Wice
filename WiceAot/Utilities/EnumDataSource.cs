@@ -17,7 +17,9 @@ public partial class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
         if (value == null)
             return null;
 
+#pragma warning disable IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
         return FromType(value.GetType(), value);
+#pragma warning restore IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
     }
 
     public static EnumDataSource FromType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicFields)] Type type, object? value = null, bool? forceFlags = null)

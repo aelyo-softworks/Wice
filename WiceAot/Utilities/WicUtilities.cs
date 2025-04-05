@@ -26,7 +26,9 @@ public class WicUtilities
 
     public static IComObject<IWICBitmapSource> LoadBitmapSource(nint pointer, long byteLength)
     {
-        ArgumentNullException.ThrowIfNull(pointer);
+        if (pointer == 0)
+            throw new ArgumentException(null, nameof(pointer));
+
         using var stream = new System.IO.UnmanagedMemoryStream(new IntPtrBuffer(pointer, byteLength), 0, byteLength);
         return LoadBitmapSource(stream, WICDecodeOptions.WICDecodeMetadataCacheOnLoad);
     }
@@ -39,7 +41,9 @@ public class WicUtilities
         uint bufferSize,
         nint pointer) => WicImagingFactory.WithFactory(factory =>
     {
-        ArgumentNullException.ThrowIfNull(pointer);
+        if (pointer == 0)
+            throw new ArgumentException(null, nameof(pointer));
+
         factory.Object.CreateBitmapFromMemory(width, height, pixelFormat, stride, bufferSize, pointer, out var bmp).ThrowOnError();
         return new ComObject<IWICBitmapSource>(bmp);
     });

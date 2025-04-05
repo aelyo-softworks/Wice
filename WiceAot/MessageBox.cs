@@ -4,11 +4,6 @@ public partial class MessageBox : DialogBox
 {
     protected MESSAGEBOX_RESULT? MessageBoxResult { get; set; }
 
-    public MessageBox()
-    {
-        DoWhenAttachedToComposition(() => Title = Application.GetTitle(Window!.Handle));
-    }
-
     public new MESSAGEBOX_RESULT Result
     {
         get
@@ -26,11 +21,11 @@ public partial class MessageBox : DialogBox
         }
     }
 
-    public static void Show(Window window, string text, Action<MessageBox>? onClose = null)
+    public static void Show(Window window, string text, string? title = null, Action<MessageBox>? onClose = null)
     {
         ArgumentNullException.ThrowIfNull(window);
         ArgumentNullException.ThrowIfNull(text);
-        var dlg = new MessageBox();
+        var dlg = new MessageBox { Title = title ?? Application.GetTitle(window.Handle) };
         var button = dlg.AddCloseButton();
         button.Click += (s, e) => dlg.MessageBoxResult = MESSAGEBOX_RESULT.IDOK;
 

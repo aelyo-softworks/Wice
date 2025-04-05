@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Runtime.Serialization;
 
 namespace Wice
 {
@@ -26,11 +25,6 @@ namespace Wice
 
         public WiceException(Exception innerException)
             : base(null, innerException)
-        {
-        }
-
-        protected WiceException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
         }
 

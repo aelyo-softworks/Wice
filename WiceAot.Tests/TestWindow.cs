@@ -79,7 +79,7 @@ internal partial class TestWindow : Window
         //sv.Viewer.IsHeightUnconstrained = false;
 
         var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
-        //text = File.ReadAllText(@"Resources\MobyDickNumbered.txt");
+        text = File.ReadAllText(@"C:\Users\simon\Downloads\contents\contents.txt");
         //text = "These are colored emoji: 😝👸🎅👨‍👩‍👧‍👦";
 
         var txt = new TextBox

@@ -8,7 +8,7 @@ public class MessageBoxSample : Sample
     {
         var btn = new Button();
         btn.Text.Text = "Open a MessageBox...";
-        btn.Click += (s, e) => { Wice.MessageBox.Show(parent.Window!, "Hello world!"); };
+        btn.Click += (s, e) => Wice.MessageBox.Show(parent.Window!, "Hello world!");
 
         btn.HorizontalAlignment = Alignment.Near; // remove from display
         Dock.SetDockType(btn, DockType.Top); // remove from display

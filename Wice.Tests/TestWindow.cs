@@ -11,6 +11,7 @@ using Wice.Utilities;
 using Windows.UI.Composition;
 
 
+
 #if NET
 using IGraphicsEffectSource = Wice.Interop.IGraphicsEffectSourceWinRT;
 #else
@@ -50,8 +51,10 @@ namespace Wice.Tests
             //AddReadOnlyText();
             //AddReadOnlyTexts();
             //AddEditableTexts();
+            //LargeText();
+            LargeTextSv();
             //BigText();
-            BigTextSv();
+            //BigTextSv();
             //DisplayTime();
             //AddTextWithSpaces(this);
 
@@ -188,6 +191,34 @@ namespace Wice.Tests
                     }
                 });
             }, null, 0, 1000);
+        }
+
+        public void LargeText()
+        {
+            var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
+            var tb = new TextBox
+            {
+                Text = text,
+            };
+            Children.Add(tb);
+        }
+
+        public void LargeTextSv()
+        {
+            var sv = new ScrollViewer();
+            sv.Viewer.IsWidthUnconstrained = false;
+
+            var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
+            var tb = new TextBox
+            {
+                Text = text,
+            };
+
+            sv.Viewer.Child = tb;
+            sv.Margin = D2D_RECT_F.Thickness(10, 10, 10, 10);
+
+            Children.Add(sv);
+            //Children.Add(txt);
         }
 
         public void BigText()

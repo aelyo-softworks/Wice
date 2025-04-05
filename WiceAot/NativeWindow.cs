@@ -284,7 +284,9 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
     internal static bool RegisterWindowClass(string className, nint windowProc)
     {
         ArgumentNullException.ThrowIfNull(className);
-        ArgumentNullException.ThrowIfNull(windowProc);
+        if (windowProc == 0)
+            throw new ArgumentException(null, nameof(windowProc));
+
         if (!Functions.GetClassInfoW(new HINSTANCE { Value = Application.ModuleHandle.Value }, PWSTR.From(className), out _))
         {
             var cls = new WNDCLASSW

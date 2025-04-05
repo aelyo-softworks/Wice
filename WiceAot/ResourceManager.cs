@@ -211,7 +211,8 @@ public partial class ResourceManager
 
     public virtual IComObject<IWICBitmapSource>? GetWicBitmapSource(nint pointer, long byteLength, string uniqueKey)
     {
-        ArgumentNullException.ThrowIfNull(pointer);
+        if (pointer == 0)
+            throw new ArgumentException(null, nameof(pointer));
         ArgumentNullException.ThrowIfNull(uniqueKey);
         return Get(null, Domain.WICBitmapSource, uniqueKey, () => WicUtilities.LoadBitmapSource(pointer, byteLength));
     }
@@ -225,7 +226,8 @@ public partial class ResourceManager
         nint pointer,
         string uniqueKey)
     {
-        ArgumentNullException.ThrowIfNull(pointer);
+        if (pointer == 0)
+            throw new ArgumentException(null, nameof(pointer));
         ArgumentNullException.ThrowIfNull(uniqueKey);
         return Get(null, Domain.WICBitmapSource, uniqueKey, () => WicUtilities.LoadBitmapSourceFromMemory(width, height, pixelFormat, stride, bufferSize, pointer));
     }

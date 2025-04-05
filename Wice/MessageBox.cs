@@ -7,11 +7,6 @@ namespace Wice
     {
         protected DialogResult? MessageBoxResult { get; set; }
 
-        public MessageBox()
-        {
-            DoWhenAttachedToComposition(() => Title = Application.GetTitle(Window.Handle));
-        }
-
         public new DialogResult Result
         {
             get
@@ -29,7 +24,7 @@ namespace Wice
             }
         }
 
-        public static void Show(Window window, string text, Action<MessageBox> onClose = null)
+        public static void Show(Window window, string text, string title = null, Action<MessageBox> onClose = null)
         {
             if (window == null)
                 throw new ArgumentNullException(nameof(window));
@@ -37,7 +32,7 @@ namespace Wice
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
-            var dlg = new MessageBox();
+            var dlg = new MessageBox { Title = title ?? Application.GetTitle(window.Handle) };
             var button = dlg.AddCloseButton();
             button.Click += (s, e) => dlg.MessageBoxResult = DialogResult.OK;
 

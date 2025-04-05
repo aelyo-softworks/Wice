@@ -49,7 +49,10 @@ namespace ZeroDep
         private static readonly string[] _dateFormatsUtc = { "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'", "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", "yyyy'-'MM'-'dd'T'HH':'mm'Z'", "yyyyMMdd'T'HH':'mm':'ss'Z'" };
         private static readonly DateTime _minDateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private static readonly long _minDateTimeTicks = _minDateTime.Ticks;
+
+#if !NET8_0_OR_GREATER
         private static readonly FormatterConverter _defaultFormatterConverter = new FormatterConverter();
+#endif
 
         /// <summary>
         /// Serializes the specified object. Supports anonymous and dynamic types.
@@ -80,6 +83,9 @@ namespace ZeroDep
                 throw new ArgumentNullException(nameof(writer));
 
             options = options ?? new JsonOptions();
+            var objectGraph = options.FinalObjectGraph;
+            SetOptions(objectGraph, options);
+
             var jsonp = options.JsonPCallback.Nullify();
             if (jsonp != null)
             {
@@ -87,7 +93,7 @@ namespace ZeroDep
                 writer.Write('(');
             }
 
-            WriteValue(writer, value, new Dictionary<object, object>(ReferenceComparer._current), options);
+            WriteValue(writer, value, objectGraph, options);
             if (jsonp != null)
             {
                 writer.Write(')');
@@ -113,6 +119,7 @@ namespace ZeroDep
 
                 if (!targetType.IsValueType)
                     return null;
+
                 return CreateInstance(null, targetType, 0, options, text);
             }
 
@@ -248,12 +255,16 @@ namespace ZeroDep
             {
                 if (options.CreateInstanceCallback != null)
                 {
-                    var og = new Dictionary<object, object>();
-                    og["elementsCount"] = elementsCount;
-                    og["value"] = value;
+                    var og = new Dictionary<object, object>
+                    {
+                        ["elementsCount"] = elementsCount,
+                        ["value"] = value
+                    };
 
-                    var e = new JsonEventArgs(null, type, og, options, null, target);
-                    e.EventType = JsonEventType.CreateInstance;
+                    var e = new JsonEventArgs(null, type, og, options, null, target)
+                    {
+                        EventType = JsonEventType.CreateInstance
+                    };
                     options.CreateInstanceCallback(e);
                     if (e.Handled)
                         return e.Value;
@@ -264,6 +275,21 @@ namespace ZeroDep
                     var elementType = type.GetElementType();
                     return Array.CreateInstance(elementType, elementsCount);
                 }
+
+                if (type.IsInterface)
+                {
+                    var elementType = GetGenericListElementType(type);
+                    if (elementType != null)
+                        return Activator.CreateInstance(typeof(List<>).MakeGenericType(elementType));
+
+                    var elementTypes = GetGenericDictionaryElementType(type);
+                    if (elementTypes != null)
+                        return Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(elementTypes));
+
+                    elementType = GetListElementType(type);
+                    if (elementType != null)
+                        return new List<object>(elementsCount);
+                }
                 return Activator.CreateInstance(type);
             }
             catch (Exception e)
@@ -273,16 +299,71 @@ namespace ZeroDep
             }
         }
 
+        private static Type GetGenericListElementType(Type type)
+        {
+            foreach (var iface in type.GetInterfaces())
+            {
+                if (!iface.IsGenericType)
+                    continue;
+
+                if (iface.GetGenericTypeDefinition() == typeof(IList<>))
+                    return iface.GetGenericArguments()[0];
+
+                if (iface.GetGenericTypeDefinition() == typeof(IReadOnlyList<>))
+                    return iface.GetGenericArguments()[0];
+
+                if (iface.GetGenericTypeDefinition() == typeof(ICollection<>))
+                    return iface.GetGenericArguments()[0];
+
+                if (iface.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>))
+                    return iface.GetGenericArguments()[0];
+            }
+            return null;
+        }
+
+        private static Type GetListElementType(Type type)
+        {
+            foreach (var iface in type.GetInterfaces())
+            {
+                if (!iface.IsGenericType)
+                    continue;
+
+                if (iface.GetGenericTypeDefinition() == typeof(IList))
+                    return iface.GetGenericArguments()[0];
+            }
+            return null;
+        }
+
+        private static Type[] GetGenericDictionaryElementType(Type type)
+        {
+            foreach (var iface in type.GetInterfaces())
+            {
+                if (!iface.IsGenericType)
+                    continue;
+
+                if (iface.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                    return iface.GetGenericArguments();
+
+                if (iface.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>))
+                    return iface.GetGenericArguments();
+            }
+            return null;
+        }
+
         private static ListObject GetListObject(Type type, JsonOptions options, object target, object value, IDictionary dictionary, string key)
         {
             if (options.GetListObjectCallback != null)
             {
-                var og = new Dictionary<object, object>();
-                og["dictionary"] = dictionary;
-                og["type"] = type;
+                var og = new Dictionary<object, object>
+                {
+                    ["dictionary"] = dictionary,
+                    ["type"] = type
+                };
 
-                var e = new JsonEventArgs(null, value, og, options, key, target);
-                e.EventType = JsonEventType.GetListObject;
+                var e = new JsonEventArgs(null, value, og, options, key, target)
+                {
+                    EventType = JsonEventType.GetListObject
+                };
                 options.GetListObjectCallback(e);
                 if (e.Handled)
                 {
@@ -299,7 +380,8 @@ namespace ZeroDep
 
             if (type.IsGenericType)
             {
-                if (type.GetGenericTypeDefinition() == typeof(ICollection<>))
+                if (type.GetGenericTypeDefinition() == typeof(ICollection<>) ||
+                    type.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>))
                     return (ListObject)Activator.CreateInstance(typeof(ICollectionTObject<>).MakeGenericType(type.GetGenericArguments()[0]));
             }
 
@@ -308,7 +390,8 @@ namespace ZeroDep
                 if (!iface.IsGenericType)
                     continue;
 
-                if (iface.GetGenericTypeDefinition() == typeof(ICollection<>))
+                if (iface.GetGenericTypeDefinition() == typeof(ICollection<>) ||
+                    iface.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>))
                     return (ListObject)Activator.CreateInstance(typeof(ICollectionTObject<>).MakeGenericType(iface.GetGenericArguments()[0]));
             }
             return null;
@@ -607,11 +690,15 @@ namespace ZeroDep
                 var entryValue = entry.Value;
                 if (options.MapEntryCallback != null)
                 {
-                    var og = new Dictionary<object, object>();
-                    og["dictionary"] = dictionary;
+                    var og = new Dictionary<object, object>
+                    {
+                        ["dictionary"] = dictionary
+                    };
 
-                    var e = new JsonEventArgs(null, entryValue, og, options, entryKey, target);
-                    e.EventType = JsonEventType.MapEntry;
+                    var e = new JsonEventArgs(null, entryValue, og, options, entryKey, target)
+                    {
+                        EventType = JsonEventType.MapEntry
+                    };
                     options.MapEntryCallback(e);
                     if (e.Handled)
                         continue;
@@ -665,7 +752,13 @@ namespace ZeroDep
                 if (iface.GetGenericTypeDefinition() == typeof(IList<>))
                     return iface.GetGenericArguments()[0];
 
+                if (iface.GetGenericTypeDefinition() == typeof(IReadOnlyList<>))
+                    return iface.GetGenericArguments()[0];
+
                 if (iface.GetGenericTypeDefinition() == typeof(ICollection<>))
+                    return iface.GetGenericArguments()[0];
+
+                if (iface.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>))
                     return iface.GetGenericArguments()[0];
 
                 if (iface.GetGenericTypeDefinition() == typeof(IEnumerable<>))
@@ -1011,6 +1104,7 @@ namespace ZeroDep
             return sb.ToString();
         }
 
+#if !NET8_0_OR_GREATER
         private static ISerializable ReadSerializable(TextReader reader, JsonOptions options, string typeName, Dictionary<string, object> values)
         {
             Type type;
@@ -1043,6 +1137,7 @@ namespace ZeroDep
                 return null;
             }
         }
+#endif
 
         private static object ReadValue(TextReader reader, JsonOptions options) => ReadValue(reader, options, false, out var _);
         private static object ReadValue(TextReader reader, JsonOptions options, bool arrayMode, out bool arrayEnd)
@@ -1081,6 +1176,7 @@ namespace ZeroDep
             if (c == '{')
             {
                 var dic = ReadDictionary(reader, options);
+#if !NET8_0_OR_GREATER
                 if (options.SerializationOptions.HasFlag(JsonSerializationOptions.UseISerializable))
                 {
                     if (dic.TryGetValue(_serializationTypeToken, out var o))
@@ -1093,6 +1189,7 @@ namespace ZeroDep
                         }
                     }
                 }
+#endif
                 return dic;
             }
 
@@ -1287,8 +1384,10 @@ namespace ZeroDep
                     using (var reader = new StringReader(text))
                     {
                         reader.Read(); // skip "
-                        var options = new JsonOptions();
-                        options.ThrowExceptions = false;
+                        var options = new JsonOptions
+                        {
+                            ThrowExceptions = false
+                        };
                         text = ReadString(reader, options);
                     }
                 }
@@ -1522,6 +1621,18 @@ namespace ZeroDep
         }
 
         /// <summary>
+        /// Defines an interface for setting or getting options.
+        /// </summary>
+        public interface IOptionsHolder
+        {
+            /// <summary>
+            /// Gets or sets the options.
+            /// </summary>
+            /// <value>The options.</value>
+            JsonOptions Options { get; set; }
+        }
+
+        /// <summary>
         /// Defines an interface for quick access to a type member.
         /// </summary>
         public interface IMemberAccessor
@@ -1558,7 +1669,7 @@ namespace ZeroDep
             /// <value>
             /// The name.
             /// </value>
-            public string Name
+            public virtual string Name
             {
                 get => _name;
                 set
@@ -1576,7 +1687,7 @@ namespace ZeroDep
             /// <value>
             /// The name used during serialization and deserialization.
             /// </value>
-            public string WireName
+            public virtual string WireName
             {
                 get => _wireName;
                 set
@@ -1594,7 +1705,7 @@ namespace ZeroDep
             /// <value>
             /// The escaped name used during serialization and deserialiation.
             /// </value>
-            public string EscapedWireName
+            public virtual string EscapedWireName
             {
                 get => _escapedWireName;
                 set
@@ -1612,7 +1723,7 @@ namespace ZeroDep
             /// <value>
             /// <c>true</c> if this instance has default value; otherwise, <c>false</c>.
             /// </value>
-            public bool HasDefaultValue { get; set; }
+            public virtual bool HasDefaultValue { get; set; }
 
             /// <summary>
             /// Gets or sets the default value.
@@ -1620,7 +1731,7 @@ namespace ZeroDep
             /// <value>
             /// The default value.
             /// </value>
-            public object DefaultValue { get; set; }
+            public virtual object DefaultValue { get; set; }
 
             /// <summary>
             /// Gets or sets the accessor.
@@ -1628,16 +1739,10 @@ namespace ZeroDep
             /// <value>
             /// The accessor.
             /// </value>
-            public IMemberAccessor Accessor
+            public virtual IMemberAccessor Accessor
             {
                 get => _accessor;
-                set
-                {
-                    if (value == null)
-                        throw new ArgumentNullException(nameof(value));
-
-                    _accessor = value;
-                }
+                set => _accessor = value ?? throw new ArgumentNullException(nameof(value));
             }
 
             /// <summary>
@@ -1646,16 +1751,10 @@ namespace ZeroDep
             /// <value>
             /// The type.
             /// </value>
-            public Type Type
+            public virtual Type Type
             {
                 get => _type;
-                set
-                {
-                    if (value == null)
-                        throw new ArgumentNullException(nameof(value));
-
-                    _type = value;
-                }
+                set => _type = value ?? throw new ArgumentNullException(nameof(value));
             }
 
             /// <summary>
@@ -1692,12 +1791,8 @@ namespace ZeroDep
                     targetValue = Accessor.Get(target);
                 }
 
-                // sufficient array?
                 if (targetValue == null || (targetValue is Array array && array.GetLength(0) < elementsCount))
                 {
-                    if (Type.IsInterface)
-                        return null;
-
                     targetValue = CreateInstance(target, Type, elementsCount, options, targetValue);
                     if (targetValue != null)
                     {
@@ -1719,12 +1814,16 @@ namespace ZeroDep
             {
                 if (options.ApplyEntryCallback != null)
                 {
-                    var og = new Dictionary<object, object>();
-                    og["dictionary"] = dictionary;
-                    og["member"] = this;
+                    var og = new Dictionary<object, object>
+                    {
+                        ["dictionary"] = dictionary,
+                        ["member"] = this
+                    };
 
-                    var e = new JsonEventArgs(null, value, og, options, key, target);
-                    e.EventType = JsonEventType.ApplyEntry;
+                    var e = new JsonEventArgs(null, value, og, options, key, target)
+                    {
+                        EventType = JsonEventType.ApplyEntry
+                    };
                     options.ApplyEntryCallback(e);
                     if (e.Handled)
                         return;
@@ -1920,12 +2019,16 @@ namespace ZeroDep
             if (writer == null)
                 throw new ArgumentNullException(nameof(writer));
 
-            objectGraph = objectGraph ?? new Dictionary<object, object>();
             options = options ?? new JsonOptions();
+            objectGraph = objectGraph ?? options.FinalObjectGraph;
+            SetOptions(objectGraph, options);
+
             if (options.WriteValueCallback != null)
             {
-                var e = new JsonEventArgs(writer, value, objectGraph, options);
-                e.EventType = JsonEventType.WriteValue;
+                var e = new JsonEventArgs(writer, value, objectGraph, options)
+                {
+                    EventType = JsonEventType.WriteValue
+                };
                 options.WriteValueCallback(e);
                 if (e.Handled)
                     return;
@@ -2120,10 +2223,12 @@ namespace ZeroDep
             }
 
             objectGraph.Add(value, null);
+            options.SerializationLevel++;
 
             if (value is IDictionary dictionary)
             {
                 WriteDictionary(writer, dictionary, objectGraph, options);
+                options.SerializationLevel--;
                 return;
             }
 
@@ -2131,12 +2236,14 @@ namespace ZeroDep
             if (TypeDef.IsKeyValuePairEnumerable(value.GetType(), out var _, out var _))
             {
                 WriteDictionary(writer, new KeyValueTypeDictionary(value), objectGraph, options);
+                options.SerializationLevel--;
                 return;
             }
 
             if (value is IEnumerable enumerable)
             {
                 WriteEnumerable(writer, enumerable, objectGraph, options);
+                options.SerializationLevel--;
                 return;
             }
 
@@ -2145,11 +2252,13 @@ namespace ZeroDep
                 if (value is Stream stream)
                 {
                     WriteBase64Stream(writer, stream, objectGraph, options);
+                    options.SerializationLevel--;
                     return;
                 }
             }
 
             WriteObject(writer, value, objectGraph, options);
+            options.SerializationLevel--;
         }
 
         /// <summary>
@@ -2168,10 +2277,11 @@ namespace ZeroDep
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            objectGraph = objectGraph ?? new Dictionary<object, object>();
             options = options ?? new JsonOptions();
-            var total = 0L;
+            objectGraph = objectGraph ?? options.FinalObjectGraph;
+            SetOptions(objectGraph, options);
 
+            var total = 0L;
             if (writer is StreamWriter sw && sw.BaseStream != null)
             {
                 sw.Flush();
@@ -2202,6 +2312,14 @@ namespace ZeroDep
                 writer.Write(Convert.ToBase64String(ms.ToArray()));
                 writer.Write('"');
                 return total;
+            }
+        }
+
+        private static void SetOptions(object obj, JsonOptions options)
+        {
+            if (obj is IOptionsHolder holder)
+            {
+                holder.Options = options;
             }
         }
 
@@ -2286,8 +2404,10 @@ namespace ZeroDep
             if (array == null)
                 throw new ArgumentNullException(nameof(array));
 
-            objectGraph = objectGraph ?? new Dictionary<object, object>();
             options = options ?? new JsonOptions();
+            objectGraph = objectGraph ?? options.FinalObjectGraph;
+            SetOptions(objectGraph, options);
+
             if (options.SerializationOptions.HasFlag(JsonSerializationOptions.ByteArrayAsBase64))
             {
                 if (array is byte[] bytes)
@@ -2350,8 +2470,10 @@ namespace ZeroDep
             if (enumerable == null)
                 throw new ArgumentNullException(nameof(enumerable));
 
-            objectGraph = objectGraph ?? new Dictionary<object, object>();
             options = options ?? new JsonOptions();
+            objectGraph = objectGraph ?? options.FinalObjectGraph;
+            SetOptions(objectGraph, options);
+
             writer.Write('[');
             var first = true;
             foreach (var value in enumerable)
@@ -2384,8 +2506,10 @@ namespace ZeroDep
             if (dictionary == null)
                 throw new ArgumentNullException(nameof(dictionary));
 
-            objectGraph = objectGraph ?? new Dictionary<object, object>();
             options = options ?? new JsonOptions();
+            objectGraph = objectGraph ?? options.FinalObjectGraph;
+            SetOptions(objectGraph, options);
+
             writer.Write('{');
             var first = true;
             foreach (DictionaryEntry entry in dictionary)
@@ -2418,6 +2542,7 @@ namespace ZeroDep
             writer.Write('}');
         }
 
+#if !NET8_0_OR_GREATER
         private static void WriteSerializable(TextWriter writer, ISerializable serializable, IDictionary<object, object> objectGraph, JsonOptions options)
         {
             var info = new SerializationInfo(serializable.GetType(), _defaultFormatterConverter);
@@ -2452,6 +2577,7 @@ namespace ZeroDep
         }
 
         private static bool ForceSerializable(object obj) => obj is Exception;
+#endif
 
         /// <summary>
         /// Writes an object to the JSON writer.
@@ -2468,33 +2594,40 @@ namespace ZeroDep
             if (value == null)
                 throw new ArgumentNullException(nameof(value));
 
-            objectGraph = objectGraph ?? new Dictionary<object, object>();
             options = options ?? new JsonOptions();
+            objectGraph = objectGraph ?? options.FinalObjectGraph;
+            SetOptions(objectGraph, options);
 
+#if !NET8_0_OR_GREATER
             ISerializable serializable = null;
             var useISerializable = options.SerializationOptions.HasFlag(JsonSerializationOptions.UseISerializable) || ForceSerializable(value);
             if (useISerializable)
             {
                 serializable = value as ISerializable;
             }
+#endif
 
             writer.Write('{');
 
             if (options.BeforeWriteObjectCallback != null)
             {
-                var e = new JsonEventArgs(writer, value, objectGraph, options);
-                e.EventType = JsonEventType.BeforeWriteObject;
+                var e = new JsonEventArgs(writer, value, objectGraph, options)
+                {
+                    EventType = JsonEventType.BeforeWriteObject
+                };
                 options.BeforeWriteObjectCallback(e);
                 if (e.Handled)
                     return;
             }
 
             var type = value.GetType();
+#if !NET8_0_OR_GREATER
             if (serializable != null)
             {
                 WriteSerializable(writer, serializable, objectGraph, options);
             }
             else
+#endif
             {
                 var def = TypeDef.Get(type, options);
                 def.WriteValues(writer, value, objectGraph, options);
@@ -2502,8 +2635,10 @@ namespace ZeroDep
 
             if (options.AfterWriteObjectCallback != null)
             {
-                var e = new JsonEventArgs(writer, value, objectGraph, options);
-                e.EventType = JsonEventType.AfterWriteObject;
+                var e = new JsonEventArgs(writer, value, objectGraph, options)
+                {
+                    EventType = JsonEventType.AfterWriteObject
+                };
                 options.AfterWriteObjectCallback(e);
             }
 
@@ -2542,6 +2677,9 @@ namespace ZeroDep
 
             name = name ?? string.Empty;
             options = options ?? new JsonOptions();
+            objectGraph = objectGraph ?? options.FinalObjectGraph;
+            SetOptions(objectGraph, options);
+
             if (options.SerializationOptions.HasFlag(JsonSerializationOptions.WriteKeysWithoutQuotes))
             {
                 writer.Write(EscapeString(name));
@@ -2847,6 +2985,97 @@ namespace ZeroDep
             return builder.ToString();
         }
 
+        /// <summary>
+        /// Gets a nullified string value from a dictionary by its path.
+        /// This is useful to get a string value from the object that the untyped Deserialize method returns which is often of IDictionary&lt;string, object&gt; type.
+        /// </summary>
+        /// <param name="dictionary">The input dictionary.</param>
+        /// <param name="path">The path, composed of dictionary keys separated by a . character. May not be null.</param>
+        /// <returns>
+        /// The nullified string value or null if not found.
+        /// </returns>
+        public static string GetNullifiedStringValueByPath(this IDictionary<string, object> dictionary, string path)
+        {
+            if (dictionary == null)
+                return null;
+
+            if (!TryGetValueByPath(dictionary, path, out object obj))
+                return null;
+
+            return Conversions.ChangeType<string>(obj).Nullify();
+        }
+
+        /// <summary>
+        /// Gets a value from a dictionary by its path.
+        /// This is useful to get a value from the object that the untyped Deserialize method returns which is often of IDictionary&lt;string, object&gt; type.
+        /// </summary>
+        /// <typeparam name="T">The final type to which to convert the retrieved value.</typeparam>
+        /// <param name="dictionary">The input dictionary.</param>
+        /// <param name="path">The path, composed of dictionary keys separated by a . character. May not be null.</param>
+        /// <param name="value">The value to retrieve.</param>
+        /// <returns>
+        /// true if the value parameter was retrieved successfully; otherwise, false.
+        /// </returns>
+        public static bool TryGetValueByPath<T>(this IDictionary<string, object> dictionary, string path, out T value)
+        {
+            if (dictionary == null)
+            {
+                value = default;
+                return false;
+            }
+
+            if (!TryGetValueByPath(dictionary, path, out object obj))
+            {
+                value = default;
+                return false;
+            }
+
+            return Conversions.TryChangeType(obj, out value);
+        }
+
+        /// <summary>
+        /// Gets a value from a dictionary by its path.
+        /// This is useful to get a value from the object that the untyped Deserialize method returns which is often of IDictionary&lt;string, object&gt; type.
+        /// </summary>
+        /// <param name="dictionary">The input dictionary.</param>
+        /// <param name="path">The path, composed of dictionary keys separated by a . character. May not be null.</param>
+        /// <param name="value">The value to retrieve.</param>
+        /// <returns>
+        /// true if the value parameter was retrieved successfully; otherwise, false.
+        /// </returns>
+        public static bool TryGetValueByPath(this IDictionary<string, object> dictionary, string path, out object value)
+        {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+
+            value = null;
+            if (dictionary == null)
+                return false;
+
+            var segments = path.Split('.');
+            var current = dictionary;
+            for (var i = 0; i < segments.Length; i++)
+            {
+                var segment = segments[i].Nullify();
+                if (segment == null)
+                    return false;
+
+                if (!current.TryGetValue(segment, out var newElement))
+                    return false;
+
+                // last?
+                if (i == segments.Length - 1)
+                {
+                    value = newElement;
+                    return true;
+                }
+                current = newElement as IDictionary<string, object>;
+                if (current == null)
+                    break;
+            }
+            return false;
+        }
+
         private static T GetAttribute<T>(this PropertyDescriptor descriptor) where T : Attribute => GetAttribute<T>(descriptor.Attributes);
         private static T GetAttribute<T>(this AttributeCollection attributes) where T : Attribute
         {
@@ -3022,9 +3251,11 @@ namespace ZeroDep
                     var value = member.Accessor.Get(component);
                     if (options.WriteNamedValueObjectCallback != null)
                     {
-                        var e = new JsonEventArgs(writer, value, objectGraph, options, name, component);
-                        e.EventType = JsonEventType.WriteNamedValueObject;
-                        e.First = first;
+                        var e = new JsonEventArgs(writer, value, objectGraph, options, name, component)
+                        {
+                            EventType = JsonEventType.WriteNamedValueObject,
+                            First = first
+                        };
                         options.WriteNamedValueObjectCallback(e);
                         first = e.First;
                         if (e.Handled)
@@ -3235,9 +3466,11 @@ namespace ZeroDep
 
                     var name = GetObjectName(info, info.Name);
 
-                    var ma = new MemberDefinition();
-                    ma.Type = info.PropertyType;
-                    ma.Name = info.Name;
+                    var ma = new MemberDefinition
+                    {
+                        Type = info.PropertyType,
+                        Name = info.Name
+                    };
                     if (serialization)
                     {
                         ma.WireName = name;
@@ -3285,9 +3518,11 @@ namespace ZeroDep
 
                         var name = GetObjectName(info, info.Name);
 
-                        var ma = new MemberDefinition();
-                        ma.Type = info.FieldType;
-                        ma.Name = info.Name;
+                        var ma = new MemberDefinition
+                        {
+                            Type = info.FieldType,
+                            Name = info.Name
+                        };
                         if (serialization)
                         {
                             ma.WireName = name;
@@ -3340,9 +3575,11 @@ namespace ZeroDep
 
                     var name = GetObjectName(descriptor, descriptor.Name);
 
-                    var ma = new MemberDefinition();
-                    ma.Type = descriptor.PropertyType;
-                    ma.Name = descriptor.Name;
+                    var ma = new MemberDefinition
+                    {
+                        Type = descriptor.PropertyType,
+                        Name = descriptor.Name
+                    };
                     if (serialization)
                     {
                         ma.WireName = name;
@@ -3361,9 +3598,19 @@ namespace ZeroDep
             }
         }
 
-        private sealed class ReferenceComparer : IEqualityComparer<object>
+        /// <summary>
+        /// A utility class to compare object by their reference.
+        /// </summary>
+        public sealed class ReferenceComparer : IEqualityComparer<object>
         {
-            internal static readonly ReferenceComparer _current = new ReferenceComparer();
+            /// <summary>
+            /// Gets the instance of the ReferenceComparer class.
+            /// </summary>
+            public static readonly ReferenceComparer Instance = new ReferenceComparer();
+
+            private ReferenceComparer()
+            {
+            }
 
             bool IEqualityComparer<object>.Equals(object x, object y) => ReferenceEquals(x, y);
             int IEqualityComparer<object>.GetHashCode(object obj) => RuntimeHelpers.GetHashCode(obj);
@@ -4425,7 +4672,9 @@ namespace ZeroDep
 
                 var typeCode = Convert.GetTypeCode(value);
 #pragma warning disable IDE0010 // Add missing cases
+#pragma warning disable IDE0066 // Convert switch statement to expression
                 switch (typeCode)
+#pragma warning restore IDE0066 // Convert switch statement to expression
 #pragma warning restore IDE0010 // Add missing cases
                 {
                     case TypeCode.SByte:
@@ -4612,7 +4861,9 @@ namespace ZeroDep
 
                     ulong tokenUl;
 #pragma warning disable IDE0010 // Add missing cases
+#pragma warning disable IDE0066 // Convert switch statement to expression
                     switch (Convert.GetTypeCode(tokenValue))
+#pragma warning restore IDE0066 // Convert switch statement to expression
 #pragma warning restore IDE0010 // Add missing cases
                     {
                         case TypeCode.Int16:
@@ -4686,6 +4937,14 @@ namespace ZeroDep
             StreamingBufferChunkSize = ushort.MaxValue;
             MaximumExceptionsCount = 100;
         }
+
+        /// <summary>
+        /// Gets a value indicating the current serialization level.
+        /// </summary>
+        /// <value>
+        /// The current serialization level.
+        /// </value>
+        public int SerializationLevel { get; internal set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether exceptions can be thrown during serialization or deserialization.
@@ -4768,7 +5027,9 @@ namespace ZeroDep
         /// <value>
         /// The list of deseralization exceptions.
         /// </value>
+#pragma warning disable CA1819 // Properties should not return arrays
         public virtual Exception[] Exceptions => _exceptions.ToArray();
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Finalizes the serialization members from an initial setup of members.
@@ -4841,6 +5102,13 @@ namespace ZeroDep
         public virtual JsonCallback GetListObjectCallback { get; set; }
 
         /// <summary>
+        /// Gets or sets a utility class that will store an object graph to avoid serialization cycles.
+        /// If null, a Dictionary&lt;object, object&gt; using an object reference comparer will be used.
+        /// </summary>
+        /// <value>The object graph instance.</value>
+        public virtual IDictionary<object, object> ObjectGraph { get; set; }
+
+        /// <summary>
         /// Adds an exception to the list of exceptions.
         /// </summary>
         /// <param name="error">The exception to add.</param>
@@ -4856,6 +5124,7 @@ namespace ZeroDep
         }
 
         internal int FinalStreamingBufferChunkSize => Math.Max(512, StreamingBufferChunkSize);
+        internal IDictionary<object, object> FinalObjectGraph => ObjectGraph ?? new Dictionary<object, object>(ZeroDep.Json.ReferenceComparer.Instance);
 
         /// <summary>
         /// Clones this instance.
@@ -4863,14 +5132,16 @@ namespace ZeroDep
         /// <returns>A newly created insance of this class with all values copied.</returns>
         public virtual JsonOptions Clone()
         {
-            var clone = new JsonOptions();
-            clone.AfterWriteObjectCallback = AfterWriteObjectCallback;
-            clone.ApplyEntryCallback = ApplyEntryCallback;
-            clone.BeforeWriteObjectCallback = BeforeWriteObjectCallback;
-            clone.CreateInstanceCallback = CreateInstanceCallback;
-            clone.DateTimeFormat = DateTimeFormat;
-            clone.DateTimeOffsetFormat = DateTimeOffsetFormat;
-            clone.DateTimeStyles = DateTimeStyles;
+            var clone = new JsonOptions
+            {
+                AfterWriteObjectCallback = AfterWriteObjectCallback,
+                ApplyEntryCallback = ApplyEntryCallback,
+                BeforeWriteObjectCallback = BeforeWriteObjectCallback,
+                CreateInstanceCallback = CreateInstanceCallback,
+                DateTimeFormat = DateTimeFormat,
+                DateTimeOffsetFormat = DateTimeOffsetFormat,
+                DateTimeStyles = DateTimeStyles
+            };
             clone._exceptions.AddRange(_exceptions);
             clone.FormattingTab = FormattingTab;
             clone.GetListObjectCallback = GetListObjectCallback;
@@ -5140,7 +5411,7 @@ namespace ZeroDep
         SerializeFields = 0x8,
 
         /// <summary>
-        /// Use the ISerializable interface.
+        /// Use the ISerializable interface. Supported only on .NET Framework or .NET Core 7 or lower only. On .NET Core 8, this has no effect.
         /// </summary>
         UseISerializable = 0x10,
 
@@ -5293,6 +5564,7 @@ namespace ZeroDep
         {
         }
 
+#if !NET8_0_OR_GREATER
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonException"/> class.
         /// </summary>
@@ -5302,6 +5574,7 @@ namespace ZeroDep
             : base(info, context)
         {
         }
+#endif
 
         /// <summary>
         /// Gets the errror code.
