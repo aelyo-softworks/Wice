@@ -235,7 +235,7 @@ public partial class FastTextBox : TextBox
                         maxCharactersPerLine = length;
                     }
 
-                    lines.Add(line);
+                    lock (_lock) lines.Add(line);
                     length = 0;
                     if (c == '\r')
                     {
@@ -278,10 +278,10 @@ public partial class FastTextBox : TextBox
                                 if (length > 0 && !Visual.LoadingWasCancelled)
                                 {
                                     var line2 = new Line(position, length);
-                                    lines.Add(line2);
+                                    lock (_lock) lines.Add(line2);
                                 }
 
-                                Lines = [.. lines];
+                                lock (_lock) Lines = [.. lines];
 
                                 _parsedConstraint = constraint;
                                 _parsedWrapping = wrapping;
@@ -313,7 +313,8 @@ public partial class FastTextBox : TextBox
                             {
                                 maxCharactersPerLine = length - 1;
                             }
-                            lines.Add(line);
+
+                            lock (_lock) lines.Add(line);
                             length = 0;
                             position = i;
                         }
@@ -333,8 +334,8 @@ public partial class FastTextBox : TextBox
                             {
                                 maxCharactersPerLine = length - 1;
                             }
-                            lines.Add(line);
 
+                            lock (_lock) lines.Add(line);
                             length = 0;
                             position = i;
                         }
@@ -356,13 +357,10 @@ public partial class FastTextBox : TextBox
             if (LoadingLines == null && length > 0)
             {
                 var line = new Line(position, length);
-                lines.Add(line);
+                lock (_lock) lines.Add(line);
             }
 
-            lock (_lock)
-            {
-                Lines = [.. lines];
-            }
+            lock (_lock) Lines = [.. lines];
 
             _parsedConstraint = constraint;
             _parsedWrapping = wrapping;

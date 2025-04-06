@@ -254,7 +254,7 @@ namespace Wice
                             maxCharactersPerLine = length;
                         }
 
-                        lines.Add(line);
+                        lock (_lock) lines.Add(line);
                         length = 0;
                         if (c == '\r')
                         {
@@ -297,10 +297,10 @@ namespace Wice
                                     if (length > 0 && !Visual.LoadingWasCancelled)
                                     {
                                         var line2 = new Line(position, length);
-                                        lines.Add(line2);
+                                        lock (_lock) lines.Add(line2);
                                     }
 
-                                    Lines = lines.ToArray();
+                                    lock (_lock) Lines = lines.ToArray();
 
                                     _parsedConstraint = constraint;
                                     _parsedWrapping = wrapping;
@@ -332,7 +332,8 @@ namespace Wice
                                 {
                                     maxCharactersPerLine = length - 1;
                                 }
-                                lines.Add(line);
+
+                                lock (_lock) lines.Add(line);
                                 length = 0;
                                 position = i;
                             }
@@ -352,7 +353,8 @@ namespace Wice
                                 {
                                     maxCharactersPerLine = length - 1;
                                 }
-                                lines.Add(line);
+
+                                lock (_lock) lines.Add(line);
 
                                 length = 0;
                                 position = i;
@@ -375,13 +377,10 @@ namespace Wice
                 if (LoadingLines == null && length > 0)
                 {
                     var line = new Line(position, length);
-                    lines.Add(line);
+                    lock (_lock) lines.Add(line);
                 }
 
-                lock (_lock)
-                {
-                    Lines = lines.ToArray();
-                }
+                lock (_lock) Lines = lines.ToArray();
 
                 _parsedConstraint = constraint;
                 _parsedWrapping = wrapping;
