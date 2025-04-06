@@ -173,6 +173,8 @@ public partial class FastTextBox : TextBox
         private DWRITE_WORD_WRAPPING _parsedWrapping;
         private D2D_SIZE_F _parsedConstraint;
         private D2D_SIZE_F _parsedSize;
+        private readonly Lock _lock = new();
+
         public FastTextBox Visual = visual;
         public string Text = text ?? string.Empty;
         public Line[]? Lines;
@@ -357,7 +359,10 @@ public partial class FastTextBox : TextBox
                 lines.Add(line);
             }
 
-            Lines = [.. lines];
+            lock (_lock)
+            {
+                Lines = [.. lines];
+            }
 
             _parsedConstraint = constraint;
             _parsedWrapping = wrapping;

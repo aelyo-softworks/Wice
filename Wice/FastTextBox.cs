@@ -184,6 +184,7 @@ namespace Wice
             private DWRITE_WORD_WRAPPING _parsedWrapping;
             private D2D_SIZE_F _parsedConstraint;
             private D2D_SIZE_F _parsedSize;
+            private readonly object _lock = new object();
 
             public TextContainer(FastTextBox visual, string text)
             {
@@ -377,7 +378,10 @@ namespace Wice
                     lines.Add(line);
                 }
 
-                Lines = lines.ToArray();
+                lock (_lock)
+                {
+                    Lines = lines.ToArray();
+                }
 
                 _parsedConstraint = constraint;
                 _parsedWrapping = wrapping;

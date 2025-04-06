@@ -71,9 +71,9 @@ internal partial class TestWindow : Window
         sv.Viewer.IsWidthUnconstrained = false;
 
         //var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
-        var text = File.ReadAllText(@"Resources\MobyDickNumbered.txt");
+        //var text = File.ReadAllText(@"Resources\MobyDickNumbered.txt");
         //var text = File.ReadAllText(@"Resources\100mb.txt");
-        //var text = File.ReadAllText(@"Resources\pi.txt");
+        var text = File.ReadAllText(@"C:\Users\simon\Downloads\Contents\contents.txt");
         var tb = new FastTextBox
         {
             VerticalAlignment = Alignment.Near,
