@@ -207,6 +207,14 @@ namespace Wice.Tests
 
         public void LargeTextSv()
         {
+            var btn = new Button
+            {
+                VerticalAlignment = Alignment.Near,
+                HorizontalAlignment = Alignment.Near,
+            };
+
+            btn.Text.Text = "click me";
+
             //var sv = new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto };
             var sv = new ScrollViewer();
             sv.Viewer.IsWidthUnconstrained = false;
@@ -232,6 +240,20 @@ namespace Wice.Tests
             sv.Margin = D2D_RECT_F.Thickness(10, 10, 10, 10);
 
             Children.Add(sv);
+
+            btn.Click += (s, e) =>
+            {
+                if (tb.Text.Contains("Moby"))
+                {
+                    tb.Text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
+                }
+                else
+                {
+                    tb.Text = File.ReadAllText(@"Resources\MobyDickNumbered.txt");
+                }
+            };
+            Children.Add(btn);
+
             //Children.Add(txt);
         }
 

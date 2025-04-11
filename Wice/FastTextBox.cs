@@ -175,6 +175,7 @@ namespace Wice
                 return;
 
             Interlocked.Exchange(ref _container, new TextContainer(this, text));
+            Invalidate(VisualPropertyInvalidateModes.Measure);
         }
 
         private sealed class TextContainer
