@@ -164,6 +164,7 @@ public partial class FastTextBox : TextBox
             return;
 
         Interlocked.Exchange(ref _container, new TextContainer(this, text));
+        Invalidate(VisualPropertyInvalidateModes.Measure);
     }
 
     private sealed class TextContainer(FastTextBox visual, string? text)
