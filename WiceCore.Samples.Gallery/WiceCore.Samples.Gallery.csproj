@@ -158,6 +158,9 @@
     <Compile Include="..\Wice.Samples.Gallery\..\Wice\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Text\RichTextBox\RichTextBoxSample.cs" Link="Samples\Text\RichTextBox\RichTextBoxSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Text\TextBox\FormattedTextBoxSample.cs" Link="Samples\Text\TextBox\FormattedTextBoxSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\DragDropSampleList.cs" Link="Samples\Misc\DragDropSampleList.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\DragDrop\DropSourceSample.cs" Link="Samples\Misc\DragDrop\DropSourceSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\DragDrop\DropTargetSample.cs" Link="Samples\Misc\DragDrop\DropTargetSample.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.17.2" />

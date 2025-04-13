@@ -171,6 +171,7 @@ public partial class Visual : BaseObject
     public event EventHandler<KeyEventArgs>? KeyDown;
     public event EventHandler<KeyEventArgs>? KeyUp;
     public event EventHandler<KeyPressEventArgs>? KeyPress;
+    public event EventHandler<DragDropEventArgs>? DragDrop;
 
     private static Visual? _focusRequestedVisual; // there's only one focused visual per app
     internal D2D_SIZE_F? _lastMeasureSize;
@@ -265,6 +266,9 @@ public partial class Visual : BaseObject
 
     [Category(CategoryRender)]
     public ContainerVisual? CompositionVisual { get; internal set; }
+
+    [Category(CategoryBehavior)]
+    public bool AllowDrop { get; set; }
 
     [Browsable(false)]
     public Window? Window { get; internal set; }
@@ -1429,7 +1433,7 @@ public partial class Visual : BaseObject
         {
             CompositionVisual = CreateCompositionVisual();
             if (CompositionVisual == null)
-                throw new WiceException("0003: Visual '" + Name + "' of type '" + GetType().Name + "' must create a valid Visual.");
+                throw new WiceException("0003: Visual '" + Name + "' of type '" + GetType().Name + "' must create a valid composition Visual.");
 
 #if DEBUG
             CompositionVisual.Comment = Name;
@@ -1645,6 +1649,14 @@ public partial class Visual : BaseObject
     protected virtual void OnKeyUp(object? sender, KeyEventArgs e) => KeyUp?.Invoke(sender, e);
     protected virtual void OnKeyPress(object? sender, KeyPressEventArgs e) => KeyPress?.Invoke(sender, e);
 
+    public virtual void DoDragDrop(IDataObject data, DROPEFFECT allowedEffects) => Window?.DoDragDrop(this, data, allowedEffects);
+
+    internal void OnDragDrop(DragDropEventArgs e)
+    {
+        e.Handled = true;
+        OnDragDrop(this, e);
+    }
+
     internal void OnPointerWheelEvent(PointerWheelEventArgs e) => OnPointerWheel(this, e);
 
     // note WM_*BUTTON* are still called so we don't need to call them
@@ -1798,6 +1810,7 @@ public partial class Visual : BaseObject
     protected virtual void OnMouseButtonUp(object? sender, MouseButtonEventArgs e) => MouseButtonUp?.Invoke(sender, e);
     protected virtual void OnMouseButtonDoubleClick(object? sender, MouseButtonEventArgs e) => MouseButtonDoubleClick?.Invoke(sender, e);
     protected virtual void CaptureMouse() => Window?.CaptureMouse(this);
+    protected virtual void OnDragDrop(object? sender, DragDropEventArgs e) => DragDrop?.Invoke(sender, e);
 
     protected virtual void OnPointerDrag(object? sender, PointerDragEventArgs e) => PointerDrag?.Invoke(sender, e);
     protected virtual void OnPointerWheel(object? sender, PointerWheelEventArgs e) => PointerWheel?.Invoke(sender, e);

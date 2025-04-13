@@ -7,7 +7,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     private static Visual? _mouseCaptorVisual;
     public static Visual? MouseCaptorVisual => _mouseCaptorVisual;
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
 
     private readonly ConcurrentList<Task> _tasks = [];
     private readonly List<WindowTimer> _timers = [];
@@ -51,6 +51,7 @@ public partial class Window : Canvas, ITitleBarParent
     private bool _hasFocus;
     private Visual? _focusedVisual;
     private Visual? _oldFocusedVisual;
+    private readonly HashSet<Visual> _ddEntered = [];
 
     public event EventHandler? HandleCreated;
     public event EventHandler? MonitorChanged;
@@ -63,6 +64,9 @@ public partial class Window : Canvas, ITitleBarParent
     public event EventHandler? DpiChangedBeforeParent;
     public event EventHandler? DpiChangedAfterParent;
     public event EventHandler<ClosingEventArgs>? Closing;
+    public event EventHandler<DragDropQueryContinueEventArgs>? DragDropQueryContinue;
+    public event EventHandler<DragDropGiveFeedback>? DragDropGiveFeedback;
+    public event EventHandler<DragDropTargetEventArgs>? DragDropTarget;
 
     public Window()
     {
@@ -116,6 +120,19 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual string ClassName => GetType().FullName!;
     protected virtual int MaxChildrenCount => int.MaxValue;
     protected virtual bool HasCaret => true;
+    protected virtual D3D11_CREATE_DEVICE_FLAG CreateDeviceFlags
+    {
+        get
+        {
+            var flags = D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_BGRA_SUPPORT; // for D2D cooperation
+                                                                                   //flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
+            if (Application.UseDebugLayer)
+            {
+                flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_DEBUG;
+            }
+            return flags;
+        }
+    }
 
     [Category(CategoryLive)]
     public bool IsAnimating => _animating != 0;
@@ -143,7 +160,7 @@ public partial class Window : Canvas, ITitleBarParent
     public TaskScheduler TaskScheduler => _scheduler;
 
     [Category(CategoryLive)]
-    public NativeWindow Native => _native?.Value!;
+    public NativeWindow Native => _native.Value;
 
     [Browsable(false)]
     public HMONITOR MonitorHandle { get; private set; }
@@ -916,9 +933,92 @@ public partial class Window : Canvas, ITitleBarParent
         NativeWindow.RegisterWindowClass(ClassName, Marshal.GetFunctionPointerForDelegate(_windowProc));
         var native = CreateNativeWindow();
         native.FrameChanged();
+        native.DragDropGiveFeedback += OnNativeDragDropGiveFeedback;
+        native.DragDropQueryContinue += OnNativeDragDropQueryContinue;
+        native.DragDropTarget += OnNativeDragDropTarget;
         OnHandleCreated(this, EventArgs.Empty);
         MonitorHandle = native.GetMonitorHandle(MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL);
         return native;
+    }
+
+    private void OnNativeDragDropTarget(object? sender, DragDropTargetEventArgs e) => DragDropTarget?.Invoke(this, e);
+    private void OnNativeDragDropQueryContinue(object? sender, DragDropQueryContinueEventArgs e) => DragDropQueryContinue?.Invoke(this, e);
+    private void OnNativeDragDropGiveFeedback(object? sender, DragDropGiveFeedback e) => DragDropGiveFeedback?.Invoke(this, e);
+
+    public virtual DROPEFFECT DoDragDrop(Visual visual, IDataObject dataObject, DROPEFFECT allowedEffects)
+    {
+        ArgumentNullException.ThrowIfNull(visual);
+        ArgumentNullException.ThrowIfNull(dataObject);
+        try
+        {
+            Functions.DoDragDrop(dataObject, Native, allowedEffects, out var effect).ThrowOnError();
+            return effect;
+        }
+        catch (Exception ex)
+        {
+            throw new WiceException("0028: Cannot enable drag & drop operations. Make sure the thread is initialized as an STA thread.", ex);
+        }
+    }
+
+    internal void RegisterForDragDrop()
+    {
+        if (!Native.IsDropTarget)
+        {
+            Native.DragDrop += OnNativeDragDrop;
+            Native.IsDropTarget = true;
+        }
+    }
+
+    protected virtual void OnNativeDragDrop(object? sender, DragDropEventArgs e)
+    {
+        if (e.Type == DragDropEventType.Leave)
+        {
+            foreach (var visual in _ddEntered)
+            {
+                visual.OnDragDrop(e);
+            }
+            _ddEntered.Clear();
+            return;
+        }
+
+        Visual? entered = null;
+        foreach (var visual in GetIntersectingVisuals(e.Point))
+        {
+            if (visual.AllowDrop)
+            {
+                if (e.Type == DragDropEventType.Over)
+                {
+                    if (_ddEntered.Add(visual))
+                    {
+                        // simulate enter
+                        e.Type = DragDropEventType.Enter;
+                    }
+                }
+
+                visual.OnDragDrop(e);
+                if (e.Handled)
+                {
+                    entered = visual;
+                    clearNotEntered();
+                    return;
+                }
+            }
+        }
+        e.Effect = DROPEFFECT.DROPEFFECT_NONE;
+        clearNotEntered();
+        _ddEntered.Clear();
+
+        void clearNotEntered()
+        {
+            var e = new DragDropEventArgs(DragDropEventType.Leave);
+            foreach (var visual in _ddEntered)
+            {
+                if (visual == entered)
+                    continue;
+
+                visual.OnDragDrop(e);
+            }
+        }
     }
 
     private static uint GetMaximumBitmapSize()
@@ -944,7 +1044,6 @@ public partial class Window : Canvas, ITitleBarParent
         using var fac = DXGIFunctions.CreateDXGIFactory1();
         var adapter = fac.EnumAdapters1().FirstOrDefault(a => !((DXGI_ADAPTER_FLAG)a.GetDesc1().Flags).HasFlag(DXGI_ADAPTER_FLAG.DXGI_ADAPTER_FLAG_SOFTWARE) && a.EnumOutputs<IDXGIOutput1>().Any());
         adapter ??= fac.EnumAdapters1().FirstOrDefault();
-        //Application.Trace("adapter: " + adapter);
         return adapter;
     }
 
@@ -955,17 +1054,10 @@ public partial class Window : Canvas, ITitleBarParent
         if (adapter == null)
             throw new WiceException("0024: Cannot find  a suitable DXGI adapter.");
 
-        var flags = D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_BGRA_SUPPORT; // for D2D cooperation
-                                                                               //flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
-        if (Application.UseDebugLayer)
-        {
-            flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_DEBUG;
-        }
-
+        var flags = CreateDeviceFlags;
         var device = D3D11Functions.D3D11CreateDevice(adapter.Object, D3D_DRIVER_TYPE.D3D_DRIVER_TYPE_UNKNOWN, flags);
         var mt = device.As<ID3D11Multithread>();
         mt?.Object.SetMultithreadProtected(true);
-        //Application.Trace("UseDebugLayer: " + Host.UseDebugLayer + " device: " + device);
         return device;
     }
 
@@ -1681,6 +1773,14 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual void DestroyCore()
     {
         //Application.Trace("'" + this + "'");
+        if (_native.IsValueCreated && _native.Value.IsDropTarget)
+        {
+            _native.Value.DragDrop -= OnNativeDragDrop;
+            _native.Value.DragDropGiveFeedback -= OnNativeDragDropGiveFeedback;
+            _native.Value.DragDropQueryContinue -= OnNativeDragDropQueryContinue;
+            _native.Value.DragDropTarget -= OnNativeDragDropTarget;
+        }
+
         var children = (WindowBaseObjectCollection)Children;
         foreach (var child in children.ToArray())
         {

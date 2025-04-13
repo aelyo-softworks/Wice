@@ -19,6 +19,7 @@ public partial class MiscPage : SampleListPage
             yield return new FocusSampleList();
             yield return new TitleBarSampleList();
             yield return new ToolTipSampleList();
+            yield return new DragDropSampleList();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace Wice;
 
-public sealed class NativeWindow : IEquatable<NativeWindow>
+[System.Runtime.InteropServices.Marshalling.GeneratedComClass]
+public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget, IDropSource, IDropSourceNotify
 {
     private static readonly ConcurrentHashSet<string> _classesNames = [];
 
@@ -8,6 +9,15 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
     private static WNDPROC GetDefWindowProc() => Marshal.GetDelegateForFunctionPointer<WNDPROC>(Functions.GetProcAddress(Functions.GetModuleHandleW(PWSTR.From("user32.dll")), PSTR.From("DefWindowProcW")));
 
     public static IEnumerable<NativeWindow> TopLevelWindows => EnumerateTopLevelWindows().Select(FromHandle).Where(w => w != null)!;
+
+    public event EventHandler<DragDropEventArgs>? DragDrop;
+    public event EventHandler<DragDropQueryContinueEventArgs>? DragDropQueryContinue;
+    public event EventHandler<DragDropGiveFeedback>? DragDropGiveFeedback;
+    public event EventHandler<DragDropTargetEventArgs>? DragDropTarget;
+
+    private HWND _dragDropTarget;
+    private bool _isDropTarget;
+    private IDataObject? _currentDataObject;
 
     private NativeWindow(HWND handle)
     {
@@ -168,6 +178,30 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
         }
     }
 
+    public bool IsDropTarget
+    {
+        get => _isDropTarget;
+        set
+        {
+            if (value == _isDropTarget)
+                return;
+
+            if (value)
+            {
+                var hr = Functions.RegisterDragDrop(Handle, this);
+                if (hr.IsError)
+                    throw new WiceException("0027: Cannot enable drag & drop operations. Make sure the thread is initialized as an STA thread.");
+
+                _isDropTarget = true;
+            }
+            else
+            {
+                Functions.RevokeDragDrop(Handle).ThrowOnError();
+                _isDropTarget = false;
+            }
+        }
+    }
+
     public override int GetHashCode() => Handle.GetHashCode();
     public override bool Equals(object? obj) => Equals(obj as NativeWindow);
     public bool Equals(NativeWindow? other) => other != null && Handle.Value == other.Handle.Value;
@@ -202,6 +236,112 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
     {
         var txt = text.Nullify() ?? Assembly.GetEntryAssembly()?.GetTitle();
         return Functions.ShellAboutW(Handle, PWSTR.From(txt), PWSTR.From(otherStuff), IconHandle);
+    }
+
+    private void OnDragDrop(DragDropEventArgs e) => DragDrop?.Invoke(this, e);
+    HRESULT IDropTarget.DragEnter(IDataObject dataObject, MODIFIERKEYS_FLAGS flags, POINTL pt, ref DROPEFFECT effect)
+    {
+        var e = new DragDropEventArgs(DragDropEventType.Enter)
+        {
+            DataObject = dataObject,
+            KeyFlags = flags,
+            Point = ScreenToClient(pt.ToPOINT()),
+            Effect = effect
+        };
+        _currentDataObject = dataObject;
+
+        OnDragDrop(e);
+        effect = e.Effect;
+        return Constants.S_OK;
+    }
+
+    HRESULT IDropTarget.DragOver(MODIFIERKEYS_FLAGS flags, POINTL pt, ref DROPEFFECT effect)
+    {
+        var e = new DragDropEventArgs(DragDropEventType.Over)
+        {
+            DataObject = _currentDataObject,
+            KeyFlags = flags,
+            Point = ScreenToClient(pt.ToPOINT()),
+            Effect = effect
+        };
+
+        OnDragDrop(e);
+        effect = e.Effect;
+        return Constants.S_OK;
+    }
+
+    HRESULT IDropTarget.DragLeave()
+    {
+        var e = new DragDropEventArgs(DragDropEventType.Leave);
+        OnDragDrop(e);
+        return Constants.S_OK;
+    }
+
+    HRESULT IDropTarget.Drop(IDataObject dataObject, MODIFIERKEYS_FLAGS flags, POINTL pt, ref DROPEFFECT effect)
+    {
+        var e = new DragDropEventArgs(DragDropEventType.Drop)
+        {
+            DataObject = dataObject,
+            KeyFlags = flags,
+            Point = ScreenToClient(pt.ToPOINT()),
+            Effect = effect
+        };
+
+        OnDragDrop(e);
+        effect = e.Effect;
+        return Constants.S_OK;
+    }
+
+    HRESULT IDropSourceNotify.DragEnterTarget(HWND hwndTarget)
+    {
+        var win = new NativeWindow(hwndTarget);
+        Application.Trace("DragEnterTarget hwndTarget:" + win);
+
+        var e = new DragDropTargetEventArgs(DragDropTargetEventType.Enter, hwndTarget);
+        _dragDropTarget = hwndTarget;
+        DragDropTarget?.Invoke(this, e);
+        return Constants.S_OK;
+    }
+
+    HRESULT IDropSourceNotify.DragLeaveTarget()
+    {
+        Application.Trace("DragLeaveTarget");
+        var e = new DragDropTargetEventArgs(DragDropTargetEventType.Leave, _dragDropTarget);
+        DragDropTarget?.Invoke(this, e);
+        return Constants.S_OK;
+    }
+
+    HRESULT IDropSource.QueryContinueDrag(BOOL escapePressed, MODIFIERKEYS_FLAGS flags)
+    {
+        //Application.Trace("QueryContinueDrag escapePressed:" + escapePressed + " flags:" + flags);
+
+        var mouseButtons = 0;
+        mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_LBUTTON) ? 1 : 0;
+        mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_MBUTTON) ? 1 : 0;
+        mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_RBUTTON) ? 1 : 0;
+        mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_XBUTTON1) ? 1 : 0;
+        mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_XBUTTON2) ? 1 : 0;
+
+        var e = new DragDropQueryContinueEventArgs(escapePressed, flags);
+        if (escapePressed || mouseButtons > 1)
+        {
+            e.Result = Constants.DRAGDROP_S_CANCEL;
+        }
+        else if (mouseButtons == 0)
+        {
+            e.Result = Constants.DRAGDROP_S_DROP;
+        }
+
+        DragDropQueryContinue?.Invoke(this, e);
+        return e.Result;
+    }
+
+    HRESULT IDropSource.GiveFeedback(DROPEFFECT effect)
+    {
+        //Application.Trace("GiveFeedback: " + effect);
+        var e = new DragDropGiveFeedback(effect);
+        DragDropGiveFeedback?.Invoke(this, e);
+        return e.Result;
     }
 
     public override string ToString()
@@ -615,5 +755,4 @@ public sealed class NativeWindow : IEquatable<NativeWindow>
         }, LPARAM.Null);
         return list.AsReadOnly();
     }
-
 }

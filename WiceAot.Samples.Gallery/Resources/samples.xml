@@ -1164,6 +1164,85 @@ gma warning restore IDE0017 // Simplify object initialization
         }
     }
 }</sample>
+  <sample namespace="Samples.Misc.DragDrop.DropSourceSample">void Layout(Visual parent)
+{
+    var stack = new Stack { Orientation = Orientation.Horizontal };
+
+    var btn = new Button();
+    btn.Text.Text = "Drag me out of here!";
+    stack.Children.Add(btn);
+
+
+    var target = new TextBox { VerticalAlignment = Alignment.Near, Padding = 10 };
+    info.Children.Add(target);
+
+    btn.MouseButtonDown += (s, e) =&gt;
+    {
+        if (e.Button == MouseButton.Left)
+        {
+            // create an IDataObject from the gallery.exe file
+            using var dataObject = ShellUtilities.CreateDataObject([Environment.ProcessPath!]);
+
+            // optionally hook events to be notified of windows being dragged over
+            Window!.DragDropTarget += (s, e) =&gt;
+            {
+                if (e.Type == DragDropTargetEventType.Leave)
+                {
+                    target.Text = string.Empty;
+                }
+                else
+                {
+                    var window = NativeWindow.FromHandle(e.Hwnd);
+                    target.Text = $"Target Window: {((uint)e.Hwnd.Value).ToHex()} '{window?.Text}' process: '{window?.Process?.ProcessName}'";
+                }
+            };
+
+            btn.DoDragDrop(dataObject.NativeObject, DROPEFFECT.DROPEFFECT_COPY);
+        }
+    };
+}</sample>
+  <sample namespace="Samples.Misc.DragDrop.DropTargetSample">void Layout(Visual parent)
+{
+    var stack = new Stack { Orientation = Orientation.Horizontal };
+
+    var box = new Border
+    {
+        RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor()),
+        AllowDrop = true, // enable the visual as a drop target
+    };
+    stack.Children.Add(box);
+
+    var defaultText = "Drag and drop files here";
+    var tb = new TextBox
+    {
+        Text = defaultText,
+    };
+    box.Child = tb;
+    box.DragDrop += (s, e) =&gt;
+    {
+        switch (e.Type)
+        {
+            case DragDropEventType.Leave:
+                tb.Text = defaultText;
+                break;
+
+            case DragDropEventType.Enter:
+            case DragDropEventType.Over:
+            case DragDropEventType.Drop:
+            default:
+                if (e.DataObject != null)
+                {
+                    var dataObject = new DataObject(new ComObject&lt;IDataObject&gt;(e.DataObject), false);
+                    var files = dataObject.GetFilesPath();
+                    if (files.Count &gt; 0)
+                    {
+                        tb.Text = string.Join(Environment.NewLine, files);
+                    }
+                }
+                break;
+        }
+    };
+}</sample>
   <sample namespace="Samples.Misc.Focus.FocusSample">void Layout(Visual parent)
 {
     for (var i = 0; i &lt; 4; i++)
@@ -1450,7 +1529,7 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     var btn = new Button();
     btn.Text.Text = "Open a MessageBox...";
-    btn.Click += (s, e) =&gt; { MessageBox.Show(parent.Window!, "Hello world!"); };
+    btn.Click += (s, e) =&gt; MessageBox.Show(parent.Window!, "Hello world!");
 
     parent.Children.Add(btn);
 }</sample>

@@ -6,11 +6,11 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v9.0": {
-      "DirectN.Extensions/1.1.0": {
+      "DirectN.Extensions/1.3.0": {
         "dependencies": {
-          "DirectNAot": "1.1.0",
+          "DirectNAot": "1.3.0",
           "Microsoft.DotNet.ILCompiler": "9.0.3",
-          "Microsoft.NET.ILLink.Tasks": "9.0.3",
+          "Microsoft.NET.ILLink.Tasks": "9.0.4",
           "DirectN": "1.3.0.0"
         },
         "runtime": {
@@ -18,8 +18,8 @@
         }
       },
       "Microsoft.DotNet.ILCompiler/9.0.3": {},
-      "Microsoft.NET.ILLink.Tasks/9.0.3": {},
-      "DirectNAot/1.1.0": {
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {},
+      "DirectNAot/1.3.0": {
         "runtime": {
           "DirectN.dll": {
             "assemblyVersion": "1.3.0.0",
@@ -38,7 +38,7 @@
     }
   },
   "libraries": {
-    "DirectN.Extensions/1.1.0": {
+    "DirectN.Extensions/1.3.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -50,14 +50,14 @@
       "path": "microsoft.dotnet.ilcompiler/9.0.3",
       "hashPath": "microsoft.dotnet.ilcompiler.9.0.3.nupkg.sha512"
     },
-    "Microsoft.NET.ILLink.Tasks/9.0.3": {
+    "Microsoft.NET.ILLink.Tasks/9.0.4": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-1rqGTfubVg0qj2PsK6esyq3PIxtYJYrN3LsYUV9RrvH3anmt3fT3ozYdAZZH4U8JU/pt5pPIUk8NBSu26wtekA==",
-      "path": "microsoft.net.illink.tasks/9.0.3",
-      "hashPath": "microsoft.net.illink.tasks.9.0.3.nupkg.sha512"
+      "sha512": "sha512-xUdlUxiFwXhTYhB4VxKg/IA0+jlZXJPo70LYuMryWbJHdonIpZjw+7DO2B0pWwpXIOs6MlH5WVXPEtfrGEcVZA==",
+      "path": "microsoft.net.illink.tasks/9.0.4",
+      "hashPath": "microsoft.net.illink.tasks.9.0.4.nupkg.sha512"
     },
-    "DirectNAot/1.1.0": {
+    "DirectNAot/1.3.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

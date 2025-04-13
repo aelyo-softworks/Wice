@@ -77,6 +77,18 @@ namespace Wice
                         break;
                     }
 
+                    // call this just at init time
+                    if (msg.hwnd == IntPtr.Zero)
+                    {
+                        if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
+                        {
+                            foreach (var window in _windows)
+                            {
+                                window.RegisterForDragDrop();
+                            }
+                        }
+                    }
+
                     // Trace("msg: " + msg.Decode());
                     WindowsFunctions.TranslateMessage(ref msg);
                     WindowsFunctions.DispatchMessage(ref msg);

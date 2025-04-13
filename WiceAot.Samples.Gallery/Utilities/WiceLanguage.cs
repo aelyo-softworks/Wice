@@ -59,6 +59,7 @@ public class WiceLanguage : ILanguage
             nameof(Ellipse),
             nameof(EnumListBox),
             nameof(EventTrigger),
+            nameof(FastTextBox),
             nameof(FlagsEnumListBox),
             nameof(FocusDirection),
             nameof(FocusVisual),

@@ -75,6 +75,7 @@ namespace Wice
         private bool _hasFocus;
         private Visual _focusedVisual;
         private Visual _oldFocusedVisual;
+        private readonly HashSet<Visual> _ddEntered = new HashSet<Visual>();
 
         public event EventHandler HandleCreated;
         public event EventHandler MonitorChanged;
@@ -87,6 +88,9 @@ namespace Wice
         public event EventHandler DpiChangedBeforeParent;
         public event EventHandler DpiChangedAfterParent;
         public event EventHandler<ClosingEventArgs> Closing;
+        public event EventHandler<DragDropQueryContinueEventArgs> DragDropQueryContinue;
+        public event EventHandler<DragDropGiveFeedback> DragDropGiveFeedback;
+        public event EventHandler<DragDropTargetEventArgs> DragDropTarget;
 
         public Window()
         {
@@ -141,6 +145,19 @@ namespace Wice
         protected virtual string ClassName => GetType().FullName;
         protected virtual int MaxChildrenCount => int.MaxValue;
         protected virtual bool HasCaret => true;
+        protected virtual D3D11_CREATE_DEVICE_FLAG CreateDeviceFlags
+        {
+            get
+            {
+                var flags = D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_BGRA_SUPPORT; // for D2D cooperation
+                                                                                       //flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
+                if (Application.UseDebugLayer)
+                {
+                    flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_DEBUG;
+                }
+                return flags;
+            }
+        }
 
         [Category(CategoryLive)]
         public bool IsAnimating => _animating != 0;
@@ -953,9 +970,85 @@ namespace Wice
             NativeWindow.RegisterWindowClass(ClassName, _windowProc);
             var native = CreateNativeWindow();
             native.FrameChanged();
+            native.DragDropGiveFeedback += OnNativeDragDropGiveFeedback;
+            native.DragDropQueryContinue += OnNativeDragDropQueryContinue;
+            native.DragDropTarget += OnNativeDragDropTarget;
             OnHandleCreated(this, EventArgs.Empty);
             MonitorHandle = native.GetMonitorHandle(MONITOR_FLAGS.MONITOR_DEFAULTTONULL);
             return native;
+        }
+
+        private void OnNativeDragDropTarget(object sender, DragDropTargetEventArgs e) => DragDropTarget?.Invoke(this, e);
+        private void OnNativeDragDropQueryContinue(object sender, DragDropQueryContinueEventArgs e) => DragDropQueryContinue?.Invoke(this, e);
+        private void OnNativeDragDropGiveFeedback(object sender, DragDropGiveFeedback e) => DragDropGiveFeedback?.Invoke(this, e);
+
+        public virtual DROPEFFECT DoDragDrop(Visual visual, System.Runtime.InteropServices.ComTypes.IDataObject dataObject, DROPEFFECT allowedEffects)
+        {
+            if (visual == null)
+                throw new ArgumentNullException(nameof(visual));
+
+            return Native.DoDragDrop(dataObject, allowedEffects);
+        }
+
+        internal void RegisterForDragDrop()
+        {
+            if (!Native.IsDropTarget)
+            {
+                Native.DragDrop += OnNativeDragDrop;
+                Native.IsDropTarget = true;
+            }
+        }
+
+        protected virtual void OnNativeDragDrop(object sender, DragDropEventArgs e)
+        {
+            if (e.Type == DragDropEventType.Leave)
+            {
+                foreach (var visual in _ddEntered)
+                {
+                    visual.OnDragDrop(e);
+                }
+                _ddEntered.Clear();
+                return;
+            }
+
+            Visual entered = null;
+            foreach (var visual in GetIntersectingVisuals(e.Point))
+            {
+                if (visual.AllowDrop)
+                {
+                    if (e.Type == DragDropEventType.Over)
+                    {
+                        if (_ddEntered.Add(visual))
+                        {
+                            // simulate enter
+                            e.Type = DragDropEventType.Enter;
+                        }
+                    }
+
+                    visual.OnDragDrop(e);
+                    if (e.Handled)
+                    {
+                        entered = visual;
+                        clearNotEntered();
+                        return;
+                    }
+                }
+            }
+            e.Effect = DROPEFFECT.DROPEFFECT_NONE;
+            clearNotEntered();
+            _ddEntered.Clear();
+
+            void clearNotEntered()
+            {
+                var e2 = new DragDropEventArgs(DragDropEventType.Leave);
+                foreach (var visual in _ddEntered)
+                {
+                    if (visual == entered)
+                        continue;
+
+                    visual.OnDragDrop(e2);
+                }
+            }
         }
 
         private static uint GetMaximumBitmapSize()
@@ -1005,13 +1098,7 @@ namespace Wice
                     if (adapter == null)
                         return null;
 
-                    var flags = D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_BGRA_SUPPORT; // for D2D cooperation
-                                                                                           //flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_VIDEO_SUPPORT;
-                    if (Application.UseDebugLayer)
-                    {
-                        flags |= D3D11_CREATE_DEVICE_FLAG.D3D11_CREATE_DEVICE_DEBUG;
-                    }
-
+                    var flags = CreateDeviceFlags;
                     var device = D3D11Functions.D3D11CreateDevice(adapter.Object, D3D_DRIVER_TYPE.D3D_DRIVER_TYPE_UNKNOWN, flags);
                     var mt = device.As<ID3D11Multithread>();
                     mt?.SetMultithreadProtected(true);
@@ -1735,6 +1822,14 @@ namespace Wice
         protected virtual void DestroyCore()
         {
             //Application.Trace("'" + this + "'");
+            if (_native.IsValueCreated && _native.Value.IsDropTarget)
+            {
+                _native.Value.DragDrop -= OnNativeDragDrop;
+                _native.Value.DragDropGiveFeedback -= OnNativeDragDropGiveFeedback;
+                _native.Value.DragDropQueryContinue -= OnNativeDragDropQueryContinue;
+                _native.Value.DragDropTarget -= OnNativeDragDropTarget;
+            }
+
             var children = (WindowBaseObjectCollection)Children;
             foreach (var child in children.ToArray())
             {

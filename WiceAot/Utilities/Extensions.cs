@@ -65,6 +65,18 @@ public static class Extensions
         dy = value._32,
     };
 
+    public static POINT ToPOINT(this POINTL value) => new()
+    {
+        x = value.x,
+        y = value.y,
+    };
+
+    public static POINTL ToPOINTL(this POINT value) => new()
+    {
+        x = value.x,
+        y = value.y,
+    };
+
     // this is to replace the As<T> on C#/WinRT object which doesn't work well under AOT...
     [return: NotNullIfNotNull(nameof(winRTObject))]
     public static IComObject<T>? AsComObject<T>(this object? winRTObject, CreateObjectFlags flags = CreateObjectFlags.UniqueInstance)

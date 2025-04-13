@@ -53,7 +53,19 @@ public partial class Application : IDisposable
                     break;
                 }
 
-                // Trace("msg: " + msg.Decode());
+                // call this just at init time
+                if (msg.hwnd.Value == 0)
+                {
+                    if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
+                    {
+                        foreach (var window in _windows)
+                        {
+                            window.RegisterForDragDrop();
+                        }
+                    }
+                }
+
+                //Trace("msg: " + msg.Decode());
                 Functions.TranslateMessage(msg);
                 Functions.DispatchMessageW(msg);
             }

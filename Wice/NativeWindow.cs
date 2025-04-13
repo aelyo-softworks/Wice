@@ -9,15 +9,25 @@ using System.Text;
 using System.Windows.Forms;
 using DirectN;
 using Microsoft.Win32;
+using Wice.Interop;
 using Wice.Utilities;
 
 namespace Wice
 {
-    public sealed class NativeWindow : IWin32Window, IEquatable<NativeWindow>
+    public sealed class NativeWindow : IWin32Window, IEquatable<NativeWindow>, NativeWindow.IDropTarget, NativeWindow.IDropSource, NativeWindow.IDropSourceNotify
     {
         private static readonly ConcurrentHashSet<string> _classesNames = new ConcurrentHashSet<string>();
 
         public static IEnumerable<NativeWindow> TopLevelWindows => WindowsFunctions.EnumerateTopLevelWindows().Select(h => FromHandle(h)).Where(w => w != null);
+
+        public event EventHandler<DragDropEventArgs> DragDrop;
+        public event EventHandler<DragDropQueryContinueEventArgs> DragDropQueryContinue;
+        public event EventHandler<DragDropGiveFeedback> DragDropGiveFeedback;
+        public event EventHandler<DragDropTargetEventArgs> DragDropTarget;
+
+        private IntPtr _dragDropTarget;
+        private bool _isDropTarget;
+        private System.Runtime.InteropServices.ComTypes.IDataObject _currentDataObject;
 
         private NativeWindow(IntPtr handle)
         {
@@ -143,6 +153,30 @@ namespace Wice
             }
         }
 
+        public bool IsDropTarget
+        {
+            get => _isDropTarget;
+            set
+            {
+                if (value == _isDropTarget)
+                    return;
+
+                if (value)
+                {
+                    var hr = RegisterDragDrop(Handle, this);
+                    if (hr.IsError)
+                        throw new WiceException("0027: Cannot enable drag & drop operations. Make sure the thread is initialized as an STA thread.");
+
+                    _isDropTarget = true;
+                }
+                else
+                {
+                    RevokeDragDrop(Handle).ThrowOnError();
+                    _isDropTarget = false;
+                }
+            }
+        }
+
         public override int GetHashCode() => Handle.GetHashCode();
         public override bool Equals(object obj) => Equals(obj as NativeWindow);
         public bool Equals(NativeWindow other) => other != null && Handle == other.Handle;
@@ -174,6 +208,128 @@ namespace Wice
         public Monitor GetMonitor(MFW flags = MFW.MONITOR_DEFAULTTONULL) => Monitor.FromWindow(Handle, flags);
         public bool IsChild(IntPtr parentHandle) => WindowsFunctions.IsChild(parentHandle, Handle);
         public WDA DisplayAffinity { get => WindowsFunctions.GetWindowDisplayAffinity(Handle); set => WindowsFunctions.SetWindowDisplayAffinity(Handle, value); }
+
+        public DROPEFFECT DoDragDrop(System.Runtime.InteropServices.ComTypes.IDataObject dataObject, DROPEFFECT allowedEffects)
+        {
+            if (dataObject == null)
+                throw new ArgumentNullException(nameof(dataObject));
+
+            try
+            {
+                DoDragDrop(dataObject, this, allowedEffects, out var effect).ThrowOnError();
+                return effect;
+            }
+            catch (Exception ex)
+            {
+                throw new WiceException("0028: Cannot enable drag & drop operations. Make sure the thread is initialized as an STA thread.", ex);
+            }
+        }
+
+        private void OnDragDrop(DragDropEventArgs e) => DragDrop?.Invoke(this, e);
+        HRESULT IDropTarget.DragEnter(System.Runtime.InteropServices.ComTypes.IDataObject dataObject, MODIFIERKEYS_FLAGS flags, tagPOINT pt, ref DROPEFFECT effect)
+        {
+            var e = new DragDropEventArgs(DragDropEventType.Enter)
+            {
+                DataObject = dataObject,
+                KeyFlags = flags,
+                Point = ScreenToClient(pt),
+                Effect = effect
+            };
+            _currentDataObject = dataObject;
+
+            OnDragDrop(e);
+            effect = e.Effect;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IDropTarget.DragOver(MODIFIERKEYS_FLAGS flags, tagPOINT pt, ref DROPEFFECT effect)
+        {
+            var e = new DragDropEventArgs(DragDropEventType.Over)
+            {
+                DataObject = _currentDataObject,
+                KeyFlags = flags,
+                Point = ScreenToClient(pt),
+                Effect = effect
+            };
+
+            OnDragDrop(e);
+            effect = e.Effect;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IDropTarget.DragLeave()
+        {
+            var e = new DragDropEventArgs(DragDropEventType.Leave);
+            OnDragDrop(e);
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IDropTarget.Drop(System.Runtime.InteropServices.ComTypes.IDataObject dataObject, MODIFIERKEYS_FLAGS flags, tagPOINT pt, ref DROPEFFECT effect)
+        {
+            var e = new DragDropEventArgs(DragDropEventType.Drop)
+            {
+                DataObject = dataObject,
+                KeyFlags = flags,
+                Point = ScreenToClient(pt),
+                Effect = effect
+            };
+
+            OnDragDrop(e);
+            effect = e.Effect;
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IDropSourceNotify.DragEnterTarget(IntPtr hwndTarget)
+        {
+            var win = new NativeWindow(hwndTarget);
+            Application.Trace("DragEnterTarget hwndTarget:" + win);
+
+            var e = new DragDropTargetEventArgs(DragDropTargetEventType.Enter, hwndTarget);
+            _dragDropTarget = hwndTarget;
+            DragDropTarget?.Invoke(this, e);
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IDropSourceNotify.DragLeaveTarget()
+        {
+            Application.Trace("DragLeaveTarget");
+            var e = new DragDropTargetEventArgs(DragDropTargetEventType.Leave, _dragDropTarget);
+            DragDropTarget?.Invoke(this, e);
+            return HRESULTS.S_OK;
+        }
+
+        HRESULT IDropSource.QueryContinueDrag(bool escapePressed, MODIFIERKEYS_FLAGS flags)
+        {
+            //Application.Trace("QueryContinueDrag escapePressed:" + escapePressed + " flags:" + flags);
+
+            var mouseButtons = 0;
+            mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_LBUTTON) ? 1 : 0;
+            mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_MBUTTON) ? 1 : 0;
+            mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_RBUTTON) ? 1 : 0;
+            mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_XBUTTON1) ? 1 : 0;
+            mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_XBUTTON2) ? 1 : 0;
+
+            var e = new DragDropQueryContinueEventArgs(escapePressed, flags);
+            if (escapePressed || mouseButtons > 1)
+            {
+                e.Result = Wice.DragDropGiveFeedback.DRAGDROP_S_CANCEL;
+            }
+            else if (mouseButtons == 0)
+            {
+                e.Result = Wice.DragDropGiveFeedback.DRAGDROP_S_DROP;
+            }
+
+            DragDropQueryContinue?.Invoke(this, e);
+            return e.Result;
+        }
+
+        HRESULT IDropSource.GiveFeedback(DROPEFFECT effect)
+        {
+            //Application.Trace("GiveFeedback: " + effect);
+            var e = new DragDropGiveFeedback(effect);
+            DragDropGiveFeedback?.Invoke(this, e);
+            return e.Result;
+        }
 
         public override string ToString()
         {
@@ -529,6 +685,51 @@ namespace Wice
 
         [DllImport("user32")]
         internal static extern int GetSystemMetricsForDpi(SM index, int dpi);
+
+        [DllImport("ole32")]
+        private static extern HRESULT RegisterDragDrop(IntPtr hwnd, IDropTarget pDropTarget);
+
+        [DllImport("ole32")]
+        private static extern HRESULT DoDragDrop(System.Runtime.InteropServices.ComTypes.IDataObject pDataObj, IDropSource pDropSource, DROPEFFECT dwOKEffects, out DROPEFFECT pdwEffect);
+
+        [DllImport("ole32")]
+        private static extern HRESULT RevokeDragDrop(IntPtr hwnd);
+
+        [ComImport, Guid("00000122-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        private interface IDropTarget
+        {
+            [PreserveSig]
+            HRESULT DragEnter(System.Runtime.InteropServices.ComTypes.IDataObject pDataObj, MODIFIERKEYS_FLAGS grfKeyState, tagPOINT pt, ref DROPEFFECT pdwEffect);
+
+            [PreserveSig]
+            HRESULT DragOver(MODIFIERKEYS_FLAGS grfKeyState, tagPOINT pt, ref DROPEFFECT pdwEffect);
+
+            [PreserveSig]
+            HRESULT DragLeave();
+
+            [PreserveSig]
+            HRESULT Drop(System.Runtime.InteropServices.ComTypes.IDataObject pDataObj, MODIFIERKEYS_FLAGS grfKeyState, tagPOINT pt, ref DROPEFFECT pdwEffect);
+        }
+
+        [ComImport, Guid("00000121-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        private interface IDropSource
+        {
+            [PreserveSig]
+            HRESULT QueryContinueDrag(bool fEscapePressed, MODIFIERKEYS_FLAGS grfKeyState);
+
+            [PreserveSig]
+            HRESULT GiveFeedback(DROPEFFECT dwEffect);
+        }
+
+        [ComImport, Guid("0000012B-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        private interface IDropSourceNotify
+        {
+            [PreserveSig]
+            HRESULT DragEnterTarget(IntPtr hwndTarget);
+
+            [PreserveSig]
+            HRESULT DragLeaveTarget();
+        }
 
         [DllImport("user32")]
         private static extern bool AreDpiAwarenessContextsEqual(IntPtr dpiContextA, IntPtr dpiContextB);

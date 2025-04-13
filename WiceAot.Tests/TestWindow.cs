@@ -78,20 +78,12 @@ internal partial class TestWindow : Window
         var sv = new ScrollViewer();
         sv.Viewer.IsWidthUnconstrained = false;
 
-        //var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
         var text = File.ReadAllText(@"Resources\MobyDickNumbered.txt");
-        //var text = File.ReadAllText(@"Resources\100mb.txt");
         var tb = new FastTextBox
         {
             VerticalAlignment = Alignment.Near,
             HorizontalAlignment = Alignment.Near,
-            //FontFamilyName = "Cascadia Mono",
-            //FontSize = 12,
             Text = text,
-            //IsFocusable = true,
-            //Text = "Did you know that one of the longest words in English is supercalifragilisticexpialidocious?. It was made popular in \"Mary Poppins\" movie.",
-            //WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WRAP,
-            //IsEditable = true,
         };
 
         sv.Viewer.Child = tb;
@@ -109,10 +101,10 @@ internal partial class TestWindow : Window
             {
                 tb.Text = File.ReadAllText(@"Resources\MobyDickNumbered.txt");
             }
+            sv.VerticalOffset = 0;
         };
 
         Children.Add(btn);
-        //Children.Add(txt);
     }
 
     public void BigText()

@@ -333,6 +333,17 @@
     <Compile Include="..\Wice\IViewerParent.cs" Link="IViewerParent.cs" />
     <Compile Include="..\Wice\FastTextBox.cs" Link="FastTextBox.cs" />
     <Compile Include="..\Wice\LoadEventArgs.cs" Link="LoadEventArgs.cs" />
+    <Compile Include="..\Wice\DragDropEventArgs.cs" Link="DragDropEventArgs.cs" />
+    <Compile Include="..\Wice\DragDropEventType.cs" Link="DragDropEventType.cs" />
+    <Compile Include="..\Wice\DragDropGiveFeedback.cs" Link="DragDropGiveFeedback.cs" />
+    <Compile Include="..\Wice\DragDropQueryContinueEventArgs.cs" Link="DragDropQueryContinueEventArgs.cs" />
+    <Compile Include="..\Wice\DragDropSourceEventArgs.cs" Link="DragDropSourceEventArgs.cs" />
+    <Compile Include="..\Wice\DragDropSourceEventType.cs" Link="DragDropSourceEventType.cs" />
+    <Compile Include="..\Wice\DragDropTargetEventArgs.cs" Link="DragDropTargetEventArgs.cs" />
+    <Compile Include="..\Wice\DragDropTargetEventType.cs" Link="DragDropTargetEventType.cs" />
+    <Compile Include="..\Wice\Interop\DROPEFFECT.cs" Link="Interop\DROPEFFECT.cs" />
+    <Compile Include="..\Wice\Interop\MODIFIERKEYS_FLAGS.cs" Link="Interop\MODIFIERKEYS_FLAGS.cs" />
+    <Compile Include="..\Wice\Utilities\ShellUtilities.cs" Link="Utilities\ShellUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.17.2" />
