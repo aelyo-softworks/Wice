@@ -4,7 +4,7 @@ public partial class FastTextBox : TextBox
 {
     private TextContainer _container;
     private IComObject<IDWriteTextLayout>? _layout;
-    private int _currentLine;
+    private int _currentLineNumber;
     private string? _renderedText;
 
     // occurs on any thread
@@ -23,6 +23,34 @@ public partial class FastTextBox : TextBox
 
     [Category(CategoryLive)]
     public virtual bool LoadingWasCancelled { get; protected set; }
+
+    [Category(CategoryLive)]
+    public bool IsLoading => _container.LoadingLines != null;
+
+    [Category(CategoryLive)]
+    public int CurrentLineNumber => _currentLineNumber;
+
+    [Category(CategoryLive)]
+    public D2D_SIZE_F RenderMetrics => _container.ParsedMetrics;
+
+    [Category(CategoryLive)]
+    public DWRITE_WORD_WRAPPING RenderWrapping => _container.ParsedWrapping;
+
+    [Category(CategoryLive)]
+    public Line? CurrentLine
+    {
+        get
+        {
+            var lines = _container.Lines;
+            if (lines == null)
+                return null;
+
+            if (_currentLineNumber < 0 || _currentLineNumber + 1 > lines.Length)
+                return null;
+
+            return lines[_currentLineNumber];
+        }
+    }
 
     [Category(CategoryLayout)]
     public override string Text { get => _container.Text; set => SetText(value); }
@@ -100,10 +128,10 @@ public partial class FastTextBox : TextBox
         {
             var floatLine = Math.Max(0, -finalRect.top / _container.ParsedMetrics.height);
             var line = floatLine.CeilingI();
-            if (line == _currentLine)
+            if (line == _currentLineNumber)
                 return;
 
-            _currentLine = line;
+            _currentLineNumber = line;
             _layout?.Dispose();
             _layout = null;
         }
@@ -128,10 +156,10 @@ public partial class FastTextBox : TextBox
         maxHeight = Math.Min(maxHeight, ParentsAbsoluteClipRect?.Height ?? 0);
         _layout?.Dispose();
         _layout = null;
-        var lastLine = _currentLine;
+        var lastLine = _currentLineNumber;
         do
         {
-            var text = _container.GetText(_currentLine, lastLine);
+            var text = _container.GetText(_currentLineNumber, lastLine);
             if (text == null)
                 return null;
 
@@ -171,7 +199,6 @@ public partial class FastTextBox : TextBox
     {
         public const char NotUnicode = '\uFFFF';
 
-        private DWRITE_WORD_WRAPPING _parsedWrapping;
         private D2D_SIZE_F _parsedConstraint;
         private D2D_SIZE_F _parsedSize;
         private readonly Lock _lock = new();
@@ -181,6 +208,7 @@ public partial class FastTextBox : TextBox
         public Line[]? Lines;
         public Task? LoadingLines;
         public D2D_SIZE_F ParsedMetrics;
+        public DWRITE_WORD_WRAPPING ParsedWrapping;
 
         // compute or estimate char width & line height
         private D2D_SIZE_F ComputeMetrics()
@@ -203,7 +231,7 @@ public partial class FastTextBox : TextBox
                 wrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_NO_WRAP;
             }
 
-            if (_parsedConstraint == constraint && _parsedWrapping == wrapping && !refresh)
+            if (_parsedConstraint == constraint && ParsedWrapping == wrapping && !refresh)
                 return _parsedSize;
 
             Visual.HasFallback = false;
@@ -285,7 +313,7 @@ public partial class FastTextBox : TextBox
                                 lock (_lock) Lines = [.. lines];
 
                                 _parsedConstraint = constraint;
-                                _parsedWrapping = wrapping;
+                                ParsedWrapping = wrapping;
                                 _parsedSize = new D2D_SIZE_F(maxCharactersPerLine * ParsedMetrics.width, Lines.Length * ParsedMetrics.height);
 
                                 e.LoadedLines = lines.Count;
@@ -364,7 +392,7 @@ public partial class FastTextBox : TextBox
             lock (_lock) Lines = [.. lines];
 
             _parsedConstraint = constraint;
-            _parsedWrapping = wrapping;
+            ParsedWrapping = wrapping;
 
             // note: fallback cannot/mustnot happen if we're loading in another thread
             Visual.HasFallback = Lines.Length < Visual.FallbackLineCountThreshold;
@@ -399,7 +427,7 @@ public partial class FastTextBox : TextBox
         }
     }
 
-    private readonly struct Line(int position, int length)
+    public readonly struct Line(int position, int length)
     {
         public int Position { get; } = position;
         public int Length { get; } = length;
