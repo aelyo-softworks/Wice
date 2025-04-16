@@ -26,8 +26,9 @@ internal partial class TestWindow : Window
 
         //ShowProgressBar();
         //LongRunWithCursor();
+        LargeRichTextBox();
         //LargeText();
-        LargeTextSv();
+        //LargeTextSv();
         //BigText();
         //BigTextSv();
 
@@ -51,6 +52,26 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void LargeRichTextBox()
+    {
+        var sv = new ScrollViewer
+        {
+            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10)
+        };
+
+        var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
+        var tb = new RichTextBox
+        {
+            VerticalAlignment = Alignment.Near,
+            Text = text,
+            IsFocusable = true,
+        };
+
+        sv.Viewer.Child = tb;
+
+        Children.Add(sv);
     }
 
     public void LargeText()

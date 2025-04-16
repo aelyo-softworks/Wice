@@ -4,7 +4,7 @@
 public class SystemInformation(Assembly? assembly = null, Window? window = null) : DiagnosticsInformation(assembly)
 {
     [Category("Graphics")]
-    public string DefaultTextServicesGeneratorVersion { get; } = RichTextBox.GetDefaultTextServicesGeneratorVersion();
+    public string DefaultTextServicesGeneratorVersion { get; } = RichTextBox.DefaultTextServicesGeneratorVersion;
 
     [Category("Graphics")]
     public new string? WindowDpiAwareness => (window ?? Application.Windows.FirstOrDefault())?.Native.DpiAwarenessDescription;

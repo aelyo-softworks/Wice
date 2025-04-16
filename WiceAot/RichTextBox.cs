@@ -351,9 +351,12 @@ public partial class RichTextBox : RenderVisual, IDisposable
     // allow command line change
     public static TextServicesGenerator GetDefaultTextServicesGenerator() => CommandLine.Current.GetArgument(nameof(TextServicesGenerator), TextServicesGenerator.Default);
 
-    public static string GetDefaultTextServicesGeneratorVersion()
+    private static readonly Lazy<string> _defaultTextServicesGeneratorVersion = new(GetDefaultTextServicesGeneratorVersion);
+    private static string GetDefaultTextServicesGeneratorVersion()
     {
-        var rtb = new RichTextBox();
+        using var rtb = new RichTextBox();
         return rtb.GeneratorVersion;
     }
+
+    public static string DefaultTextServicesGeneratorVersion { get; } = _defaultTextServicesGeneratorVersion.Value;
 }
