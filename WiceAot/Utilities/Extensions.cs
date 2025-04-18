@@ -65,6 +65,13 @@ public static class Extensions
         dy = value._32,
     };
 
+    public static int PixelToHiMetric(this int pixel) => (int)PixelToHiMetric((float)pixel);
+    public static float PixelToHiMetric(this float pixel)
+    {
+        var dpi = Functions.Dpi;
+        return D2D_SIZE_F.HIMETRIC_PER_INCH * pixel / dpi.width;
+    }
+
     public static POINT ToPOINT(this POINTL value) => new()
     {
         x = value.x,

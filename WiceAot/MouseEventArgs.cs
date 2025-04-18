@@ -10,6 +10,7 @@ public class MouseEventArgs(int x, int y, POINTER_MOD vk) : HandledEventArgs
     // window relative
     public int X { get; } = x;
     public int Y { get; } = y;
+    public POINT Point { get; } = new POINT(x, y);
 
     public IReadOnlyList<Visual> VisualsStack
     {

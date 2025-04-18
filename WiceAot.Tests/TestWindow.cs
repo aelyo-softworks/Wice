@@ -62,6 +62,8 @@ internal partial class TestWindow : Window
         };
 
         var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
+        //var text = File.ReadAllText(@"Resources\ShortText.txt");
+        //var text = File.ReadAllText(@"Resources\MobyDickNumbered.txt");
         var tb = new RichTextBox
         {
             VerticalAlignment = Alignment.Near,
@@ -72,6 +74,37 @@ internal partial class TestWindow : Window
         sv.Viewer.Child = tb;
 
         Children.Add(sv);
+
+        ITextRange? range = null;
+        tb.MouseButtonDown += (s, e) =>
+        {
+            var pt = tb.Window!.ClientToScreen(e.Point);
+            tb.Document!.Object.RangeFromPoint(pt.x, pt.y, out range).ThrowOnError();
+        };
+
+        tb.MouseMove += (s, e) =>
+        {
+            if (range != null)
+            {
+                var pt = tb.Window!.ClientToScreen(e.Point);
+                tb.Document!.Object.RangeFromPoint(pt.x, pt.y, out var range2).ThrowOnError();
+                range2.GetStart(out var end).ThrowOnError();
+                range2.FinalRelease();
+                range.SetEnd(end).ThrowOnError();
+                range.Select();
+            }
+        };
+
+        tb.MouseButtonUp += (s, e) =>
+        {
+            if (range != null)
+            {
+                range.FinalRelease();
+                range = null;
+            }
+
+            ReleaseMouseCapture();
+        };
     }
 
     public void LargeText()

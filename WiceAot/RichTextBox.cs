@@ -1,10 +1,12 @@
-﻿namespace Wice;
+﻿using System.Runtime.InteropServices.Marshalling;
+
+namespace Wice;
 
 // this currently is only read-only
 // note this visual sits on a COM object so we must dispose it on the same thread that created it
 public partial class RichTextBox : RenderVisual, IDisposable
 {
-    private TextHost? _host;
+    private RichTextBoxTextHost? _host;
     private bool _disposedValue;
 
     public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
@@ -15,11 +17,140 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
 
         Generator = generator;
-        _host = new TextHost(generator) { TextColor = new COLORREF() };
+        _host = CreateTextHost(generator, this);
+        _host.TextColor = new COLORREF();
         BackgroundColor = D3DCOLORVALUE.Transparent;
     }
 
-    protected TextHost? Host => _host;
+    protected RichTextBoxTextHost? Host => _host;
+    protected virtual RichTextBoxTextHost CreateTextHost(TextServicesGenerator generator, RichTextBox richTextBox) => new(generator, richTextBox);
+
+    [GeneratedComClass]
+    protected partial class RichTextBoxTextHost(TextServicesGenerator generator, RichTextBox richTextBox)
+        : TextHost(generator)
+    {
+        public RichTextBox RichTextBox { get; } = richTextBox;
+
+        // avoid too many traces in debug
+        public override uint TxGetSysColor(SYS_COLOR_INDEX nIndex) => Functions.GetSysColor(nIndex);
+        public unsafe override bool TxClientToScreen(nint lppt)
+        {
+            if (lppt == 0)
+                return false;
+
+            var arr = RichTextBox.AbsoluteRenderRect;
+            if (arr.IsInvalid)
+                return false;
+
+            var window = RichTextBox.Window;
+            if (window == null)
+                return false;
+
+            var pt = *(POINT*)lppt;
+            pt = new POINT(pt.x + arr.left, pt.y - arr.top);
+            pt = window.ClientToScreen(pt);
+            *(POINT*)lppt = pt;
+            return true;
+        }
+
+        public unsafe override bool TxScreenToClient(nint lppt)
+        {
+            if (lppt == 0)
+                return false;
+
+            var window = RichTextBox.Window;
+            if (window == null)
+                return false;
+
+            var pt = *(POINT*)lppt;
+            pt = window.ScreenToClient(pt);
+            var pos = RichTextBox.GetRelativePosition(pt.x, pt.y);
+            *(POINT*)lppt = pos;
+            return true;
+        }
+
+        public unsafe override HRESULT TxGetPropertyBits(uint dwMask, nint pdwBits)
+        {
+            var mask = (TXTBIT)dwMask;
+            if (pdwBits == 0)
+                return Constants.E_INVALIDARG;
+
+            var bits = TXTBIT.TXTBIT_RICHTEXT | TXTBIT.TXTBIT_D2DDWRITE;
+            if (Options.HasFlag(TextHostOptions.WordWrap))
+            {
+                bits |= TXTBIT.TXTBIT_WORDWRAP;
+            }
+
+            if (Options.HasFlag(TextHostOptions.Vertical))
+            {
+                bits |= TXTBIT.TXTBIT_VERTICAL;
+            }
+
+            if (Options.HasFlag(TextHostOptions.ReadOnly))
+            {
+                bits |= TXTBIT.TXTBIT_READONLY;
+            }
+
+            if (Options.HasFlag(TextHostOptions.Multiline))
+            {
+                bits |= TXTBIT.TXTBIT_MULTILINE;
+            }
+
+            bits &= mask;
+            *(TXTBIT*)pdwBits = bits;
+            return Constants.S_OK;
+        }
+
+        public unsafe override HRESULT TxGetSelectionBarWidth(nint lSelBarWidth)
+        {
+            if (lSelBarWidth == 0)
+                return Constants.E_INVALIDARG;
+
+            *(int*)lSelBarWidth = 0;
+            return Constants.S_OK;
+        }
+
+        public unsafe override HRESULT TxGetWindowStyles(nint pdwStyle, nint pdwExStyle)
+        {
+            var window = RichTextBox.Window;
+            if (window == null)
+                return Constants.E_FAIL;
+
+            if (pdwStyle != 0)
+            {
+                *(WINDOW_STYLE*)pdwStyle = window.Style;
+            }
+
+            if (pdwExStyle != 0)
+            {
+                *(WINDOW_EX_STYLE*)pdwExStyle = window.ExtendedStyle;
+            }
+            return Constants.S_OK;
+        }
+
+        public unsafe override HRESULT TxGetWindow(nint phwnd)
+        {
+            if (phwnd == 0)
+                return base.TxGetWindow(phwnd);
+
+            var window = RichTextBox.Window;
+            if (window == null)
+                return base.TxGetWindow(phwnd);
+
+            *(HWND*)phwnd = window.Handle;
+            return Constants.S_OK;
+        }
+
+        public override void TxViewChange(BOOL fUpdate)
+        {
+            RichTextBox.Invalidate(VisualPropertyInvalidateModes.Render);
+        }
+
+        public override unsafe void TxInvalidateRect(nint prc, BOOL fMode)
+        {
+            RichTextBox.Invalidate(VisualPropertyInvalidateModes.Render);
+        }
+    }
 
     [Category(CategoryLive)]
     public IComObject<ITextDocument2>? Document => _host?.Document;
@@ -49,7 +180,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
     [Category(CategoryLayout)]
     public virtual TextHostOptions Options
     {
-        get => (_host?.Options).GetValueOrDefault();
+        get => _host?.Options ?? TextHostOptions.Default;
         set
         {
             var host = _host;
@@ -115,7 +246,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
     {
         OnPropertyChanging(propertyName);
         Application.CheckRunningAsMainThread();
-        Invalidate(modes, new InvalidateReason(GetType()));
+        Invalidate(modes);
     }
 
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
@@ -288,8 +419,29 @@ public partial class RichTextBox : RenderVisual, IDisposable
         var rr = RelativeRenderRect;
         var urc = rc;
         urc.top = -(int)rr.top;
+
+        var vp = GetViewerParent();
+        if (vp != null)
+        {
+            var ar = ((Visual)vp).AbsoluteRenderRect;
+            if (ar.IsValid)
+            {
+                if (urc.Width > ar.Width)
+                {
+                    urc.Width = (int)ar.Width;
+                }
+
+                if (urc.Height > ar.Height)
+                {
+                    urc.Height = (int)ar.Height;
+                }
+            }
+        }
+
         host.Draw(context.DeviceContext.Object, rc, urc);
     }
+
+    private IViewerParent? GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;
 
     // seems like richedit is relative to primary monitor's dpi
     private static (int Primary, int Monitor) GetMonitorDpiRatioToPrimary(DirectN.Extensions.Utilities.Monitor? monitor)

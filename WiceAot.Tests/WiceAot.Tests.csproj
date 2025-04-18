@@ -52,6 +52,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Update="Resources\ShortText.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	  <None Update="Resources\AliceInWonderlandNumbered.txt">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>

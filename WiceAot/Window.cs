@@ -1375,16 +1375,17 @@ public partial class Window : Canvas, ITitleBarParent
     }
 
     // this is to ensure render will happen on main/ui thread
-    public virtual void RequestRender()
+    public virtual bool RequestRender()
     {
         if (_native?.IsValueCreated == false)
-            return;
+            return false;
 
         // we want 0 or 1 render queued
         if (Interlocked.CompareExchange(ref _renderQueued, 1, 0) != 0)
-            return;
+            return false;
 
         Native?.PostMessage(WM_PROCESS_INVALIDATIONS);
+        return true;
     }
 
     private void MeasureWindow(bool force)
