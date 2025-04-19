@@ -95,15 +95,32 @@ internal partial class TestWindow : Window
             }
         };
 
+        string? selection = null;
         tb.MouseButtonUp += (s, e) =>
         {
+            selection = null;
             if (range != null)
             {
+                range.GetText(out BSTR pbstr);
+                if (pbstr.Value != 0)
+                {
+                    selection = pbstr.ToString();
+                    BSTR.Dispose(ref pbstr);
+                }
+
                 range.FinalRelease();
                 range = null;
             }
 
             ReleaseMouseCapture();
+        };
+
+        tb.KeyDown += (s, e) =>
+        {
+            if (e.WithControl && e.Key == VIRTUAL_KEY.VK_C && !string.IsNullOrEmpty(selection))
+            {
+                DirectN.Extensions.Utilities.Clipboard.SetText(selection);
+            }
         };
     }
 
