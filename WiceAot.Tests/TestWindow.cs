@@ -26,7 +26,8 @@ internal partial class TestWindow : Window
 
         //ShowProgressBar();
         //LongRunWithCursor();
-        LargeRichTextBox();
+        //LargeRichTextBox();
+        RichTextBoxFont();
         //LargeText();
         //LargeTextSv();
         //BigText();
@@ -122,6 +123,44 @@ internal partial class TestWindow : Window
                 DirectN.Extensions.Utilities.Clipboard.SetText(selection);
             }
         };
+    }
+
+    public void RichTextBoxFont()
+    {
+        var sv = new ScrollViewer
+        {
+            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10)
+        };
+
+        var text = File.ReadAllText(@"Resources\AliceInWonderlandNumbered.txt");
+        //var text = File.ReadAllText(@"Resources\ShortText.txt");
+        //var text = File.ReadAllText(@"Resources\MobyDickNumbered.txt");
+        var tb = new RichTextBox
+        {
+            VerticalAlignment = Alignment.Near,
+            Text = text,
+            IsFocusable = true,
+        };
+
+        sv.Viewer.Child = tb;
+
+        Children.Add(sv);
+
+        var button = new Button();
+        button.Text.Text = "click to change font size & name";
+        button.Click += (s, e) =>
+        {
+            tb.Document!.Object.GetDocumentFont(out var font).ThrowOnError();
+            using var f = new ComObject<ITextFont2>(font);
+            font.SetSize(26).ThrowOnError();
+
+            using var bstr = new DirectN.Extensions.Utilities.Bstr("Consolas");
+            font.SetName(bstr).ThrowOnError();
+
+            tb.Document!.Object.SetDocumentFont(font).ThrowOnError();
+            button.Remove();
+        };
+        Children.Add(button);
     }
 
     public void LargeText()
