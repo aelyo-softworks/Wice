@@ -1,23 +1,24 @@
 ﻿namespace Wice.Utilities;
 
 #pragma warning disable CA1822 // Mark members as static
+#pragma warning disable CA1826 // Do not use Enumerable methods on indexable collections
 public class SystemInformation(Assembly? assembly = null, Window? window = null) : DiagnosticsInformation(assembly)
 {
     [Category("Graphics")]
     public string DefaultTextServicesGeneratorVersion { get; } = RichTextBox.DefaultTextServicesGeneratorVersion;
 
     [Category("Graphics")]
-    public new string? WindowDpiAwareness => (window ?? Application.Windows.FirstOrDefault())?.Native.DpiAwarenessDescription;
+    public new string? WindowDpiAwareness => (window ?? Application.AllWindows.FirstOrDefault())?.Native.DpiAwarenessDescription;
 
     [Category("Graphics")]
-    public new uint WindowDpiFromDpiAwareness => (window ?? Application.Windows.FirstOrDefault())?.Native.DpiFromDpiAwareness ?? 96;
+    public new uint WindowDpiFromDpiAwareness => (window ?? Application.AllWindows.FirstOrDefault())?.Native.DpiFromDpiAwareness ?? 96;
 
     [Category("Graphics")]
     public new string? WindowMonitor
     {
         get
         {
-            var monitor = (window ?? Application.Windows.FirstOrDefault())?.GetMonitor();
+            var monitor = (window ?? Application.AllWindows.FirstOrDefault())?.GetMonitor();
             if (monitor == null)
                 return null;
 
@@ -38,4 +39,5 @@ public class SystemInformation(Assembly? assembly = null, Window? window = null)
     [Category("System")]
     public new string ProcessorArchitecture => SystemUtilities.GetProcessorArchitecture().ToString();
 }
+#pragma warning restore CA1826 // Do not use Enumerable methods on indexable collections
 #pragma warning restore CA1822 // Mark members as static

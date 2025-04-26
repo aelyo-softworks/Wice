@@ -22,6 +22,9 @@ namespace Wice.Utilities
 
         public void Log(TraceLevel level, string message = null, [CallerMemberName] string methodName = null)
         {
+            if (_disposedValue)
+                return;
+
             if (!string.IsNullOrEmpty(methodName))
             {
                 methodName += "|";

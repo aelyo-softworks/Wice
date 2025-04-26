@@ -225,11 +225,11 @@ public static class AcrylicBrush
         if (!brush.Comment.StartsWith(typeof(AcrylicBrush).Name))
             return null;
 
-        var htmlString = brush.Comment.Substring(typeof(AcrylicBrush).Name.Length);
+        var htmlString = brush.Comment[typeof(AcrylicBrush).Name.Length..];
         var pos = htmlString.IndexOf('\0');
         if (pos > 0)
         {
-            if (D3DCOLORVALUE.TryParseFromName(htmlString.Substring(0, pos), out var colorValue))
+            if (D3DCOLORVALUE.TryParseFromName(htmlString[..pos], out var colorValue))
                 return colorValue;
         }
         return null;

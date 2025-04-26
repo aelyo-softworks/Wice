@@ -87,6 +87,7 @@
     </EmbeddedResource>
     <Compile Include="..\Wice.Tests\..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="Samples\Collections\PropertyGrid\SampleModel.cs" />
     <Compile Include="..\Wice.Tests\..\Wice\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+    <EmbeddedResource Include="..\Wice.Tests\Resources\pi.txt" Link="Resources\pi.txt" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.17.2" />

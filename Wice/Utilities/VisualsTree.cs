@@ -7,6 +7,7 @@ using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using DirectN;
@@ -30,6 +31,7 @@ namespace Wice.Utilities
 
         public VisualsTree()
         {
+            ManagedThreadId = Thread.CurrentThread.ManagedThreadId;
             InitializeComponent();
 
             treeViewVisuals.BeforeExpand += OnTreeViewVisualsBeforeExpand;
@@ -44,6 +46,7 @@ namespace Wice.Utilities
 
         protected override bool ShowWithoutActivation => true;
 
+        public int ManagedThreadId { get; }
         public IEnumerable<Window> Windows => WindowsNodes.Select(n => (Window)n.Tag);
         public IEnumerable<TreeNode> WindowsNodes
         {
@@ -93,18 +96,27 @@ namespace Wice.Utilities
 
         protected virtual void OnWindowAdded(Window window)
         {
+            if (ManagedThreadId != window.ManagedThreadId)
+                return;
+
             RefreshWindows();
             window.Resized += OnWindowResized;
         }
 
         protected virtual void OnWindowRemoved(Window window)
         {
+            if (ManagedThreadId != window.ManagedThreadId)
+                return;
+
             RefreshWindows();
             window.Resized -= OnWindowResized;
         }
 
         protected virtual void OnWindowResized(Window window)
         {
+            if (ManagedThreadId != window.ManagedThreadId)
+                return;
+
             if (highlightSelectionToolStripMenuItem.Checked)
             {
                 _bounds?.Update();
@@ -114,7 +126,7 @@ namespace Wice.Utilities
         public virtual void RefreshWindows() => DoWithCurrentLayout(() =>
         {
             treeViewVisuals.Nodes.Clear();
-            foreach (var window in Application.Windows)
+            foreach (var window in Application.AllWindows)
             {
                 AddVisual(window, treeViewVisuals.Nodes);
             }
@@ -255,7 +267,7 @@ namespace Wice.Utilities
             SelectVisual();
         }
 
-        private void CloseApplicationToolStripMenuItem_Click(object sender, EventArgs e) => Application.Exit();
+        private void CloseApplicationToolStripMenuItem_Click(object sender, EventArgs e) => Application.AllExit();
         private void TrackVisualUnderMouseToolStripMenuItem_Click(object sender, EventArgs e) => Capture = true;
         private void RefreshToolStripMenuItem_Click(object sender, EventArgs e) => RefreshWindows();
         private void OnTreeViewVisualsAfterSelect(object sender, TreeViewEventArgs e) => SelectVisual();

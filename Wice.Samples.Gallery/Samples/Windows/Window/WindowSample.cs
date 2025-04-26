@@ -5,7 +5,7 @@ namespace Wice.Samples.Gallery.Samples.Windows.Window
 {
     public class WindowSample : Sample
     {
-        public override string Description => "A simple secondary window. All windows belong to the same Wice application.";
+        public override string Description => "A simple secondary window. All windows in the same UI thread belong to the same Wice application.";
 
         public override void Layout(Visual parent)
         {

@@ -1858,7 +1858,7 @@ public partial class Visual : BaseObject
 
         if (im != VisualPropertyInvalidateModes.None)
         {
-            Application.CheckRunningAsMainThread();
+            CheckRunningAsMainThread();
         }
 
         if (!base.SetPropertyValue(property, value, options))
@@ -1885,6 +1885,17 @@ public partial class Visual : BaseObject
         return true;
     }
 
+    public bool IsRunningAsMainThread
+    {
+        get
+        {
+            var win = Window;
+            return win == null || win.ManagedThreadId == Environment.CurrentManagedThreadId;
+        }
+    }
+
+    public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0029: This method must be called on the UI thread."); }
+
     public virtual void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason? reason = null) => Window?.Invalidate(this, modes, reason);
 
     protected virtual void OnDetachingFromParent(object? sender, EventArgs e) => DetachingFromParent?.Invoke(sender, e);
@@ -1899,7 +1910,7 @@ public partial class Visual : BaseObject
 
     private void OnChildrenCollectionChanged(NotifyCollectionChangedEventArgs e)
     {
-        Application.CheckRunningAsMainThread();
+        CheckRunningAsMainThread();
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Remove:

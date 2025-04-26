@@ -22,7 +22,7 @@ public class TextRenderingParameters
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        var fac = Application.Current.ResourceManager.DWriteFactory.Object;
+        var fac = Application.CurrentResourceManager.DWriteFactory.Object;
         var existing = FromMonitor(monitorHandle);
         var gamma = Gamma ?? existing.Gamma;
         var ec = EnhancedContrast ?? existing.EnhancedContrast;
@@ -64,7 +64,7 @@ public class TextRenderingParameters
             }
             else
             {
-                Application.Current.ResourceManager.DWriteFactory.Object.CreateCustomRenderingParams(gamma.Value, ec.Value, ctl.Value, pg.Value, (DWRITE_RENDERING_MODE)mode.Value, out var drp0).ThrowOnError();
+                Application.CurrentResourceManager.DWriteFactory.Object.CreateCustomRenderingParams(gamma.Value, ec.Value, ctl.Value, pg.Value, (DWRITE_RENDERING_MODE)mode.Value, out var drp0).ThrowOnError();
                 drp = new ComObject<IDWriteRenderingParams>(drp0);
             }
 
@@ -81,7 +81,7 @@ public class TextRenderingParameters
 
     public static TextRenderingParameters FromMonitor(HMONITOR handle)
     {
-        Application.Current.ResourceManager.DWriteFactory.Object.CreateMonitorRenderingParams(handle, out var p).ThrowOnError();
+        Application.CurrentResourceManager.DWriteFactory.Object.CreateMonitorRenderingParams(handle, out var p).ThrowOnError();
         var trp = new TextRenderingParameters
         {
             Gamma = p.GetGamma(),

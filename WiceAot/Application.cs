@@ -1,44 +1,77 @@
-﻿namespace Wice;
+﻿
+namespace Wice;
 
 public partial class Application : IDisposable
 {
     private bool _disposedValue;
-    private static Application? _current;
 
-    public static event EventHandler<ValueEventArgs<Window>>? WindowRemoved;
-    public static event EventHandler<ValueEventArgs<Window>>? WindowAdded;
-    public static event EventHandler? ApplicationExit;
-
-    static Application()
-    {
-        AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
-    }
-
-    private static void OnCurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
-    {
-        if (e.ExceptionObject is Exception error)
-        {
-            AddError(error);
-            var win = _windows.FirstOrDefault()?.Native?.Handle;
-            ShowFatalError(win.GetValueOrDefault());
-        }
-    }
+    public event EventHandler? ApplicationExit;
 
     public Application()
     {
-        if (Interlocked.CompareExchange(ref _current, this, null) != null)
-            throw new WiceException("0006: There can be only one Application instance in a given process.");
+        var apps = _applications;
+        if (apps == null)
+            throw new WiceException("0030: It's not possible to create applications any more.");
 
-        MainThreadId = Environment.CurrentManagedThreadId;
         // no, we can't use Windows.System.DispatcherQueueController.CreateOnDedicatedThread();
         // or compositor will raise an access denied error
         DispatcherQueueController = new WindowsDispatcherQueueController();
         DispatcherQueueController.EnsureOnCurrentThread();
-        ResourceManager = CreateResourceManager;
+
+        apps.AddOrUpdate(Environment.CurrentManagedThreadId, this, (k, o) =>
+        {
+            throw new WiceException("0006: There can be only one Application instance for a given thread.");
+        });
+
+        MainThreadId = Environment.CurrentManagedThreadId;
+        ThreadId = Functions.GetCurrentThreadId();
+        ResourceManager = CreateResourceManager();
     }
 
     public WindowsDispatcherQueueController DispatcherQueueController { get; }
+    public bool ExitOnLastWindowRemoved { get; set; } = true;
+    public bool Exiting { get; private set; }
+    public int MainThreadId { get; }
+    public uint ThreadId { get; }
+    public bool IsRunningAsMainThread => MainThreadId == Environment.CurrentManagedThreadId;
+    public bool IsDisposed => _disposedValue;
     public ResourceManager ResourceManager { get; }
+
+    public IReadOnlyList<Window> Windows
+    {
+        get
+        {
+            lock (_windowsLock)
+            {
+                return [.. _windows.Where(w => w.ManagedThreadId == MainThreadId)];
+            }
+        }
+    }
+
+    public IReadOnlyList<Window> BackgroundWindows
+    {
+        get
+        {
+            lock (_windowsLock)
+            {
+                return [.. _windows.Where(w => w.ManagedThreadId == MainThreadId && w.IsBackground)];
+            }
+        }
+    }
+
+    public IReadOnlyList<Window> NonBackgroundWindows
+    {
+        get
+        {
+            lock (_windowsLock)
+            {
+                return [.. _windows.Where(w => w.ManagedThreadId == MainThreadId && !w.IsBackground)];
+            }
+        }
+    }
+
+    public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0008: This method must be called on the render thread."); }
+    public override string ToString() => MainThreadId + " (" + ThreadId + ")";
 
     public virtual void Run()
     {
@@ -79,66 +112,31 @@ public partial class Application : IDisposable
         ShowFatalError(HWND.Null);
     }
 
-    protected virtual ResourceManager CreateResourceManager => new(this);
-
-    protected virtual void Dispose(bool disposing)
+    public virtual void Exit()
     {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
-                // dispose managed state (managed objects)
-            }
-
-            // free unmanaged resources (unmanaged objects) and override finalizer
-            // set large fields to null
-            _disposedValue = true;
-        }
+        CheckRunningAsMainThread();
+        OnApplicationExit(this, EventArgs.Empty);
+        Functions.PostQuitMessage(0);
     }
 
     ~Application() { Dispose(disposing: false); }
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 
-    private static readonly object _lock = new();
-    private static bool _exiting;
-    private readonly static List<Window> _windows = [];
-    private readonly static List<Exception> _errors = [];
-
-    internal static void AddWindow(Window window)
+    protected virtual void OnApplicationExit(object sender, EventArgs e) => ApplicationExit?.Invoke(sender, e);
+    protected virtual ResourceManager CreateResourceManager()
     {
-        lock (_lock)
-        {
-            _windows.Add(window);
-            Current.ResourceManager.AddWindow(window);
-
-            // default is for new windows to be background (don't prevent to quit)
-            if (_windows.Count > 1)
-            {
-                window.IsBackground = true;
-            }
-
-            WindowAdded?.Invoke(Current, new ValueEventArgs<Window>(window));
-        }
+        CheckRunningAsMainThread();
+        return new ResourceManager(this);
     }
 
-    internal static void RemoveWindow(Window window)
+    protected virtual void Dispose(bool disposing)
     {
-        lock (_lock)
+        if (!_disposedValue)
         {
-            _windows.Remove(window);
-            Current.ResourceManager.RemoveWindow(window);
-            WindowRemoved?.Invoke(Current, new ValueEventArgs<Window>(window));
-
-            if (QuitOnLastWindowRemoved && !_exiting && !_windows.Any(w => !w.IsBackground))
-            {
-                _exiting = true;
-                var backgroundWindows = _windows.Where(w => w.IsBackground).ToArray();
-                foreach (var bw in backgroundWindows)
-                {
-                    bw.Destroy();
-                }
-                Exit();
-            }
+            // note: we don't check thread id here
+            _applications?.TryRemove(Environment.CurrentManagedThreadId, out _);
+            OnApplicationExit(this, EventArgs.Empty);
+            _disposedValue = true;
         }
     }
 
@@ -148,32 +146,69 @@ public partial class Application : IDisposable
     private static bool _useDebugLayer;
 #endif
 
-    public static Application Current
+    internal const uint WM_HOSTQUIT = MessageDecoder.WM_APP + 0x3FFF; // last possible app message
+
+    private static readonly Lock _windowsLock = new();
+    private static readonly Lock _errorsLock = new();
+    private readonly static List<Window> _windows = [];
+    private readonly static List<Exception> _errors = [];
+    private static ConcurrentDictionary<int, Application>? _applications = [];
+
+    public static event EventHandler<ValueEventArgs<Window>>? WindowRemoved;
+    public static event EventHandler<ValueEventArgs<Window>>? WindowAdded;
+    public static event EventHandler? AllApplicationsExit;
+
+    public static Application? Current
     {
         get
         {
-            if (_current == null)
-            {
-                _ = new Application();
-            }
-            return _current!;
+            var apps = _applications;
+            if (apps == null)
+                return null;
+
+            apps.TryGetValue(Environment.CurrentManagedThreadId, out var app);
+            return app;
         }
     }
-    public static Theme CurrentTheme => Current.ResourceManager.Theme;
+
+    public static IReadOnlyList<Window> AllWindows
+    {
+        get
+        {
+            lock (_windowsLock)
+            {
+                return [.. _windows];
+            }
+        }
+    }
+
+    public static ResourceManager CurrentResourceManager => Current?.ResourceManager ?? throw new WiceException("0031: Resource Manager is not available at this time.");
+    public static Theme CurrentTheme => CurrentResourceManager.Theme ?? throw new WiceException("0031: Theme is not available at this time.");
     public static bool UseDebugLayer { get => _useDebugLayer && DXGIFunctions.IsDebugLayerAvailable; set => _useDebugLayer = true; }
-    public static IEnumerable<Window> Windows => _windows;
     public static HMODULE ModuleHandle => Functions.GetModuleHandleW(PWSTR.Null);
     public static bool IsFatalErrorShowing { get; private set; }
-    public static bool QuitOnLastWindowRemoved { get; set; } = true;
+    public static bool ExitAllOnLastWindowRemoved { get; set; } = true;
+    public static bool AllExiting { get; private set; }
 
-    public static int MainThreadId { get; private set; }
-    public static bool IsRunningAsMainThread => MainThreadId == Environment.CurrentManagedThreadId;
-    public static void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0008: This method must be called on the render thread."); }
-
-    public static void Exit()
+    static Application()
     {
-        ApplicationExit?.Invoke(Current, EventArgs.Empty);
-        Functions.PostQuitMessage(0);
+        AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
+    }
+
+    public static void AllExit()
+    {
+        var apps = Interlocked.Exchange(ref _applications, null);
+        if (apps == null)
+            return;
+
+        foreach (var kv in apps)
+        {
+            // call from one thread
+            kv.Value.OnApplicationExit(kv.Value, EventArgs.Empty);
+            Functions.PostThreadMessageW(kv.Value.ThreadId, MessageDecoder.WM_QUIT, IntPtr.Zero, IntPtr.Zero);
+        }
+
+        AllApplicationsExit?.Invoke(null, EventArgs.Empty);
     }
 
     public static bool HasErrors => _errors.Count > 0;
@@ -182,7 +217,7 @@ public partial class Application : IDisposable
         if (error == null)
             return;
 
-        lock (_lock)
+        lock (_errorsLock)
         {
             var ts = error.ToString();
             if (_errors.Any(e => e.ToString() == ts))
@@ -283,5 +318,78 @@ public partial class Application : IDisposable
         return Assembly.GetEntryAssembly()?.GetName().Name ?? "Wice";
     }
 
-    internal const uint WM_HOSTQUIT = MessageDecoder.WM_APP + 0x3FFF; // last possible app message
+    private static void OnCurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        if (e.ExceptionObject is Exception error)
+        {
+            AddError(error);
+            var win = _windows.FirstOrDefault()?.Native?.Handle;
+            ShowFatalError(win.GetValueOrDefault());
+        }
+    }
+
+    internal static void AddWindow(Window window)
+    {
+        lock (_windowsLock)
+        {
+            _windows.Add(window);
+
+            var apps = _applications;
+            if (apps != null)
+            {
+                apps.TryGetValue(window.ManagedThreadId, out var app);
+                if (app != null)
+                {
+                    app.ResourceManager.AddWindow(window);
+
+                    // default is for new windows to be background (don't prevent to quit)
+                    if (app.Windows.Count > 1)
+                    {
+                        window.IsBackground = true;
+                    }
+
+                    WindowAdded?.Invoke(app, new ValueEventArgs<Window>(window));
+                }
+            }
+        }
+    }
+
+    internal static void RemoveWindow(Window window)
+    {
+        lock (_windowsLock)
+        {
+            _windows.Remove(window);
+
+            var apps = _applications;
+            if (apps != null)
+            {
+                apps.TryGetValue(window.ManagedThreadId, out var app);
+                if (app != null)
+                {
+                    WindowRemoved?.Invoke(app, new ValueEventArgs<Window>(window));
+                    app.ResourceManager.RemoveWindow(window);
+                    if (app.ExitOnLastWindowRemoved && !app.Exiting && app.NonBackgroundWindows.Count == 0)
+                    {
+                        app.Exiting = true;
+                        foreach (var bw in app.BackgroundWindows)
+                        {
+                            bw.Destroy();
+                        }
+                        app.Exit();
+                    }
+                }
+            }
+
+            if (ExitAllOnLastWindowRemoved && !AllExiting && !_windows.Any(w => !w.IsBackground))
+            {
+                AllExiting = true;
+                var backgroundWindows = _windows.Where(w => w.IsBackground).ToArray();
+                foreach (var bw in backgroundWindows)
+                {
+                    bw.Destroy();
+                }
+                AllExit();
+            }
+        }
+    }
 }

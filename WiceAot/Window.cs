@@ -71,6 +71,7 @@ public partial class Window : Canvas, ITitleBarParent
     public Window()
     {
         //EnableInvalidationStackDiagnostics = true;
+        ManagedThreadId = Environment.CurrentManagedThreadId;
 
         _caret = new Lazy<Caret>(GetCaret, true);
         Window = this;
@@ -98,6 +99,8 @@ public partial class Window : Canvas, ITitleBarParent
         Application.AddWindow(this);
         IsFocusable = true;
     }
+
+    public int ManagedThreadId { get; }
 
     [Browsable(false)]
     public CompositionGraphicsDevice CompositionDevice => _compositionDevice.Value;
@@ -779,7 +782,7 @@ public partial class Window : Canvas, ITitleBarParent
     public virtual Task RunTaskOnMainThread(Action action, bool startNew = false)
     {
         ArgumentNullException.ThrowIfNull(action);
-        if (!startNew && Application.IsRunningAsMainThread)
+        if (!startNew && IsRunningAsMainThread)
         {
             action();
             return Task.CompletedTask;
@@ -810,12 +813,12 @@ public partial class Window : Canvas, ITitleBarParent
                 buttonsHeight++; // TODO: is this always 1?
 
                 var rc = WindowRect.ToD2D_RECT_F();
-                var path = Application.Current.ResourceManager.D2DFactory.CreatePathGeometry();
+                var path = Application.CurrentResourceManager.D2DFactory.CreatePathGeometry();
 
                 using (var sink = path.Open())
                 {
-                    using (var rect1 = Application.Current.ResourceManager.D2DFactory.CreateRectangleGeometry(new D2D_RECT_F(rc.Size).Deflate(1)))
-                    using (var rect2 = Application.Current.ResourceManager.D2DFactory.CreateRectangleGeometry(new D2D_RECT_F(rc.Width - buttonsWidth, 0, new D2D_SIZE_F(buttonsWidth, buttonsHeight))))
+                    using (var rect1 = Application.CurrentResourceManager.D2DFactory.CreateRectangleGeometry(new D2D_RECT_F(rc.Size).Deflate(1)))
+                    using (var rect2 = Application.CurrentResourceManager.D2DFactory.CreateRectangleGeometry(new D2D_RECT_F(rc.Width - buttonsWidth, 0, new D2D_SIZE_F(buttonsWidth, buttonsHeight))))
                     {
                         rect1.Object.CombineWithGeometry(rect2.Object, D2D1_COMBINE_MODE.D2D1_COMBINE_MODE_EXCLUDE, 0, 0, sink.Object).ThrowOnError();
                     }
@@ -1023,15 +1026,15 @@ public partial class Window : Canvas, ITitleBarParent
 
     private static uint GetMaximumBitmapSize()
     {
-        var window = Application.Windows.FirstOrDefault();
-        if (window == null)
+        var windows = Application.AllWindows;
+        if (windows.Count == 0)
         {
             // early call, use default (experience) value
             _maximumBitmapSize = new Lazy<uint>(GetMaximumBitmapSize, true);
             return 16384;
         }
 
-        var surface = window.CompositionDevice.CreateDrawingSurface(new Size(1, 1), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+        var surface = windows[0].CompositionDevice.CreateDrawingSurface(new Size(1, 1), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
         using var interop = surface.AsComObject<ICompositionDrawingSurfaceInterop>();
         using var dc = interop.BeginDraw<ID2D1DeviceContext>();
         var size = dc.Object.GetMaximumBitmapSize();
@@ -1064,7 +1067,7 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual IComObject<ID2D1Device1> Create2D1Device()
     {
         var dxDev = _d3D11Device.Value.As<IDXGIDevice1>()!; // we don't dispose or we dispose the whole device
-        Application.Current.ResourceManager.D2DFactory.Object.CreateDevice(dxDev.Object, out var dev).ThrowOnError();
+        Application.CurrentResourceManager.D2DFactory.Object.CreateDevice(dxDev.Object, out var dev).ThrowOnError();
         return new ComObject<ID2D1Device1>((ID2D1Device1)dev);
     }
 
@@ -1469,10 +1472,10 @@ public partial class Window : Canvas, ITitleBarParent
 #if DEBUG
     private static void TraceInformation()
     {
-        Application.Trace("Windows Count: " + Application.Windows.Count());
+        Application.Trace("Windows Count: " + Application.AllWindows.Count);
 
         var i = 0;
-        foreach (var window in Application.Windows)
+        foreach (var window in Application.AllWindows)
         {
             Application.Trace(" Window[" + i + "] '" + window.Title + "'");
             var sb = new StringBuilder();
@@ -1483,7 +1486,7 @@ public partial class Window : Canvas, ITitleBarParent
             i++;
         }
 
-        Application.Current.ResourceManager.TraceInformation();
+        Application.Current?.ResourceManager.TraceInformation();
     }
 
     private static void TraceVisual(StringBuilder sb, int indent, Visual visual, bool recursive = true)
@@ -1573,7 +1576,7 @@ public partial class Window : Canvas, ITitleBarParent
     private void ProcessInvalidations()
     {
 #if DEBUG
-        Application.CheckRunningAsMainThread();
+        CheckRunningAsMainThread();
 #endif
 
         if (Application.IsFatalErrorShowing)

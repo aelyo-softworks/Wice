@@ -174,7 +174,7 @@ namespace Wice
                 if (text == null)
                     return null;
 
-                var layout = Application.Current.ResourceManager.CreateTextLayout(GetFormat(), text, 0, maxWidth, maxHeight);
+                var layout = Application.CurrentResourceManager.CreateTextLayout(GetFormat(), text, 0, maxWidth, maxHeight);
                 var metrics = layout.GetMetrics1();
                 if (metrics.heightIncludingTrailingWhitespace > maxHeight)
                 {
@@ -232,7 +232,7 @@ namespace Wice
             {
                 const string sample = "The quick brown fox jumps over the lazy dog";
                 var format = Visual.GetFormat();
-                using (var layout = Application.Current.ResourceManager.CreateTextLayout(format, sample))
+                using (var layout = Application.CurrentResourceManager.CreateTextLayout(format, sample))
                 {
                     var metrics = layout.GetMetrics1();
                     return new D2D_SIZE_F(metrics.width / sample.Length, metrics.height);

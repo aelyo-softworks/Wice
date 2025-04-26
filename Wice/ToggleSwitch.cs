@@ -56,7 +56,7 @@ namespace Wice
 
             _canvas.Arranged += (s, e) =>
             {
-                var geoSource = Application.Current.ResourceManager.GetToggleSwitchGeometrySource(_canvas.ArrangedRect.Width - _path.StrokeThickness, _canvas.ArrangedRect.Height - _path.StrokeThickness, _path.StrokeThickness / 2);
+                var geoSource = Application.CurrentResourceManager.GetToggleSwitchGeometrySource(_canvas.ArrangedRect.Width - _path.StrokeThickness, _canvas.ArrangedRect.Height - _path.StrokeThickness, _path.StrokeThickness / 2);
                 _path.GeometrySource2D = geoSource.GetIGeometrySource2();
 
                 var radius = _canvas.ArrangedRect.Height / 2 - _path.StrokeThickness * 2.5f;

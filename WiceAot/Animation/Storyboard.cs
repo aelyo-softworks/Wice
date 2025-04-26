@@ -1,8 +1,9 @@
-﻿namespace Wice.Animation;
+﻿
+namespace Wice.Animation;
 
 public abstract class Storyboard : AnimationObject
 {
-    private static readonly object _lock = new();
+    private static readonly Lock _lock = new();
 
     public event EventHandler? Stopped;
     public event EventHandler? Starting;

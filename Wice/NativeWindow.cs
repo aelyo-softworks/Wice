@@ -52,7 +52,6 @@ namespace Wice
         public WS_EX ExtendedStyle { get => (WS_EX)GetWindowLong(WindowsConstants.GWL_EXSTYLE).ToInt64(); set => SetWindowLong(WindowsConstants.GWL_EXSTYLE, new IntPtr((int)value)); }
         public bool IsEnabled { get => WindowsFunctions.IsWindowEnabled(Handle); set => WindowsFunctions.EnableWindow(Handle, value); }
         public int ThreadId => WindowsFunctions.GetWindowThreadId(Handle);
-        public int ManagedThreadId { get; internal set; }
         public int ProcessId => WindowsFunctions.GetWindowProcessId(Handle);
         public string ModuleFileName => WindowsFunctions.GetWindowModuleFileName(Handle);
 
@@ -212,9 +211,6 @@ namespace Wice
         public Monitor GetMonitor(MFW flags = MFW.MONITOR_DEFAULTTONULL) => Monitor.FromWindow(Handle, flags);
         public bool IsChild(IntPtr parentHandle) => WindowsFunctions.IsChild(parentHandle, Handle);
         public WDA DisplayAffinity { get => WindowsFunctions.GetWindowDisplayAffinity(Handle); set => WindowsFunctions.SetWindowDisplayAffinity(Handle, value); }
-
-        public bool IsRunningAsMainThread => ManagedThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId;
-        public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0029: This method must be called on the UI thread."); }
 
         public DROPEFFECT DoDragDrop(System.Runtime.InteropServices.ComTypes.IDataObject dataObject, DROPEFFECT allowedEffects)
         {
@@ -689,6 +685,9 @@ namespace Wice
             public IntPtr hRgnBlur;
             public bool fTransitionOnMaximized;
         }
+
+        [DllImport("user32")]
+        internal static extern bool PostThreadMessage(int idThread, int msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32")]
         internal static extern int GetSystemMetricsForDpi(SM index, int dpi);

@@ -23,7 +23,7 @@ namespace Wice
 
             Application = application;
             D2DFactory = D2D1Functions.D2D1CreateFactory1();
-            DWriteFactory = DWriteFunctions.DWriteCreateFactory();
+            DWriteFactory = DWriteFunctions.DWriteCreateFactory(application.MainThreadId != 1 ? DWRITE_FACTORY_TYPE.DWRITE_FACTORY_TYPE_ISOLATED : DWRITE_FACTORY_TYPE.DWRITE_FACTORY_TYPE_SHARED);
             Theme = CreateTheme();
             if (Theme == null)
                 throw new InvalidOperationException();

@@ -13,6 +13,7 @@ public class ApplicationSampleList : SampleList
         get
         {
             yield return new ApplicationSample();
+            yield return new MultipleApplicationSample();
         }
     }
 }

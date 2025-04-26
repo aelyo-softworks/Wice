@@ -35,15 +35,6 @@ namespace Wice
         [Category(CategoryLayout)]
         public Brush LineBrush { get => (Brush)GetPropertyValue(LineBrushProperty); set => SetPropertyValue(LineBrushProperty, value); }
 
-        private IComObject<ID2D1StrokeStyle> GetLinesStroke()
-        {
-            var style = LineStrokeStyle;
-            if (!style.HasValue)
-                return null;
-
-            return Application.Current.ResourceManager.GetStrokeStyle(style.Value);
-        }
-
         protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
         {
             var cols = Columns;

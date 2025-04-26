@@ -404,7 +404,7 @@ public static class UIExtensions
 
     //    return DrawOnSurface(visual, device, (dc) =>
     //    {
-    //        using var layout = Application.Current.ResourceManager.GetTextLayout(format, text);
+    //        using var layout = Application.CurrentResourceManager.GetTextLayout(format, text);
     //        layout.Object.GetMetrics(out var metrics);
     //        return new D2D_SIZE_F(metrics.widthIncludingTrailingWhitespace, metrics.height);
     //    }, options);

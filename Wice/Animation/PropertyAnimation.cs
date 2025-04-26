@@ -57,7 +57,7 @@ namespace Wice.Animation
                 if (target != null)
                 {
                     var win = Window;
-                    if (win != null && !Application.IsRunningAsMainThread && TargetProperty.Options.HasFlag(BaseObjectPropertyOptions.WriteRequiresMainThread))
+                    if (win != null && !win.IsRunningAsMainThread && TargetProperty.Options.HasFlag(BaseObjectPropertyOptions.WriteRequiresMainThread))
                     {
                         win.RunTaskOnMainThread(() =>
                         {

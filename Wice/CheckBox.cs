@@ -28,7 +28,7 @@ namespace Wice
 
             border.Arranged += (s, e) =>
             {
-                var geoSource = Application.Current.ResourceManager.GetCheckButtonGeometrySource(border.ArrangedRect.Width, border.ArrangedRect.Height);
+                var geoSource = Application.CurrentResourceManager.GetCheckButtonGeometrySource(border.ArrangedRect.Width, border.ArrangedRect.Height);
                 path.GeometrySource2D = geoSource.GetIGeometrySource2();
             };
 

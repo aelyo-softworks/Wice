@@ -95,6 +95,7 @@ namespace Wice
         public Window()
         {
             //EnableInvalidationStackDiagnostics = true;
+            ManagedThreadId = Thread.CurrentThread.ManagedThreadId;
 
             _caret = new Lazy<Caret>(GetCaret, true);
             Window = this;
@@ -123,6 +124,8 @@ namespace Wice
             Application.AddWindow(this);
             IsFocusable = true;
         }
+
+        public int ManagedThreadId { get; }
 
         [Browsable(false)]
         public CompositionGraphicsDevice CompositionDevice => _compositionDevice.Value;
@@ -813,7 +816,7 @@ namespace Wice
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
-            if (!startNew && Application.IsRunningAsMainThread)
+            if (!startNew && IsRunningAsMainThread)
             {
                 action();
                 return Task.CompletedTask;
@@ -844,12 +847,12 @@ namespace Wice
                     buttonsHeight++; // TODO: is this always 1?
 
                     var rc = WindowRect.ToD2D_RECT_F();
-                    var path = Application.Current.ResourceManager.D2DFactory.CreatePathGeometry();
+                    var path = Application.CurrentResourceManager.D2DFactory.CreatePathGeometry();
 
                     using (var sink = path.Open())
                     {
-                        using (var rect1 = Application.Current.ResourceManager.D2DFactory.CreateRectangleGeometry(new D2D_RECT_F(rc.Size).Deflate(1)))
-                        using (var rect2 = Application.Current.ResourceManager.D2DFactory.CreateRectangleGeometry(new D2D_RECT_F(rc.Width - buttonsWidth, 0, new D2D_SIZE_F(buttonsWidth, buttonsHeight))))
+                        using (var rect1 = Application.CurrentResourceManager.D2DFactory.CreateRectangleGeometry(new D2D_RECT_F(rc.Size).Deflate(1)))
+                        using (var rect2 = Application.CurrentResourceManager.D2DFactory.CreateRectangleGeometry(new D2D_RECT_F(rc.Width - buttonsWidth, 0, new D2D_SIZE_F(buttonsWidth, buttonsHeight))))
                         {
                             rect1.Object.CombineWithGeometry(rect2.Object, D2D1_COMBINE_MODE.D2D1_COMBINE_MODE_EXCLUDE, IntPtr.Zero, 0, sink.Object).ThrowOnError();
                         }
@@ -1053,7 +1056,7 @@ namespace Wice
 
         private static uint GetMaximumBitmapSize()
         {
-            var window = Application.Windows.FirstOrDefault();
+            var window = Application.AllWindows.FirstOrDefault();
             if (window == null)
             {
                 // early call, use default (experience) value
@@ -1111,7 +1114,7 @@ namespace Wice
         protected virtual IComObject<ID2D1Device1> Create2D1Device()
         {
             var dxDev = _d3D11Device.Value.As<IDXGIDevice1>(); // we don't dispose or we dispose the whole device
-            Application.Current.ResourceManager.D2DFactory.Object.CreateDevice(dxDev, out var dev).ThrowOnError();
+            Application.CurrentResourceManager.D2DFactory.Object.CreateDevice(dxDev, out var dev).ThrowOnError();
             return new ComObject<ID2D1Device1>((ID2D1Device1)dev);
         }
 
@@ -1519,10 +1522,10 @@ namespace Wice
 #if DEBUG
         private static void TraceInformation()
         {
-            Application.Trace("Windows Count: " + Application.Windows.Count());
+            Application.Trace("Windows Count: " + Application.AllWindows.Count());
 
             var i = 0;
-            foreach (var window in Application.Windows)
+            foreach (var window in Application.AllWindows)
             {
                 Application.Trace(" Window[" + i + "] '" + window.Title + "'");
                 var sb = new StringBuilder();
@@ -1533,7 +1536,7 @@ namespace Wice
                 i++;
             }
 
-            Application.Current.ResourceManager.TraceInformation();
+            Application.CurrentResourceManager.TraceInformation();
         }
 
         private static void TraceVisual(StringBuilder sb, int indent, Visual visual, bool recursive = true)
@@ -1623,7 +1626,7 @@ namespace Wice
         private void ProcessInvalidations()
         {
 #if DEBUG
-            Application.CheckRunningAsMainThread();
+            CheckRunningAsMainThread();
 #endif
 
             if (Application.IsFatalErrorShowing)
@@ -1904,7 +1907,6 @@ namespace Wice
                 throw new Win32Exception(Marshal.GetLastWin32Error());
 
             var native = NativeWindow.FromHandle(hwnd);
-            native.ManagedThreadId = Thread.CurrentThread.ManagedThreadId;
             if (_iconHandle != IntPtr.Zero)
             {
                 native.IconHandle = _iconHandle;
@@ -3328,7 +3330,7 @@ namespace Wice
                         int time;
                         if (win.CurrentToolTip != null)
                         {
-                            time = Application.CurrentTheme.ToolTipReshowTime;
+                            time = Application.CurrentTheme?.ToolTipReshowTime ?? 0;
                             if (time <= 0)
                             {
                                 time = WindowsFunctions.GetDoubleClickTime() / 5;
@@ -3336,7 +3338,7 @@ namespace Wice
                         }
                         else
                         {
-                            time = Application.CurrentTheme.ToolTipInitialTime;
+                            time = Application.CurrentTheme?.ToolTipInitialTime ?? 0;
                             if (time <= 0)
                             {
                                 time = WindowsFunctions.GetDoubleClickTime();

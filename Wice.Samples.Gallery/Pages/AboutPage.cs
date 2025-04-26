@@ -19,7 +19,7 @@ namespace Wice.Samples.Gallery.Pages
             logo.HorizontalAlignment = Alignment.Near;
             logo.VerticalAlignment = Alignment.Near;
             logo.Stretch = Stretch.None;
-            logo.Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), typeof(Program).Namespace + ".Resources.aelyo_flat.png");
+            logo.Source = Application.CurrentResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), typeof(Program).Namespace + ".Resources.aelyo_flat.png");
             stack.Children.Add(logo);
 
             // about & copyright

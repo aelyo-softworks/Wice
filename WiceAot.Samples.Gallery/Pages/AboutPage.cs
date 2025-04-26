@@ -14,7 +14,7 @@ public partial class AboutPage : Page
             HorizontalAlignment = Alignment.Near,
             VerticalAlignment = Alignment.Near,
             Stretch = Stretch.None,
-            Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), typeof(Program).Namespace + ".Resources.aelyo_flat.png")!
+            Source = Application.CurrentResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), typeof(Program).Namespace + ".Resources.aelyo_flat.png")!
         };
         stack.Children.Add(logo);
 

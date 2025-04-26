@@ -1,10 +1,11 @@
-﻿namespace Wice.Utilities;
+﻿
+namespace Wice.Utilities;
 
 public class ConcurrentQuadTree<T> : IQuadTree<T> where T : notnull
 {
     private readonly QuadTree<T>.Quadrant _root;
     private readonly Dictionary<T, QuadTree<T>.Quadrant> _table;
-    private readonly object _lock = new();
+    private readonly Lock _lock = new();
 
     public ConcurrentQuadTree(D2D_RECT_F bounds)
         : this(bounds, null)
@@ -98,7 +99,7 @@ public class ConcurrentQuadTree<T> : IQuadTree<T> where T : notnull
         T[] nodes;
         lock (_lock)
         {
-            nodes = _root.GetIntersectingNodes(bounds).Select(node => node.Node).ToArray();
+            nodes = [.. _root.GetIntersectingNodes(bounds).Select(node => node.Node)];
         }
 
         foreach (var node in nodes)

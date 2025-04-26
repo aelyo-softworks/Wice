@@ -161,6 +161,7 @@
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\DragDropSampleList.cs" Link="Samples\Misc\DragDropSampleList.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\DragDrop\DropSourceSample.cs" Link="Samples\Misc\DragDrop\DropSourceSample.cs" />
     <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\DragDrop\DropTargetSample.cs" Link="Samples\Misc\DragDrop\DropTargetSample.cs" />
+    <Compile Include="..\Wice.Samples.Gallery\Samples\Misc\Application\MultipleApplicationSample.cs" Link="Samples\Misc\Application\MultipleApplicationSample.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.17.2" />

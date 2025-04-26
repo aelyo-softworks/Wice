@@ -121,7 +121,7 @@ namespace Wice
         protected virtual void Invalidate(string propertyName, VisualPropertyInvalidateModes modes = VisualPropertyInvalidateModes.Measure)
         {
             OnPropertyChanging(propertyName);
-            Application.CheckRunningAsMainThread();
+            CheckRunningAsMainThread();
             Invalidate(modes, new InvalidateReason(GetType()));
         }
 

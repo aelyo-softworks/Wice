@@ -1233,7 +1233,7 @@ namespace Wice.Tests
             //image.HorizontalAlignment = Alignment.Center;
             //image.VerticalAlignment = Alignment.Center;
             //image.Stretch = Stretch.None;
-            //image.Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), GetType().Namespace + ".Resources.aelyo_flat.png");
+            //image.Source = Application.CurrentResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), GetType().Namespace + ".Resources.aelyo_flat.png");
             //b1.Children.Add(image);
 
             //var textBox = new TextBox();
@@ -1380,7 +1380,7 @@ namespace Wice.Tests
                 if (_first)
                 {
                     _first = false;
-                    var geo = Application.Current.ResourceManager.D2DFactory.CreatePathGeometry<ID2D1PathGeometry1>();
+                    var geo = Application.CurrentResourceManager.D2DFactory.CreatePathGeometry<ID2D1PathGeometry1>();
 
                     float margin = 10;
                     float width = canvas.ArrangedRect.Width - 2 * margin;
@@ -1760,7 +1760,7 @@ namespace Wice.Tests
             image.HorizontalAlignment = Alignment.Center;
             image.VerticalAlignment = Alignment.Center;
             image.Stretch = Stretch.None;
-            image.Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), GetType().Namespace + ".Resources.aelyo_flat.png");
+            image.Source = Application.CurrentResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), GetType().Namespace + ".Resources.aelyo_flat.png");
             dlgPanel.Children.Add(image);
 
             var tb = new TextBox();
@@ -1783,7 +1783,7 @@ namespace Wice.Tests
 
             var image = new Image();
             image.Name = "image";
-            image.Source = Application.Current.ResourceManager.GetWicBitmapSource(@"Resources\rainier.jpg");
+            image.Source = Application.CurrentResourceManager.GetWicBitmapSource(@"Resources\rainier.jpg");
             scrollView.Viewer.Child = image;
 
             KeyDown += (s, e) =>
@@ -1982,8 +1982,8 @@ namespace Wice.Tests
             //img.HoverBackgroundColor = _D3DCOLORVALUE.Wheat;
             //img.Margin = 10;
             //img.InterpolationMode = D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC;
-            //img.Source = Application.Current.ResourceManager.GetWicBitmapSource(@"Resources\rainier.jpg");
-            img.Source = Application.Current.ResourceManager.GetWicBitmapSource(@"d:\downloads\dog.jpg");
+            //img.Source = Application.CurrentResourceManager.GetWicBitmapSource(@"Resources\rainier.jpg");
+            img.Source = Application.CurrentResourceManager.GetWicBitmapSource(@"d:\downloads\dog.jpg");
         }
 
         public void AddUniformColorGrid(int size)

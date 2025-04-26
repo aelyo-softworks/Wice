@@ -27,7 +27,7 @@ namespace Wice
             if (context == null)
                 throw new ArgumentNullException(nameof(context));
 
-            var fac = Application.Current.ResourceManager.DWriteFactory.Object;
+            var fac = Application.CurrentResourceManager.DWriteFactory.Object;
             var existing = FromMonitor(monitorHandle);
             var gamma = Gamma ?? existing.Gamma;
             var ec = EnhancedContrast ?? existing.EnhancedContrast;
@@ -61,7 +61,7 @@ namespace Wice
                 }
                 else
                 {
-                    Application.Current.ResourceManager.DWriteFactory.Object.CreateCustomRenderingParams(gamma.Value, ec.Value, ctl.Value, pg.Value, (DWRITE_RENDERING_MODE)mode.Value, out drp).ThrowOnError();
+                    Application.CurrentResourceManager.DWriteFactory.Object.CreateCustomRenderingParams(gamma.Value, ec.Value, ctl.Value, pg.Value, (DWRITE_RENDERING_MODE)mode.Value, out drp).ThrowOnError();
                 }
                 context.SetTextRenderingParams(drp);
             }
@@ -76,7 +76,7 @@ namespace Wice
 
         public static TextRenderingParameters FromMonitor(IntPtr handle)
         {
-            Application.Current.ResourceManager.DWriteFactory.Object.CreateMonitorRenderingParams(handle, out var p).ThrowOnError();
+            Application.CurrentResourceManager.DWriteFactory.Object.CreateMonitorRenderingParams(handle, out var p).ThrowOnError();
             var trp = new TextRenderingParameters();
             trp.Gamma = p.GetGamma();
             trp.EnhancedContrast = p.GetEnhancedContrast();

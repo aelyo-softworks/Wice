@@ -156,7 +156,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         get
         {
             var dic = new Dictionary<string, nint>();
-            PROPENUMPROCW enumProc = (h, p1, p2) =>
+            BOOL enumProc(HWND h, PWSTR p1, HANDLE p2)
             {
                 var value = Functions.GetPropW(h, p1);
                 var s = p1.ToString();
@@ -165,7 +165,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
                     dic[s] = value;
                 }
                 return true;
-            };
+            }
             Functions.EnumPropsW(Handle, enumProc);
             return dic.AsReadOnly();
         }
@@ -256,7 +256,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public DirectN.Extensions.Utilities.Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => DirectN.Extensions.Utilities.Monitor.FromWindow(Handle, flags);
     public bool IsChild(HWND parentHandle) => Functions.IsChild(parentHandle, Handle);
 
-    public bool IsRunningAsMainThread => ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
+    public bool IsRunningAsMainThread => ManagedThreadId == Environment.CurrentManagedThreadId;
     public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0029: This method must be called on the UI thread."); }
 
     public int ShellAbout(string? text = null, string? otherStuff = null)

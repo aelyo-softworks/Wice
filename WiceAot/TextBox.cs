@@ -1,4 +1,5 @@
-﻿namespace Wice;
+﻿
+namespace Wice;
 
 public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IValueable, IPasswordCapable
 {
@@ -31,9 +32,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public static VisualProperty FontSizeProperty { get; } = VisualProperty.Add<float?>(typeof(TextBox), nameof(FontSize), VisualPropertyInvalidateModes.Measure);
     public static VisualProperty TextRenderingParametersProperty { get; } = VisualProperty.Add<TextRenderingParameters>(typeof(TextBox), nameof(TextRenderingParameters), VisualPropertyInvalidateModes.Render);
     public static VisualProperty PasswordCharProperty { get; } = VisualProperty.Add<char?>(typeof(TextBox), nameof(PasswordCharacter), VisualPropertyInvalidateModes.Measure);
-    public static VisualProperty ClipTextProperty = VisualProperty.Add(typeof(Visual), nameof(ClipText), VisualPropertyInvalidateModes.Render, true);
+    public static VisualProperty ClipTextProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(ClipText), VisualPropertyInvalidateModes.Render, true);
 
-    private readonly object _rangesLock = new();
+    private readonly Lock _rangesLock = new();
     private readonly ConcurrentDictionary<FontRangeType, FontRanges> _ranges = new();
 
     // cache
@@ -600,7 +601,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     internal IComObject<IDWriteTextFormat> GetFormat()
     {
-        var format = Application.Current.ResourceManager.GetTextFormat(this)!;
+        var format = Application.CurrentResourceManager.GetTextFormat(this)!;
         //Application.Trace(this + " fontsize:" + format.Object.GetFontSize());
         return format;
     }
@@ -636,7 +637,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
         _rendered = false;
         _layout?.Dispose();
-        _layout = Application.Current.ResourceManager.CreateTextLayout(GetFormat(), text, 0, maxWidth, maxHeight);
+        _layout = Application.CurrentResourceManager.CreateTextLayout(GetFormat(), text, 0, maxWidth, maxHeight);
 
         if (_layout.Object is IDWriteTextLayout2 layout2)
         {
@@ -1447,7 +1448,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         _origin.y = Math.Min(0, y);
     }
 
-    private float GetFontSize() => Application.Current.ResourceManager.GetFontSize(FontSize);
+    private float GetFontSize() => Application.CurrentResourceManager.GetFontSize(FontSize);
 
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {
@@ -1625,7 +1626,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
             if (pos > 0)
             {
-                text = text.Substring(0, pos);
+                text = text[..pos];
             }
         }
 
@@ -1729,7 +1730,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         var layout = CheckLayout(true)!;
         var w = layout.Object.GetMaxWidth();
         var h = layout.Object.GetMaxHeight();
-        return Application.Current.ResourceManager.GetTextLayout(layout.Object, text, maxWidth: w, maxHeight: h);
+        return Application.CurrentResourceManager.GetTextLayout(layout.Object, text, maxWidth: w, maxHeight: h);
     }
 
     private static void CopyGlobalProperties(IDWriteTextLayout oldLayout, IDWriteTextLayout newLayout)
@@ -1985,7 +1986,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     private bool SetSelection(TextBoxSetSelection moveMode, uint? advance, bool extendSelection, bool updateCaretFormat = true)
     {
-        Application.CheckRunningAsMainThread();
+        CheckRunningAsMainThread();
         // Moves the caret relatively or absolutely, optionally extending the selection range (for example, when shift is held).
         uint line;// = uint.MaxValue; // current line number, needed by a few modes
         uint absolutePosition = _charPosition + _charPositionOffset;

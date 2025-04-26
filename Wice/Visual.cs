@@ -1908,7 +1908,7 @@ namespace Wice
 
             if (im != VisualPropertyInvalidateModes.None)
             {
-                Application.CheckRunningAsMainThread();
+                CheckRunningAsMainThread();
             }
 
             if (!base.SetPropertyValue(property, value, options))
@@ -1935,6 +1935,17 @@ namespace Wice
             return true;
         }
 
+        public bool IsRunningAsMainThread
+        {
+            get
+            {
+                var win = Window;
+                return win == null || win.ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
+            }
+        }
+
+        public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0029: This method must be called on the UI thread."); }
+
         public virtual void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason reason = null) => Window?.Invalidate(this, modes, reason);
 
         protected virtual void OnDetachingFromParent(object sender, EventArgs e) => DetachingFromParent?.Invoke(sender, e);
@@ -1949,7 +1960,7 @@ namespace Wice
 
         private void OnChildrenCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            Application.CheckRunningAsMainThread();
+            CheckRunningAsMainThread();
 
             switch (e.Action)
             {

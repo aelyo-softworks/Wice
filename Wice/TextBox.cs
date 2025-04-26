@@ -612,7 +612,7 @@ namespace Wice
 
         internal IComObject<IDWriteTextFormat> GetFormat()
         {
-            var format = Application.Current.ResourceManager.GetTextFormat(this);
+            var format = Application.CurrentResourceManager.GetTextFormat(this);
             //Application.Trace(this + " fontsize:" + format.Object.GetFontSize());
             return format;
         }
@@ -650,7 +650,7 @@ namespace Wice
 
             _rendered = false;
             _layout?.Dispose();
-            _layout = Application.Current.ResourceManager.CreateTextLayout(GetFormat(), text, 0, maxWidth, maxHeight);
+            _layout = Application.CurrentResourceManager.CreateTextLayout(GetFormat(), text, 0, maxWidth, maxHeight);
 
             if (_layout.Object is IDWriteTextLayout2 layout2)
             {
@@ -1453,7 +1453,7 @@ namespace Wice
             _origin.y = Math.Min(0, y);
         }
 
-        private float GetFontSize() => Application.Current.ResourceManager.GetFontSize(FontSize);
+        private float GetFontSize() => Application.CurrentResourceManager.GetFontSize(FontSize);
 
         protected override void OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -1736,7 +1736,7 @@ namespace Wice
             var layout = CheckLayout(true);
             var w = layout.Object.GetMaxWidth();
             var h = layout.Object.GetMaxHeight();
-            return Application.Current.ResourceManager.GetTextLayout(layout.Object, text, maxWidth: w, maxHeight: h);
+            return Application.CurrentResourceManager.GetTextLayout(layout.Object, text, maxWidth: w, maxHeight: h);
         }
 
         private static void CopyGlobalProperties(IDWriteTextLayout oldLayout, IDWriteTextLayout newLayout)
@@ -1999,7 +1999,7 @@ namespace Wice
 
         private bool SetSelection(TextBoxSetSelection moveMode, uint? advance, bool extendSelection, bool updateCaretFormat = true)
         {
-            Application.CheckRunningAsMainThread();
+            CheckRunningAsMainThread();
             var layout = CheckLayout(false);
             if (layout == null)
                 return false;

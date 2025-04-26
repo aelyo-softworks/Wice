@@ -41,7 +41,7 @@ namespace Wice
             var size = (Child.ArrangedRect - Child.Margin).Size;
             var open = IsArrowOpen;
             var type = Dock.GetDockType(this);
-            var geoSource = Application.Current.ResourceManager.GetScrollBarButtonGeometrySource(type, size.width, ArrowRatio, open);
+            var geoSource = Application.CurrentResourceManager.GetScrollBarButtonGeometrySource(type, size.width, ArrowRatio, open);
             if (geoSource.Equals(_lastGeometrySource2D))
                 return;
 

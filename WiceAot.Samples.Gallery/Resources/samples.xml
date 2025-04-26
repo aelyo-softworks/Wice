@@ -893,7 +893,7 @@ gma warning restore IDE0017 // Simplify object initialization
         InterpolationMode = D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC,
 
         // load from .NET embedded resource
-        Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.rainier.jpg")!
+        Source = Application.CurrentResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.rainier.jpg")!
     };
 
     // set the scroll viewer's content
@@ -1068,7 +1068,7 @@ gma warning restore IDE0017 // Simplify object initialization
     img.InterpolationMode = D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC;
 
     // load from .NET embedded resource
-    img.Source = Application.Current.ResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.rainier.jpg")!;
+    img.Source = Application.CurrentResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.rainier.jpg")!;
 }</sample>
   <sample namespace="Samples.Media.Shape.EllipseRectangleShapeSample">void Layout(Visual parent)
 {
@@ -1163,6 +1163,33 @@ gma warning restore IDE0017 // Simplify object initialization
             dw.Run();
         }
     }
+}</sample>
+  <sample namespace="Samples.Misc.Application.MultipleApplicationSample">void Layout(Visual parent)
+{
+    var btn = new Button();
+    btn.Text.Text = "Open new Window in a new Application";
+    btn.Click += (s, e) =&gt;
+    {
+        TaskUtilities.RunWithNewSTAThread(() =&gt;
+        {
+            // create another application in the same process
+            using var dw = new Application();
+            // add (main) window to application
+            // this window is not background (by default) so it will outlive the main gallery application window
+            // and will need to be closed separately to end the process
+            var win = new Window
+            {
+                Title = "Window in another application (Thread " + Environment.CurrentManagedThreadId + ")",
+                WindowsFrameMode = WindowsFrameMode.None
+            };
+            win.Children.Add(new TitleBar { IsMain = true });
+            win.ResizeClient(400, 400);
+            win.Center();
+            win.Show();
+            dw.Run();
+        });
+    };
+    parent.Children.Add(btn);
 }</sample>
   <sample namespace="Samples.Misc.DragDrop.DropSourceSample">void Layout(Visual parent)
 {
@@ -1373,8 +1400,10 @@ gma warning restore IDE0017 // Simplify object initialization
 }</sample>
   <sample namespace="Samples.Text.TextBox.ColorFontTextBoxSample">void Layout(Visual parent)
 {
-    var tb = new TextBox();
-    tb.IsFocusable = true;
+    var tb = new TextBox
+    {
+        IsFocusable = true
+    };
     parent.Children.Add(tb);
     Dock.SetDockType(tb, DockType.Top);
 

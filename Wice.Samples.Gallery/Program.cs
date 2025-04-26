@@ -10,38 +10,10 @@ namespace Wice.Samples.Gallery
         private static readonly string _storageDirectoryPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), typeof(Program).Namespace);
         public static string StorageDirectoryPath => _storageDirectoryPath;
 
-        [STAThread] // Wice doesn't require this but it's needed for Drag&Drop operations
+        [STAThread] // Wice doesn't require this but it's needed for Drag & Drop operations
         static void Main()
         {
-
-#if DEBUG
-            Application.Logger = UILogger.Instance;
-            MFMediaTypeWrapper.Logger = DirectNLogger.Instance;
-#else
-            Audit.StartAuditing(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), typeof(Program).Namespace, "logs"));
-            Audit.FlushRecords();
-#endif
-
-            try
-            {
-                if (Debugger.IsAttached)
-                {
-                    newWindow();
-                }
-                else
-                {
-                    try
-                    {
-                        newWindow();
-                    }
-                    catch (Exception e)
-                    {
-                        Application.AddError(e);
-                        Application.ShowFatalError(IntPtr.Zero);
-                    }
-                }
-            }
-            finally
+            Application.AllApplicationsExit += (s, e) =>
             {
 #if DEBUG
                 ComObjectLogger.Instance.Dispose();
@@ -50,6 +22,30 @@ namespace Wice.Samples.Gallery
 #else
                 Audit.StopAuditing();
 #endif
+            };
+#if DEBUG
+            Application.Logger = UILogger.Instance;
+            MFMediaTypeWrapper.Logger = DirectNLogger.Instance;
+#else
+            Audit.StartAuditing(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), typeof(Program).Namespace, "logs"));
+            Audit.FlushRecords();
+#endif
+
+            if (Debugger.IsAttached)
+            {
+                newWindow();
+            }
+            else
+            {
+                try
+                {
+                    newWindow();
+                }
+                catch (Exception e)
+                {
+                    Application.AddError(e);
+                    Application.ShowFatalError(IntPtr.Zero);
+                }
             }
 
             void newWindow()

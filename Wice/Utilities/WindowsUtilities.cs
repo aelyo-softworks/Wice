@@ -9,9 +9,12 @@ namespace Wice.Utilities
     {
         private static readonly ConcurrentDictionary<string, string> _loadedStrings = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        [DllImport("kernel32", CharSet = CharSet.Auto)]
 #pragma warning disable CA1401 // P/Invokes should not be visible
+        [DllImport("kernel32", CharSet = CharSet.Auto)]
         public static extern bool AllocConsole();
+
+        [DllImport("kernel32")]
+        public static extern int GetCurrentThreadId();
 
         [DllImport("kernel32", CharSet = CharSet.Auto)]
         public static extern bool FreeConsole();

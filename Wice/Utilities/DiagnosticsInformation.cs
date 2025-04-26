@@ -102,17 +102,17 @@ namespace Wice.Utilities
         public string DefaultTextServicesGeneratorVersion { get; } = RichTextBox.GetDefaultTextServicesGeneratorVersion();
 
         [Category("Graphics")]
-        public string WindowDpiAwareness => (_window ?? Application.Windows.FirstOrDefault())?.Native.DpiAwarenessDescription;
+        public string WindowDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.Native.DpiAwarenessDescription;
 
         [Category("Graphics")]
-        public int WindowDpiFromDpiAwareness => (_window ?? Application.Windows.FirstOrDefault())?.Native.DpiFromDpiAwareness ?? 96;
+        public int WindowDpiFromDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.Native.DpiFromDpiAwareness ?? 96;
 
         [Category("Graphics")]
         public string WindowMonitor
         {
             get
             {
-                var monitor = (_window ?? Application.Windows.FirstOrDefault())?.Monitor;
+                var monitor = (_window ?? Application.AllWindows.FirstOrDefault())?.Monitor;
                 if (monitor == null)
                     return null;
 

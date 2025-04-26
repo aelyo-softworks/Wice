@@ -58,7 +58,7 @@ public partial class TitleBarButton : ButtonBase
         base.OnArranged(sender, e);
         var size = Path.ArrangedRect;
         var geoSize = size.Height;
-        var geoSource = Application.Current.ResourceManager.GetTitleBarButtonGeometrySource(ButtonType, geoSize);
+        var geoSource = Application.CurrentResourceManager.GetTitleBarButtonGeometrySource(ButtonType, geoSize);
         if (geoSource.Equals(_lastGeometrySource2D))
             return;
 
