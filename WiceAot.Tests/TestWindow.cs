@@ -24,10 +24,11 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
+        Pager();
         //ShowProgressBar();
         //LongRunWithCursor();
         //LargeRichTextBox();
-        RichTextBoxFont();
+        //RichTextBoxFont();
         //LargeText();
         //LargeTextSv();
         //BigText();
@@ -53,6 +54,63 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void Pager()
+    {
+        var lines = File.ReadAllLines(@"Resources\MobyDickNumbered.txt");
+
+        var pagesCount = lines.Length / 1000;
+        if (lines.Length % 1000 != 0)
+        {
+            pagesCount++;
+        }
+
+        var pages = new string[pagesCount];
+        for (var i = 0; i < pagesCount; i++)
+        {
+            pages[i] = string.Join(Environment.NewLine, lines.Skip(i * lines.Length / pagesCount).Take(lines.Length / pagesCount));
+        }
+
+        var dock = new Dock { LastChildFill = true, HorizontalAlignment = Alignment.Stretch };
+        Children.Add(dock);
+
+        var buttons = new Stack { Orientation = Orientation.Horizontal, HorizontalAlignment = Alignment.Stretch };
+        Dock.SetDockType(buttons, DockType.Top);
+        dock.Children.Add(buttons);
+
+        var sv = new ScrollViewer();
+        sv.Viewer.IsWidthUnconstrained = false;
+        Dock.SetDockType(sv, DockType.Bottom);
+        dock.Children.Add(sv);
+
+        var rtb = new RichTextBox();
+
+        rtb.Document!.Object.GetDocumentFont(out var obj).ThrowOnError();
+        using var font = new ComObject<ITextFont2>(obj);
+        font.Object.SetSize(12).ThrowOnError();
+        using var bstr = new DirectN.Extensions.Utilities.Bstr("Consolas");
+        font.Object.SetName(bstr).ThrowOnError();
+        rtb.Document.Object.SetDocumentFont(font.Object).ThrowOnError();
+
+        rtb.VerticalAlignment = Alignment.Near;
+        rtb.Text = pages[0];
+        sv.Viewer.Child = rtb;
+
+        foreach (var i in Enumerable.Range(0, pagesCount))
+        {
+            var btn = new Button { Margin = 8 };
+            btn.Text.Text = (i + 1).ToString();
+            btn.Click += (s, e) =>
+            {
+                rtb.Text = pages[i];
+
+                // optionally scroll to left/top
+                //sv.HorizontalOffset = 0;
+                //sv.VerticalOffset = 0;
+            };
+            buttons.Children.Add(btn);
+        }
     }
 
     public void LargeRichTextBox()

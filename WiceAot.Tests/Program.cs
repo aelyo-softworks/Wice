@@ -34,7 +34,7 @@ internal class Program
         {
             var win = new TestWindow { Title = "Wice" };
             //WindowsUtilities.AllocConsole();
-            win.ResizeClient(400, 900);
+            win.ResizeClient(1000, 800);
             win.Center();
             win.Show();
             win.SetForeground();

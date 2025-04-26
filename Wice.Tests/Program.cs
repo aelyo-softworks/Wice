@@ -60,7 +60,7 @@ namespace Wice.Tests
             {
                 var win = new TestWindow { Title = "Wice" };
                 //WindowsUtilities.AllocConsole();
-                win.ResizeClient(400, 900);
+                win.ResizeClient(800, 600);
                 win.Center();
                 win.Show();
                 win.SetForeground();

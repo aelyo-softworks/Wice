@@ -46,13 +46,14 @@ namespace Wice.Tests
             //AddCounter(1);
             //AddDrawTextCounter(10);
 
+            Pager();
             //AddScrollableReadOnlyText();
             //AddDrawText(this);
             //AddReadOnlyText();
             //AddReadOnlyTexts();
             //AddEditableTexts();
             //LargeText();
-            LargeTextSv();
+            //LargeTextSv();
             //BigText();
             //BigTextSv();
             //DisplayTime();
@@ -203,6 +204,53 @@ namespace Wice.Tests
                 IsFocusable = true,
             };
             Children.Add(tb);
+        }
+
+        public void Pager()
+        {
+            var lines = File.ReadAllLines(@"Resources\AliceInWonderlandNumbered.txt");
+
+            var pagesCount = lines.Length / 1000;
+            if (lines.Length % 1000 != 0)
+            {
+                pagesCount++;
+            }
+
+            var pages = new string[pagesCount];
+            for (var i = 0; i < pagesCount; i++)
+            {
+                pages[i] = string.Join(Environment.NewLine, lines.Skip(i * lines.Length / pagesCount).Take(lines.Length / pagesCount));
+            }
+
+            var dock = new Dock { LastChildFill = true, HorizontalAlignment = Alignment.Stretch };
+            Children.Add(dock);
+
+            var buttons = new Stack { Orientation = Orientation.Horizontal, HorizontalAlignment = Alignment.Stretch };
+            Dock.SetDockType(buttons, DockType.Top);
+            dock.Children.Add(buttons);
+
+            var sv = new ScrollViewer();
+            sv.Viewer.IsWidthUnconstrained = false;
+            Dock.SetDockType(sv, DockType.Bottom);
+            dock.Children.Add(sv);
+
+            var rtb = new RichTextBox();
+            rtb.VerticalAlignment = Alignment.Near;
+            rtb.Text = pages[0];
+            sv.Viewer.Child = rtb;
+
+            foreach (var i in Enumerable.Range(0, pagesCount))
+            {
+                var btn = new Button { Margin = 10 };
+                btn.Text.Text = (i + 1).ToString();
+                btn.Click += (s, e) =>
+                {
+                    rtb.Text = pages[i];
+                    //sv.HorizontalOffset = 0;
+                    //sv.VerticalOffset = 0;
+                };
+                buttons.Children.Add(btn);
+            }
         }
 
         public void LargeTextSv()
