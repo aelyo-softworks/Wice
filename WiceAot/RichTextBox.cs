@@ -69,47 +69,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
             return true;
         }
 
-        public unsafe override HRESULT TxGetPropertyBits(uint dwMask, nint pdwBits)
-        {
-            var mask = (TXTBIT)dwMask;
-            if (pdwBits == 0)
-                return Constants.E_INVALIDARG;
-
-            var bits = TXTBIT.TXTBIT_RICHTEXT | TXTBIT.TXTBIT_D2DDWRITE;
-            if (Options.HasFlag(TextHostOptions.WordWrap))
-            {
-                bits |= TXTBIT.TXTBIT_WORDWRAP;
-            }
-
-            if (Options.HasFlag(TextHostOptions.Vertical))
-            {
-                bits |= TXTBIT.TXTBIT_VERTICAL;
-            }
-
-            if (Options.HasFlag(TextHostOptions.ReadOnly))
-            {
-                bits |= TXTBIT.TXTBIT_READONLY;
-            }
-
-            if (Options.HasFlag(TextHostOptions.Multiline))
-            {
-                bits |= TXTBIT.TXTBIT_MULTILINE;
-            }
-
-            bits &= mask;
-            *(TXTBIT*)pdwBits = bits;
-            return Constants.S_OK;
-        }
-
-        public unsafe override HRESULT TxGetSelectionBarWidth(nint lSelBarWidth)
-        {
-            if (lSelBarWidth == 0)
-                return Constants.E_INVALIDARG;
-
-            *(int*)lSelBarWidth = 0;
-            return Constants.S_OK;
-        }
-
         public unsafe override HRESULT TxGetWindowStyles(nint pdwStyle, nint pdwExStyle)
         {
             var window = RichTextBox.Window;

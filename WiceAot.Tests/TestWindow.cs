@@ -97,6 +97,8 @@ internal partial class TestWindow : Window
         rtb.Text = pages[0];
         sv.Viewer.Child = rtb;
 
+        sv.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+
         foreach (var i in Enumerable.Range(0, pagesCount))
         {
             var btn = new Button { Margin = 8 };
