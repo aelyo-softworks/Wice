@@ -1904,6 +1904,7 @@ namespace Wice
                 throw new Win32Exception(Marshal.GetLastWin32Error());
 
             var native = NativeWindow.FromHandle(hwnd);
+            native.ManagedThreadId = Thread.CurrentThread.ManagedThreadId;
             if (_iconHandle != IntPtr.Zero)
             {
                 native.IconHandle = _iconHandle;

@@ -52,6 +52,7 @@ namespace Wice
         public WS_EX ExtendedStyle { get => (WS_EX)GetWindowLong(WindowsConstants.GWL_EXSTYLE).ToInt64(); set => SetWindowLong(WindowsConstants.GWL_EXSTYLE, new IntPtr((int)value)); }
         public bool IsEnabled { get => WindowsFunctions.IsWindowEnabled(Handle); set => WindowsFunctions.EnableWindow(Handle, value); }
         public int ThreadId => WindowsFunctions.GetWindowThreadId(Handle);
+        public int ManagedThreadId { get; internal set; }
         public int ProcessId => WindowsFunctions.GetWindowProcessId(Handle);
         public string ModuleFileName => WindowsFunctions.GetWindowModuleFileName(Handle);
 
@@ -163,15 +164,18 @@ namespace Wice
 
                 if (value)
                 {
+                    // we need to ensure this as STAThread doesn't always call it for some reason
+                    OleInitialize(IntPtr.Zero); // don't check error
                     var hr = RegisterDragDrop(Handle, this);
-                    if (hr.IsError)
-                        throw new WiceException("0027: Cannot enable drag & drop operations. Make sure the thread is initialized as an STA thread.");
+                    if (hr.IsError && hr != DRAGDROP_E_ALREADYREGISTERED)
+                        throw new WiceException("0027: Cannot enable drag & drop operations. Make sure the thread is initialized as an STA thread.", Marshal.GetExceptionForHR(hr.Value));
 
                     _isDropTarget = true;
                 }
                 else
                 {
-                    RevokeDragDrop(Handle).ThrowOnError();
+                    var hr = RevokeDragDrop(Handle);
+                    hr.ThrowOnErrorExcept(DRAGDROP_E_NOTREGISTERED);
                     _isDropTarget = false;
                 }
             }
@@ -208,6 +212,9 @@ namespace Wice
         public Monitor GetMonitor(MFW flags = MFW.MONITOR_DEFAULTTONULL) => Monitor.FromWindow(Handle, flags);
         public bool IsChild(IntPtr parentHandle) => WindowsFunctions.IsChild(parentHandle, Handle);
         public WDA DisplayAffinity { get => WindowsFunctions.GetWindowDisplayAffinity(Handle); set => WindowsFunctions.SetWindowDisplayAffinity(Handle, value); }
+
+        public bool IsRunningAsMainThread => ManagedThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId;
+        public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0029: This method must be called on the UI thread."); }
 
         public DROPEFFECT DoDragDrop(System.Runtime.InteropServices.ComTypes.IDataObject dataObject, DROPEFFECT allowedEffects)
         {
@@ -690,10 +697,16 @@ namespace Wice
         private static extern HRESULT RegisterDragDrop(IntPtr hwnd, IDropTarget pDropTarget);
 
         [DllImport("ole32")]
+        public static extern HRESULT OleInitialize(IntPtr pvReserved);
+
+        [DllImport("ole32")]
         private static extern HRESULT DoDragDrop(System.Runtime.InteropServices.ComTypes.IDataObject pDataObj, IDropSource pDropSource, DROPEFFECT dwOKEffects, out DROPEFFECT pdwEffect);
 
         [DllImport("ole32")]
         private static extern HRESULT RevokeDragDrop(IntPtr hwnd);
+
+        const int DRAGDROP_E_NOTREGISTERED = unchecked((int)0x80040100);
+        const int DRAGDROP_E_ALREADYREGISTERED = unchecked((int)0x80040101);
 
         [ComImport, Guid("00000122-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         private interface IDropTarget

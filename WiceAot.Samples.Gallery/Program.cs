@@ -2,9 +2,6 @@
 
 static class Program
 {
-    private static readonly string _storageDirectoryPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), typeof(Program).Namespace!);
-    public static string StorageDirectoryPath => _storageDirectoryPath;
-
     [STAThread] // Wice doesn't require this but it's needed for Drag&Drop operations
     static void Main()
     {

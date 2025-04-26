@@ -41,6 +41,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public WINDOW_EX_STYLE ExtendedStyle { get => (WINDOW_EX_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE).ToInt64(); set => SetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, new nint((int)value)); }
     public bool IsEnabled { get => Functions.IsWindowEnabled(Handle); set => Functions.EnableWindow(Handle, value); }
     public uint ThreadId => Functions.GetWindowThreadProcessId(Handle, 0);
+    public int ManagedThreadId { get; internal set; }
     public unsafe int ProcessId
     {
         get
@@ -150,6 +151,26 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    public IReadOnlyDictionary<string, nint> Props
+    {
+        get
+        {
+            var dic = new Dictionary<string, nint>();
+            PROPENUMPROCW enumProc = (h, p1, p2) =>
+            {
+                var value = Functions.GetPropW(h, p1);
+                var s = p1.ToString();
+                if (s != null)
+                {
+                    dic[s] = value;
+                }
+                return true;
+            };
+            Functions.EnumPropsW(Handle, enumProc);
+            return dic.AsReadOnly();
+        }
+    }
+
     public IReadOnlyDictionary<PROPERTYKEY, object?> Properties
     {
         get
@@ -188,15 +209,18 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
 
             if (value)
             {
+                // we need to ensure this as STAThread doesn't always call it for some reason
+                Functions.OleInitialize(0); // don't check error
                 var hr = Functions.RegisterDragDrop(Handle, this);
-                if (hr.IsError)
-                    throw new WiceException("0027: Cannot enable drag & drop operations. Make sure the thread is initialized as an STA thread.");
+                if (hr.IsError && hr != Constants.DRAGDROP_E_ALREADYREGISTERED)
+                    throw new WiceException("0027: Cannot enable drag & drop operations. Make sure the thread is initialized as an STA thread.", Marshal.GetExceptionForHR(hr)!);
 
                 _isDropTarget = true;
             }
             else
             {
-                Functions.RevokeDragDrop(Handle).ThrowOnError();
+                var hr = Functions.RevokeDragDrop(Handle);
+                hr.ThrowOnErrorExcept(Constants.DRAGDROP_E_NOTREGISTERED);
                 _isDropTarget = false;
             }
         }
@@ -231,6 +255,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public POINT GetClientCursorPosition() => ScreenToClient(GetCursorPosition());
     public DirectN.Extensions.Utilities.Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => DirectN.Extensions.Utilities.Monitor.FromWindow(Handle, flags);
     public bool IsChild(HWND parentHandle) => Functions.IsChild(parentHandle, Handle);
+
+    public bool IsRunningAsMainThread => ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
+    public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0029: This method must be called on the UI thread."); }
 
     public int ShellAbout(string? text = null, string? otherStuff = null)
     {

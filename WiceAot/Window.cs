@@ -1854,6 +1854,7 @@ public partial class Window : Canvas, ITitleBarParent
             throw new Win32Exception(Marshal.GetLastWin32Error());
 
         var native = NativeWindow.FromHandle(hwnd)!;
+        native.ManagedThreadId = Environment.CurrentManagedThreadId;
         if (_iconHandle.Value != 0)
         {
             native.IconHandle = _iconHandle;
