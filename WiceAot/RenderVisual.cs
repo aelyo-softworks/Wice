@@ -69,6 +69,9 @@ public abstract class RenderVisual : Visual
 
     protected override void Render()
     {
+        _widthMaxed = null;
+        _heightMaxed = null;
+
         base.Render();
         RenderD2DSurface(null, null);
     }
@@ -164,9 +167,14 @@ public abstract class RenderVisual : Visual
                 // this must be handled by a D2D transform
                 _widthMaxed = offset.X;
                 _heightMaxed = offset.Y;
+
+                visual.Offset = new Vector3();
             }
             else
             {
+                _widthMaxed = null;
+                _heightMaxed = null;
+
                 visual.Offset = offset;
             }
         }

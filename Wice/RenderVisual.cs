@@ -77,6 +77,9 @@ namespace Wice
 
         protected override void Render()
         {
+            _widthMaxed = null;
+            _heightMaxed = null;
+
             base.Render();
             RenderD2DSurface(null, null);
         }
@@ -135,6 +138,9 @@ namespace Wice
             if (visual == null)
                 throw new ArgumentNullException(nameof(visual));
 
+            _widthMaxed = null;
+            _heightMaxed = null;
+
             // I don't think it's documented but experience shows sprite visuals (backed by DirectX texture) width or height
             // must be below D2D bitmap limit (which is 16384), with a slight 2px offset
             // (if we declare a visual of 16384, max DirectX, it becomes 16386 at DirectX11 level for some reason...)
@@ -170,9 +176,14 @@ namespace Wice
                     // this must be handled by a D2D transform
                     _widthMaxed = offset.X;
                     _heightMaxed = offset.Y;
+
+                    visual.Offset = new Vector3();
                 }
                 else
                 {
+                    _widthMaxed = null;
+                    _heightMaxed = null;
+
                     visual.Offset = offset;
                 }
             }

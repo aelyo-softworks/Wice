@@ -203,7 +203,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
     protected virtual void Invalidate(string propertyName, VisualPropertyInvalidateModes modes = VisualPropertyInvalidateModes.Measure)
     {
-        OnPropertyChanging(propertyName);
+        OnPropertyChanged(propertyName);
         CheckRunningAsMainThread();
         Invalidate(modes);
     }

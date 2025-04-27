@@ -1935,6 +1935,7 @@ namespace Wice
             return true;
         }
 
+        [Browsable(false)]
         public bool IsRunningAsMainThread
         {
             get

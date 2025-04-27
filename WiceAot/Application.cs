@@ -1,5 +1,4 @@
-﻿
-namespace Wice;
+﻿namespace Wice;
 
 public partial class Application : IDisposable
 {
