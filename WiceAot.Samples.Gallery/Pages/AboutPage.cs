@@ -23,7 +23,7 @@ public partial class AboutPage : Page
         var asm = typeof(Application).Assembly;
         var url = "https://github.com/aelyo-softworks/Wice";
         tb.Text = "Wice AOT v" + asm.GetInformationalVersion() + " based on DirectN AOT v" + typeof(ComObject).Assembly.GetInformationalVersion() + Environment.NewLine
-            + System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription + " - " + DiagnosticsInformation.GetBitness() + Environment.NewLine
+            + RuntimeInformation.FrameworkDescription + " - " + DiagnosticsInformation.GetBitness() + Environment.NewLine
             + asm.GetCopyright() + Environment.NewLine
             + "Source code: " + url;
         stack.Children.Add(tb);

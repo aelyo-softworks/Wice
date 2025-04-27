@@ -13,11 +13,20 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Resources\100mb.txt" />
+		<None Remove="Resources\100mb.txt" />
+		<None Remove="runtimes\win-arm64\native\WebView2Loader.dll" />
+		<None Remove="runtimes\win-x64\native\WebView2Loader.dll" />
+		<None Remove="runtimes\win-x86\native\WebView2Loader.dll" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+		<Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="runtimes\win-arm64\native\WebView2Loader.dll" />
+	  <EmbeddedResource Include="runtimes\win-x64\native\WebView2Loader.dll" />
+	  <EmbeddedResource Include="runtimes\win-x86\native\WebView2Loader.dll" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -43,24 +52,27 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="DirectN">
-	    <HintPath>..\WiceAot\External\DirectN.dll</HintPath>
-	  </Reference>
-	  <Reference Include="DirectN.Extensions">
-	    <HintPath>..\WiceAot\External\DirectN.Extensions.dll</HintPath>
-	  </Reference>
+		<Reference Include="DirectN">
+			<HintPath>..\WiceAot\External\DirectN.dll</HintPath>
+		</Reference>
+		<Reference Include="DirectN.Extensions">
+			<HintPath>..\WiceAot\External\DirectN.Extensions.dll</HintPath>
+		</Reference>
+		<Reference Include="WebView2">
+			<HintPath>..\WiceAot\External\WebView2.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="Resources\ShortText.txt">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\AliceInWonderlandNumbered.txt">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Resources\MobyDickNumbered.txt">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
+		<None Update="Resources\ShortText.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\AliceInWonderlandNumbered.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\MobyDickNumbered.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 </Project>

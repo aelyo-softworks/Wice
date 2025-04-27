@@ -2,7 +2,7 @@
   "profiles": {
     "WiceAot.Samples.Gallery": {
       "commandName": "Project",
-      "nativeDebugging": false,
+      "nativeDebugging": true,
       "hotReloadEnabled": false
     }
   }

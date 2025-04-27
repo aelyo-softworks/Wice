@@ -1,0 +1,59 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "WebView2/1.0.0": {
+        "dependencies": {
+          "DirectNAot": "1.3.0",
+          "Microsoft.DotNet.ILCompiler": "9.0.4",
+          "Microsoft.NET.ILLink.Tasks": "9.0.4"
+        },
+        "runtime": {
+          "WebView2.dll": {}
+        }
+      },
+      "DirectNAot/1.3.0": {
+        "runtime": {
+          "lib/net9.0/DirectN.dll": {
+            "assemblyVersion": "1.3.0.0",
+            "fileVersion": "1.3.0.0"
+          }
+        }
+      },
+      "Microsoft.DotNet.ILCompiler/9.0.4": {},
+      "Microsoft.NET.ILLink.Tasks/9.0.4": {}
+    }
+  },
+  "libraries": {
+    "WebView2/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "DirectNAot/1.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-SZFwLJZ6nqwtFwdYL8JnPGEPZvSPWVVkCFlTtmOov7v3KTXrl+nB+IqAzyIsFKn0E92hsS228CMiRKTbq+IcmQ==",
+      "path": "directnaot/1.3.0",
+      "hashPath": "directnaot.1.3.0.nupkg.sha512"
+    },
+    "Microsoft.DotNet.ILCompiler/9.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-G85txKEuQ8s64BG9Pk3TbmE+cDgKReepnIPNfC1lNks4u2v5SkQhjCuuSAep+H2xtgFpYU7w9LFOF+vVtJZguA==",
+      "path": "microsoft.dotnet.ilcompiler/9.0.4",
+      "hashPath": "microsoft.dotnet.ilcompiler.9.0.4.nupkg.sha512"
+    },
+    "Microsoft.NET.ILLink.Tasks/9.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xUdlUxiFwXhTYhB4VxKg/IA0+jlZXJPo70LYuMryWbJHdonIpZjw+7DO2B0pWwpXIOs6MlH5WVXPEtfrGEcVZA==",
+      "path": "microsoft.net.illink.tasks/9.0.4",
+      "hashPath": "microsoft.net.illink.tasks.9.0.4.nupkg.sha512"
+    }
+  }
+}

@@ -1148,6 +1148,15 @@ gma warning restore IDE0017 // Simplify object initialization
     // load from .NET embedded resource
     img.Document = new AssemblyResourceStreamer(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.tiger.svg");
 }</sample>
+  <sample namespace="Samples.Media.WebView.WebViewSample">void Layout(Visual parent)
+{
+    var webView = new WebView();
+    parent.Children.Add(webView);
+    webView.Width = 900;
+    webView.Height = 500;
+    webView.Margin = 10;
+    webView.SourceUri = "https://www.bing.com";
+}</sample>
   <sample namespace="Samples.Misc.Application.ApplicationSample">class Program
 {
     static void Main()

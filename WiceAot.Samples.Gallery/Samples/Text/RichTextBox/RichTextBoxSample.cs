@@ -3,7 +3,7 @@
 // RichTextBox visual sits on a COM object so we must dispose it on the same thread that created it
 public abstract class RichTextBoxSample : Sample, IDisposable
 {
-    private bool disposedValue;
+    private bool _disposedValue;
 
     protected RichTextBoxSample()
     {
@@ -13,7 +13,7 @@ public abstract class RichTextBoxSample : Sample, IDisposable
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!_disposedValue)
         {
             if (disposing)
             {
@@ -23,7 +23,7 @@ public abstract class RichTextBoxSample : Sample, IDisposable
 
             // free unmanaged resources (unmanaged objects) and override finalizer
             // set large fields to null
-            disposedValue = true;
+            _disposedValue = true;
         }
     }
 

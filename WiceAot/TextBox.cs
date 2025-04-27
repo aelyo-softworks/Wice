@@ -1,5 +1,4 @@
-﻿
-namespace Wice;
+﻿namespace Wice;
 
 public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IValueable, IPasswordCapable
 {

@@ -24,7 +24,8 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
-        Pager();
+        ShowWebView();
+        //Pager();
         //ShowProgressBar();
         //LongRunWithCursor();
         //LargeRichTextBox();
@@ -54,6 +55,14 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void ShowWebView()
+    {
+        var webView = new WebView();
+        webView.SourceUri = "https://www.bing.com";
+        webView.Margin = D2D_RECT_F.Thickness(10, 10, 10, 10);
+        Children.Add(webView);
     }
 
     public void Pager()
@@ -97,7 +106,7 @@ internal partial class TestWindow : Window
         rtb.Text = pages[0];
         sv.Viewer.Child = rtb;
 
-        sv.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+        rtb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
 
         foreach (var i in Enumerable.Range(0, pagesCount))
         {

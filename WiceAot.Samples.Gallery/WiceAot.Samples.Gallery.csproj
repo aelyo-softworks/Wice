@@ -15,37 +15,40 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <NoWarn>1701;1702;IDE0130</NoWarn>
+		<NoWarn>1701;1702;IDE0130</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <NoWarn>1701;1702;IDE0130</NoWarn>
+		<NoWarn>1701;1702;IDE0130</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="Resources\aelyo_flat.png" />
-	  <None Remove="Resources\lorem-cn.txt" />
-	  <None Remove="Resources\rainier.jpg" />
-	  <None Remove="Resources\samples.xml" />
-	  <None Remove="Resources\tiger.svg" />
-	  <None Remove="Resources\wice.rtf" />
+		<None Remove="Resources\aelyo_flat.png" />
+		<None Remove="Resources\lorem-cn.txt" />
+		<None Remove="Resources\rainier.jpg" />
+		<None Remove="Resources\samples.xml" />
+		<None Remove="Resources\tiger.svg" />
+		<None Remove="Resources\wice.rtf" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+		<Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="wice_color.ico" />
+		<Content Include="wice_color.ico" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Resources\aelyo_flat.png" />
-	  <EmbeddedResource Include="Resources\lorem-cn.txt" />
-	  <EmbeddedResource Include="Resources\rainier.jpg" />
-	  <EmbeddedResource Include="Resources\samples.xml" />
-	  <EmbeddedResource Include="Resources\tiger.svg" />
-	  <EmbeddedResource Include="Resources\wice.rtf" />
+		<EmbeddedResource Include="Resources\aelyo_flat.png" />
+		<EmbeddedResource Include="Resources\lorem-cn.txt" />
+		<EmbeddedResource Include="Resources\rainier.jpg" />
+		<EmbeddedResource Include="Resources\samples.xml" />
+		<EmbeddedResource Include="Resources\tiger.svg" />
+		<EmbeddedResource Include="Resources\wice.rtf" />
+		<EmbeddedResource Include="runtimes\win-arm64\native\WebView2Loader.dll" />
+		<EmbeddedResource Include="runtimes\win-x64\native\WebView2Loader.dll" />
+		<EmbeddedResource Include="runtimes\win-x86\native\WebView2Loader.dll" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -89,6 +92,9 @@
 		</Reference>
 		<Reference Include="DirectN.Extensions">
 			<HintPath>..\WiceAot\External\DirectN.Extensions.dll</HintPath>
+		</Reference>
+		<Reference Include="WebView2">
+			<HintPath>..\WiceAot\External\WebView2.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 

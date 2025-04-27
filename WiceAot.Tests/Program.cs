@@ -2,7 +2,7 @@
 
 internal class Program
 {
-    //[STAThread]
+    [STAThread] // for webview2
     static void Main(string[] args)
     {
         if (Debugger.IsAttached)
