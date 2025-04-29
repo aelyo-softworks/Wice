@@ -18,7 +18,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
         Generator = generator;
         _host = CreateTextHost(generator, this);
-        _host.TextColor = new COLORREF();
         BackgroundColor = D3DCOLORVALUE.Transparent;
     }
 
@@ -26,8 +25,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
     protected virtual RichTextBoxTextHost CreateTextHost(TextServicesGenerator generator, RichTextBox richTextBox) => new(generator, richTextBox);
 
     [GeneratedComClass]
-    protected partial class RichTextBoxTextHost(TextServicesGenerator generator, RichTextBox richTextBox)
-        : TextHost(generator)
+    protected partial class RichTextBoxTextHost(TextServicesGenerator generator, RichTextBox richTextBox) : TextHost(generator)
     {
         public RichTextBox RichTextBox { get; } = richTextBox;
 
@@ -35,7 +33,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         public override uint TxGetSysColor(SYS_COLOR_INDEX nIndex) => Functions.GetSysColor(nIndex);
         public unsafe override bool TxClientToScreen(nint lppt)
         {
-            if (lppt == 0)
+            if (lppt == 0 || RichTextBox == null)
                 return false;
 
             var arr = RichTextBox.AbsoluteRenderRect;
@@ -55,7 +53,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
         public unsafe override bool TxScreenToClient(nint lppt)
         {
-            if (lppt == 0)
+            if (lppt == 0 || RichTextBox == null)
                 return false;
 
             var window = RichTextBox.Window;
@@ -71,7 +69,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
         public unsafe override HRESULT TxGetWindowStyles(nint pdwStyle, nint pdwExStyle)
         {
-            var window = RichTextBox.Window;
+            var window = RichTextBox?.Window;
             if (window == null)
                 return Constants.E_FAIL;
 
@@ -89,7 +87,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
         public unsafe override HRESULT TxGetWindow(nint phwnd)
         {
-            if (phwnd == 0)
+            if (phwnd == 0 || RichTextBox == null)
                 return base.TxGetWindow(phwnd);
 
             var window = RichTextBox.Window;
@@ -102,12 +100,12 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
         public override void TxViewChange(BOOL fUpdate)
         {
-            RichTextBox.Invalidate(VisualPropertyInvalidateModes.Render);
+            RichTextBox?.Invalidate(VisualPropertyInvalidateModes.Render);
         }
 
         public override unsafe void TxInvalidateRect(nint prc, BOOL fMode)
         {
-            RichTextBox.Invalidate(VisualPropertyInvalidateModes.Render);
+            RichTextBox?.Invalidate(VisualPropertyInvalidateModes.Render);
         }
     }
 
@@ -130,9 +128,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
             if (host == null)
                 return;
 
-            OnPropertyChanging(nameof(Options));
+            OnPropertyChanging();
             host.TextColor = TextHost.ToColor(value);
-            Invalidate(nameof(Options), VisualPropertyInvalidateModes.Render);
+            Invalidate(VisualPropertyInvalidateModes.Render);
         }
     }
 
@@ -146,9 +144,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
             if (host == null)
                 return;
 
-            OnPropertyChanging(nameof(Options));
+            OnPropertyChanging();
             host.Options = value;
-            Invalidate(nameof(Options));
+            Invalidate();
         }
     }
 
@@ -162,9 +160,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
             if (host == null)
                 return;
 
-            OnPropertyChanging(nameof(Text));
+            OnPropertyChanging();
             host.Text = value;
-            Invalidate(nameof(Text));
+            Invalidate();
         }
     }
 
@@ -178,9 +176,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
             if (host == null)
                 return;
 
-            OnPropertyChanging(nameof(RtfText));
+            OnPropertyChanging();
             host.RtfText = value;
-            Invalidate(nameof(RtfText));
+            Invalidate();
         }
     }
 
@@ -195,17 +193,81 @@ public partial class RichTextBox : RenderVisual, IDisposable
             if (host == null)
                 return;
 
-            OnPropertyChanging(nameof(HtmlText));
+            OnPropertyChanging();
             host.HtmlText = value;
-            Invalidate(nameof(HtmlText));
+            Invalidate();
         }
     }
 
-    protected virtual void Invalidate(string propertyName, VisualPropertyInvalidateModes modes = VisualPropertyInvalidateModes.Measure)
+    [Category(CategoryLayout)]
+    public virtual string FontName
+    {
+        get => _host?.FaceName ?? string.Empty;
+        set
+        {
+            var host = _host;
+            if (host == null)
+                return;
+
+            OnPropertyChanging();
+            host.FaceName = value;
+            Invalidate();
+        }
+    }
+
+    [Category(CategoryLayout)]
+    public virtual int FontSize
+    {
+        get => _host?.Height ?? 0;
+        set
+        {
+            var host = _host;
+            if (host == null)
+                return;
+
+            OnPropertyChanging();
+            host.Height = value;
+            Invalidate();
+        }
+    }
+
+    [Category(CategoryLayout)]
+    public virtual ushort FontWeight
+    {
+        get => _host?.Weight ?? 0;
+        set
+        {
+            var host = _host;
+            if (host == null)
+                return;
+
+            OnPropertyChanging();
+            host.Weight = value;
+            Invalidate();
+        }
+    }
+
+    [Category(CategoryLayout)]
+    public virtual TXTBACKSTYLE BackStyle
+    {
+        get => _host?.BackStyle ?? TXTBACKSTYLE.TXTBACK_TRANSPARENT;
+        set
+        {
+            var host = _host;
+            if (host == null)
+                return;
+
+            OnPropertyChanging();
+            host.BackStyle = value;
+            Invalidate();
+        }
+    }
+
+    protected virtual void Invalidate(VisualPropertyInvalidateModes modes = VisualPropertyInvalidateModes.Measure, [CallerMemberName] string? propertyName = null)
     {
         OnPropertyChanged(propertyName);
         CheckRunningAsMainThread();
-        Invalidate(modes);
+        base.Invalidate(modes);
     }
 
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)

@@ -24,8 +24,8 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
-        ShowWebView();
-        //Pager();
+        //ShowWebView();
+        Pager();
         //ShowProgressBar();
         //LongRunWithCursor();
         //LargeRichTextBox();
@@ -107,6 +107,9 @@ internal partial class TestWindow : Window
         sv.Viewer.Child = rtb;
 
         rtb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+
+        //rtb.FontName = "Consolas";
+        //rtb.FontSize = 18;
 
         foreach (var i in Enumerable.Range(0, pagesCount))
         {
