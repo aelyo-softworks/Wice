@@ -51,6 +51,14 @@ public partial class SvgImage : RenderVisual, IDisposable
         return true;
     }
 
+    public virtual D2D_RECT_F GetDestinationRectangle() => Image.GetDestinationRectangle(
+                RenderSize,
+                HorizontalAlignment,
+                VerticalAlignment,
+                Stretch,
+                StretchDirection,
+                RelativeRenderRect);
+
     protected internal override void RenderCore(RenderContext context)
     {
         base.RenderCore(context);
@@ -62,13 +70,7 @@ public partial class SvgImage : RenderVisual, IDisposable
         if (dc == null)
             return;
 
-        var rc = Image.GetDestinationRectangle(
-            RenderSize,
-            HorizontalAlignment,
-            VerticalAlignment,
-            Stretch,
-            StretchDirection,
-            RelativeRenderRect);
+        var rc = GetDestinationRectangle();
 
         //
         // note we cannot use D2D transforms on a SVG in a Direct Composition context, like this:

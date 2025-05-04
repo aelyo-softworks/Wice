@@ -64,6 +64,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="Resources\rainier.jpg">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Resources\ShortText.txt">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

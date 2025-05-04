@@ -25,7 +25,8 @@ internal partial class TestWindow : Window
         //AddUniformGridSysColors();
 
         //ShowWebView();
-        Pager();
+        ZoomableImage();
+        //Pager();
         //ShowProgressBar();
         //LongRunWithCursor();
         //LargeRichTextBox();
@@ -63,6 +64,33 @@ internal partial class TestWindow : Window
         webView.SourceUri = "https://www.bing.com";
         webView.Margin = D2D_RECT_F.Thickness(10, 10, 10, 10);
         Children.Add(webView);
+    }
+
+    public void ZoomableImage()
+    {
+        var img = new Image();
+        Children.Add(img);
+
+        var accumulatedZoom = 0;
+        const float zoomStepPercent = 0.01f;
+
+        img.MouseWheel += (s, e) =>
+        {
+            accumulatedZoom += e.Delta;
+            if (accumulatedZoom != 0)
+            {
+                var destRc = img.GetDestinationRectangle();
+                var scale = 1 + zoomStepPercent * accumulatedZoom;
+                var offsetX = destRc.Width * zoomStepPercent * accumulatedZoom / 2;
+                var offsetY = destRc.Height * zoomStepPercent * accumulatedZoom / 2;
+                img.RenderTransformMatrix = Matrix4x4.CreateScale(scale) * Matrix4x4.CreateTranslation(new Vector3(-offsetX, -offsetY, 0));
+            }
+            else
+            {
+                img.RenderTransformMatrix = null;
+            }
+        };
+        img.Source = Application.CurrentResourceManager.GetWicBitmapSource(@"resources\rainier.jpg");
     }
 
     public void Pager()

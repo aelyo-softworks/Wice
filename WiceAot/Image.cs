@@ -23,7 +23,7 @@ public partial class Image : RenderVisual, IDisposable
     public IComObject<ID2D1Bitmap>? Bitmap => _bitmap;
 
     [Category(CategoryBehavior)]
-    public IComObject<IWICBitmapSource> Source { get => (IComObject<IWICBitmapSource>)GetPropertyValue(SourceProperty)!; set => SetPropertyValue(SourceProperty, value); }
+    public IComObject<IWICBitmapSource>? Source { get => (IComObject<IWICBitmapSource>?)GetPropertyValue(SourceProperty); set => SetPropertyValue(SourceProperty, value); }
 
     [Category(CategoryRender)]
     public float SourceOpacity { get => (float)GetPropertyValue(SourceOpacityProperty)!; set => SetPropertyValue(SourceOpacityProperty, value); }
@@ -75,7 +75,15 @@ public partial class Image : RenderVisual, IDisposable
         return new D2D_SIZE_F(width, height);
     }
 
-    internal static D2D_RECT_F GetDestinationRectangle(
+    public virtual D2D_RECT_F GetDestinationRectangle() => GetDestinationRectangle(
+                    Source?.GetSizeF() ?? D2D_SIZE_F.Zero,
+                    HorizontalAlignment,
+                    VerticalAlignment,
+                    Stretch,
+                    StretchDirection,
+                    RelativeRenderRect);
+
+    public static D2D_RECT_F GetDestinationRectangle(
         D2D_SIZE_F size,
         Alignment horizontalAlignment,
         Alignment verticalAlignment,
@@ -149,7 +157,7 @@ public partial class Image : RenderVisual, IDisposable
         if (src != null && !src.IsDisposed)
         {
             var bmp = _bitmap;
-            if (bmp == null)
+            if (bmp == null && Source != null)
             {
                 context.DeviceContext.Object.CreateBitmapFromWicBitmap(Source.Object, 0, out ID2D1Bitmap bitmap).ThrowOnError();
                 bmp = new ComObject<ID2D1Bitmap>(bitmap);
@@ -159,13 +167,7 @@ public partial class Image : RenderVisual, IDisposable
 
             if (bmp != null && !bmp.IsDisposed)
             {
-                var destRc = GetDestinationRectangle(
-                    src.GetSizeF(),
-                    HorizontalAlignment,
-                    VerticalAlignment,
-                    Stretch,
-                    StretchDirection,
-                    RelativeRenderRect);
+                var destRc = GetDestinationRectangle();
                 var srcRectangle = SourceRectangle;
                 context.DeviceContext.DrawBitmap(bmp, SourceOpacity, InterpolationMode, destRc, srcRectangle);
             }
