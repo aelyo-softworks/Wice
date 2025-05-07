@@ -242,19 +242,28 @@ namespace Wice
 
         protected override void ArrangeCore(D2D_RECT_F finalRect)
         {
-            switch (ScrollMode)
+            var window = Window;
+            if (window == null)
+                return;
+
+            // scrollviewer has lots of internal children that can trigger invalidations
+            // to avoid oscillations, we need to suspend invalidations
+            window.WithInvalidationsProcessingSuspended(() =>
             {
-                case ScrollViewerMode.Overlay:
-                    Canvas.ArrangeCore(this, finalRect);
-                    break;
+                switch (ScrollMode)
+                {
+                    case ScrollViewerMode.Overlay:
+                        Canvas.ArrangeCore(this, finalRect);
+                        break;
 
-                case ScrollViewerMode.Dock:
-                    base.ArrangeCore(finalRect);
-                    break;
+                    case ScrollViewerMode.Dock:
+                        base.ArrangeCore(finalRect);
+                        break;
 
-                default:
-                    throw new NotSupportedException();
-            }
+                    default:
+                        throw new NotSupportedException();
+                }
+            });
         }
 
         private void OnVerticalScrollBarThumbDragDelta(object sender, DragEventArgs e)

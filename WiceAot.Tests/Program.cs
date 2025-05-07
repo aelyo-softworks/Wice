@@ -7,21 +7,17 @@ internal class Program
     {
         if (Debugger.IsAttached)
         {
-            using (var dw = new Application())
-            {
-                newWindow();
-                dw.Run();
-            }
+            using var dw = new Application();
+            newWindow();
+            dw.Run();
         }
         else
         {
             try
             {
-                using (var dw = new Application())
-                {
-                    newWindow();
-                    dw.Run();
-                }
+                using var dw = new Application();
+                newWindow();
+                dw.Run();
             }
             catch (Exception e)
             {

@@ -51,8 +51,8 @@ namespace Wice
                 {
                     _childOffsetLeft = value;
                     OnPropertyChanged();
+                    Child?.Invalidate(VisualPropertyInvalidateModes.Render);
                 }
-                Child?.Invalidate(VisualPropertyInvalidateModes.Render);
             }
         }
 
@@ -66,8 +66,8 @@ namespace Wice
                 {
                     _childOffsetTop = value;
                     OnPropertyChanged();
+                    Child?.Invalidate(VisualPropertyInvalidateModes.Render);
                 }
-                Child?.Invalidate(VisualPropertyInvalidateModes.Render);
             }
         }
 

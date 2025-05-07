@@ -26,6 +26,7 @@ namespace Wice
         public static VisualProperty CursorProperty = VisualProperty.Add<Cursor>(typeof(Visual), nameof(Cursor), VisualPropertyInvalidateModes.None);
         public static VisualProperty DataProperty = VisualProperty.Add<object>(typeof(Visual), nameof(Data), VisualPropertyInvalidateModes.Measure);
         public static VisualProperty OpacityProperty = VisualProperty.Add(typeof(Visual), nameof(Opacity), VisualPropertyInvalidateModes.Render, 1f);
+        public static VisualProperty ZoomProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(Zoom), VisualPropertyInvalidateModes.Measure, 1f, ValidateZoom);
         public static VisualProperty ClipChildrenProperty = VisualProperty.Add(typeof(Visual), nameof(ClipChildren), VisualPropertyInvalidateModes.Render, true);
         public static VisualProperty ClipFromParentProperty = VisualProperty.Add(typeof(Visual), nameof(ClipFromParent), VisualPropertyInvalidateModes.Render, true);
         public static VisualProperty WidthProperty = VisualProperty.Add(typeof(Visual), nameof(Width), VisualPropertyInvalidateModes.ParentMeasure, float.NaN, ValidateWidthOrHeight);
@@ -59,6 +60,18 @@ namespace Wice
         protected static object NullifyString(BaseObject obj, object value) => ((string)value).Nullify();
 
         private static void IsMouseOverChanged(BaseObject obj, object newValue, object oldValue) => ((Visual)obj).IsMouseOverChanged((bool)newValue);
+
+        protected static object ValidateZoom(BaseObject obj, object value)
+        {
+            var flt = (float)value;
+            if (float.IsNaN(flt) || float.IsPositiveInfinity(flt))
+                return 1f;
+
+            if (flt < 0 || float.IsNegativeInfinity(flt))
+                return 0f;
+
+            return flt;
+        }
 
         protected static object ValidateNonNullString(BaseObject obj, object value)
         {
@@ -617,6 +630,9 @@ namespace Wice
 
         [Category(CategoryRender)]
         public float Opacity { get => (float)GetPropertyValue(OpacityProperty); set => SetPropertyValue(OpacityProperty, value); }
+
+        [Category(CategoryLayout)]
+        public float Zoom { get => (float)GetPropertyValue(ZoomProperty); set => SetPropertyValue(ZoomProperty, value); }
 
         [Category(CategoryLayout)]
         public float Width { get => (float)GetPropertyValue(WidthProperty); set => SetPropertyValue(WidthProperty, value); }
@@ -2237,6 +2253,9 @@ namespace Wice
             var size = MeasureCore(childConstraint);
             if (size.IsNotSet || size.width < 0 || size.height < 0)
                 throw new WiceException("0007: Element named '" + Name + "' of type '" + GetType().Name + "' desired size is invalid: " + size + ".");
+
+            size.width *= Zoom;
+            size.height *= Zoom;
 
             value = Width;
             if (value.IsSet())

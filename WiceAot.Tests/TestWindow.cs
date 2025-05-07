@@ -25,7 +25,7 @@ internal partial class TestWindow : Window
         //AddUniformGridSysColors();
 
         //ShowWebView();
-        ZoomableImage();
+        ZoomableImageWithSV();
         //Pager();
         //ShowProgressBar();
         //LongRunWithCursor();
@@ -66,30 +66,26 @@ internal partial class TestWindow : Window
         Children.Add(webView);
     }
 
-    public void ZoomableImage()
+    public void ZoomableImageWithSV()
     {
-        var img = new Image();
-        Children.Add(img);
+        var sv = new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto };
+        sv.Viewer.IsWidthUnconstrained = false;
+        sv.Margin = D2D_RECT_F.Thickness(10);
+        Dock.SetDockType(sv, DockType.Top);
 
-        var accumulatedZoom = 0;
-        const float zoomStepPercent = 0.01f;
+        var img = new Image { VerticalAlignment = Alignment.Near, HorizontalAlignment = Alignment.Center };
+        sv.Viewer.Children.Add(img);
+        Children.Add(sv);
 
         img.MouseWheel += (s, e) =>
         {
-            accumulatedZoom += e.Delta;
-            if (accumulatedZoom != 0)
-            {
-                var destRc = img.GetDestinationRectangle();
-                var scale = 1 + zoomStepPercent * accumulatedZoom;
-                var offsetX = destRc.Width * zoomStepPercent * accumulatedZoom / 2;
-                var offsetY = destRc.Height * zoomStepPercent * accumulatedZoom / 2;
-                img.RenderTransformMatrix = Matrix4x4.CreateScale(scale) * Matrix4x4.CreateTranslation(new Vector3(-offsetX, -offsetY, 0));
-            }
-            else
-            {
-                img.RenderTransformMatrix = null;
-            }
+            if (!NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL))
+                return;
+
+            const float zoomStepPercent = 0.05f;
+            img.Zoom += e.Delta * zoomStepPercent;
         };
+
         img.Source = Application.CurrentResourceManager.GetWicBitmapSource(@"resources\rainier.jpg");
     }
 

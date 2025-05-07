@@ -51,6 +51,8 @@ public partial class Window : Canvas, ITitleBarParent
     private bool _hasFocus;
     private Visual? _focusedVisual;
     private Visual? _oldFocusedVisual;
+    private int _invalidationsSuspended;
+    private readonly ConcurrentDictionary<Visual, InvalidateMode> _suspendedInvalidations = new();
     private readonly HashSet<Visual> _ddEntered = [];
 
     public event EventHandler? HandleCreated;
@@ -145,10 +147,6 @@ public partial class Window : Canvas, ITitleBarParent
 
     [Category(CategoryLayout)]
     public int BorderHeight { get; }
-#if DEBUG
-    [Category(CategoryDebug)]
-    public bool EnableInvalidationStackDiagnostics { get; set; }
-#endif
 
     [Category(CategoryLayout)]
     public uint Dpi => Native?.Dpi ?? 96;
@@ -1200,22 +1198,65 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    public void WithInvalidationsProcessingSuspended(Action action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+        if (Interlocked.Increment(ref _invalidationsSuspended) == 1)
+        {
+            _suspendedInvalidations.Clear();
+        }
+
+        try
+        {
+            action();
+        }
+        finally
+        {
+            if (Interlocked.Decrement(ref _invalidationsSuspended) == 0)
+            {
+                lock (_lock)
+                {
+                    foreach (var invalidation in _suspendedInvalidations)
+                    {
+                        // override older ones with newer ones
+                        _invalidations[invalidation.Key] = invalidation.Value;
+                    }
+                    _suspendedInvalidations.Clear();
+                }
+            }
+        }
+    }
+
     public virtual void Invalidate(Visual visual, VisualPropertyInvalidateModes modes, InvalidateReason? reason = null)
     {
         ArgumentNullException.ThrowIfNull(visual);
         reason ??= new InvalidateReason(GetType());
-        PrivateInvalidate(visual, modes, reason);
+
+        if (_invalidationsSuspended > 0)
+        {
+            PrivateInvalidate(visual, modes, reason, false, _suspendedInvalidations);
+        }
+        else
+        {
+            PrivateInvalidate(visual, modes, reason, false, _invalidations);
+        }
+
         if (!_invalidations.IsEmpty)
         {
             RequestRender();
         }
     }
 
-    private void PrivateInvalidate(Visual visual, VisualPropertyInvalidateModes modes, InvalidateReason reason)
+    private static void PrivateInvalidate(
+        Visual visual,
+        VisualPropertyInvalidateModes modes,
+        InvalidateReason reason,
+        bool enableInvalidationStackDiagnostics,
+        ConcurrentDictionary<Visual, InvalidateMode> invalidations)
     {
         //Application.Trace("V:" + visual + " R:" + reason + " M:" + modes);
 #if DEBUG
-        if (EnableInvalidationStackDiagnostics && visual is Window)
+        if (enableInvalidationStackDiagnostics && visual is Window)
         {
             // get last 2 Window invalidate markers and compare frames between
             Change? first = null;
@@ -1286,7 +1327,7 @@ public partial class Window : Canvas, ITitleBarParent
             if (finalParentModes != VisualPropertyInvalidateModes.None)
             {
                 var newReason = new ParentUpgradeInvalidateReason(visual.Parent.GetType(), visual.GetType(), InvalidateMode.None, finalParentModes, reason);
-                PrivateInvalidate(visual.Parent, finalParentModes, newReason);
+                PrivateInvalidate(visual.Parent, finalParentModes, newReason, enableInvalidationStackDiagnostics, invalidations);
             }
         }
 
@@ -1299,7 +1340,7 @@ public partial class Window : Canvas, ITitleBarParent
             // if we find an "inferior" action in any parent, we upgrade parent
             foreach (var parent in visual.AllParents)
             {
-                if (!_invalidations.TryGetValue(parent, out var existingParentMode))
+                if (!invalidations.TryGetValue(parent, out var existingParentMode))
                     continue;
 
                 if (mode == InvalidateMode.Measure)
@@ -1308,7 +1349,7 @@ public partial class Window : Canvas, ITitleBarParent
                         return;
 
                     var newReason = new ParentUpgradeInvalidateReason(visual.Parent!.GetType(), visual.GetType(), existingParentMode, VisualPropertyInvalidateModes.Measure, reason);
-                    PrivateInvalidate(parent, VisualPropertyInvalidateModes.Measure, newReason);
+                    PrivateInvalidate(parent, VisualPropertyInvalidateModes.Measure, newReason, enableInvalidationStackDiagnostics, invalidations);
                     return;
                 }
 
@@ -1318,14 +1359,14 @@ public partial class Window : Canvas, ITitleBarParent
                         return;
 
                     var newReason = new ParentUpgradeInvalidateReason(visual.Parent!.GetType(), visual.GetType(), existingParentMode, VisualPropertyInvalidateModes.Arrange, reason);
-                    PrivateInvalidate(parent, VisualPropertyInvalidateModes.Arrange, newReason);
+                    PrivateInvalidate(parent, VisualPropertyInvalidateModes.Arrange, newReason, enableInvalidationStackDiagnostics, invalidations);
                     return;
                 }
             }
         }
 
         //Application.Trace("mode: " + mode + " visual: " + visual + " reason: " + reason);
-        _invalidations.AddOrUpdate(visual, mode, (k, o) =>
+        invalidations.AddOrUpdate(visual, mode, (k, o) =>
         {
             // only add if higher action
             // for example measure > render
@@ -1340,16 +1381,16 @@ public partial class Window : Canvas, ITitleBarParent
             case InvalidateMode.Measure:
                 foreach (var child in visual.AllChildren)
                 {
-                    _invalidations.TryRemove(child, out _);
+                    invalidations.TryRemove(child, out _);
                 }
                 break;
 
             case InvalidateMode.Arrange:
                 foreach (var child in visual.AllChildren)
                 {
-                    if (_invalidations.TryGetValue(child, out var childMode) && (childMode == InvalidateMode.Render) || (childMode == InvalidateMode.Arrange))
+                    if (invalidations.TryGetValue(child, out var childMode) && (childMode == InvalidateMode.Render) || (childMode == InvalidateMode.Arrange))
                     {
-                        _invalidations.TryRemove(child, out _);
+                        invalidations.TryRemove(child, out _);
                     }
                 }
                 break;
@@ -1357,9 +1398,9 @@ public partial class Window : Canvas, ITitleBarParent
             case InvalidateMode.Render:
                 foreach (var child in visual.AllChildren)
                 {
-                    if (_invalidations.TryGetValue(child, out var childMode) && childMode == InvalidateMode.Render)
+                    if (invalidations.TryGetValue(child, out var childMode) && childMode == InvalidateMode.Render)
                     {
-                        _invalidations.TryRemove(child, out _);
+                        invalidations.TryRemove(child, out _);
                     }
                 }
                 break;
@@ -1580,6 +1621,9 @@ public partial class Window : Canvas, ITitleBarParent
 #endif
 
         if (Application.IsFatalErrorShowing)
+            return;
+
+        if (_invalidationsSuspended != 0)
             return;
 
         KeyValuePair<Visual, InvalidateMode>[] invalidations;

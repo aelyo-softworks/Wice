@@ -52,8 +52,8 @@ public partial class Viewer : Visual, IOneChildParent
             {
                 _childOffsetLeft = value;
                 OnPropertyChanged();
+                Child?.Invalidate(VisualPropertyInvalidateModes.Render);
             }
-            Child?.Invalidate(VisualPropertyInvalidateModes.Render);
         }
     }
 
@@ -67,8 +67,8 @@ public partial class Viewer : Visual, IOneChildParent
             {
                 _childOffsetTop = value;
                 OnPropertyChanged();
+                Child?.Invalidate(VisualPropertyInvalidateModes.Render);
             }
-            Child?.Invalidate(VisualPropertyInvalidateModes.Render);
         }
     }
 
