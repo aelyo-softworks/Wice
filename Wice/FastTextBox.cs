@@ -114,6 +114,15 @@ namespace Wice
         protected virtual void OnLoading(object sender, LoadEventArgs e) => Loading?.Invoke(this, e);
         protected virtual void OnLoaded(object sender, LoadEventArgs e) => Loaded?.Invoke(this, e);
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            if (disposing)
+            {
+                Interlocked.Exchange(ref _layout, null)?.Dispose();
+            }
+        }
+
         protected virtual void ValidateProperties()
         {
             if (FallbackLineCountThreshold < 0)

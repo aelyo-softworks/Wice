@@ -25,7 +25,8 @@ internal partial class TestWindow : Window
         //AddUniformGridSysColors();
 
         //ShowWebView();
-        ZoomableImageWithSV();
+        ShowPdfView();
+        //ZoomableImageWithSV();
         //Pager();
         //ShowProgressBar();
         //LongRunWithCursor();
@@ -56,6 +57,14 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void ShowPdfView()
+    {
+        var pdfView = new PdfView();
+        pdfView.SourceFilePath = @"resources\sample.pdf";
+        pdfView.Margin = D2D_RECT_F.Thickness(10, 10, 10, 10);
+        Children.Add(pdfView);
     }
 
     public void ShowWebView()

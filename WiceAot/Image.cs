@@ -54,7 +54,7 @@ public partial class Image : RenderVisual, IDisposable
         return true;
     }
 
-    private D2D_SIZE_F GetSize(D2D_SIZE_F constraint)
+    protected virtual D2D_SIZE_F GetSize(D2D_SIZE_F constraint)
     {
         var width = 0f;
         var height = 0f;
@@ -174,7 +174,7 @@ public partial class Image : RenderVisual, IDisposable
         }
     }
 
-    protected void DisposeBitmap()
+    protected virtual void DisposeBitmap()
     {
         var bmp = Interlocked.Exchange(ref _bitmap, null);
         if (bmp != null)

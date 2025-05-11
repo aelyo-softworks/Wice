@@ -26,6 +26,7 @@
 		<None Remove="Resources\aelyo_flat.png" />
 		<None Remove="Resources\lorem-cn.txt" />
 		<None Remove="Resources\rainier.jpg" />
+		<None Remove="Resources\sample.pdf" />
 		<None Remove="Resources\samples.xml" />
 		<None Remove="Resources\tiger.svg" />
 		<None Remove="Resources\wice.rtf" />
@@ -43,6 +44,9 @@
 		<EmbeddedResource Include="Resources\aelyo_flat.png" />
 		<EmbeddedResource Include="Resources\lorem-cn.txt" />
 		<EmbeddedResource Include="Resources\rainier.jpg" />
+		<EmbeddedResource Include="Resources\sample.pdf">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
 		<EmbeddedResource Include="Resources\samples.xml" />
 		<EmbeddedResource Include="Resources\tiger.svg" />
 		<EmbeddedResource Include="Resources\wice.rtf" />

@@ -315,7 +315,7 @@ namespace Wice
                     if (!property.Changing(this, value, o))
                     {
                         changed = false;
-                        return 0;
+                        return o;
                     }
                 }
 

@@ -1070,6 +1070,53 @@ gma warning restore IDE0017 // Simplify object initialization
     // load from .NET embedded resource
     img.Source = Application.CurrentResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.rainier.jpg")!;
 }</sample>
+  <sample namespace="Samples.Media.PdfView.PdfViewSample">void Layout(Visual parent)
+{
+
+    var pdfView = new PdfView();
+    pdfView.HorizontalAlignment = Alignment.Center;
+    pdfView.Height = 600;
+    pdfView.Margin = 10;
+    pdfView.SourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Samples.Gallery.Resources.sample.pdf");
+
+    var buttons = new Stack { Orientation = Orientation.Horizontal, HorizontalAlignment = Alignment.Stretch };
+    dock.Children.Add(buttons);
+
+    var load = new Button { HorizontalAlignment = Alignment.Near, Margin = D2D_RECT_F.Thickness(5) };
+    load.Text.Text = "Load PDF File...";
+    load.Click += async (s, e) =&gt;
+    {
+        var picker = new FileOpenPicker();
+        picker.FileTypeFilter.Add(".pdf");
+
+        InitializeWithWindow.Initialize(picker, Window!.Handle);
+        var file = await picker.PickSingleFileAsync();
+        if (file != null)
+        {
+            await Window!.RunTaskOnMainThread(() =&gt; pdfView.SourceFilePath = file.Path);
+        }
+    };
+    buttons.Children.Add(load);
+
+    var next = new Button { HorizontalAlignment = Alignment.Near, Margin = D2D_RECT_F.Thickness(5) };
+    next.Text.Text = "Next Page";
+    next.Click += (s, e) =&gt; pdfView.CurrentPage += 1;
+    buttons.Children.Add(next);
+
+    var prev = new Button { HorizontalAlignment = Alignment.Near, Margin = D2D_RECT_F.Thickness(5) };
+    prev.Text.Text = "Previous Page";
+    prev.Click += (s, e) =&gt; pdfView.CurrentPage += -1;
+    buttons.Children.Add(prev);
+
+    var pagesCount = new TextBox { VerticalAlignment = Alignment.Center, Margin = D2D_RECT_F.Thickness(5) };
+    buttons.Children.Add(pagesCount);
+
+    dock.Children.Add(pdfView);
+    pdfView.PageChanged += (s, e) =&gt; Window!.RunTaskOnMainThread(() =&gt;
+    {
+        pagesCount.Text = $"Page {1 + pdfView.CurrentPage}/{pdfView.PagesCount}";
+    });
+}</sample>
   <sample namespace="Samples.Media.Shape.EllipseRectangleShapeSample">void Layout(Visual parent)
 {
     var ellipse = new Ellipse

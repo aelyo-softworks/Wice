@@ -301,6 +301,7 @@ public partial class Visual : BaseObject
     protected internal virtual bool DisablePointerEvents { get; set; }
     protected internal virtual bool DisableKeyEvents { get; set; }
     protected internal virtual bool HandlePointerEvents { get; set; }
+    protected internal virtual bool DisposeOnDetachFromComposition { get; set; } = true; // for IDisposable Visuals only
 
     protected D2D_SIZE_F? LastMeasureSize => _lastMeasureSize;
     protected D2D_RECT_F? LastArrangeRect => _lastArrangeRect;
@@ -1510,6 +1511,11 @@ public partial class Visual : BaseObject
         CompositionVisual = null;
 
         OnDetachedFromComposition(this, EventArgs.Empty);
+
+        if (DisposeOnDetachFromComposition && this is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
 
         foreach (var child in Children)
         {

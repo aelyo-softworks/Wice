@@ -13,7 +13,7 @@ using Windows.UI.Composition;
 
 namespace Wice
 {
-    public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IValueable, IPasswordCapable
+    public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IValueable, IPasswordCapable, IDisposable
     {
         public static VisualProperty ForegroundBrushProperty = VisualProperty.Add<Brush>(typeof(TextBox), nameof(ForegroundBrush), VisualPropertyInvalidateModes.Render, Application.CurrentTheme.TextBoxForegroundColor);
         public static VisualProperty HoverForegroundBrushProperty = VisualProperty.Add<Brush>(typeof(TextBox), nameof(HoverForegroundBrush), VisualPropertyInvalidateModes.Render);
@@ -70,6 +70,7 @@ namespace Wice
         private readonly UndoStack<UndoState> _undoStack = new UndoStack<UndoState>();
         private EventHandler<ValueEventArgs> _valueChanged;
         private bool _textHasChanged;
+        private bool _disposedValue;
 
         event EventHandler<ValueEventArgs> IValueable.ValueChanged { add { UIExtensions.AddEvent(ref _valueChanged, value); } remove { UIExtensions.RemoveEvent(ref _valueChanged, value); } }
         public event EventHandler<ValueEventArgs<string>> TextChanged;
@@ -390,12 +391,6 @@ namespace Wice
                 _rendered = false;
             }
             base.Invalidate(modes, reason);
-        }
-
-        protected override void OnDetachingFromComposition(object sender, EventArgs e)
-        {
-            base.OnDetachingFromComposition(sender, e);
-            Reset();
         }
 
         protected override void IsMouseOverChanged(bool newValue)
@@ -2848,5 +2843,24 @@ namespace Wice
             public DWRITE_VERTICAL_GLYPH_ORIENTATION verticalGlyphOrientation;
             public DWRITE_LINE_SPACING? lineSpacing;
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    // dispose managed state (managed objects)
+                    Interlocked.Exchange(ref _layout, null)?.Dispose();
+                }
+
+                // free unmanaged resources (unmanaged objects) and override finalizer
+                // set large fields to null
+                _disposedValue = true;
+            }
+        }
+
+        ~TextBox() { Dispose(disposing: false); }
+        public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
     }
 }
