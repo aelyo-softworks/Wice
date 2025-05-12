@@ -2505,7 +2505,8 @@ public partial class Visual : BaseObject
 
             if (!renderBounds.IsEmpty)
             {
-                Window?.AddVisual(this, ref renderBounds);
+                var rb = GetHitTestBounds(renderBounds);
+                Window?.AddVisual(this, ref rb);
             }
         }
 
@@ -2542,6 +2543,8 @@ public partial class Visual : BaseObject
             RenderBrushes();
         }
     }
+
+    protected virtual D2D_RECT_F GetHitTestBounds(D2D_RECT_F defaultBounds) => defaultBounds;
 
     protected virtual void RenderBrushes()
     {

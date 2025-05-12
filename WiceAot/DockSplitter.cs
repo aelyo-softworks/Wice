@@ -17,6 +17,9 @@ public partial class DockSplitter : Visual
     public Orientation Orientation { get; private set; }
 
     [Category(CategoryBehavior)]
+    public float HitTestTolerance { get; set; }
+
+    [Category(CategoryBehavior)]
     public float Size { get => (float)GetPropertyValue(SizeProperty)!; set => SetPropertyValue(SizeProperty, value); }
 
     protected override void OnAttachedToParent(object? sender, EventArgs e)
@@ -38,6 +41,19 @@ public partial class DockSplitter : Visual
             Height = size;
         }
         base.OnAttachedToParent(sender, e);
+    }
+
+    protected override D2D_RECT_F GetHitTestBounds(D2D_RECT_F defaultBounds)
+    {
+        var bounds = base.GetHitTestBounds(defaultBounds);
+        if (HitTestTolerance != 0)
+        {
+            bounds.left -= HitTestTolerance;
+            bounds.top -= HitTestTolerance;
+            bounds.right += HitTestTolerance;
+            bounds.bottom += HitTestTolerance;
+        }
+        return bounds;
     }
 
     protected override DragState CreateDragState(MouseButtonEventArgs e) => new SplitDragState(this, e);
