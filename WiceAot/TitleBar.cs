@@ -4,7 +4,7 @@
     {
         private bool _isMain;
 
-        public event EventHandler? Updated;
+        public event EventHandler<ValueEventArgs<SIZE>>? Updated;
 
         public TitleBar()
         {
@@ -135,7 +135,7 @@
             return size;
         }
 
-        protected virtual void OnUpdated(object sender, EventArgs e) => Updated?.Invoke(sender, e);
+        protected virtual void OnUpdated(object sender, ValueEventArgs<SIZE> e) => Updated?.Invoke(sender, e);
 
         protected virtual internal void Update()
         {
@@ -186,7 +186,20 @@
                 MaxButton.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
             }
 
-            OnUpdated(this, EventArgs.Empty);
+            foreach (var child in Children)
+            {
+                if (child is Button tb &&
+                    tb != CloseButton &&
+                    tb != MinButton &&
+                    tb != MaxButton)
+                {
+                    tb.Height = buttonSize.cy;
+                    tb.Width = buttonSize.cx;
+                    tb.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
+                }
+            }
+
+            OnUpdated(this, new ValueEventArgs<SIZE>(buttonSize));
         }
 
         protected override void OnAttachedToComposition(object? sender, EventArgs e)

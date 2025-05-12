@@ -78,8 +78,9 @@ public partial class TitleBarButton : ButtonBase
     }
 
     // this is dpi-adjusted but only when called *after* some message like SHOWWINDOW or NCPAINT (not sure)
-    internal unsafe static SIZE GetDpiAdjustedCaptionButtonSize(Window window)
+    public unsafe static SIZE GetDpiAdjustedCaptionButtonSize(Window window)
     {
+        ArgumentNullException.ThrowIfNull(window);
         var bounds = new RECT();
         var size = (uint)sizeof(RECT);
         Functions.DwmGetWindowAttribute(window.Handle, (uint)DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, (nint)(&bounds), size);
@@ -101,7 +102,7 @@ public partial class TitleBarButton : ButtonBase
         var dpi = window.Monitor?.EffectiveDpi.width;
         if (!dpi.HasValue)
         {
-            dpi = (uint)window.Dpi;
+            dpi = window.Dpi;
         }
 
         if (dpi == 96)

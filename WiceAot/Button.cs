@@ -32,8 +32,6 @@ public partial class Button : ButtonBase
         // to ensure button size is equal to content's size
         HorizontalAlignment = Alignment.Center;
         VerticalAlignment = Alignment.Center;
-        //Child.HorizontalAlignment = Alignment.Center;
-        //Child.VerticalAlignment = Alignment.Center;
     }
 
     [Browsable(false)]
@@ -41,6 +39,9 @@ public partial class Button : ButtonBase
 
     [Browsable(false)]
     public TextBox Text { get; }
+
+    [Browsable(false)]
+    public bool UpdateStyleFromTheme { get; set; } = true;
 
     private void OnIconPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -61,10 +62,13 @@ public partial class Button : ButtonBase
     protected override void UpdateStyle()
     {
         base.UpdateStyle();
-        var compositor = Compositor;
-        if (compositor != null)
+        if (UpdateStyleFromTheme)
         {
-            RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ButtonColor.ToColor());
+            var compositor = Compositor;
+            if (compositor != null)
+            {
+                RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ButtonColor.ToColor());
+            }
         }
     }
 
