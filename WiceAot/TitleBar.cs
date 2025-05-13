@@ -82,6 +82,23 @@
         [Browsable(false)]
         public Visual? CloseButton { get; }
 
+        [Browsable(false)]
+        public virtual IEnumerable<Visual> OtherVisuals
+        {
+            get
+            {
+                foreach (var child in Children)
+                {
+                    if (child != TitlePadding &&
+                        child != Title &&
+                        child != CloseButton &&
+                        child != MinButton &&
+                        child != MaxButton)
+                        yield return child;
+                }
+            }
+        }
+
         [Category(CategoryBehavior)]
         public virtual bool IsMain
         {
@@ -137,6 +154,27 @@
 
         protected virtual void OnUpdated(object sender, ValueEventArgs<SIZE> e) => Updated?.Invoke(sender, e);
 
+        // called when no frame
+        protected virtual internal HT? HitTest(D2D_RECT_F bounds)
+        {
+            if (CloseButton?.AbsoluteRenderBounds.Contains(bounds) == true)
+                return HT.HTCLOSE;
+
+            if (MaxButton?.AbsoluteRenderBounds.Contains(bounds) == true)
+                return HT.HTMAXBUTTON;
+
+            if (MinButton?.AbsoluteRenderBounds.Contains(bounds) == true)
+                return HT.HTMINBUTTON;
+
+            foreach (var other in OtherVisuals)
+            {
+                if (other.AbsoluteRenderBounds.Contains(bounds))
+                    return null;
+            }
+
+            return HT.HTCAPTION;
+        }
+
         protected virtual internal void Update()
         {
             var window = Window;
@@ -186,17 +224,11 @@
                 MaxButton.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
             }
 
-            foreach (var child in Children)
+            foreach (var child in OtherVisuals.OfType<ButtonBase>())
             {
-                if (child is Button tb &&
-                    tb != CloseButton &&
-                    tb != MinButton &&
-                    tb != MaxButton)
-                {
-                    tb.Height = buttonSize.cy;
-                    tb.Width = buttonSize.cx;
-                    tb.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
-                }
+                child.Height = buttonSize.cy;
+                child.Width = buttonSize.cx;
+                child.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
             }
 
             OnUpdated(this, new ValueEventArgs<SIZE>(buttonSize));

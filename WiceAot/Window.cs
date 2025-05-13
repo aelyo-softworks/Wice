@@ -3005,18 +3005,7 @@ public partial class Window : Canvas, ITitleBarParent
                                 var cli = D2D_RECT_F.Sized(clix, cliy, 0, 0);
                                 var titleBar = win.MainTitleBar;
                                 if (titleBar != null && titleBar.AbsoluteRenderBounds.Contains(cli))
-                                {
-                                    if (titleBar.CloseButton?.AbsoluteRenderBounds.Contains(cli) == true)
-                                        return HT.HTCLOSE;
-
-                                    if (titleBar.MaxButton?.AbsoluteRenderBounds.Contains(cli) == true)
-                                        return HT.HTMAXBUTTON;
-
-                                    if (titleBar.MinButton?.AbsoluteRenderBounds.Contains(cli) == true)
-                                        return HT.HTMINBUTTON;
-
-                                    return HT.HTCAPTION;
-                                }
+                                    return titleBar.HitTest(cli);
                             }
                             return null;
                         }
