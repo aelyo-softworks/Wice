@@ -301,7 +301,8 @@ public partial class Visual : BaseObject
     protected internal virtual bool DisablePointerEvents { get; set; }
     protected internal virtual bool DisableKeyEvents { get; set; }
     protected internal virtual bool HandlePointerEvents { get; set; }
-    protected internal virtual bool DisposeOnDetachFromComposition { get; set; } = true; // for IDisposable Visuals only
+    public virtual bool? DisposeOnDetachFromComposition { get; set; } = true; // for IDisposable Visuals only
+    public virtual bool? DisposeChidrenOnDetachFromComposition { get; set; } // for IDisposable Visuals only
 
     protected D2D_SIZE_F? LastMeasureSize => _lastMeasureSize;
     protected D2D_RECT_F? LastArrangeRect => _lastArrangeRect;
@@ -553,7 +554,7 @@ public partial class Visual : BaseObject
             else
             {
                 Window.ReleaseMouseCapture();
-                RemoveFromComposition(true);
+                RemoveFromComposition(true, null);
             }
             OnPropertyChanged();
         }
@@ -1487,7 +1488,7 @@ public partial class Visual : BaseObject
         visual.Dispose();
     }
 
-    private void RemoveFromComposition(bool includeComposition)
+    private void RemoveFromComposition(bool includeComposition, bool? disposeOnDetachFromComposition)
     {
         ResetState();
 
@@ -1512,14 +1513,34 @@ public partial class Visual : BaseObject
 
         OnDetachedFromComposition(this, EventArgs.Empty);
 
-        if (DisposeOnDetachFromComposition && this is IDisposable disposable)
+        // priority is local def first
+        var dispose = DisposeOnDetachFromComposition;
+        if (disposeOnDetachFromComposition == null)
+        {
+            dispose = disposeOnDetachFromComposition;
+        }
+
+        if (dispose == true && this is IDisposable disposable)
         {
             disposable.Dispose();
         }
 
+        var disposeChildren = DisposeChidrenOnDetachFromComposition;
+        if (disposeChildren == null)
+        {
+            if (disposeOnDetachFromComposition != null)
+            {
+                disposeChildren = disposeOnDetachFromComposition;
+            }
+            else if (DisposeOnDetachFromComposition != null)
+            {
+                disposeChildren = DisposeOnDetachFromComposition;
+            }
+        }
+
         foreach (var child in Children)
         {
-            child.RemoveFromComposition(false);
+            child.RemoveFromComposition(false, disposeChildren);
         }
     }
 

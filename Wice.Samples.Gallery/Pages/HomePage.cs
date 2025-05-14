@@ -1,14 +1,11 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 using DirectN;
 
 namespace Wice.Samples.Gallery.Pages
 {
-    public class HomePage : Page, IDisposable
+    public class HomePage : Page
     {
-        private readonly RichTextBox _rtb = new RichTextBox();
-
         public HomePage()
         {
             // home has no title
@@ -19,10 +16,14 @@ namespace Wice.Samples.Gallery.Pages
             sv.Viewer.IsWidthUnconstrained = false;
             Children.Add(sv);
 
-            _rtb.Padding = D2D_RECT_F.Thickness(0, 0, 20, 0);
-            _rtb.VerticalAlignment = Alignment.Near;
-            _rtb.Options |= TextHostOptions.WordWrap;
-            SetDockType(_rtb, DockType.Top);
+            var rtb = new RichTextBox
+            {
+                Padding = D2D_RECT_F.Thickness(0, 0, 20, 0),
+                VerticalAlignment = Alignment.Near,
+                DisposeOnDetachFromComposition = false,
+            };
+            rtb.Options |= TextHostOptions.WordWrap;
+            SetDockType(rtb, DockType.Top);
 
             // load from this assembly's resource
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(Program).Namespace + ".Resources.wice.rtf"))
@@ -37,19 +38,13 @@ namespace Wice.Samples.Gallery.Pages
                 // ManagedIStream is wrapped as IDispatch and this causes failure in dynamic DLR code
                 // "COMException: Cannot marshal 'parameter #1': Invalid managed/unmanaged type combination"
                 var unk = new UnknownWrapper(new ManagedIStream(stream));
-                _rtb.Document.Open(unk, 0, CP_UNICODE);
+                rtb.Document.Open(unk, 0, CP_UNICODE);
             }
 
-            sv.Viewer.Child = _rtb;
+            sv.Viewer.Child = rtb;
         }
 
         public override string IconText => MDL2GlyphResource.Home;
         public override int SortOrder => 0;
-
-        public void Dispose()
-        {
-            _rtb?.Dispose();
-            GC.SuppressFinalize(this);
-        }
     }
 }

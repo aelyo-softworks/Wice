@@ -168,9 +168,6 @@ namespace Wice.Samples.Gallery
             text.SetTypography(typo.DWriteTypography.Object);
         }
 
-        public void Dispose()
-        {
-            _pages.Dispose();
-        }
+        public void Dispose() => _pages.Dispose();
     }
 }

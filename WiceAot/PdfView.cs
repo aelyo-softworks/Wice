@@ -18,6 +18,7 @@ public partial class PdfView : RenderVisual, IDisposable
     private static bool OnPageChanging(BaseObject obj, object? newValue, object? oldValue) => ((PdfView)obj).OnPageChanging((int)newValue!);
 
     public event EventHandler<EventArgs>? DocumentLoaded;
+    public event EventHandler<EventArgs>? DocumentLoadError;
     public event EventHandler<EventArgs>? DocumentDisposed;
     public event EventHandler<EventArgs>? PageChanged;
 
@@ -141,9 +142,17 @@ public partial class PdfView : RenderVisual, IDisposable
         }
         catch (Exception ex)
         {
-            LoadError = ex;
-            throw;
+            if (OnLoadError(ex))
+                throw;
         }
+    }
+
+    protected virtual bool OnLoadError(Exception exception)
+    {
+        ArgumentNullException.ThrowIfNull(exception);
+        LoadError = exception;
+        OnDocumentLoadError(this, EventArgs.Empty);
+        return true;
     }
 
     protected virtual PdfPage? EnsurePage()
@@ -227,6 +236,7 @@ public partial class PdfView : RenderVisual, IDisposable
     protected virtual void OnDocumentDisposed(object sender, EventArgs args) => DocumentDisposed?.Invoke(sender, args);
     protected virtual void OnDocumentLoaded(object sender, EventArgs args) => DocumentLoaded?.Invoke(sender, args);
     protected virtual void OnPageChanged(object sender, EventArgs args) => PageChanged?.Invoke(sender, args);
+    protected virtual void OnDocumentLoadError(object sender, EventArgs args) => DocumentLoadError?.Invoke(sender, args);
 
     protected virtual void Dispose(bool disposing)
     {

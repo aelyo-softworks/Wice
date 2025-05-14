@@ -5,24 +5,25 @@ using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Text.RichTextBox
 {
-    public class DocumentRichTextBoxSample : RichTextBoxSample
+    public class DocumentRichTextBoxSample : Sample
     {
         public override string Description => "A rich text box filled from an RTF stream.";
         public override int SortOrder => 1;
 
         public override void Layout(Visual parent)
         {
-            parent.Children.Add(Rtb);
-            Dock.SetDockType(Rtb, DockType.Top);
+            var rtb = new Wice.RichTextBox();
+            parent.Children.Add(rtb);
+            Dock.SetDockType(rtb, DockType.Top);
 
-            Rtb.MaxWidth = 500;
-            Rtb.MaxHeight = 400;
-            Rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
-            Rtb.Padding = D2D_RECT_F.Thickness(10);
-            Rtb.Margin = D2D_RECT_F.Thickness(10);
+            rtb.MaxWidth = 500;
+            rtb.MaxHeight = 400;
+            rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
+            rtb.Padding = D2D_RECT_F.Thickness(10);
+            rtb.Margin = D2D_RECT_F.Thickness(10);
 
             // Document is a COM IDispatch object. Cf https://docs.microsoft.com/en-us/windows/win32/api/tom/nf-tom-itextdocument-open
-            dynamic doc = Rtb.Document;
+            dynamic doc = rtb.Document;
 
             // load text from this assembly's resources
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Wice.Samples.Gallery.Resources.wice.rtf"))

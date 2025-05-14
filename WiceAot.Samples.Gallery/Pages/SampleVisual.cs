@@ -2,14 +2,10 @@
 
 public partial class SampleVisual : Dock
 {
-    private readonly Sample _sample;
-    private CodeBox? _codeBox;
-
     public SampleVisual(Sample sample)
     {
         ArgumentNullException.ThrowIfNull(sample);
 
-        _sample = sample;
         var desc = sample.Description.Nullify();
         if (desc != null)
         {
@@ -44,7 +40,7 @@ public partial class SampleVisual : Dock
             var text = sample.GetSampleText();
             if (text != null)
             {
-                _codeBox = new CodeBox
+                var _codeBox = new CodeBox
                 {
                     Margin = D2D_RECT_F.Thickness(0, 10, 0, 0),
                     RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
@@ -57,15 +53,5 @@ public partial class SampleVisual : Dock
                 dock.Children.Add(_codeBox);
             }
         });
-    }
-
-    protected override void OnDetachedFromComposition(object? sender, EventArgs e)
-    {
-        base.OnDetachedFromComposition(sender, e);
-        _codeBox?.Dispose();
-        if (_sample is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
     }
 }

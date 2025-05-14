@@ -3,11 +3,8 @@ using WinRT.Interop;
 
 namespace Wice.Samples.Gallery.Samples.Media.PdfView;
 
-public class PdfViewSample : Sample, IDisposable
+public class PdfViewSample : Sample
 {
-    private bool _disposedValue;
-    private Wice.PdfView? _pdfView;
-
     public override string Description => "A visual that hosts PDF content with transparency support.";
 
     public override void Layout(Visual parent)
@@ -16,9 +13,10 @@ public class PdfViewSample : Sample, IDisposable
         Dock.SetDockType(dock, DockType.Top); // remove from display
         parent.Children.Add(dock); // remove from display
 
-        var pdfView = new Wice.PdfView();
-        _pdfView = pdfView; // remove from display
-        pdfView.HorizontalAlignment = Alignment.Center;
+        var pdfView = new Wice.PdfView
+        {
+            HorizontalAlignment = Alignment.Center
+        };
         Dock.SetDockType(pdfView, DockType.Top); // remove from display
         pdfView.Height = 600;
         pdfView.Margin = 10;
@@ -62,27 +60,5 @@ public class PdfViewSample : Sample, IDisposable
         {
             pagesCount.Text = $"Page {1 + pdfView.CurrentPage}/{pdfView.PagesCount}";
         });
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
-                // dispose managed state (managed objects)
-                _pdfView?.Dispose();
-            }
-
-            // free unmanaged resources (unmanaged objects) and override finalizer
-            // set large fields to null
-            _disposedValue = true;
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-        GC.SuppressFinalize(this);
     }
 }

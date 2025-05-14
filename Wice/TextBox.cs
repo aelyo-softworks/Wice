@@ -2844,6 +2844,12 @@ namespace Wice
             public DWRITE_LINE_SPACING? lineSpacing;
         }
 
+        protected override void OnDetachingFromComposition(object sender, EventArgs e)
+        {
+            base.OnDetachingFromComposition(sender, e);
+            Reset();
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)

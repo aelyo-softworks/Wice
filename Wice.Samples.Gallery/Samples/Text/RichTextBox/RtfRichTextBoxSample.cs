@@ -3,21 +3,22 @@ using Wice.Utilities;
 
 namespace Wice.Samples.Gallery.Samples.Text.RichTextBox
 {
-    public class RtfRichTextBoxSample : RichTextBoxSample
+    public class RtfRichTextBoxSample : Sample
     {
         public override string Description => "A rich text box filled from an RTF string.";
         public override int SortOrder => 2;
 
         public override void Layout(Visual parent)
         {
-            parent.Children.Add(Rtb);
-            Dock.SetDockType(Rtb, DockType.Top);
+            var rtb = new Wice.RichTextBox();
+            parent.Children.Add(rtb);
+            Dock.SetDockType(rtb, DockType.Top);
 
-            Rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
-            Rtb.Padding = D2D_RECT_F.Thickness(10);
-            Rtb.Margin = D2D_RECT_F.Thickness(10);
+            rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
+            rtb.Padding = D2D_RECT_F.Thickness(10);
+            rtb.Margin = D2D_RECT_F.Thickness(10);
 
-            Rtb.RtfText = @"{\rtf1\ansi\deff0
+            rtb.RtfText = @"{\rtf1\ansi\deff0
                 {\coloRtbl;\red0\green0\blue0;\red255\green0\blue0;}
                 This line is the default color\line
                 \cf2
