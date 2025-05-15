@@ -9,44 +9,43 @@ namespace Wice.Samples.Gallery.Samples.Layout.Dock
 
         public override void Layout(Visual parent)
         {
-            var canvas = new Wice.Canvas();
-            canvas.Width = 120;
-            canvas.Height = 120;
-            canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray.ToColor());
-            parent.Children.Add(canvas);
-            Wice.Dock.SetDockType(canvas, DockType.Top); // remove from display
+            var dock = new Wice.Dock();
+            dock.Width = 120;
+            dock.Height = 120;
+            dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray.ToColor());
+            parent.Children.Add(dock);
+            Wice.Dock.SetDockType(dock, DockType.Top); // remove from display
 
             var b0 = new Wice.Border();
+            Wice.Dock.SetDockType(b0, DockType.Top);
             b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
             b0.Width = 40;
             b0.Height = 40;
-            Wice.Canvas.SetLeft(b0, 0);
-            Wice.Canvas.SetTop(b0, 0);
-            canvas.Children.Add(b0);
+            dock.Children.Add(b0);
 
             var b1 = new Wice.Border();
+            Wice.Dock.SetDockType(b1, DockType.Left);
+            b1.VerticalAlignment = Alignment.Near;
             b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
             b1.Width = 40;
             b1.Height = 40;
-            Wice.Canvas.SetLeft(b1, 0);
-            Wice.Canvas.SetBottom(b1, 0);
-            canvas.Children.Add(b1);
+            dock.Children.Add(b1);
 
             var b2 = new Wice.Border();
+            Wice.Dock.SetDockType(b2, DockType.Right);
+            b2.VerticalAlignment = Alignment.Near;
             b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
             b2.Width = 40;
             b2.Height = 40;
-            Wice.Canvas.SetRight(b2, 0);
-            Wice.Canvas.SetTop(b2, 0);
-            canvas.Children.Add(b2);
+            dock.Children.Add(b2);
 
             var b3 = new Wice.Border();
+            Wice.Dock.SetDockType(b3, DockType.Bottom);
+            b3.VerticalAlignment = Alignment.Far;
             b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
             b3.Width = 40;
             b3.Height = 40;
-            Wice.Canvas.SetRight(b3, 0);
-            Wice.Canvas.SetBottom(b3, 0);
-            canvas.Children.Add(b3);
+            dock.Children.Add(b3);
         }
     }
 }

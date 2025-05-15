@@ -46,7 +46,8 @@ namespace Wice.Tests
             //AddCounter(1);
             //AddDrawTextCounter(10);
 
-            Pager();
+            ShowTabs();
+            //Pager();
             //AddScrollableReadOnlyText();
             //AddDrawText(this);
             //AddReadOnlyText();
@@ -163,6 +164,28 @@ namespace Wice.Tests
                     label.Text = DateTime.Now.ToString();
                 });
             }, null, 0, 1000);
+        }
+
+        public void ShowTabs()
+        {
+            var tabs = new Tab();
+            tabs.Margin = 10;
+            tabs.VerticalAlignment = Alignment.Near;
+            tabs.PagesHeader.Height = 40;
+            //tabs.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
+            Children.Add(tabs);
+
+            var page1 = new TabPage();
+            page1.Header.Text.Text = "Page 1";
+            //page1.Header.Text.BackgroundColor = _D3DCOLORVALUE.Red;
+            page1.Header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0).ToColor());
+            tabs.Pages.Add(page1);
+
+            var page2 = new TabPage();
+            page2.Header.Text.Text = "Page 2";
+            //page2.Header.Text.BackgroundColor = _D3DCOLORVALUE.Blue;
+            page2.Header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0).ToColor());
+            tabs.Pages.Add(page2);
         }
 
         public void LongRunWithCursor()

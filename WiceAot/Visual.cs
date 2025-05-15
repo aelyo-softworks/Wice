@@ -301,7 +301,11 @@ public partial class Visual : BaseObject
     protected internal virtual bool DisablePointerEvents { get; set; }
     protected internal virtual bool DisableKeyEvents { get; set; }
     protected internal virtual bool HandlePointerEvents { get; set; }
+
+    [Browsable(false)]
     public virtual bool? DisposeOnDetachFromComposition { get; set; } = true; // for IDisposable Visuals only
+
+    [Browsable(false)]
     public virtual bool? DisposeChidrenOnDetachFromComposition { get; set; } // for IDisposable Visuals only
 
     protected D2D_SIZE_F? LastMeasureSize => _lastMeasureSize;

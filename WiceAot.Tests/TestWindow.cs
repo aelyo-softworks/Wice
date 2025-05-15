@@ -24,8 +24,9 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
+        ShowTabs();
         //ShowWebView();
-        ShowPdfView();
+        //ShowPdfView();
         //ZoomableImageWithSV();
         //Pager();
         //ShowProgressBar();
@@ -57,6 +58,23 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void ShowTabs()
+    {
+        var tabs = new Tab();
+        tabs.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
+        Children.Add(tabs);
+
+        var page1 = new TabPage();
+        page1.Header.Text.Text = "Page 1";
+        page1.Header.Text.BackgroundColor = D3DCOLORVALUE.Red;
+        tabs.Pages.Add(page1);
+
+        var page2 = new TabPage();
+        page2.Header.Text.Text = "Page 2";
+        page2.Header.Text.BackgroundColor = D3DCOLORVALUE.Blue;
+        tabs.Pages.Add(page2);
     }
 
     public void ShowPdfView()

@@ -179,16 +179,6 @@ namespace Wice
 
         internal static D2D_SIZE_F MeasureCore(Visual visual, D2D_SIZE_F constraint, DimensionOptions sizeToContent)
         {
-            //if (visual.HorizontalAlignment == Alignment.Stretch && constraint.width.IsSet())
-            //{
-            //    childConstraint.width = constraint.width;
-            //}
-
-            //if (visual.VerticalAlignment == Alignment.Stretch && constraint.height.IsSet())
-            //{
-            //    childConstraint.height = constraint.height;
-            //}
-
             D2D_RECT_F? rect = null;
             var children = visual.VisibleChildren.ToArray();
             foreach (var child in children)

@@ -786,43 +786,42 @@ warning restore IDE0017 // Simplify object initialization
 }</sample>
   <sample namespace="Samples.Layout.Dock.SimpleDockSample">void Layout(Visual parent)
 {
-    var canvas = new Canvas();
-    canvas.Width = 120;
-    canvas.Height = 120;
-    canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray.ToColor());
-    parent.Children.Add(canvas);
+    var dock = new Dock();
+    dock.Width = 120;
+    dock.Height = 120;
+    dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray.ToColor());
+    parent.Children.Add(dock);
 
     var b0 = new Border();
+    Dock.SetDockType(b0, DockType.Top);
     b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
     b0.Width = 40;
     b0.Height = 40;
-    Canvas.SetLeft(b0, 0);
-    Canvas.SetTop(b0, 0);
-    canvas.Children.Add(b0);
+    dock.Children.Add(b0);
 
     var b1 = new Border();
+    Dock.SetDockType(b1, DockType.Left);
+    b1.VerticalAlignment = Alignment.Near;
     b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
     b1.Width = 40;
     b1.Height = 40;
-    Canvas.SetLeft(b1, 0);
-    Canvas.SetBottom(b1, 0);
-    canvas.Children.Add(b1);
+    dock.Children.Add(b1);
 
     var b2 = new Border();
+    Dock.SetDockType(b2, DockType.Right);
+    b2.VerticalAlignment = Alignment.Near;
     b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
     b2.Width = 40;
     b2.Height = 40;
-    Canvas.SetRight(b2, 0);
-    Canvas.SetTop(b2, 0);
-    canvas.Children.Add(b2);
+    dock.Children.Add(b2);
 
     var b3 = new Border();
+    Dock.SetDockType(b3, DockType.Bottom);
+    b3.VerticalAlignment = Alignment.Far;
     b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
     b3.Width = 40;
     b3.Height = 40;
-    Canvas.SetRight(b3, 0);
-    Canvas.SetBottom(b3, 0);
-    canvas.Children.Add(b3);
+    dock.Children.Add(b3);
 }</sample>
   <sample namespace="Samples.Layout.DockSplitter.SimpleDockSplitterSample">void Layout(Visual parent)
 {
@@ -1385,17 +1384,18 @@ warning restore IDE0017 // Simplify object initialization
 }</sample>
   <sample namespace="Samples.Text.RichTextBox.DocumentRichTextBoxSample">void Layout(Visual parent)
 {
-    parent.Children.Add(Rtb);
-    Dock.SetDockType(Rtb, DockType.Top);
+    var rtb = new RichTextBox();
+    parent.Children.Add(rtb);
+    Dock.SetDockType(rtb, DockType.Top);
 
-    Rtb.MaxWidth = 500;
-    Rtb.MaxHeight = 400;
-    Rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
-    Rtb.Padding = D2D_RECT_F.Thickness(10);
-    Rtb.Margin = D2D_RECT_F.Thickness(10);
+    rtb.MaxWidth = 500;
+    rtb.MaxHeight = 400;
+    rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
+    rtb.Padding = D2D_RECT_F.Thickness(10);
+    rtb.Margin = D2D_RECT_F.Thickness(10);
 
     // Document is a COM IDispatch object. Cf https://docs.microsoft.com/en-us/windows/win32/api/tom/nf-tom-itextdocument-open
-    dynamic doc = Rtb.Document;
+    dynamic doc = rtb.Document;
 
     // load text from this assembly's resources
     using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Samples.Gallery.Resources.wice.rtf"))
@@ -1409,14 +1409,15 @@ warning restore IDE0017 // Simplify object initialization
 }</sample>
   <sample namespace="Samples.Text.RichTextBox.RtfRichTextBoxSample">void Layout(Visual parent)
 {
-    parent.Children.Add(Rtb);
-    Dock.SetDockType(Rtb, DockType.Top);
+    var rtb = new RichTextBox();
+    parent.Children.Add(rtb);
+    Dock.SetDockType(rtb, DockType.Top);
 
-    Rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
-    Rtb.Padding = D2D_RECT_F.Thickness(10);
-    Rtb.Margin = D2D_RECT_F.Thickness(10);
+    rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
+    rtb.Padding = D2D_RECT_F.Thickness(10);
+    rtb.Margin = D2D_RECT_F.Thickness(10);
 
-    Rtb.RtfText = @"{\rtf1\ansi\deff0
+    rtb.RtfText = @"{\rtf1\ansi\deff0
         {\coloRtbl;\red0\green0\blue0;\red255\green0\blue0;}
         This line is the default color\line
         \cf2
@@ -1427,13 +1428,14 @@ warning restore IDE0017 // Simplify object initialization
 }</sample>
   <sample namespace="Samples.Text.RichTextBox.SimpleRichTextBoxSample">void Layout(Visual parent)
 {
-    parent.Children.Add(Rtb);
-    Dock.SetDockType(Rtb, DockType.Top);
+    var rtb = new RichTextBox();
+    parent.Children.Add(rtb);
+    Dock.SetDockType(rtb, DockType.Top);
 
-    Rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.GreenYellow.ToColor());
-    Rtb.Padding = D2D_RECT_F.Thickness(10);
-    Rtb.Margin = D2D_RECT_F.Thickness(10);
-    Rtb.Text = "Hello World";
+    rtb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.GreenYellow.ToColor());
+    rtb.Padding = D2D_RECT_F.Thickness(10);
+    rtb.Margin = D2D_RECT_F.Thickness(10);
+    rtb.Text = "Hello World";
 }</sample>
   <sample namespace="Samples.Text.TextBox.ColorFontTextBoxSample">void Layout(Visual parent)
 {

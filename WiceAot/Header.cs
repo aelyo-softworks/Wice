@@ -131,11 +131,6 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
 
         if (property == IsSelectedProperty)
         {
-            if (RaiseIsSelectedChanged)
-            {
-                OnIsSelectedChanged(this, new ValueEventArgs<bool>(IsSelected));
-            }
-
             if (SelectedButton.IsVisible)
             {
                 var target = SelectedButton.Child;
@@ -171,6 +166,11 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
             {
                 Selection.IsVisible = IsSelected;
                 Selection.Width = Application.CurrentTheme.HeaderSelectionWidth;
+            }
+
+            if (RaiseIsSelectedChanged)
+            {
+                OnIsSelectedChanged(this, new ValueEventArgs<bool>(IsSelected));
             }
         }
 
