@@ -56,14 +56,23 @@
 	  <Compile Include="..\WiceAot\BaseObjectPropertyOptions.cs" Link="BaseObjectPropertyOptions.cs" />
 	  <Compile Include="..\WiceAot\BaseObjectSetOptions.cs" Link="BaseObjectSetOptions.cs" />
 	  <Compile Include="..\WiceAot\Brush.cs" Link="Brush.cs" />
+	  <Compile Include="..\WiceAot\ClosingEventArgs.cs" Link="ClosingEventArgs.cs" />
+	  <Compile Include="..\WiceAot\CollectionChangedInvalidateReason.cs" Link="CollectionChangedInvalidateReason.cs" />
 	  <Compile Include="..\WiceAot\CompositionUpdateParts.cs" Link="CompositionUpdateParts.cs" />
 	  <Compile Include="..\WiceAot\DataSourceEnumerateOptions.cs" Link="DataSourceEnumerateOptions.cs" />
 	  <Compile Include="..\WiceAot\DimensionOptions.cs" Link="DimensionOptions.cs" />
 	  <Compile Include="..\WiceAot\DockType.cs" Link="DockType.cs" />
+	  <Compile Include="..\WiceAot\DpiChangedEventArgs.cs" Link="DpiChangedEventArgs.cs" />
+	  <Compile Include="..\WiceAot\DragDropEventArgs.cs" Link="DragDropEventArgs.cs" />
 	  <Compile Include="..\WiceAot\DragDropEventType.cs" Link="DragDropEventType.cs" />
 	  <Compile Include="..\WiceAot\DragDropGiveFeedback.cs" Link="DragDropGiveFeedback.cs" />
+	  <Compile Include="..\WiceAot\DragDropQueryContinueEventArgs.cs" Link="DragDropQueryContinueEventArgs.cs" />
+	  <Compile Include="..\WiceAot\DragDropSourceEventArgs.cs" Link="DragDropSourceEventArgs.cs" />
 	  <Compile Include="..\WiceAot\DragDropSourceEventType.cs" Link="DragDropSourceEventType.cs" />
+	  <Compile Include="..\WiceAot\DragDropTargetEventArgs.cs" Link="DragDropTargetEventArgs.cs" />
 	  <Compile Include="..\WiceAot\DragDropTargetEventType.cs" Link="DragDropTargetEventType.cs" />
+	  <Compile Include="..\WiceAot\DragEventArgs.cs" Link="DragEventArgs.cs" />
+	  <Compile Include="..\WiceAot\DragState.cs" Link="DragState.cs" />
 	  <Compile Include="..\WiceAot\EditorMode.cs" Link="EditorMode.cs" />
 	  <Compile Include="..\WiceAot\Effects\AffineTransformEffect.cs" Link="Effects\AffineTransformEffect.cs" />
 	  <Compile Include="..\WiceAot\Effects\AlphaMaskEffect.cs" Link="Effects\AlphaMaskEffect.cs" />
@@ -130,8 +139,12 @@
 	  <Compile Include="..\WiceAot\Effects\UnpremultiplyEffect.cs" Link="Effects\UnpremultiplyEffect.cs" />
 	  <Compile Include="..\WiceAot\Effects\VignetteEffect.cs" Link="Effects\VignetteEffect.cs" />
 	  <Compile Include="..\WiceAot\Effects\WhiteLevelAdjustmentEffect.cs" Link="Effects\WhiteLevelAdjustmentEffect.cs" />
+	  <Compile Include="..\WiceAot\EventTrigger.cs" Link="EventTrigger.cs" />
 	  <Compile Include="..\WiceAot\FocusDirection.cs" Link="FocusDirection.cs" />
 	  <Compile Include="..\WiceAot\GetRectOptions.cs" Link="GetRectOptions.cs" />
+	  <Compile Include="..\WiceAot\GridColumn.cs" Link="GridColumn.cs" />
+	  <Compile Include="..\WiceAot\GridDimension.cs" Link="GridDimension.cs" />
+	  <Compile Include="..\WiceAot\GridRow.cs" Link="GridRow.cs" />
 	  <Compile Include="..\WiceAot\IAccessKeyParent.cs" Link="IAccessKeyParent.cs" />
 	  <Compile Include="..\WiceAot\IBindingDisplayName.cs" Link="IBindingDisplayName.cs" />
 	  <Compile Include="..\WiceAot\IClickable.cs" Link="IClickable.cs" />
@@ -152,21 +165,40 @@
 	  <Compile Include="..\WiceAot\ITitleBarParent.cs" Link="ITitleBarParent.cs" />
 	  <Compile Include="..\WiceAot\IValueable.cs" Link="IValueable.cs" />
 	  <Compile Include="..\WiceAot\IViewerParent.cs" Link="IViewerParent.cs" />
+	  <Compile Include="..\WiceAot\KeyEventArgs.cs" Link="KeyEventArgs.cs" />
+	  <Compile Include="..\WiceAot\KeyPressEventArgs.cs" Link="KeyPressEventArgs.cs" />
+	  <Compile Include="..\WiceAot\LinearGradientBrush.cs" Link="LinearGradientBrush.cs" />
 	  <Compile Include="..\WiceAot\MouseButton.cs" Link="MouseButton.cs" />
+	  <Compile Include="..\WiceAot\MouseButtonEventArgs.cs" Link="MouseButtonEventArgs.cs" />
+	  <Compile Include="..\WiceAot\MouseEventArgs.cs" Link="MouseEventArgs.cs" />
+	  <Compile Include="..\WiceAot\MouseWheelEventArgs.cs" Link="MouseWheelEventArgs.cs" />
 	  <Compile Include="..\WiceAot\Orientation.cs" Link="Orientation.cs" />
 	  <Compile Include="..\WiceAot\PlacementMode.cs" Link="PlacementMode.cs" />
+	  <Compile Include="..\WiceAot\PointerActivateEventArgs.cs" Link="PointerActivateEventArgs.cs" />
+	  <Compile Include="..\WiceAot\PointerContactChangedEventArgs.cs" Link="PointerContactChangedEventArgs.cs" />
+	  <Compile Include="..\WiceAot\PointerDragEventArgs.cs" Link="PointerDragEventArgs.cs" />
+	  <Compile Include="..\WiceAot\PointerEnterEventArgs.cs" Link="PointerEnterEventArgs.cs" />
+	  <Compile Include="..\WiceAot\PointerEventArgs.cs" Link="PointerEventArgs.cs" />
+	  <Compile Include="..\WiceAot\PointerLeaveEventArgs.cs" Link="PointerLeaveEventArgs.cs" />
+	  <Compile Include="..\WiceAot\PointerPositionEventArgs.cs" Link="PointerPositionEventArgs.cs" />
+	  <Compile Include="..\WiceAot\PointerUpdateEventArgs.cs" Link="PointerUpdateEventArgs.cs" />
+	  <Compile Include="..\WiceAot\PointerWheelEventArgs.cs" Link="PointerWheelEventArgs.cs" />
 	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridCategoryOptionsAttribute.cs" Link="PropertyGrid\PropertyGridCategoryOptionsAttribute.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridItem.cs" Link="PropertyGrid\PropertyGridItem.cs" />
+	  <Compile Include="..\WiceAot\RadialGradientBrush.cs" Link="RadialGradientBrush.cs" />
 	  <Compile Include="..\WiceAot\ScrollBarMode.cs" Link="ScrollBarMode.cs" />
 	  <Compile Include="..\WiceAot\ScrollBarVisibility.cs" Link="ScrollBarVisibility.cs" />
 	  <Compile Include="..\WiceAot\ScrollViewerMode.cs" Link="ScrollViewerMode.cs" />
 	  <Compile Include="..\WiceAot\SelectionMode.cs" Link="SelectionMode.cs" />
+	  <Compile Include="..\WiceAot\SolidColorBrush.cs" Link="SolidColorBrush.cs" />
 	  <Compile Include="..\WiceAot\Stretch.cs" Link="Stretch.cs" />
 	  <Compile Include="..\WiceAot\StretchDirection.cs" Link="StretchDirection.cs" />
 	  <Compile Include="..\WiceAot\SurfaceCreationOptions.cs" Link="SurfaceCreationOptions.cs" />
 	  <Compile Include="..\WiceAot\TextBoxSetSelection.cs" Link="TextBoxSetSelection.cs" />
+	  <Compile Include="..\WiceAot\TextFormat.cs" Link="TextFormat.cs" />
 	  <Compile Include="..\WiceAot\TitleBarButtonType.cs" Link="TitleBarButtonType.cs" />
+	  <Compile Include="..\WiceAot\Typography.cs" Link="Typography.cs" />
 	  <Compile Include="..\WiceAot\Utilities\AssemblyResourceStreamer.cs" Link="Utilities\AssemblyResourceStreamer.cs" />
 	  <Compile Include="..\WiceAot\Utilities\CompositionObjectEqualityComparer.cs" Link="Utilities\CompositionObjectEqualityComparer.cs" />
 	  <Compile Include="..\WiceAot\Utilities\CompositionUtilities.cs" Link="Utilities\CompositionUtilities.cs" />
@@ -184,9 +216,12 @@
 	  <Compile Include="..\WiceAot\Utilities\UndoStack.cs" Link="Utilities\UndoStack.cs" />
 	  <Compile Include="..\WiceAot\ValueEventArgs.cs" Link="ValueEventArgs.cs" />
 	  <Compile Include="..\WiceAot\VisualDoOptions.cs" Link="VisualDoOptions.cs" />
+	  <Compile Include="..\WiceAot\VisualProperty.cs" Link="VisualProperty.cs" />
 	  <Compile Include="..\WiceAot\VisualPropertyInvalidateModes.cs" Link="VisualPropertyInvalidateModes.cs" />
 	  <Compile Include="..\WiceAot\VisualSetOptions.cs" Link="VisualSetOptions.cs" />
+	  <Compile Include="..\WiceAot\WiceException.cs" Link="WiceException.cs" />
 	  <Compile Include="..\WiceAot\WindowsFrameMode.cs" Link="WindowsFrameMode.cs" />
+	  <Compile Include="..\WiceAot\WindowTimer.cs" Link="WindowTimer.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -237,6 +272,7 @@
 		<Using Include="Windows.UI.Composition.Core" />
 		<Using Include="Windows.UI.Composition.Diagnostics" />
 		<Using Alias="D3DCOLORVALUE" Include="DirectN._D3DCOLORVALUE" />
+		<Using Alias="POINT" Include="DirectN.tagPOINT" />
 		<Using Alias="RECT" Include="DirectN.tagRECT" />
 		<Using Alias="VIRTUAL_KEY" Include="DirectN.VirtualKeys" />
 	</ItemGroup>

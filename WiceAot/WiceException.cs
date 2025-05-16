@@ -37,7 +37,11 @@ public class WiceException : Exception
         if (pos < 0)
             return -1;
 
+#if NETFRAMEWORK
+        if (int.TryParse(message.Substring(Prefix.Length, pos - Prefix.Length), NumberStyles.None, CultureInfo.InvariantCulture, out var i))
+#else
         if (int.TryParse(message.AsSpan(Prefix.Length, pos - Prefix.Length), NumberStyles.None, CultureInfo.InvariantCulture, out var i))
+#endif
             return i;
 
         return -1;

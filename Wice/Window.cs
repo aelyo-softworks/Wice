@@ -3174,7 +3174,7 @@ namespace Wice
                     pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
                     pt = win.Native.ScreenToClient(pt);
                     var pce = new PointerContactChangedEventArgs(
-                        WindowsFunctions.GetPointerId(wParam),
+                        (uint)WindowsFunctions.GetPointerId(wParam),
                         pt.x,
                         pt.y,
                         WindowsFunctions.GetPointerFlags(wParam),
@@ -3295,7 +3295,7 @@ namespace Wice
                     pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
                     pt = win.Native.ScreenToClient(pt);
                     orientation = msg == MessageDecoder.WM_POINTERHWHEEL ? Orientation.Horizontal : Orientation.Vertical;
-                    var pwe = new PointerWheelEventArgs(WindowsFunctions.GetPointerId(wParam), pt.x, pt.y, wParam.SignedHIWORD(), orientation);
+                    var pwe = new PointerWheelEventArgs((uint)WindowsFunctions.GetPointerId(wParam), pt.x, pt.y, wParam.SignedHIWORD(), orientation);
                     win.OnPointerWheelEvent(pwe);
 
                     // unhandled? send as mouse event
@@ -3317,7 +3317,7 @@ namespace Wice
 
                 case MessageDecoder.WM_POINTERACTIVATE:
                     ht = (HT)DirectN.Extensions.SignedHIWORD(wParam);
-                    var ea = new PointerActivateEventArgs(WindowsFunctions.GetPointerId(wParam), lParam, ht);
+                    var ea = new PointerActivateEventArgs((uint)WindowsFunctions.GetPointerId(wParam), lParam, ht);
                     var pa = win.OnPointerActivate(ea);
                     if (pa == PA.PA_DONT_HANDLE)
                     {
@@ -3387,7 +3387,7 @@ namespace Wice
                     pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
                     pt = win.Native.ScreenToClient(pt);
                     var ppe = new PointerUpdateEventArgs(
-                        WindowsFunctions.GetPointerId(wParam),
+                        (uint)WindowsFunctions.GetPointerId(wParam),
                         pt.x,
                         pt.y,
                         WindowsFunctions.GetPointerFlags(wParam)
@@ -3444,7 +3444,7 @@ namespace Wice
                     pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
                     pt = win.Native.ScreenToClient(pt);
                     win.OnPointerEnter(new PointerEnterEventArgs(
-                        WindowsFunctions.GetPointerId(wParam),
+                        (uint)WindowsFunctions.GetPointerId(wParam),
                         pt.x,
                         pt.y,
                         WindowsFunctions.GetPointerFlags(wParam)));
@@ -3454,7 +3454,7 @@ namespace Wice
                     pt = new tagPOINT(lParam.SignedLOWORD(), lParam.SignedHIWORD());
                     pt = win.Native.ScreenToClient(pt);
                     win.OnPointerLeave(new PointerLeaveEventArgs(
-                        WindowsFunctions.GetPointerId(wParam),
+                        (uint)WindowsFunctions.GetPointerId(wParam),
                         pt.x,
                         pt.y,
                         WindowsFunctions.GetPointerFlags(wParam))); break;
@@ -3517,7 +3517,7 @@ namespace Wice
 
                 case MessageDecoder.WM_CHAR:
                 case MessageDecoder.WM_SYSCHAR:
-                    var e = new KeyPressEventArgs(wParam.ToInt32());
+                    var e = new KeyPressEventArgs((uint)wParam.ToInt32());
                     win.OnKeyPressEvent(e);
                     if (e.Handled)
                         break;

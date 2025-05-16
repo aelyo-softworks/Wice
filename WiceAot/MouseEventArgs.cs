@@ -25,13 +25,13 @@ public class MouseEventArgs(int x, int y, POINTER_MOD vk) : HandledEventArgs
 
     public POINT GetPosition(Visual visual)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
         return visual.GetRelativePosition(X, Y);
     }
 
     public bool Hits(Visual visual)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
         var size = visual.RenderSize;
         if (size.IsInvalid)
             return false;

@@ -4,8 +4,8 @@ public class DragState
 {
     public DragState(Visual visual, MouseButtonEventArgs e)
     {
-        ArgumentNullException.ThrowIfNull(visual);
-        ArgumentNullException.ThrowIfNull(e);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
+        ExceptionExtensions.ThrowIfNull(e, nameof(e));
         StartX = e.X;
         StartY = e.Y;
         Button = e.Button;

@@ -1,8 +1,4 @@
-﻿using System.Diagnostics;
-using Wice.Interop;
-using Wice.Utilities;
-
-namespace Wice.Samples.Gallery.Samples.Misc.DragDrop
+﻿namespace Wice.Samples.Gallery.Samples.Misc.DragDrop
 {
     public class DropSourceSample : Sample
     {
@@ -42,7 +38,7 @@ namespace Wice.Samples.Gallery.Samples.Misc.DragDrop
                             else
                             {
                                 var window = NativeWindow.FromHandle(e2.Hwnd);
-                                target.Text = $"Target Window: 0x{e2.Hwnd.ToInt32():X8} '{window?.Text}' process: '{window?.Process?.ProcessName}'";
+                                target.Text = $"Target Window: {e2.Hwnd.Value.ToHexa()} '{window?.Text}' process: '{window?.Process?.ProcessName}'";
                             }
                         };
 

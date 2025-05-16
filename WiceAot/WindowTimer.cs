@@ -9,7 +9,7 @@ public partial class WindowTimer : IDisposable
 
     public WindowTimer(Window window, Action? action = null, int dueTime = Timeout.Infinite, int period = Timeout.Infinite)
     {
-        ArgumentNullException.ThrowIfNull(window);
+        ExceptionExtensions.ThrowIfNull(window, nameof(window));
         Window = window;
         _action = action;
         Window.AddTimer(this);

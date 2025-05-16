@@ -3,10 +3,21 @@
 public abstract class PointerEventArgs(uint pointerId) : HandledEventArgs
 {
     public uint PointerId { get; } = pointerId;
+#if NETFRAMEWORK
+
+    public POINTER_INPUT_TYPE PointerType => WindowsFunctions.GetPointerType((int)PointerId);
+    public POINTER_INFO PointerInfo => WindowsFunctions.GetPointerInfo((int)PointerId);
+    public POINTER_PEN_INFO PointerPenInfo => WindowsFunctions.GetPointerPenInfo((int)PointerId);
+    public POINTER_TOUCH_INFO PointerTouchInfo => WindowsFunctions.GetPointerTouchInfo((int)PointerId);
+
+#else
+
     public POINTER_INPUT_TYPE PointerType { get { Functions.GetPointerType(PointerId, out var type); return type; } }
     public POINTER_INFO PointerInfo { get { Functions.GetPointerInfo(PointerId, out var info); return info; } }
     public POINTER_PEN_INFO PointerPenInfo { get { Functions.GetPointerPenInfo(PointerId, out var info); return info; } }
     public POINTER_TOUCH_INFO PointerTouchInfo { get { Functions.GetPointerTouchInfo(PointerId, out var info); return info; } }
+
+#endif
 
     public int Pressure => PointerType switch
     {

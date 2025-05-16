@@ -5,7 +5,7 @@ public class CollectionChangedInvalidateReason : InvalidateReason
     public CollectionChangedInvalidateReason(Type type, Type childType, NotifyCollectionChangedAction action, InvalidateReason? innerReason = null)
         : base(type, innerReason)
     {
-        ArgumentNullException.ThrowIfNull(childType);
+        ExceptionExtensions.ThrowIfNull(childType, nameof(childType));
         ChildType = childType;
         Action = action;
     }

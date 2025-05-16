@@ -11,13 +11,13 @@ public abstract class PointerPositionEventArgs(uint pointerId, int x, int y) : P
 
     public POINT GetPosition(Visual visual)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
         return visual.GetRelativePosition(X, Y);
     }
 
     public bool Hits(Visual visual)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
         var size = visual.RenderSize;
         if (size.IsInvalid)
             return false;
