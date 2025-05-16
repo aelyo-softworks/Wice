@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1AtlasString)]
+#else
 [Guid(Constants.CLSID_D2D1AtlasString)]
+#endif
 public partial class AtlasEffect : EffectWithSource
 {
     public static EffectProperty InputRectProperty { get; }

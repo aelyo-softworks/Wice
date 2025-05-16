@@ -1,4 +1,5 @@
-﻿using WinRT.Interop;
+﻿using WinRT;
+using WinRT.Interop;
 
 // see here https://github.com/microsoft/CsWinRT/issues/1722
 

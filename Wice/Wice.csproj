@@ -1,13 +1,192 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net472</TargetFramework>
+		<TargetFrameworks>net472</TargetFrameworks>
 		<UseWindowsForms>true</UseWindowsForms>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<LangVersion>default</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <NoWarn>1701;1702;8632</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <NoWarn>1701;1702;8632</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Remove="Resources\NoiseAsset_256X256.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Include="..\WiceAot\AccessKey.cs" Link="AccessKey.cs" />
+	  <Compile Include="..\WiceAot\Alignment.cs" Link="Alignment.cs" />
+	  <Compile Include="..\WiceAot\Animation\Animation.cs" Link="Animation\Animation.cs" />
+	  <Compile Include="..\WiceAot\Animation\AnimationGroup.cs" Link="Animation\AnimationGroup.cs" />
+	  <Compile Include="..\WiceAot\Animation\AnimationObject.cs" Link="Animation\AnimationObject.cs" />
+	  <Compile Include="..\WiceAot\Animation\AnimationResult.cs" Link="Animation\AnimationResult.cs" />
+	  <Compile Include="..\WiceAot\Animation\AnimationState.cs" Link="Animation\AnimationState.cs" />
+	  <Compile Include="..\WiceAot\Animation\BackEase.cs" Link="Animation\BackEase.cs" />
+	  <Compile Include="..\WiceAot\Animation\BounceEase.cs" Link="Animation\BounceEase.cs" />
+	  <Compile Include="..\WiceAot\Animation\CircleEase.cs" Link="Animation\CircleEase.cs" />
+	  <Compile Include="..\WiceAot\Animation\CompositorControllerStoryboard.cs" Link="Animation\CompositorControllerStoryboard.cs" />
+	  <Compile Include="..\WiceAot\Animation\CubicEase.cs" Link="Animation\CubicEase.cs" />
+	  <Compile Include="..\WiceAot\Animation\EasingMode.cs" Link="Animation\EasingMode.cs" />
+	  <Compile Include="..\WiceAot\Animation\ElasticEase.cs" Link="Animation\ElasticEase.cs" />
+	  <Compile Include="..\WiceAot\Animation\ExponentialEase.cs" Link="Animation\ExponentialEase.cs" />
+	  <Compile Include="..\WiceAot\Animation\IEasingFunction.cs" Link="Animation\IEasingFunction.cs" />
+	  <Compile Include="..\WiceAot\Animation\PowerEase.cs" Link="Animation\PowerEase.cs" />
+	  <Compile Include="..\WiceAot\Animation\PropertyAnimation.cs" Link="Animation\PropertyAnimation.cs" />
+	  <Compile Include="..\WiceAot\Animation\PropertyAnimationArguments.cs" Link="Animation\PropertyAnimationArguments.cs" />
+	  <Compile Include="..\WiceAot\Animation\QuadraticEase.cs" Link="Animation\QuadraticEase.cs" />
+	  <Compile Include="..\WiceAot\Animation\QuarticEase.cs" Link="Animation\QuarticEase.cs" />
+	  <Compile Include="..\WiceAot\Animation\QuinticEase.cs" Link="Animation\QuinticEase.cs" />
+	  <Compile Include="..\WiceAot\Animation\SineEase.cs" Link="Animation\SineEase.cs" />
+	  <Compile Include="..\WiceAot\Animation\SinglePropertyAnimation.cs" Link="Animation\SinglePropertyAnimation.cs" />
+	  <Compile Include="..\WiceAot\Animation\Storyboard.cs" Link="Animation\Storyboard.cs" />
+	  <Compile Include="..\WiceAot\Animation\TimerStoryboard.cs" Link="Animation\TimerStoryboard.cs" />
+	  <Compile Include="..\WiceAot\Animation\Vector2PropertyAnimation.cs" Link="Animation\Vector2PropertyAnimation.cs" />
+	  <Compile Include="..\WiceAot\Animation\Vector3PropertyAnimation.cs" Link="Animation\Vector3PropertyAnimation.cs" />
+	  <Compile Include="..\WiceAot\Animation\VerticalBlankStoryboard.cs" Link="Animation\VerticalBlankStoryboard.cs" />
+	  <Compile Include="..\WiceAot\Application.cs" Link="Application.cs" />
+	  <Compile Include="..\WiceAot\BaseObject.cs" Link="BaseObject.cs" />
+	  <Compile Include="..\WiceAot\BaseObjectCollection.cs" Link="BaseObjectCollection.cs" />
+	  <Compile Include="..\WiceAot\BaseObjectProperty.cs" Link="BaseObjectProperty.cs" />
+	  <Compile Include="..\WiceAot\BaseObjectPropertyOptions.cs" Link="BaseObjectPropertyOptions.cs" />
+	  <Compile Include="..\WiceAot\BaseObjectSetOptions.cs" Link="BaseObjectSetOptions.cs" />
+	  <Compile Include="..\WiceAot\Brush.cs" Link="Brush.cs" />
+	  <Compile Include="..\WiceAot\CompositionUpdateParts.cs" Link="CompositionUpdateParts.cs" />
+	  <Compile Include="..\WiceAot\DataSourceEnumerateOptions.cs" Link="DataSourceEnumerateOptions.cs" />
+	  <Compile Include="..\WiceAot\DimensionOptions.cs" Link="DimensionOptions.cs" />
+	  <Compile Include="..\WiceAot\DockType.cs" Link="DockType.cs" />
+	  <Compile Include="..\WiceAot\DragDropEventType.cs" Link="DragDropEventType.cs" />
+	  <Compile Include="..\WiceAot\DragDropGiveFeedback.cs" Link="DragDropGiveFeedback.cs" />
+	  <Compile Include="..\WiceAot\DragDropSourceEventType.cs" Link="DragDropSourceEventType.cs" />
+	  <Compile Include="..\WiceAot\DragDropTargetEventType.cs" Link="DragDropTargetEventType.cs" />
+	  <Compile Include="..\WiceAot\EditorMode.cs" Link="EditorMode.cs" />
+	  <Compile Include="..\WiceAot\Effects\AffineTransformEffect.cs" Link="Effects\AffineTransformEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\AlphaMaskEffect.cs" Link="Effects\AlphaMaskEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\ArithmeticCompositeEffect.cs" Link="Effects\ArithmeticCompositeEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\AtlasEffect.cs" Link="Effects\AtlasEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\BlendEffect.cs" Link="Effects\BlendEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\BorderEffect.cs" Link="Effects\BorderEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\BrightnessEffect.cs" Link="Effects\BrightnessEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\ChromaKeyEffect.cs" Link="Effects\ChromaKeyEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\ColorManagementEffect.cs" Link="Effects\ColorManagementEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\ColorMatrixEffect.cs" Link="Effects\ColorMatrixEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\CompositeEffect.cs" Link="Effects\CompositeEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\CompositeStepEffect.cs" Link="Effects\CompositeStepEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\ContrastEffect.cs" Link="Effects\ContrastEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\ConvolveMatrixEffect.cs" Link="Effects\ConvolveMatrixEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\CropEffect.cs" Link="Effects\CropEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\CrossFadeEffect.cs" Link="Effects\CrossFadeEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\DirectionalBlurEffect.cs" Link="Effects\DirectionalBlurEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\DiscreteTransferEffect.cs" Link="Effects\DiscreteTransferEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\DisplacementMapEffect.cs" Link="Effects\DisplacementMapEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\DistantDiffuseEffect.cs" Link="Effects\DistantDiffuseEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\DistantSpecularEffect.cs" Link="Effects\DistantSpecularEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\DpiCompensationEffect.cs" Link="Effects\DpiCompensationEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\EdgeDetectionEffect.cs" Link="Effects\EdgeDetectionEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\EffectProperty.cs" Link="Effects\EffectProperty.cs" />
+	  <Compile Include="..\WiceAot\Effects\EffectWithSource.cs" Link="Effects\EffectWithSource.cs" />
+	  <Compile Include="..\WiceAot\Effects\EffectWithTwoSources.cs" Link="Effects\EffectWithTwoSources.cs" />
+	  <Compile Include="..\WiceAot\Effects\EmbossEffect.cs" Link="Effects\EmbossEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\ExposureEffect.cs" Link="Effects\ExposureEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\FloodEffect.cs" Link="Effects\FloodEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\GammaTransferEffect.cs" Link="Effects\GammaTransferEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\GaussianBlurEffect.cs" Link="Effects\GaussianBlurEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\GrayscaleEffect.cs" Link="Effects\GrayscaleEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\HdrToneMapEffect.cs" Link="Effects\HdrToneMapEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\HighlightsShadowsEffect.cs" Link="Effects\HighlightsShadowsEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\HueRotationEffect.cs" Link="Effects\HueRotationEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\HueToRgbEffect.cs" Link="Effects\HueToRgbEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\InvertEffect.cs" Link="Effects\InvertEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\LinearTransferEffect.cs" Link="Effects\LinearTransferEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\LookupTable3DEffect.cs" Link="Effects\LookupTable3DEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\LuminanceToAlphaEffect.cs" Link="Effects\LuminanceToAlphaEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\MorphologyEffect.cs" Link="Effects\MorphologyEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\OpacityEffect.cs" Link="Effects\OpacityEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\OpacityMetadataEffect.cs" Link="Effects\OpacityMetadataEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\PointDiffuseEffect.cs" Link="Effects\PointDiffuseEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\PointSpecularEffect.cs" Link="Effects\PointSpecularEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\PosterizeEffect.cs" Link="Effects\PosterizeEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\PremultiplyEffect.cs" Link="Effects\PremultiplyEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\RgbToHueEffect.cs" Link="Effects\RgbToHueEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\SaturationEffect.cs" Link="Effects\SaturationEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\ScaleEffect.cs" Link="Effects\ScaleEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\SepiaEffect.cs" Link="Effects\SepiaEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\ShadowEffect.cs" Link="Effects\ShadowEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\SharpenEffect.cs" Link="Effects\SharpenEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\SpotDiffuseEffect.cs" Link="Effects\SpotDiffuseEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\SpotSpecularEffect.cs" Link="Effects\SpotSpecularEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\StraightenEffect.cs" Link="Effects\StraightenEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\TableTransferEffect.cs" Link="Effects\TableTransferEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\TemperatureTintEffect.cs" Link="Effects\TemperatureTintEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\TileEffect.cs" Link="Effects\TileEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\TintEffect.cs" Link="Effects\TintEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\TransformEffect.cs" Link="Effects\TransformEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\TurbulenceEffect.cs" Link="Effects\TurbulenceEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\UnpremultiplyEffect.cs" Link="Effects\UnpremultiplyEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\VignetteEffect.cs" Link="Effects\VignetteEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\WhiteLevelAdjustmentEffect.cs" Link="Effects\WhiteLevelAdjustmentEffect.cs" />
+	  <Compile Include="..\WiceAot\FocusDirection.cs" Link="FocusDirection.cs" />
+	  <Compile Include="..\WiceAot\GetRectOptions.cs" Link="GetRectOptions.cs" />
+	  <Compile Include="..\WiceAot\IAccessKeyParent.cs" Link="IAccessKeyParent.cs" />
+	  <Compile Include="..\WiceAot\IBindingDisplayName.cs" Link="IBindingDisplayName.cs" />
+	  <Compile Include="..\WiceAot\IClickable.cs" Link="IClickable.cs" />
+	  <Compile Include="..\WiceAot\IContentParent.cs" Link="IContentParent.cs" />
+	  <Compile Include="..\WiceAot\IDataSourceVisual.cs" Link="IDataSourceVisual.cs" />
+	  <Compile Include="..\WiceAot\IFocusableParent.cs" Link="IFocusableParent.cs" />
+	  <Compile Include="..\WiceAot\IModalVisual.cs" Link="IModalVisual.cs" />
+	  <Compile Include="..\WiceAot\InvalidateMode.cs" Link="InvalidateMode.cs" />
+	  <Compile Include="..\WiceAot\InvalidateReason.cs" Link="InvalidateReason.cs" />
+	  <Compile Include="..\WiceAot\IOneChildParent.cs" Link="IOneChildParent.cs" />
+	  <Compile Include="..\WiceAot\IPasswordCapable.cs" Link="IPasswordCapable.cs" />
+	  <Compile Include="..\WiceAot\IPropertyOwner.cs" Link="IPropertyOwner.cs" />
+	  <Compile Include="..\WiceAot\IReadStreamer.cs" Link="IReadStreamer.cs" />
+	  <Compile Include="..\WiceAot\ISelectable.cs" Link="ISelectable.cs" />
+	  <Compile Include="..\WiceAot\ISelectorVisual.cs" Link="ISelectorVisual.cs" />
+	  <Compile Include="..\WiceAot\ITextBoxProperties.cs" Link="ITextBoxProperties.cs" />
+	  <Compile Include="..\WiceAot\ITextFormat.cs" Link="ITextFormat.cs" />
+	  <Compile Include="..\WiceAot\ITitleBarParent.cs" Link="ITitleBarParent.cs" />
+	  <Compile Include="..\WiceAot\IValueable.cs" Link="IValueable.cs" />
+	  <Compile Include="..\WiceAot\IViewerParent.cs" Link="IViewerParent.cs" />
+	  <Compile Include="..\WiceAot\MouseButton.cs" Link="MouseButton.cs" />
+	  <Compile Include="..\WiceAot\Orientation.cs" Link="Orientation.cs" />
+	  <Compile Include="..\WiceAot\PlacementMode.cs" Link="PlacementMode.cs" />
+	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridCategoryOptionsAttribute.cs" Link="PropertyGrid\PropertyGridCategoryOptionsAttribute.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridItem.cs" Link="PropertyGrid\PropertyGridItem.cs" />
+	  <Compile Include="..\WiceAot\ScrollBarMode.cs" Link="ScrollBarMode.cs" />
+	  <Compile Include="..\WiceAot\ScrollBarVisibility.cs" Link="ScrollBarVisibility.cs" />
+	  <Compile Include="..\WiceAot\ScrollViewerMode.cs" Link="ScrollViewerMode.cs" />
+	  <Compile Include="..\WiceAot\SelectionMode.cs" Link="SelectionMode.cs" />
+	  <Compile Include="..\WiceAot\Stretch.cs" Link="Stretch.cs" />
+	  <Compile Include="..\WiceAot\StretchDirection.cs" Link="StretchDirection.cs" />
+	  <Compile Include="..\WiceAot\SurfaceCreationOptions.cs" Link="SurfaceCreationOptions.cs" />
+	  <Compile Include="..\WiceAot\TextBoxSetSelection.cs" Link="TextBoxSetSelection.cs" />
+	  <Compile Include="..\WiceAot\TitleBarButtonType.cs" Link="TitleBarButtonType.cs" />
+	  <Compile Include="..\WiceAot\Utilities\AssemblyResourceStreamer.cs" Link="Utilities\AssemblyResourceStreamer.cs" />
+	  <Compile Include="..\WiceAot\Utilities\CompositionObjectEqualityComparer.cs" Link="Utilities\CompositionObjectEqualityComparer.cs" />
+	  <Compile Include="..\WiceAot\Utilities\CompositionUtilities.cs" Link="Utilities\CompositionUtilities.cs" />
+	  <Compile Include="..\WiceAot\Utilities\ConcurrentHashSet.cs" Link="Utilities\ConcurrentHashSet.cs" />
+	  <Compile Include="..\WiceAot\Utilities\ConcurrentList.cs" Link="Utilities\ConcurrentList.cs" />
+	  <Compile Include="..\WiceAot\Utilities\ConcurrentQuadTree.cs" Link="Utilities\ConcurrentQuadTree.cs" />
+	  <Compile Include="..\WiceAot\Utilities\ExceptionExtensions.cs" Link="Utilities\ExceptionExtensions.cs" />
+	  <Compile Include="..\WiceAot\Utilities\FileStreamer.cs" Link="Utilities\FileStreamer.cs" />
+	  <Compile Include="..\WiceAot\Utilities\IOUtilities.cs" Link="Utilities\IOUtilities.cs" />
+	  <Compile Include="..\WiceAot\Utilities\IQuadTree.cs" Link="Utilities\IQuadTree.cs" />
+	  <Compile Include="..\WiceAot\Utilities\QuadTree.cs" Link="Utilities\QuadTree.cs" />
+	  <Compile Include="..\WiceAot\Utilities\ShellUtilities.cs" Link="Utilities\ShellUtilities.cs" />
+	  <Compile Include="..\WiceAot\Utilities\StreamStreamer.cs" Link="Utilities\StreamStreamer.cs" />
+	  <Compile Include="..\WiceAot\Utilities\UIExtensions.cs" Link="Utilities\UIExtensions.cs" />
+	  <Compile Include="..\WiceAot\Utilities\UndoStack.cs" Link="Utilities\UndoStack.cs" />
+	  <Compile Include="..\WiceAot\ValueEventArgs.cs" Link="ValueEventArgs.cs" />
+	  <Compile Include="..\WiceAot\VisualDoOptions.cs" Link="VisualDoOptions.cs" />
+	  <Compile Include="..\WiceAot\VisualPropertyInvalidateModes.cs" Link="VisualPropertyInvalidateModes.cs" />
+	  <Compile Include="..\WiceAot\VisualSetOptions.cs" Link="VisualSetOptions.cs" />
+	  <Compile Include="..\WiceAot\WindowsFrameMode.cs" Link="WindowsFrameMode.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -18,6 +197,48 @@
 		<PackageReference Include="DirectN" Version="1.17.2" />
 		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.26100.3916" />
 		<PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="DirectN" />
+		<Using Include="Microsoft.Win32" />
+		<Using Include="System" />
+		<Using Include="System.ComponentModel" />
+		<Using Include="System.Collections" />
+		<Using Include="System.Collections.Concurrent" />
+		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Collections.ObjectModel" />
+		<Using Include="System.Collections.Specialized" />
+		<Using Include="System.Diagnostics" />
+		<Using Include="System.Diagnostics.CodeAnalysis" />
+		<Using Include="System.Globalization" />
+		<Using Include="System.IO" />
+		<Using Include="System.Linq" />
+		<Using Include="System.Numerics" />
+		<Using Include="System.Reflection" />
+		<Using Include="System.Runtime.CompilerServices" />
+		<Using Include="System.Runtime.InteropServices" />
+		<Using Include="System.Runtime.InteropServices.ComTypes" />
+		<Using Include="System.Runtime.Serialization" />
+		<Using Include="System.Runtime.Versioning" />
+		<Using Include="System.Security.Cryptography" />
+		<Using Include="System.Text" />
+		<Using Include="System.Threading" />
+		<Using Include="Wice.Animation" />
+		<Using Include="Wice.Effects" />
+		<Using Include="Wice.Interop" />
+		<Using Include="Wice.Utilities" />
+		<Using Include="Windows.Foundation" />
+		<Using Include="Windows.Graphics" />
+		<Using Include="Windows.Graphics.DirectX" />
+		<Using Include="Windows.Graphics.Effects" />
+		<Using Include="Windows.UI" />
+		<Using Include="Windows.UI.Composition" />
+		<Using Include="Windows.UI.Composition.Core" />
+		<Using Include="Windows.UI.Composition.Diagnostics" />
+		<Using Alias="D3DCOLORVALUE" Include="DirectN._D3DCOLORVALUE" />
+		<Using Alias="RECT" Include="DirectN.tagRECT" />
+		<Using Alias="VIRTUAL_KEY" Include="DirectN.VirtualKeys" />
 	</ItemGroup>
 
 	<ItemGroup>

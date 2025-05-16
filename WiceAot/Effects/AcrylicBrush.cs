@@ -1,4 +1,6 @@
-﻿namespace Wice.Effects;
+﻿using WinRT;
+
+namespace Wice.Effects;
 
 public static class AcrylicBrush
 {

@@ -9,7 +9,7 @@ public class PropertyAnimationArguments
 
     public PropertyAnimationArguments(BaseObject target, BaseObjectProperty targetProperty, TimeSpan duration)
     {
-        ArgumentNullException.ThrowIfNull(targetProperty);
+        ExceptionExtensions.ThrowIfNull(targetProperty, nameof(targetProperty));
         if (target != null)
         {
             // null target is possible

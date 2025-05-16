@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1HighlightsShadowsString)]
+#else
 [Guid(Constants.CLSID_D2D1HighlightsShadowsString)]
+#endif
 public partial class HighlightsShadowsEffect : EffectWithSource
 {
     public static EffectProperty HighlightsProperty { get; }

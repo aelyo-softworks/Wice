@@ -5,7 +5,7 @@ public class AssemblyResourceStreamer : IReadStreamer
     public AssemblyResourceStreamer(Assembly assembly, string streamName)
     {
         Assembly = assembly ?? Assembly.GetCallingAssembly();
-        ArgumentNullException.ThrowIfNull(streamName);
+        ExceptionExtensions.ThrowIfNull(streamName, nameof(streamName));
 
         StreamName = streamName;
     }

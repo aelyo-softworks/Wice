@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1SepiaString)]
+#else
 [Guid(Constants.CLSID_D2D1SepiaString)]
+#endif
 public partial class SepiaEffect : EffectWithSource
 {
     public static EffectProperty IntensityProperty { get; }

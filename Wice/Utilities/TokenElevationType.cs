@@ -1,10 +1,9 @@
-﻿namespace Wice.Utilities
+﻿namespace Wice.Utilities;
+
+public enum TokenElevationType
 {
-    public enum TokenElevationType
-    {
-        Unknown = 0,
-        Default = 1,
-        Full = 2,
-        Limited = 3,
-    }
+    Unknown = 0,
+    Default = 1,
+    Full = 2,
+    Limited = 3,
 }

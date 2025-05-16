@@ -14,8 +14,12 @@ public partial class Application : IDisposable
 
         // no, we can't use Windows.System.DispatcherQueueController.CreateOnDedicatedThread();
         // or compositor will raise an access denied error
+#if NETFRAMEWORK
+        DispatcherQueueController.Create();
+#else
         DispatcherQueueController = new WindowsDispatcherQueueController();
         DispatcherQueueController.EnsureOnCurrentThread();
+#endif
 
         apps.AddOrUpdate(Environment.CurrentManagedThreadId, this, (k, o) =>
         {
@@ -23,11 +27,17 @@ public partial class Application : IDisposable
         });
 
         MainThreadId = Environment.CurrentManagedThreadId;
+#if NETFRAMEWORK
+        ThreadId = (uint)WindowsUtilities.GetCurrentThreadId();
+#else
         ThreadId = Functions.GetCurrentThreadId();
+#endif
         ResourceManager = CreateResourceManager();
     }
 
+#if !NETFRAMEWORK
     public WindowsDispatcherQueueController DispatcherQueueController { get; }
+#endif
     public bool ExitOnLastWindowRemoved { get; set; } = true;
     public bool Exiting { get; private set; }
     public int MainThreadId { get; }
@@ -76,8 +86,14 @@ public partial class Application : IDisposable
     {
         if (_errors.Count == 0)
         {
-            MSG msg;
-            while (Functions.GetMessageW(out msg, HWND.Null, 0, 0))
+            MSG msg = new();
+            while (
+#if NETFRAMEWORK
+                WindowsFunctions.GetMessage(ref msg, IntPtr.Zero, 0, 0)
+#else
+                Functions.GetMessageW(out msg, HWND.Null, 0, 0)
+#endif
+                )
             {
                 if (msg.message == WM_HOSTQUIT)
                 {
@@ -86,7 +102,11 @@ public partial class Application : IDisposable
                 }
 
                 // call this just at init time
+#if NETFRAMEWORK
+                if (msg.hwnd == IntPtr.Zero)
+#else
                 if (msg.hwnd.Value == 0)
+#endif
                 {
                     if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
                     {
@@ -98,8 +118,13 @@ public partial class Application : IDisposable
                 }
 
                 //Trace("msg: " + msg.Decode());
+#if NETFRAMEWORK
+                WindowsFunctions.TranslateMessage(ref msg);
+                WindowsFunctions.DispatchMessage(ref msg);
+#else
                 Functions.TranslateMessage(msg);
                 Functions.DispatchMessageW(msg);
+#endif
             }
 #if DEBUG
             if (msg.message == MessageDecoder.WM_QUIT)
@@ -115,7 +140,11 @@ public partial class Application : IDisposable
     {
         CheckRunningAsMainThread();
         OnApplicationExit(this, EventArgs.Empty);
+#if NETFRAMEWORK
+        WindowsFunctions.PostQuitMessage(0);
+#else
         Functions.PostQuitMessage(0);
+#endif
     }
 
     ~Application() { Dispose(disposing: false); }
@@ -147,8 +176,13 @@ public partial class Application : IDisposable
 
     internal const uint WM_HOSTQUIT = MessageDecoder.WM_APP + 0x3FFF; // last possible app message
 
+#if NETFRAMEWORK
+    private static readonly object _windowsLock = new();
+    private static readonly object _errorsLock = new();
+#else
     private static readonly Lock _windowsLock = new();
     private static readonly Lock _errorsLock = new();
+#endif
     private readonly static List<Window> _windows = [];
     private readonly static List<Exception> _errors = [];
     private static ConcurrentDictionary<int, Application>? _applications = [];
@@ -184,7 +218,12 @@ public partial class Application : IDisposable
     public static ResourceManager CurrentResourceManager => Current?.ResourceManager ?? throw new WiceException("0031: Resource Manager is not available at this time.");
     public static Theme CurrentTheme => CurrentResourceManager.Theme ?? throw new WiceException("0031: Theme is not available at this time.");
     public static bool UseDebugLayer { get => _useDebugLayer && DXGIFunctions.IsDebugLayerAvailable; set => _useDebugLayer = true; }
-    public static HMODULE ModuleHandle => Functions.GetModuleHandleW(PWSTR.Null);
+    public static HMODULE ModuleHandle =>
+#if NETFRAMEWORK
+        WindowsFunctions.GetModuleHandle(null);
+#else
+        Functions.GetModuleHandleW(PWSTR.Null);
+#endif
     public static bool IsFatalErrorShowing { get; private set; }
     public static bool ExitAllOnLastWindowRemoved { get; set; } = true;
     public static bool AllExiting { get; private set; }
@@ -204,7 +243,11 @@ public partial class Application : IDisposable
         {
             // call from one thread
             kv.Value.OnApplicationExit(kv.Value, EventArgs.Empty);
+#if NETFRAMEWORK
+            NativeWindow.PostThreadMessage((int)kv.Value.ThreadId, MessageDecoder.WM_QUIT, IntPtr.Zero, IntPtr.Zero);
+#else
             Functions.PostThreadMessageW(kv.Value.ThreadId, MessageDecoder.WM_QUIT, IntPtr.Zero, IntPtr.Zero);
+#endif
         }
 
         AllApplicationsExit?.Invoke(null, EventArgs.Empty);
@@ -227,7 +270,11 @@ public partial class Application : IDisposable
         }
 
         // we don't use PostQuitMessage because it prevents any other windows from showing (like messagebox, taskdialog, etc.)
+#if NETFRAMEWORK
+        WindowsFunctions.PostMessage(HWND.Null, (int)WM_HOSTQUIT);
+#else
         Functions.PostMessageW(HWND.Null, WM_HOSTQUIT, WPARAM.Null, LPARAM.Null);
+#endif
     }
 
     public static void ShowFatalError(HWND hwnd)

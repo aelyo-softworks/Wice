@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1ScaleString)]
+#else
 [Guid(Constants.CLSID_D2D1ScaleString)]
+#endif
 public partial class ScaleEffect : EffectWithSource
 {
     public static EffectProperty ScaleProperty { get; }

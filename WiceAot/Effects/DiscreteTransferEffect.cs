@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1DiscreteTransferString)]
+#else
 [Guid(Constants.CLSID_D2D1DiscreteTransferString)]
+#endif
 public partial class DiscreteTransferEffect : EffectWithSource
 {
     public static EffectProperty RedTableProperty { get; }

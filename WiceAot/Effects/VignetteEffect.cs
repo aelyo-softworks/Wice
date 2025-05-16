@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1VignetteString)]
+#else
 [Guid(Constants.CLSID_D2D1VignetteString)]
+#endif
 public partial class VignetteEffect : EffectWithSource
 {
     public static EffectProperty ColorProperty { get; }

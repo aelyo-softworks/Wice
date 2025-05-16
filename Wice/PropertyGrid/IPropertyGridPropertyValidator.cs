@@ -1,9 +1,6 @@
-﻿using System.Collections;
+﻿namespace Wice.PropertyGrid;
 
-namespace Wice.PropertyGrid
+public interface IPropertyGridPropertyValidator
 {
-    public interface IPropertyGridPropertyValidator
-    {
-        IEnumerable ValidateValue(PropertyGridProperty property);
-    }
+    IEnumerable ValidateValue(PropertyGridProperty property);
 }

@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1BorderString)]
+#else
 [Guid(Constants.CLSID_D2D1BorderString)]
+#endif
 public partial class BorderEffect : EffectWithSource
 {
     public static EffectProperty EdgeModeXProperty { get; }

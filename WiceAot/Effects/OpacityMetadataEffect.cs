@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1OpacityMetadataString)]
+#else
 [Guid(Constants.CLSID_D2D1OpacityMetadataString)]
+#endif
 public partial class OpacityMetadataEffect : EffectWithSource
 {
     public static EffectProperty InputOpaqueRectProperty { get; }

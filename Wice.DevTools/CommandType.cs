@@ -1,12 +1,7 @@
-﻿namespace Wice.DevTools
+﻿namespace Wice.DevTools;
+
+public enum CommandType
 {
-    public enum CommandType
-    {
-        Unknown,
-        UpdateWiceCore,
-        UpdateWiceCoreTests,
-        UpdateWiceCoreSamplesGallery,
-        UpdateWiceSamplesGalleryCode,
-        All,
-    }
+    Unknown,
+    UpdateWiceSamplesGalleryCode,
 }

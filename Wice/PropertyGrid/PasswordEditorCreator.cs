@@ -1,33 +1,30 @@
-﻿using System;
+﻿namespace Wice.PropertyGrid;
 
-namespace Wice.PropertyGrid
+public class PasswordEditorCreator : IEditorCreator
 {
-    public class PasswordEditorCreator : IEditorCreator
+    public object CreateEditor(PropertyValueVisual value)
     {
-        public object CreateEditor(PropertyValueVisual value)
-        {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+        if (value == null)
+            throw new ArgumentNullException(nameof(value));
 
-            var editor = value.CreateDefaultEditor();
-            if (editor is IPasswordCapable pc)
+        var editor = value.CreateDefaultEditor();
+        if (editor is IPasswordCapable pc)
+        {
+            pc.IsPasswordModeEnabled = true;
+            var pw = PropertyGridDynamicPropertyAttribute.GetValueFromProperty<char>(value.Property, "PasswordCharacter");
+            if (pw != 0)
             {
-                pc.IsPasswordModeEnabled = true;
-                var pw = PropertyGridDynamicPropertyAttribute.GetValueFromProperty<char>(value.Property, "PasswordCharacter");
-                if (pw != 0)
-                {
-                    pc.SetPasswordCharacter(pw);
-                }
+                pc.SetPasswordCharacter(pw);
             }
-            return editor;
         }
+        return editor;
+    }
 
-        public object UpdateEditor(PropertyValueVisual value, object editor)
-        {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+    public object UpdateEditor(PropertyValueVisual value, object editor)
+    {
+        if (value == null)
+            throw new ArgumentNullException(nameof(value));
 
-            return editor;
-        }
+        return editor;
     }
 }

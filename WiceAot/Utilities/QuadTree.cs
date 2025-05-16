@@ -41,7 +41,7 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
 
     public virtual void Insert(T node, D2D_RECT_F bounds)
     {
-        ArgumentNullException.ThrowIfNull(node);
+        ExceptionExtensions.ThrowIfNull(node, nameof(node));
         if (bounds.IsEmpty)
             throw new ArgumentException(null, nameof(bounds));
 
@@ -51,7 +51,7 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
 
     public virtual void Move(T node, D2D_RECT_F newBounds)
     {
-        ArgumentNullException.ThrowIfNull(node);
+        ExceptionExtensions.ThrowIfNull(node, nameof(node));
         if (newBounds.IsEmpty)
             throw new ArgumentException(null, nameof(newBounds));
 
@@ -65,7 +65,7 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
 
     public virtual bool Remove(T node)
     {
-        ArgumentNullException.ThrowIfNull(node);
+        ExceptionExtensions.ThrowIfNull(node, nameof(node));
         if (_table.TryGetValue(node, out var parent))
         {
             parent?.RemoveNode(node);

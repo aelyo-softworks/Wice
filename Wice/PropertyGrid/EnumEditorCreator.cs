@@ -1,94 +1,89 @@
-﻿using System;
-using DirectN;
-using Wice.Utilities;
+﻿namespace Wice.PropertyGrid;
 
-namespace Wice.PropertyGrid
+public class EnumEditorCreator : IEditorCreator
 {
-    public class EnumEditorCreator : IEditorCreator
+    public object CreateEditor(PropertyValueVisual value)
     {
-        public object CreateEditor(PropertyValueVisual value)
-        {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+        if (value == null)
+            throw new ArgumentNullException(nameof(value));
 
-            var editor = value.Property.Source.Grid.CreateEditorHost(value);
-            if (editor != null)
+        var editor = value.Property.Source.Grid.CreateEditorHost(value);
+        if (editor != null)
+        {
+            value.DoWhenAttachedToParent(() =>
             {
-                value.DoWhenAttachedToParent(() =>
-                {
-                    var parentFontSize = (float?)TextBox.FontSizeProperty.GetValue(value.Parent);
-                    //editor.Header.Text.FontSize = parentFontSize;
-                    editor.Header.Text.CopyFrom(value.Parent);
+                var parentFontSize = (float?)TextBox.FontSizeProperty.GetValue(value.Parent);
+                //editor.Header.Text.FontSize = parentFontSize;
+                editor.Header.Text.CopyFrom(value.Parent);
 
-                    var fontSize = parentFontSize ?? Application.CurrentTheme.DefaultFontSize;
-                    editor.Header.Height = fontSize + 4;
-                });
+                var fontSize = parentFontSize ?? Application.CurrentTheme.DefaultFontSize;
+                editor.Header.Height = fontSize + 4;
+            });
 
-                editor.DialogOpened += (s, e) =>
+            editor.DialogOpened += (s, e) =>
+            {
+                object child;
+                if (Conversions.IsFlagsEnum(value.Property.Type))
                 {
-                    object child;
-                    if (Conversions.IsFlagsEnum(value.Property.Type))
+                    var flb = new FlagsEnumListBox();
+                    if (value.Property.TryGetTargetValue(out var targetValue))
                     {
-                        var flb = new FlagsEnumListBox();
-                        if (value.Property.TryGetTargetValue(out var targetValue))
+                        flb.Value = targetValue;
+                    }
+
+                    child = flb;
+                }
+                else
+                {
+                    var elb = new EnumListBox();
+                    if (value.Property.TryGetTargetValue(out var targetValue))
+                    {
+                        elb.Value = targetValue;
+                    }
+
+                    child = elb;
+                }
+
+                if (child is ListBox lb)
+                {
+                    lb.ItemDataBound += (s2, e2) =>
+                    {
+                        if (e2.Value.DataVisual is TextBox tb)
                         {
-                            flb.Value = targetValue;
+                            tb.CopyFrom(value.Parent);
                         }
 
-                        child = flb;
-                    }
-                    else
+                        // TODO
+                        //if (e2.Value.ItemVisual != null)
+                        //{
+                        //    e2.Value.ItemVisual.RenderBrush = null;// e2.Value.ItemVisual.Compositor.CreateColorBrush(_D3DCOLORVALUE.Black);
+                        //}
+                    };
+                }
+
+                if (child is Visual visual)
+                {
+                    editor.Dialog.Content.Children.Add(visual);
+                }
+
+                if (child is IValueable valueable)
+                {
+                    valueable.ValueChanged += (s2, e2) =>
                     {
-                        var elb = new EnumListBox();
-                        if (value.Property.TryGetTargetValue(out var targetValue))
-                        {
-                            elb.Value = targetValue;
-                        }
-
-                        child = elb;
-                    }
-
-                    if (child is ListBox lb)
-                    {
-                        lb.ItemDataBound += (s2, e2) =>
-                        {
-                            if (e2.Value.DataVisual is TextBox tb)
-                            {
-                                tb.CopyFrom(value.Parent);
-                            }
-
-                            // TODO
-                            //if (e2.Value.ItemVisual != null)
-                            //{
-                            //    e2.Value.ItemVisual.RenderBrush = null;// e2.Value.ItemVisual.Compositor.CreateColorBrush(_D3DCOLORVALUE.Black);
-                            //}
-                        };
-                    }
-
-                    if (child is Visual visual)
-                    {
-                        editor.Dialog.Content.Children.Add(visual);
-                    }
-
-                    if (child is IValueable valueable)
-                    {
-                        valueable.ValueChanged += (s2, e2) =>
-                        {
-                            value.Property.Value = e2.Value;
-                        };
-                    }
-                };
-            }
-            return editor;
+                        value.Property.Value = e2.Value;
+                    };
+                }
+            };
         }
+        return editor;
+    }
 
 
-        public object UpdateEditor(PropertyValueVisual value, object editor)
-        {
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+    public object UpdateEditor(PropertyValueVisual value, object editor)
+    {
+        if (value == null)
+            throw new ArgumentNullException(nameof(value));
 
-            return editor;
-        }
+        return editor;
     }
 }

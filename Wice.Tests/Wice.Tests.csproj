@@ -6,6 +6,7 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<LangVersion>default</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -15,7 +16,7 @@
 
 	<ItemGroup>
 		<Compile Include="..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="SampleModel.cs" />
-		<Compile Include="..\Wice\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+		<Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -103,6 +104,43 @@
 		<None Update="Resources\wice.rtf">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="DirectN" />
+		<Using Include="Microsoft.Win32" />
+		<Using Include="System" />
+		<Using Include="System.ComponentModel" />
+		<Using Include="System.Collections" />
+		<Using Include="System.Collections.Concurrent" />
+		<Using Include="System.Collections.Generic" />
+		<Using Include="System.Collections.ObjectModel" />
+		<Using Include="System.Collections.Specialized" />
+		<Using Include="System.Diagnostics" />
+		<Using Include="System.Diagnostics.CodeAnalysis" />
+		<Using Include="System.Globalization" />
+		<Using Include="System.Linq" />
+		<Using Include="System.Numerics" />
+		<Using Include="System.Reflection" />
+		<Using Include="System.Runtime.CompilerServices" />
+		<Using Include="System.Runtime.InteropServices" />
+		<Using Include="System.Runtime.Serialization" />
+		<Using Include="System.Runtime.Versioning" />
+		<Using Include="System.Text" />
+		<Using Include="System.Threading" />
+		<Using Include="Wice.Animation" />
+		<Using Include="Wice.Effects" />
+		<Using Include="Wice.Interop" />
+		<Using Include="Wice.Utilities" />
+		<Using Include="Windows.Foundation" />
+		<Using Include="Windows.Graphics" />
+		<Using Include="Windows.Graphics.DirectX" />
+		<Using Include="Windows.Graphics.Effects" />
+		<Using Include="Windows.UI" />
+		<Using Include="Windows.UI.Composition" />
+		<Using Include="Windows.UI.Composition.Core" />
+		<Using Include="Windows.UI.Composition.Diagnostics" />
+		<Using Alias="D3DCOLORVALUE" Include="DirectN._D3DCOLORVALUE" />
 	</ItemGroup>
 
 

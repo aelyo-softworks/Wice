@@ -1,11 +1,14 @@
-﻿
-namespace Wice.Utilities;
+﻿namespace Wice.Utilities;
 
 public class ConcurrentQuadTree<T> : IQuadTree<T> where T : notnull
 {
     private readonly QuadTree<T>.Quadrant _root;
     private readonly Dictionary<T, QuadTree<T>.Quadrant> _table;
+#if NETFRAMEWORK
+    private readonly object _lock = new();
+#else
     private readonly Lock _lock = new();
+#endif
 
     public ConcurrentQuadTree(D2D_RECT_F bounds)
         : this(bounds, null)
@@ -43,7 +46,7 @@ public class ConcurrentQuadTree<T> : IQuadTree<T> where T : notnull
 
     public virtual void Insert(T node, D2D_RECT_F bounds)
     {
-        ArgumentNullException.ThrowIfNull(node);
+        ExceptionExtensions.ThrowIfNull(node, nameof(node));
         if (bounds.IsEmpty)
             throw new ArgumentException(null, nameof(bounds));
 
@@ -56,7 +59,7 @@ public class ConcurrentQuadTree<T> : IQuadTree<T> where T : notnull
 
     public virtual void Move(T node, D2D_RECT_F newBounds)
     {
-        ArgumentNullException.ThrowIfNull(node);
+        ExceptionExtensions.ThrowIfNull(node, nameof(node));
         if (newBounds.IsEmpty)
             throw new ArgumentException(null, nameof(newBounds));
 
@@ -73,7 +76,7 @@ public class ConcurrentQuadTree<T> : IQuadTree<T> where T : notnull
 
     public virtual bool Remove(T node)
     {
-        ArgumentNullException.ThrowIfNull(node);
+        ExceptionExtensions.ThrowIfNull(node, nameof(node));
         lock (_lock)
         {
             if (_table.TryGetValue(node, out var parent))

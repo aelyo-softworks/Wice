@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1ColorManagementString)]
+#else
 [Guid(Constants.CLSID_D2D1ColorManagementString)]
+#endif
 public partial class ColorManagementEffect : EffectWithSource
 {
     public static EffectProperty SourceColorContextProperty { get; }

@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1HueRotationString)]
+#else
 [Guid(Constants.CLSID_D2D1HueRotationString)]
+#endif
 public partial class HueRotationEffect : EffectWithSource
 {
     public static EffectProperty AngleProperty { get; }

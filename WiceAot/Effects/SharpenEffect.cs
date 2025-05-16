@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1SharpenString)]
+#else
 [Guid(Constants.CLSID_D2D1SharpenString)]
+#endif
 public partial class SharpenEffect : EffectWithSource
 {
     public static EffectProperty SharpnessProperty { get; }

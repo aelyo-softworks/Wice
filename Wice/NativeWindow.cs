@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Linq;
 using System.Windows.Forms;
-using DirectN;
-using Microsoft.Win32;
-using Wice.Interop;
-using Wice.Utilities;
 
 namespace Wice
 {
@@ -208,7 +197,7 @@ namespace Wice
         public tagPOINT ScreenToClient(tagPOINT pt) { WindowsFunctions.ScreenToClient(Handle, ref pt); return pt; }
         public tagPOINT ClientToScreen(tagPOINT pt) { WindowsFunctions.ClientToScreen(Handle, ref pt); return pt; }
         public tagPOINT GetClientCursorPosition() => ScreenToClient(GetCursorPosition());
-        public Monitor GetMonitor(MFW flags = MFW.MONITOR_DEFAULTTONULL) => Monitor.FromWindow(Handle, flags);
+        public DirectN.Monitor GetMonitor(MFW flags = MFW.MONITOR_DEFAULTTONULL) => DirectN.Monitor.FromWindow(Handle, flags);
         public bool IsChild(IntPtr parentHandle) => WindowsFunctions.IsChild(parentHandle, Handle);
         public WDA DisplayAffinity { get => WindowsFunctions.GetWindowDisplayAffinity(Handle); set => WindowsFunctions.SetWindowDisplayAffinity(Handle, value); }
 

@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1ConvolveMatrixString)]
+#else
 [Guid(Constants.CLSID_D2D1ConvolveMatrixString)]
+#endif
 public partial class ConvolveMatrixEffect : EffectWithSource
 {
     public static EffectProperty KernelUnitLengthProperty { get; }

@@ -2,7 +2,9 @@
 
 public static class CompositionUtilities
 {
+#if NET
     [return: NotNullIfNotNull(nameof(brush))]
+#endif
     public static CompositionBrush? Clone(this CompositionBrush? brush)
     {
         if (brush == null)

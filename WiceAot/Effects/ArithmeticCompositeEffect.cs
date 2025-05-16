@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1ArithmeticCompositeString)]
+#else
 [Guid(Constants.CLSID_D2D1ArithmeticCompositeString)]
+#endif
 public partial class ArithmeticCompositeEffect : EffectWithTwoSources
 {
     public static EffectProperty CoefficientsProperty { get; }

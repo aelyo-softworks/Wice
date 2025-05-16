@@ -91,7 +91,7 @@ public static class Extensions
         if (winRTObject == null)
             return null;
 
-        var ptr = MarshalInspectable<object>.FromManaged(winRTObject);
+        var ptr = WinRT.MarshalInspectable<object>.FromManaged(winRTObject);
         var obj = ComObject.FromPointer<T>(ptr, flags);
         if (obj == null)
             throw new InvalidCastException($"Object of type '{winRTObject.GetType().FullName}' is not of type '{typeof(T).FullName}'.");

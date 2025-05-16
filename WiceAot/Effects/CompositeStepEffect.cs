@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1CompositeString)]
+#else
 [Guid(Constants.CLSID_D2D1CompositeString)]
+#endif
 public partial class CompositeStepEffect : Effect
 {
     public static EffectProperty ModeProperty { get; }

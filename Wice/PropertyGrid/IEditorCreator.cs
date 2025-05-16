@@ -1,8 +1,7 @@
-﻿namespace Wice.PropertyGrid
+﻿namespace Wice.PropertyGrid;
+
+public interface IEditorCreator
 {
-    public interface IEditorCreator
-    {
-        object CreateEditor(PropertyValueVisual value);
-        object UpdateEditor(PropertyValueVisual value, object editor);
-    }
+    object CreateEditor(PropertyValueVisual value);
+    object UpdateEditor(PropertyValueVisual value, object editor);
 }

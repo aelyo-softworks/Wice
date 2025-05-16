@@ -33,14 +33,14 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     public ConcurrentHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer)
         : this(comparer)
     {
-        ArgumentNullException.ThrowIfNull(collection);
+        ExceptionExtensions.ThrowIfNull(collection, nameof(collection));
         InitializeFromCollection(collection);
     }
 
     public ConcurrentHashSet(int concurrencyLevel, IEnumerable<T> collection, IEqualityComparer<T> comparer)
         : this(concurrencyLevel, _defaultCapacity, false, comparer)
     {
-        ArgumentNullException.ThrowIfNull(collection);
+        ExceptionExtensions.ThrowIfNull(collection, nameof(collection));
         InitializeFromCollection(collection);
     }
 
@@ -51,8 +51,13 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
 
     private ConcurrentHashSet(int concurrencyLevel, int capacity, bool growLockArray, IEqualityComparer<T>? comparer)
     {
+#if NETFRAMEWORK
+        if (concurrencyLevel < 1) throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
+        if (capacity < 0) throw new ArgumentOutOfRangeException(nameof(capacity));
+#else
         ArgumentOutOfRangeException.ThrowIfLessThan(concurrencyLevel, 1);
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
+#endif
 
         // The capacity should be at least as large as the concurrency level. Otherwise, we would have locks that don't guard
         // any buckets.
@@ -211,8 +216,13 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     bool ICollection<T>.IsReadOnly => false;
     void ICollection<T>.CopyTo(T[] array, int arrayIndex)
     {
-        ArgumentNullException.ThrowIfNull(array);
+        ExceptionExtensions.ThrowIfNull(array, nameof(array));
+#if NETFRAMEWORK
+        if (arrayIndex < 0)
+            throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+#else
         ArgumentOutOfRangeException.ThrowIfNegative(arrayIndex);
+#endif
         var locksAcquired = 0;
         try
         {

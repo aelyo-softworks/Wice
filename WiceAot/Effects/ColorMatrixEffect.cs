@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1ColorMatrixString)]
+#else
 [Guid(Constants.CLSID_D2D1ColorMatrixString)]
+#endif
 public partial class ColorMatrixEffect : EffectWithSource
 {
     public static EffectProperty ColorMatrixProperty { get; }

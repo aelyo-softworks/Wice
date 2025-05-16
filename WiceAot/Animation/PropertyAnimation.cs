@@ -6,7 +6,7 @@ public abstract class PropertyAnimation : Animation
 
     protected PropertyAnimation(PropertyAnimationArguments arguments)
     {
-        ArgumentNullException.ThrowIfNull(arguments);
+        ExceptionExtensions.ThrowIfNull(arguments, nameof(arguments));
         if (!arguments.IsValid)
             throw new ArgumentException(null, nameof(arguments));
 

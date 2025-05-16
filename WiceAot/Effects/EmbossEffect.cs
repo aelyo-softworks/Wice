@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1EmbossString)]
+#else
 [Guid(Constants.CLSID_D2D1EmbossString)]
+#endif
 public partial class EmbossEffect : EffectWithSource
 {
     public static EffectProperty HeightProperty { get; }

@@ -1,122 +1,77 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Runtime.InteropServices;
-using DirectN;
-using Windows.Foundation.Metadata;
-#if NET
-using WinRT;
-#endif
+﻿using Windows.Foundation.Metadata;
 
-namespace Wice.Utilities
+namespace Wice.Utilities;
+
+public static class WinRTUtilities
 {
-    public static class WinRTUtilities
-    {
-        private static readonly ConcurrentDictionary<ushort, bool> _apiContractAvailable = new ConcurrentDictionary<ushort, bool>();
+    private static readonly ConcurrentDictionary<ushort, bool> _apiContractAvailable = new ConcurrentDictionary<ushort, bool>();
 
-        [DllImport("combase")]
+    [DllImport("combase")]
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments
-        private static extern HRESULT RoGetActivationFactory([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] string activatableClassId, [MarshalAs(UnmanagedType.LPStruct)] Guid iid, [MarshalAs(UnmanagedType.IUnknown)] out object factory);
+    private static extern HRESULT RoGetActivationFactory([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] string activatableClassId, [MarshalAs(UnmanagedType.LPStruct)] Guid iid, [MarshalAs(UnmanagedType.IUnknown)] out object factory);
 #pragma warning restore CA2101 // Specify marshaling for P/Invoke string arguments
 
-        public static T GetActivationFactory<T>(string activatableClassId, bool throwOnError = true) => (T)GetActivationFactory(activatableClassId, typeof(T).GUID, throwOnError);
-        public static object GetActivationFactory(string activatableClassId, Guid iid, bool throwOnError = true)
-        {
-            if (activatableClassId == null)
-                throw new ArgumentNullException(nameof(activatableClassId));
+    public static T GetActivationFactory<T>(string activatableClassId, bool throwOnError = true) => (T)GetActivationFactory(activatableClassId, typeof(T).GUID, throwOnError);
+    public static object GetActivationFactory(string activatableClassId, Guid iid, bool throwOnError = true)
+    {
+        if (activatableClassId == null)
+            throw new ArgumentNullException(nameof(activatableClassId));
 
-            RoGetActivationFactory(activatableClassId, iid, out var comp).ThrowOnError(throwOnError);
-            return comp;
-        }
+        RoGetActivationFactory(activatableClassId, iid, out var comp).ThrowOnError(throwOnError);
+        return comp;
+    }
 
-        public static bool Is19H1OrHigher => IsApiContractAvailable(8);
+    public static bool Is19H1OrHigher => IsApiContractAvailable(8);
 
-        public static bool IsApiContractAvailable(ushort version)
-        {
-            if (_apiContractAvailable.TryGetValue(version, out var available))
-                return available;
-
-            available = ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", version);
-            _apiContractAvailable[version] = available;
+    public static bool IsApiContractAvailable(ushort version)
+    {
+        if (_apiContractAvailable.TryGetValue(version, out var available))
             return available;
-        }
 
-        public static T WinRTCast<T>(this object obj, bool throwOnError = true) where T : class
+        available = ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", version);
+        _apiContractAvailable[version] = available;
+        return available;
+    }
+
+    public static T WinRTCast<T>(this object obj, bool throwOnError = true) where T : class
+    {
+        if (obj == null)
+            return default;
+
+        if (throwOnError)
+            return (T)obj;
+
+        return obj as T;
+    }
+
+    public static T WinRTCast<T>(this IntPtr unk, bool throwOnError = true) where T : class
+    {
+        if (unk == IntPtr.Zero)
+            return default;
+
+        if (throwOnError)
+            return WinRTCast<T>(Marshal.GetObjectForIUnknown(unk), throwOnError);
+
+        try
         {
-            if (obj == null)
-                return default;
-
-            if (throwOnError)
-            {
-#if NET
-                var unkt = Marshal.GetIUnknownForObject(obj);
-                return MarshalInterface<T>.FromAbi(unkt);
-#else
-                return (T)obj;
-#endif
-            }
-
-#if NET
-            var unk = Marshal.GetIUnknownForObject(obj);
-            if (unk == IntPtr.Zero)
-                return default;
-
-            try
-            {
-                return MarshalInterface<T>.FromAbi(unk);
-            }
-            catch
-            {
-                return default;
-            }
-#else
-            return obj as T;
-#endif
+            return WinRTCast<T>(Marshal.GetObjectForIUnknown(unk), false);
         }
-
-        public static T WinRTCast<T>(this IntPtr unk, bool throwOnError = true) where T : class
+        catch
         {
-            if (unk == IntPtr.Zero)
-                return default;
-
-            if (throwOnError)
-                return WinRTCast<T>(Marshal.GetObjectForIUnknown(unk), throwOnError);
-
-            try
-            {
-                return WinRTCast<T>(Marshal.GetObjectForIUnknown(unk), false);
-            }
-            catch
-            {
-                return default;
-            }
+            return default;
         }
+    }
 
-        public static T ComCast<T>(this object obj, bool throwOnError = true) where T : class
+    public static T ComCast<T>(this object obj, bool throwOnError = true) where T : class
+    {
+        if (obj == null)
+            return default;
+
+        if (throwOnError)
         {
-            if (obj == null)
-                return default;
-
-            if (throwOnError)
-            {
-#if NET
-                return obj.As<T>();
-#else
-                return (T)obj;
-#endif
-            }
-
-#if NET
-            try
-            {
-                return obj.As<T>();
-            }
-            catch
-            {
-                return default;
-            }
-#else
-            return obj as T;
-#endif
+            return (T)obj;
         }
+
+        return obj as T;
     }
 }

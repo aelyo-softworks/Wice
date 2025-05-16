@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1StraightenString)]
+#else
 [Guid(Constants.CLSID_D2D1StraightenString)]
+#endif
 public partial class StraightenEffect : EffectWithSource
 {
     public static EffectProperty AngleProperty { get; }

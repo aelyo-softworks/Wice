@@ -1076,7 +1076,7 @@ public partial class Window : Canvas, ITitleBarParent
         return ComObject.WithComInstance(d2d1.Object, devUnk =>
         {
             var hr = interop.Object.CreateGraphicsDevice(devUnk, out var unk);
-            var dev = MarshalInterface<CompositionGraphicsDevice>.FromAbi(unk);
+            var dev = WinRT.MarshalInterface<CompositionGraphicsDevice>.FromAbi(unk);
             if (hr.Value < 0)
             {
                 try
@@ -1103,7 +1103,7 @@ public partial class Window : Canvas, ITitleBarParent
 
         using var interop = controller.Compositor.AsComObject<ICompositorDesktopInterop>();
         interop.Object.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
-        _compositionTarget = MarshalInspectable<CompositionTarget>.FromAbi(target);
+        _compositionTarget = WinRT.MarshalInspectable<CompositionTarget>.FromAbi(target);
         CompositionVisual = CreateWindowVisual(controller.Compositor);
         if (CompositionVisual == null)
             throw new InvalidOperationException();

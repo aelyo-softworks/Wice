@@ -183,7 +183,7 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
 
     protected virtual bool MergeProperties(BaseObject source, BaseObjectSetOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(source);
+        ExceptionExtensions.ThrowIfNull(source, nameof(source));
         var changed = false;
         foreach (var kv in source.Values)
         {
@@ -207,14 +207,14 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
 
     protected virtual bool IsPropertyValueSet(BaseObjectProperty property)
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
         property = BaseObjectProperty.GetFinal(GetType(), property);
         return Values.ContainsKey(property.Id);
     }
 
     protected virtual object? GetPropertyValue(BaseObjectProperty property)
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
         if (!TryGetPropertyValue(property, out var value))
             return property.DefaultValue;
 
@@ -223,7 +223,7 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
 
     protected virtual bool TryGetPropertyValue(BaseObjectProperty property, out object? value)
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
         property = BaseObjectProperty.GetFinal(GetType(), property);
         return Values.TryGetValue(property.Id, out value);
     }
@@ -231,14 +231,14 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
     protected bool ResetPropertyValue(BaseObjectProperty property) => ResetPropertyValue(property, out _);
     protected virtual bool ResetPropertyValue(BaseObjectProperty property, out object? value)
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
         property = BaseObjectProperty.GetFinal(GetType(), property);
         return Values.TryRemove(property.Id, out value);
     }
 
     protected virtual bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
         property = BaseObjectProperty.GetFinal(GetType(), property);
         if (property.Convert != null)
         {

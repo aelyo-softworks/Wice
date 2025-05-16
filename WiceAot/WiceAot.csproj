@@ -48,7 +48,6 @@
 		<Using Include="Wice.Effects" />
 		<Using Include="Wice.Interop" />
 		<Using Include="Wice.Utilities" />
-		<Using Include="WinRT" />
 		<Using Include="Windows.Foundation" />
 		<Using Include="Windows.Graphics" />
 		<Using Include="Windows.Graphics.DirectX" />

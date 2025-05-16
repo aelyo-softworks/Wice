@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1RgbToHueString)]
+#else
 [Guid(Constants.CLSID_D2D1RgbToHueString)]
+#endif
 public partial class RgbToHueEffect : EffectWithSource
 {
     public static EffectProperty OutputColorSpaceProperty { get; }

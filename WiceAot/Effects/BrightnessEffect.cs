@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1BrightnessString)]
+#else
 [Guid(Constants.CLSID_D2D1BrightnessString)]
+#endif
 public partial class BrightnessEffect : EffectWithSource
 {
     public static EffectProperty WhitePointProperty { get; }

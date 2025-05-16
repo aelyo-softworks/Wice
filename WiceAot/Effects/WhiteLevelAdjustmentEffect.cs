@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1WhiteLevelAdjustmentString)]
+#else
 [Guid(Constants.CLSID_D2D1WhiteLevelAdjustmentString)]
+#endif
 public partial class WhiteLevelAdjustmentEffect : EffectWithSource
 {
     public static EffectProperty InputWhiteLevelProperty { get; }

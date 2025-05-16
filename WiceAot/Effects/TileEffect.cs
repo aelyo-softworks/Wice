@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1TileString)]
+#else
 [Guid(Constants.CLSID_D2D1TileString)]
+#endif
 public partial class TileEffect : EffectWithSource
 {
     public static EffectProperty RectProperty { get; }

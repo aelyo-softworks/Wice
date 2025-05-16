@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1ContrastString)]
+#else
 [Guid(Constants.CLSID_D2D1ContrastString)]
+#endif
 public partial class ContrastEffect : EffectWithSource
 {
     public static EffectProperty ContrastProperty { get; }

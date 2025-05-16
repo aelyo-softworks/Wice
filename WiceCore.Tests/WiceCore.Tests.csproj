@@ -14,9 +14,6 @@
     <None Remove="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WiceCore\WiceCore.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\Wice.Tests\app.manifest" Link="app.manifest" />
     <Compile Include="..\Wice.Tests\Border2.cs" Link="Border2.cs" />
     <Compile Include="..\Wice.Tests\Program.cs" Link="Program.cs" />

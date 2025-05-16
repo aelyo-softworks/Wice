@@ -220,7 +220,7 @@ public partial class PdfView : RenderVisual, IDisposable
         if (page == null)
             return;
 
-        var pageUnk = ((IWinRTObject)page).NativeObject.ThisPtr; // no AddRef needed
+        var pageUnk = ((WinRT.IWinRTObject)page).NativeObject.ThisPtr; // no AddRef needed
 
         var rc = GetDestinationRectangle();
         var renderParams = new PDF_RENDER_PARAMS

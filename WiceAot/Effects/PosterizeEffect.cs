@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1PosterizeString)]
+#else
 [Guid(Constants.CLSID_D2D1PosterizeString)]
+#endif
 public partial class PosterizeEffect : EffectWithSource
 {
     public static EffectProperty RedValueCountProperty { get; }

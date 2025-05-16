@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1TurbulenceString)]
+#else
 [Guid(Constants.CLSID_D2D1TurbulenceString)]
+#endif
 public partial class TurbulenceEffect : Effect
 {
     public static EffectProperty OffsetProperty { get; }

@@ -1,9 +1,12 @@
-﻿
-namespace Wice.Animation;
+﻿namespace Wice.Animation;
 
 public abstract class Storyboard : AnimationObject
 {
+#if NET9_0_OR_GREATER
     private static readonly Lock _lock = new();
+#else
+    private static readonly object _lock = new();
+#endif
 
     public event EventHandler? Stopped;
     public event EventHandler? Starting;
@@ -11,7 +14,7 @@ public abstract class Storyboard : AnimationObject
 
     protected Storyboard(Window window)
     {
-        ArgumentNullException.ThrowIfNull(window);
+        ExceptionExtensions.ThrowIfNull(window, nameof(window));
 
         Window = window;
         Children = CreateChildren();
@@ -93,7 +96,7 @@ public abstract class Storyboard : AnimationObject
 
     protected virtual bool OnChildTick(Animation animation)
     {
-        ArgumentNullException.ThrowIfNull(animation);
+        ExceptionExtensions.ThrowIfNull(animation, nameof(animation));
 
         if (animation.State == AnimationState.Stopped)
             return false;

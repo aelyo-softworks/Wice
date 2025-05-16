@@ -4,7 +4,7 @@ public class InvalidateReason
 {
     public InvalidateReason(Type type, InvalidateReason? innerReason = null)
     {
-        ArgumentNullException.ThrowIfNull(type);
+        ExceptionExtensions.ThrowIfNull(type, nameof(type));
         Type = type;
         InnerReason = innerReason;
     }
@@ -17,7 +17,11 @@ public class InvalidateReason
         var typeName = GetType().Name;
         if (typeName.EndsWith(typeof(InvalidateReason).Name))
         {
+#if NETFRAMEWORK
+            typeName = typeName.Substring(0, typeName.Length - typeof(InvalidateReason).Name.Length);
+#else
             typeName = typeName[..^typeof(InvalidateReason).Name.Length];
+#endif
         }
         return typeName + "(" + Type.Name + ")";
     }

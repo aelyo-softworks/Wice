@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DirectN;
-using Wice.Effects;
-using Wice.Samples.Gallery.Pages;
-using Wice.Utilities;
+﻿using Wice.Samples.Gallery.Pages;
 
 namespace Wice.Samples.Gallery
 {
@@ -59,7 +53,7 @@ namespace Wice.Samples.Gallery
             get
             {
                 var cursor = NativeWindow.GetCursorPosition();
-                var area = Monitor.All.First(m => m.Handle == Monitor.GetNearestFromPoint(cursor.x, cursor.y)).WorkingArea;
+                var area = DirectN.Monitor.All.First(m => m.Handle == DirectN.Monitor.GetNearestFromPoint(cursor.x, cursor.y)).WorkingArea;
                 return area;
             }
         }

@@ -167,7 +167,4 @@
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.17.2" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WiceCore\WiceCore.csproj" />
-  </ItemGroup>
 </Project>

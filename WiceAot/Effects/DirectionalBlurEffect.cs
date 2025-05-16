@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1DirectionalBlurString)]
+#else
 [Guid(Constants.CLSID_D2D1DirectionalBlurString)]
+#endif
 public partial class DirectionalBlurEffect : EffectWithSource
 {
     public static EffectProperty StandardDeviationProperty { get; }

@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D13DTransformString)]
+#else
 [Guid(Constants.CLSID_D2D13DTransformString)]
+#endif
 public partial class TransformEffect : EffectWithSource
 {
     public static EffectProperty InterpolationModeProperty { get; }

@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1FloodString)]
+#else
 [Guid(Constants.CLSID_D2D1FloodString)]
+#endif
 public partial class FloodEffect : Effect
 {
     public static EffectProperty ColorProperty { get; }

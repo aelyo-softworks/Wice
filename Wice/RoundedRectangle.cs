@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Numerics;
-using Wice.Utilities;
 using Windows.UI.Composition;
+using Extensions = Wice.Utilities.Extensions;
 
 namespace Wice
 {

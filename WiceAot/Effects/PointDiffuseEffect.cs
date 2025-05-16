@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1PointDiffuseString)]
+#else
 [Guid(Constants.CLSID_D2D1PointDiffuseString)]
+#endif
 public partial class PointDiffuseEffect : EffectWithSource
 {
     public static EffectProperty LightPositionProperty { get; }

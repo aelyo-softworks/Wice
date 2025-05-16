@@ -38,6 +38,7 @@ public class CompositionObjectEqualityComparer : IEqualityComparer<CompositionOb
                 && equalsGradientBrush(xlb, ylb);
         }
 
+#if NET
         if (OperatingSystem.IsWindows() && OperatingSystem.IsWindowsVersionAtLeast(10, 0, 18362))
         {
             if (x is CompositionRadialGradientBrush xrg)
@@ -47,6 +48,7 @@ public class CompositionObjectEqualityComparer : IEqualityComparer<CompositionOb
                     && equalsGradientBrush(xrg, yrg);
             }
         }
+#endif
 
         if (x is DropShadow xds)
         {

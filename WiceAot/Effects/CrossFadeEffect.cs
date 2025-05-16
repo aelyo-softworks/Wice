@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1CrossFadeString)]
+#else
 [Guid(Constants.CLSID_D2D1CrossFadeString)]
+#endif
 public partial class CrossFadeEffect : EffectWithTwoSources
 {
     public static EffectProperty WeightProperty { get; }

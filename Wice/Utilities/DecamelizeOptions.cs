@@ -1,12 +1,11 @@
-﻿namespace Wice.Utilities
-{
-    public class DecamelizeOptions
-    {
-        public DecamelizeOptions()
-        {
-            TextOptions = DecamelizeTextOptions.Default;
-        }
+﻿namespace Wice.Utilities;
 
-        public virtual DecamelizeTextOptions TextOptions { get; set; }
+public class DecamelizeOptions
+{
+    public DecamelizeOptions()
+    {
+        TextOptions = DecamelizeTextOptions.Default;
     }
+
+    public virtual DecamelizeTextOptions TextOptions { get; set; }
 }

@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1GaussianBlurString)]
+#else
 [Guid(Constants.CLSID_D2D1GaussianBlurString)]
+#endif
 public partial class GaussianBlurEffect : EffectWithSource
 {
     public static EffectProperty StandardDeviationProperty { get; }

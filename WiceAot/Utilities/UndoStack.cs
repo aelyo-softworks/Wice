@@ -9,7 +9,12 @@ public class UndoStack<T>
 
     public UndoStack(int capacity = 100)
     {
+#if NETFRAMEWORK
+        if (capacity < 1)
+            throw new ArgumentOutOfRangeException(nameof(capacity));
+#else
         ArgumentOutOfRangeException.ThrowIfLessThan(capacity, 1);
+#endif
         Capacity = capacity;
     }
 
@@ -54,7 +59,11 @@ public class UndoStack<T>
         }
     }
 
-    public virtual bool TryUndo(T existing, [NotNullWhen(true)] out T? item)
+    public virtual bool TryUndo(T existing,
+#if !NETFRAMEWORK
+        [NotNullWhen(true)]
+#endif
+        out T? item)
     {
         lock (SyncObject)
         {
@@ -70,7 +79,11 @@ public class UndoStack<T>
         }
     }
 
-    public virtual bool TryRedo(T existing, [NotNullWhen(true)] out T? item)
+    public virtual bool TryRedo(T existing,
+#if !NETFRAMEWORK
+        [NotNullWhen(true)] 
+#endif
+        out T? item)
     {
         lock (SyncObject)
         {

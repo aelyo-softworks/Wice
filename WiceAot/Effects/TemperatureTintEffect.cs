@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1TemperatureTintString)]
+#else
 [Guid(Constants.CLSID_D2D1TemperatureTintString)]
+#endif
 public partial class TemperatureTintEffect : EffectWithSource
 {
     public static EffectProperty TemperatureProperty { get; }

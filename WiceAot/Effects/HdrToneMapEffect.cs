@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1HdrToneMapString)]
+#else
 [Guid(Constants.CLSID_D2D1HdrToneMapString)]
+#endif
 public partial class HdrToneMapEffect : EffectWithSource
 {
     public static EffectProperty InputMaxLuminanceProperty { get; }

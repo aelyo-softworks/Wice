@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1PointSpecularString)]
+#else
 [Guid(Constants.CLSID_D2D1PointSpecularString)]
+#endif
 public partial class PointSpecularEffect : EffectWithSource
 {
     public static EffectProperty LightPositionProperty { get; }

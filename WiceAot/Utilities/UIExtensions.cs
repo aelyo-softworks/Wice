@@ -19,9 +19,8 @@ public static class UIExtensions
 
     public static void SetHyperLinkRange(this TextBox textBox, string text, Func<string, bool>? onClick = null)
     {
-        ArgumentNullException.ThrowIfNull(textBox);
-
-        ArgumentNullException.ThrowIfNull(text);
+        ExceptionExtensions.ThrowIfNull(textBox, nameof(textBox));
+        ExceptionExtensions.ThrowIfNull(text, nameof(text));
 
         var range = DWRITE_TEXT_RANGE.Search(textBox.Text, text).First();
         textBox.SetUnderline(true, range);
@@ -34,7 +33,11 @@ public static class UIExtensions
             if (textBox.IsPositionOverRange(e.GetPosition(textBox), range))
             {
                 textBox.SetSolidColor(HyperLinkHotColor, range);
+#if NETFRAMEWORK
+                textBox.Cursor = DirectN.Cursor.Hand;
+#else
                 textBox.Cursor = DirectN.Extensions.Utilities.Cursor.Hand;
+#endif
             }
             else
             {
@@ -121,7 +124,7 @@ public static class UIExtensions
 
     public static void Select(this IEnumerable<ISelectable> selectables, Func<ISelectable, bool> selectionCompareFunc, bool raiseIsSelectedChanged = false)
     {
-        ArgumentNullException.ThrowIfNull(selectionCompareFunc);
+        ExceptionExtensions.ThrowIfNull(selectionCompareFunc, nameof(selectionCompareFunc));
         if (selectables == null)
             return;
 
@@ -152,14 +155,30 @@ public static class UIExtensions
         }
     }
 
-    //public static T GetSelectedTag<T>(this TreeView tree)
-    //{
-    //    var tag = tree.SelectedNode?.Tag;
-    //    if (tag == null || !typeof(T).IsAssignableFrom(tag.GetType()))
-    //        return default;
 
-    //    return (T)tag;
-    //}
+#if NETFRAMEWORK
+    // avoid AmbiguousMatchException
+    public static PropertyInfo GetUnambiguousProperty(object component, string name, BindingFlags flags = BindingFlags.Public | BindingFlags.Instance) => GetUnambiguousProperty(component?.GetType(), name, flags);
+    public static PropertyInfo GetUnambiguousProperty(this Type type, string name, BindingFlags flags = BindingFlags.Public | BindingFlags.Instance)
+    {
+        if (type == null)
+            throw new ArgumentNullException(nameof(type));
+
+        if (name == null)
+            throw new ArgumentNullException(nameof(name));
+
+        return type.GetProperties(flags).Where(p => p.Name.EqualsIgnoreCase(name)).FirstOrDefault();
+    }
+
+    public static T GetSelectedTag<T>(this System.Windows.Forms.TreeView tree)
+    {
+        var tag = tree.SelectedNode?.Tag;
+        if (tag == null || !typeof(T).IsAssignableFrom(tag.GetType()))
+            return default;
+
+        return (T)tag;
+    }
+#endif
 
     public static void CopyFrom(this TextBox? target, BaseObject? source)
     {
@@ -225,10 +244,14 @@ public static class UIExtensions
     }
 
     // avoid AmbiguousMatchException
-    public static PropertyInfo? GetUnambiguousProperty([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] this Type type, string name)
+    public static PropertyInfo? GetUnambiguousProperty(
+#if !NETFRAMEWORK
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
+#endif
+        this Type type, string name)
     {
-        ArgumentNullException.ThrowIfNull(type);
-        ArgumentNullException.ThrowIfNull(name);
+        ExceptionExtensions.ThrowIfNull(type, nameof(type));
+        ExceptionExtensions.ThrowIfNull(name, nameof(name));
         return type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.Name.EqualsIgnoreCase(name)).FirstOrDefault();
     }
 
@@ -244,13 +267,17 @@ public static class UIExtensions
         if (elen > maxCount)
             return null;
 
+#if NETFRAMEWORK
+        return text.Substring(0, maxCount - elen) + ellipsis;
+#else
         return string.Concat(text.AsSpan(0, maxCount - elen), ellipsis);
+#endif
     }
 
     public static object AddOnClick(this Visual visual, EventHandler handler)
     {
-        ArgumentNullException.ThrowIfNull(visual);
-        ArgumentNullException.ThrowIfNull(handler);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
+        ExceptionExtensions.ThrowIfNull(handler, nameof(handler));
         if (visual is ButtonBase button)
         {
             var buttonHandler = new EventHandler<EventArgs>(handler);
@@ -265,8 +292,8 @@ public static class UIExtensions
 
     public static void RemoveOnClick(this Visual visual, object handler)
     {
-        ArgumentNullException.ThrowIfNull(visual);
-        ArgumentNullException.ThrowIfNull(handler);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
+        ExceptionExtensions.ThrowIfNull(handler, nameof(handler));
         if (visual is ButtonBase button)
         {
             var buttonHandler = (EventHandler<EventArgs>)handler;
@@ -291,8 +318,8 @@ public static class UIExtensions
 
     public static CompositionScopedBatch RunScopedBatch(this Compositor compositor, Action action, Action? onCompleted = null, CompositionBatchTypes types = CompositionBatchTypes.Animation)
     {
-        ArgumentNullException.ThrowIfNull(compositor);
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(compositor, nameof(compositor));
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         var batch = compositor.CreateScopedBatch(types);
         if (onCompleted != null)
         {
@@ -314,44 +341,68 @@ public static class UIExtensions
     public static void Clear(this SpriteVisual visual, CompositionGraphicsDevice device, D3DCOLORVALUE? color = null, SurfaceCreationOptions? options = null, RECT? rect = null) => DrawOnSurface(visual, device, (dc) => dc.Clear(color ?? D3DCOLORVALUE.Transparent), options, rect);
     public static void DrawOnSurface(this SpriteVisual visual, CompositionGraphicsDevice device, Action<IComObject<ID2D1DeviceContext>> drawAction, SurfaceCreationOptions? options = null, RECT? rect = null)
     {
-        ArgumentNullException.ThrowIfNull(visual);
-        ArgumentNullException.ThrowIfNull(device);
-        ArgumentNullException.ThrowIfNull(drawAction);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
+        ExceptionExtensions.ThrowIfNull(device, nameof(device));
+        ExceptionExtensions.ThrowIfNull(drawAction, nameof(drawAction));
         var surface = EnsureDrawingSurface(visual, device, options);
         if (surface == null)
             return;
 
+#if NETFRAMEWORK
+        var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
+        using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop))
+        {
+            using (var dc = surfaceInterop.BeginDraw(rect))
+            {
+                drawAction(dc);
+            }
+            surfaceInterop.EndDraw();
+        }
+#else
         using var interop = surface.AsComObject<ICompositionDrawingSurfaceInterop>();
         using (var dc = interop.BeginDraw<ID2D1DeviceContext>(rect))
         {
             drawAction(dc);
         }
         interop.EndDraw();
+#endif
     }
 
     public static T? DrawOnSurface<T>(this SpriteVisual visual, CompositionGraphicsDevice device, Func<IComObject<ID2D1DeviceContext>, T> drawAction, SurfaceCreationOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(visual);
-        ArgumentNullException.ThrowIfNull(device);
-        ArgumentNullException.ThrowIfNull(drawAction);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
+        ExceptionExtensions.ThrowIfNull(device, nameof(device));
+        ExceptionExtensions.ThrowIfNull(drawAction, nameof(drawAction));
 
         T item;
         var surface = EnsureDrawingSurface(visual, device, options);
         if (surface == null)
             return default;
 
+#if NETFRAMEWORK
+        var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
+        using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop))
+        {
+            using (var dc = surfaceInterop.BeginDraw())
+            {
+                item = drawAction(dc);
+            }
+            surfaceInterop.EndDraw();
+        }
+#else
         using var interop = surface.AsComObject<ICompositionDrawingSurfaceInterop>();
         using (var dc = interop.BeginDraw<ID2D1DeviceContext>())
         {
             item = drawAction(dc);
         }
         interop.EndDraw();
+#endif
         return item;
     }
 
     public static CompositionDrawingSurface? EnsureDrawingSurface(this SpriteVisual visual, CompositionGraphicsDevice device, SurfaceCreationOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
         var size = visual.Size;
         Window.ClampMaxBitmapSize(ref size);
         if ((visual.Brush as CompositionSurfaceBrush)?.Surface is not CompositionDrawingSurface surface)

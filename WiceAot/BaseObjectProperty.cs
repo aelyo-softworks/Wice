@@ -19,8 +19,8 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
 
     public static BaseObjectProperty? GetByName(string name, Type type)
     {
-        ArgumentNullException.ThrowIfNull(name);
-        ArgumentNullException.ThrowIfNull(type);
+        ExceptionExtensions.ThrowIfNull(name, nameof(name));
+        ExceptionExtensions.ThrowIfNull(type, nameof(type));
         foreach (var kv in _allProperties)
         {
             if (kv.Value.Name == name && kv.Value.DeclaringType.IsAssignableFrom(type))
@@ -29,7 +29,9 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
         return null;
     }
 
+#if !NETFRAMEWORK
     [return: NotNullIfNotNull(nameof(property))]
+#endif
     public static BaseObjectProperty? GetFinal(Type declaringType, BaseObjectProperty property)
     {
         if (property == null)
@@ -38,7 +40,7 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
         if (!property.IsOverriden)
             return property;
 
-        ArgumentNullException.ThrowIfNull(declaringType);
+        ExceptionExtensions.ThrowIfNull(declaringType, nameof(declaringType));
         if (!typeof(BaseObject).IsAssignableFrom(declaringType))
             throw new ArgumentException(null, nameof(declaringType));
 
@@ -53,7 +55,7 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
 
     public static IReadOnlyCollection<BaseObjectProperty> GetProperties(Type declaringType)
     {
-        ArgumentNullException.ThrowIfNull(declaringType);
+        ExceptionExtensions.ThrowIfNull(declaringType, nameof(declaringType));
         if (!typeof(BaseObject).IsAssignableFrom(declaringType))
             throw new ArgumentException(null, nameof(declaringType));
 
@@ -64,11 +66,27 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
         return [];
     }
 
-    public static BaseObjectProperty Add<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] T>(Type declaringType, string name, T? defaultValue = default, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null) => Add(declaringType, name, typeof(T), defaultValue, convert, changing, changed);
-    public static BaseObjectProperty Add(Type declaringType, string name, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type, object? defaultValue = null, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null) => Add(new BaseObjectProperty(declaringType, name, type, defaultValue, convert, changing, changed));
+    public static BaseObjectProperty Add<
+#if !NETFRAMEWORK
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+    T>(Type declaringType, string name, T? defaultValue = default, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null) => Add(declaringType, name, typeof(T), defaultValue, convert, changing, changed);
+
+    public static BaseObjectProperty Add(
+        Type declaringType,
+        string name,
+#if !NETFRAMEWORK
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
+    Type type,
+        object? defaultValue = null,
+        ConvertDelegate? convert = null,
+        ChangingDelegate? changing = null,
+        ChangedDelegate? changed = null) => Add(new BaseObjectProperty(declaringType, name, type, defaultValue, convert, changing, changed));
+
     public static BaseObjectProperty Add(BaseObjectProperty property)
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
         property.Id = Interlocked.Increment(ref _lastPropertyId);
 
         if (property.DefaultValue == null)
@@ -82,7 +100,11 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
         {
             if (!property.Type.GetType().IsAssignableFrom(property.DefaultValue.GetType()))
             {
+#if NETFRAMEWORK
+                property.DefaultValue = Conversions.ChangeType(property.DefaultValue, property.Type);
+#else
                 property.DefaultValue = Conversions.ChangeObjectType(property.DefaultValue, property.Type);
+#endif
             }
         }
 
@@ -116,52 +138,67 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
 
     public virtual bool SetValue(BaseObject target, object value, BaseObjectSetOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(target);
+        ExceptionExtensions.ThrowIfNull(target, nameof(target));
         return ((IPropertyOwner)target).SetPropertyValue(this, value, options);
     }
 
     public virtual object? GetValue(BaseObject target)
     {
-        ArgumentNullException.ThrowIfNull(target);
+        ExceptionExtensions.ThrowIfNull(target, nameof(target));
         return ((IPropertyOwner)target).GetPropertyValue(this);
     }
 
     public virtual bool TryGetPropertyValue(BaseObject target, out object? value)
     {
-        ArgumentNullException.ThrowIfNull(target);
+        ExceptionExtensions.ThrowIfNull(target, nameof(target));
         return ((IPropertyOwner)target).TryGetPropertyValue(this, out value);
     }
 
     public virtual bool IsPropertyValueSet(BaseObject target)
     {
-        ArgumentNullException.ThrowIfNull(target);
+        ExceptionExtensions.ThrowIfNull(target, nameof(target));
         return ((IPropertyOwner)target).IsPropertyValueSet(this);
     }
 
     public bool ResetPropertyValue(BaseObject target) => ResetPropertyValue(target, out _);
     public virtual bool ResetPropertyValue(BaseObject target, out object? value)
     {
-        ArgumentNullException.ThrowIfNull(target);
+        ExceptionExtensions.ThrowIfNull(target, nameof(target));
         return ((IPropertyOwner)target).ResetPropertyValue(this, out value);
     }
 
     private object? _defaultValue;
     private BaseObjectPropertyOptions _options;
 
-    public BaseObjectProperty(Type declaringType, string name, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type, object? defaultValue = null, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null, BaseObjectPropertyOptions options = BaseObjectPropertyOptions.None)
+    public BaseObjectProperty(
+        Type declaringType,
+        string name,
+#if !NETFRAMEWORK
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] 
+#endif
+        Type type,
+        object? defaultValue = null,
+        ConvertDelegate? convert = null,
+        ChangingDelegate? changing = null,
+        ChangedDelegate? changed = null,
+        BaseObjectPropertyOptions options = BaseObjectPropertyOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(declaringType);
+        ExceptionExtensions.ThrowIfNull(declaringType, nameof(declaringType));
         if (!typeof(BaseObject).IsAssignableFrom(declaringType))
             throw new ArgumentException("Type '" + declaringType.FullName + "' does not derive from " + nameof(BaseObject) + ".", nameof(declaringType));
 
-        ArgumentNullException.ThrowIfNull(name);
-        ArgumentNullException.ThrowIfNull(type);
+        ExceptionExtensions.ThrowIfNull(name, nameof(name));
+        ExceptionExtensions.ThrowIfNull(type, nameof(type));
 
         DeclaringType = declaringType;
         Name = name;
         Type = type;
         DefaultValue = defaultValue;
+#if NETFRAMEWORK
+        ConvertedDefaultValue = Conversions.ChangeType(defaultValue, type, null, CultureInfo.InvariantCulture);
+#else
         ConvertedDefaultValue = Conversions.ChangeObjectType(defaultValue, type, null, CultureInfo.InvariantCulture);
+#endif
         Convert = convert;
         Changing = changing;
         Changed = changed;
@@ -173,7 +210,10 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     public int Id { get; private set; }
     public string Name { get; }
     public Type DeclaringType { get; } // is a BaseObject
+
+#if !NETFRAMEWORK
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
     public Type Type { get; }
     public ConvertDelegate? Convert { get; }
     public ChangedDelegate? Changed { get; }
@@ -198,6 +238,16 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     }
 
     // TODO: add acrylic brush?
-    public virtual bool TryConvertToTargetType(object? value, out object? convertedValue) => Conversions.TryChangeObjectType(value, Type, CultureInfo.InvariantCulture, out convertedValue);
-    public virtual object? ConvertToTargetType(object? value) => Conversions.ChangeObjectType(value, Type, ConvertedDefaultValue, CultureInfo.InvariantCulture);
+    public virtual bool TryConvertToTargetType(object? value, out object? convertedValue) =>
+#if NETFRAMEWORK
+        Conversions.TryChangeType(value, Type, CultureInfo.InvariantCulture, out convertedValue);
+#else
+        Conversions.TryChangeObjectType(value, Type, CultureInfo.InvariantCulture, out convertedValue);
+#endif
+    public virtual object? ConvertToTargetType(object? value) =>
+#if NETFRAMEWORK
+        Conversions.ChangeType(value, Type, ConvertedDefaultValue, CultureInfo.InvariantCulture);
+#else
+        Conversions.ChangeObjectType(value, Type, ConvertedDefaultValue, CultureInfo.InvariantCulture);
+#endif
 }

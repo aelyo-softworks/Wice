@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1EdgeDetectionString)]
+#else
 [Guid(Constants.CLSID_D2D1EdgeDetectionString)]
+#endif
 public partial class EdgeDetectionEffect : EffectWithSource
 {
     public static EffectProperty StrengthProperty { get; }

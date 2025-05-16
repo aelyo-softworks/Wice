@@ -1,23 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using DirectN;
-using Wice.Interop;
-using Wice.Utilities;
-using Windows.Foundation;
-using Windows.Graphics.DirectX;
-using Windows.UI.Composition;
-using Windows.UI.Composition.Core;
-using Windows.UI.Composition.Diagnostics;
+﻿using System.Threading.Tasks;
 #if NET
 using WinRT;
 #endif
@@ -3599,9 +3580,9 @@ namespace Wice
         private const int MOUSE_TRACK_TIMER_ID = 1;
         private const int TME_HOVER = 1;
         private const int TME_LEAVE = 2;
-        private const int WM_PROCESS_INVALIDATIONS = Application.WM_HOSTQUIT - 1;
+        private const int WM_PROCESS_INVALIDATIONS = (int)Application.WM_HOSTQUIT - 1;
         private const int WM_SETCARETPOS = MessageDecoder.WM_APP - 2;
-        private const int WM_PROCESS_TASKS = Application.WM_HOSTQUIT - 3;
+        private const int WM_PROCESS_TASKS = (int)Application.WM_HOSTQUIT - 3;
         internal const int WM_MOUSEENTER = 1; // pseudo message for us
 #pragma warning restore IDE1006 // Naming Styles
     }

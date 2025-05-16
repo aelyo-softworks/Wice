@@ -2,5 +2,5 @@
 
 public interface IReadStreamer
 {
-    Stream GetReadStream();
+    Stream? GetReadStream();
 }

@@ -42,7 +42,7 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
 
     protected virtual void ProtectedAdd(T item, bool checkMaxChildrenCount)
     {
-        ArgumentNullException.ThrowIfNull(item);
+        ExceptionExtensions.ThrowIfNull(item, nameof(item));
         if (checkMaxChildrenCount && Count == MaxChildrenCount)
             throw new WiceException("0002: Collection has a maximum of " + MaxChildrenCount + " children.");
 
@@ -82,7 +82,7 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
 
     public void Add(T item)
     {
-        ArgumentNullException.ThrowIfNull(item);
+        ExceptionExtensions.ThrowIfNull(item, nameof(item));
         if (IsReadOnly)
             throw new NotSupportedException();
 

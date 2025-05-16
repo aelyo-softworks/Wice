@@ -1,8 +1,4 @@
-﻿using System.Numerics;
-using DirectN;
-using Wice.Utilities;
-
-namespace Wice.Samples.Gallery
+﻿namespace Wice.Samples.Gallery
 {
     public class RoundedButton : Button
     {

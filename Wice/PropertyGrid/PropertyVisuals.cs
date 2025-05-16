@@ -1,8 +1,7 @@
-﻿namespace Wice.PropertyGrid
+﻿namespace Wice.PropertyGrid;
+
+public class PropertyVisuals
 {
-    public class PropertyVisuals
-    {
-        public Visual Text { get; set; }
-        public PropertyValueVisual ValueVisual { get; set; }
-    }
+    public Visual Text { get; set; }
+    public PropertyValueVisual ValueVisual { get; set; }
 }

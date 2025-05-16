@@ -1,5 +1,6 @@
 ﻿using WebView2;
 using WebView2.Utilities;
+using WinRT;
 
 namespace Wice;
 

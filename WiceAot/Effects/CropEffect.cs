@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1CropString)]
+#else
 [Guid(Constants.CLSID_D2D1CropString)]
+#endif
 public partial class CropEffect : EffectWithSource
 {
     public static EffectProperty RectProperty { get; }

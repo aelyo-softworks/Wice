@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1ExposureString)]
+#else
 [Guid(Constants.CLSID_D2D1ExposureString)]
+#endif
 public partial class ExposureEffect : EffectWithSource
 {
     public static EffectProperty ExposureValueProperty { get; }

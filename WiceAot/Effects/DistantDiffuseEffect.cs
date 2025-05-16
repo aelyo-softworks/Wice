@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1DistantDiffuseString)]
+#else
 [Guid(Constants.CLSID_D2D1DistantDiffuseString)]
+#endif
 public partial class DistantDiffuseEffect : EffectWithSource
 {
     public static EffectProperty AzimuthProperty { get; }

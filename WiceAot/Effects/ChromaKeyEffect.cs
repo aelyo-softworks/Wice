@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1ChromaKeyString)]
+#else
 [Guid(Constants.CLSID_D2D1ChromaKeyString)]
+#endif
 public partial class ChromaKeyEffect : EffectWithSource
 {
     public static EffectProperty ColorProperty { get; }

@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using DirectN;
-using Windows.Foundation;
-using Wice.Interop;
-using Wice.Utilities;
-#if NET
+﻿#if NET
 using IGraphicsEffectSource = Wice.Interop.IGraphicsEffectSourceWinRT;
 using IGraphicsEffect = Wice.Interop.IGraphicsEffectWinRT;
 #else
-using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
 using IGraphicsEffect = Windows.Graphics.Effects.IGraphicsEffect;
+using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
 #endif
 
 namespace Wice.Effects
@@ -29,7 +19,7 @@ namespace Wice.Effects
         private readonly Lazy<IPropertyValueStatics> _statics;
         private string _name;
 
-        protected Effect(int sourcesCount = 0)
+        protected Effect(uint sourcesCount = 0)
         {
             if (sourcesCount < 0)
                 throw new ArgumentOutOfRangeException(nameof(sourcesCount));
@@ -39,7 +29,7 @@ namespace Wice.Effects
             _statics = new Lazy<IPropertyValueStatics>(() => WinRTUtilities.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue"));
         }
 
-        public int MaximumSourcesCount { get; }
+        public uint MaximumSourcesCount { get; }
         public override string Name { get => _name ?? string.Empty; set => _name = value; } // *must* not be null for IGraphicsEffectD2D1Interop
         public virtual bool Cached { get; set; }
         public virtual D2D1_BUFFER_PRECISION Precision { get; set; }

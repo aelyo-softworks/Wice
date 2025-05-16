@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1LinearTransferString)]
+#else
 [Guid(Constants.CLSID_D2D1LinearTransferString)]
+#endif
 public partial class LinearTransferEffect : EffectWithSource
 {
     public static EffectProperty RedYInterceptProperty { get; }

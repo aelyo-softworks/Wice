@@ -1,8 +1,7 @@
-﻿namespace Wice.DevTools
+﻿namespace Wice.DevTools;
+
+public enum MsBuildProjectType
 {
-    public enum MsBuildProjectType
-    {
-        MsBuild,
-        NetSdk
-    }
+    MsBuild,
+    NetSdk
 }

@@ -1,6 +1,10 @@
 ﻿namespace Wice.Effects;
 
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1ShadowString)]
+#else
 [Guid(Constants.CLSID_D2D1ShadowString)]
+#endif
 public partial class ShadowEffect : EffectWithSource
 {
     public static EffectProperty BlurStandardDeviationProperty { get; }
