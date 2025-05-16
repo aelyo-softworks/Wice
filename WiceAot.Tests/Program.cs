@@ -28,7 +28,7 @@ internal class Program
 
         void newWindow()
         {
-            var win = new TestWindow { Title = "Wice" };
+            var win = new TestWindow { Title = "Wice AOT" };
             //WindowsUtilities.AllocConsole();
             win.ResizeClient(1000, 800);
             win.Center();

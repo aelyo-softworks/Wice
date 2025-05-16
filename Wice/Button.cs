@@ -37,8 +37,6 @@ namespace Wice
             // to ensure button size is equal to content's size
             HorizontalAlignment = Alignment.Center;
             VerticalAlignment = Alignment.Center;
-            //Child.HorizontalAlignment = Alignment.Center;
-            //Child.VerticalAlignment = Alignment.Center;
         }
 
         [Browsable(false)]

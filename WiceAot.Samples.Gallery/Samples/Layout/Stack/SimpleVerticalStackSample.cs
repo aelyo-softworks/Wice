@@ -2,12 +2,12 @@
 
 public class SimpleVerticalStackSample : Sample
 {
-    public override string Description => "A simple vertical stack containing two boxes.";
+    public override string Description => "A simple vertical stack containing two boxes with spacing.";
     public override int SortOrder => 1;
 
     public override void Layout(Visual parent)
     {
-        var stack = new Wice.Stack();
+        var stack = new Wice.Stack { Spacing = new D2D_SIZE_F(10, 10) };
         parent.Children.Add(stack);
         Wice.Dock.SetDockType(stack, DockType.Top); // remove from display
         stack.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());

@@ -52,7 +52,6 @@ namespace Wice
             TextBoxSelectionColor = ColorUtilities.GetSysColor(COLOR.COLOR_HIGHLIGHTTEXT);
 
             SelectedColor = new _D3DCOLORVALUE(0xFF0078D7); // blue
-            SelectedHoverColor = new _D3DCOLORVALUE(0xFFCBE8F6);
             HeaderSelectionWidth = 4;
 
             FocusColor = _D3DCOLORVALUE.Black;
@@ -128,7 +127,6 @@ namespace Wice
         public virtual _D3DCOLORVALUE TextBoxSelectionColor { get; set; }
 
         public virtual TimeSpan SelectionBrushAnimationDuration { get; set; }
-        public virtual _D3DCOLORVALUE SelectedHoverColor { get; set; }
 
         public virtual TimeSpan BrushAnimationDuration { get; set; }
         public virtual TimeSpan SelectedAnimationDuration { get; set; }

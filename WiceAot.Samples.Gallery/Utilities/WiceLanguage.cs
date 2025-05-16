@@ -155,7 +155,7 @@ public class WiceLanguage : ILanguage
             nameof(SvgImage),
             nameof(SymbolHeader),
             nameof(SymbolHeaderedContent),
-            nameof(Tab),
+            nameof(Tabs),
             nameof(TabPage),
             nameof(TextBox),
             nameof(TextBoxSetSelection),

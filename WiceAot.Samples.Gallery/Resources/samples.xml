@@ -929,7 +929,7 @@ gma warning restore IDE0017 // Simplify object initialization
 }</sample>
   <sample namespace="Samples.Layout.Stack.SimpleVerticalStackSample">void Layout(Visual parent)
 {
-    var stack = new Stack();
+    var stack = new Stack { Spacing = new D2D_SIZE_F(10, 10) };
     parent.Children.Add(stack);
     stack.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
 
@@ -944,6 +944,57 @@ gma warning restore IDE0017 // Simplify object initialization
     b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
     b1.Width = 50;
     b1.Height = 50;
+}</sample>
+  <sample namespace="Samples.Layout.Tabs.TabsSample">void Layout(Visual parent)
+{
+    var tabs = new Tabs();
+    tabs.PagesHeader.Spacing = new D2D_SIZE_F(5, 5);
+    tabs.VerticalAlignment = Alignment.Near;
+    parent.Children.Add(tabs);
+
+    TabPage? plusPage = null;
+    addPage();
+    addPage();
+    addPage();
+
+    // add the special "+" tab, always at the end
+    plusPage = new TabPage();
+    tabs.Pages.Add(plusPage);
+    plusPage.Header.AutoSelect = false; // it's not a selectable page per se
+    plusPage.Header.Icon.Text = MDL2GlyphResource.Add; // plus icon
+    plusPage.Header.Text.Text = string.Empty; // no text
+    plusPage.Header.HorizontalAlignment = Alignment.Stretch; // take all available space
+    plusPage.Header.HoverRenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
+    plusPage.Header.SelectedButtonClick += (s, e) =&gt; addPage();
+
+    TabPage addPage()
+    {
+        var page = new TabPage();
+
+        // take the plus page into account if it's there
+        int index;
+        if (plusPage != null)
+        {
+            index = plusPage.Index;
+            tabs.Pages.Insert(index, page);
+            page.Header.IsSelected = true;
+        }
+        else
+        {
+            index = tabs.Pages.Count;
+            tabs.Pages.Add(page);
+        }
+
+        page.Header.Text.Text = "Page " + index;
+        page.Header.SelectedBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
+        page.Header.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.DarkGray.ToColor());
+        page.Header.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
+
+        // by default header's close button is invisible
+        page.Header.CloseButton!.IsVisible = true;
+        page.Header.CloseButtonClick += (s, e) =&gt; tabs.Pages.Remove(page);
+        return page;
+    }
 }</sample>
   <sample namespace="Samples.Layout.UniformGrid.ShapesUniformGridSample">void Layout(Visual parent)
 {

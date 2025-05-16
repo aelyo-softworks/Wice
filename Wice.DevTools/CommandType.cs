@@ -7,5 +7,6 @@
         UpdateWiceCoreTests,
         UpdateWiceCoreSamplesGallery,
         UpdateWiceSamplesGalleryCode,
+        All,
     }
 }

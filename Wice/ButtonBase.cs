@@ -44,21 +44,20 @@ namespace Wice
         }
 
         public void DoClick(EventArgs e) => OnClick(this, e);
-        void IAccessKeyParent.OnAccessKey(KeyEventArgs e)
+
+        void IAccessKeyParent.OnAccessKey(KeyEventArgs e) => OnAccessKey(e);
+        protected virtual void OnAccessKey(KeyEventArgs e)
         {
-            if (!IsEnabled)
+            if (AccessKeys == null || !IsEnabled || !IsFocused)
                 return;
 
-            if (AccessKeys != null)
+            foreach (var ak in AccessKeys)
             {
-                foreach (var ak in AccessKeys)
+                if (ak.Matches(e))
                 {
-                    if (ak.Matches(e))
-                    {
-                        DoClick(e);
-                        e.Handled = true;
-                        return;
-                    }
+                    DoClick(e);
+                    e.Handled = true;
+                    return;
                 }
             }
         }
@@ -87,9 +86,6 @@ namespace Wice
 
         protected virtual void UpdateStyle()
         {
-            if (Compositor == null)
-                return;
-
             Opacity = IsEnabled ? 1f : Application.CurrentTheme.DisabledOpacityRatio;
             Cursor = IsEnabled ? Cursor.Hand : null;
         }

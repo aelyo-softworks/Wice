@@ -25,6 +25,7 @@ public partial class LayoutPage : SampleListPage
             yield return new StackSampleList();
             yield return new UniformGridSampleList();
             yield return new WrapSampleList();
+            yield return new TabsSampleList();
         }
     }
 }

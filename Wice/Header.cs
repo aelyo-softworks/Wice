@@ -11,8 +11,11 @@ namespace Wice
     public class Header : Canvas, IAccessKeyParent, ISelectable
     {
         public static VisualProperty IsSelectedProperty = VisualProperty.Add(typeof(Header), nameof(IsSelected), VisualPropertyInvalidateModes.Measure, false);
+        public static VisualProperty SelectedBrushProperty = VisualProperty.Add<CompositionBrush>(typeof(Header), nameof(SelectedBrush), VisualPropertyInvalidateModes.Render);
 
         public event EventHandler<ValueEventArgs<bool>> IsSelectedChanged;
+        public event EventHandler SelectedButtonClick;
+        public event EventHandler CloseButtonClick;
 
         private readonly List<AccessKey> _accessKeys = new List<AccessKey>();
 
@@ -89,10 +92,28 @@ namespace Wice
             Panel.Children.Add(Text);
             Text.TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER;
             Text.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+
+            CloseButton = CreateCloseButton();
+            if (CloseButton != null)
+            {
+#if DEBUG
+                CloseButton.Name = nameof(CloseButton);
+#endif
+                Panel.Children.Add(CloseButton);
+                CloseButton.DoWhenAttachedToComposition(() => CloseButton.RenderBrush = null);
+                CloseButton.IsVisible = false;
+                CloseButton.Margin = D2D_RECT_F.Thickness(20, 0, 0, 0);
+                CloseButton.Icon.Text = MDL2GlyphResource.Cancel;
+                CloseButton.Click += (s, e) => OnCloseButtonClick(this, e);
+                CloseButton.ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, close);
+            }
         }
 
         [Category(CategoryBehavior)]
         public bool AutoSelect { get; set; }
+
+        [Category(CategoryRender)]
+        public CompositionBrush SelectedBrush { get => (CompositionBrush)GetPropertyValue(SelectedBrushProperty); set => SetPropertyValue(SelectedBrushProperty, value); }
 
         [Category(CategoryBehavior)]
         public bool IsSelected { get => (bool)GetPropertyValue(IsSelectedProperty); set => SetPropertyValue(IsSelectedProperty, value); }
@@ -115,6 +136,9 @@ namespace Wice
         [Browsable(false)]
         public TextBox SelectedButtonText { get; }
 
+        [Browsable(false)]
+        public Button CloseButton { get; }
+
         [Category(CategoryBehavior)]
         public virtual IList<AccessKey> AccessKeys => _accessKeys;
 
@@ -124,11 +148,14 @@ namespace Wice
         protected virtual TextBox CreateText() => new TextBox();
         protected virtual ButtonBase CreateSelectedButton() => new ButtonBase();
         protected virtual TextBox CreateSelectedButtonText() => new TextBox();
+        protected virtual Button CreateCloseButton() => new Button();
 
         bool ISelectable.RaiseIsSelectedChanged { get => RaiseIsSelectedChanged; set => RaiseIsSelectedChanged = value; }
         protected virtual bool RaiseIsSelectedChanged { get; set; }
 
         protected virtual void OnIsSelectedChanged(object sender, ValueEventArgs<bool> e) => IsSelectedChanged?.Invoke(sender, e);
+        protected virtual void OnSelectedButtonClick(object sender, EventArgs e) => SelectedButtonClick?.Invoke(sender, e);
+        protected virtual void OnCloseButtonClick(object sender, EventArgs e) => CloseButtonClick?.Invoke(sender, e);
 
         protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions options = null)
         {
@@ -183,18 +210,32 @@ namespace Wice
             return true;
         }
 
-        void IAccessKeyParent.OnAccessKey(KeyEventArgs e)
+        protected override void RenderBrushes()
         {
-            if (AccessKeys != null)
+            base.RenderBrushes();
+            if (IsSelected)
             {
-                foreach (var ak in AccessKeys)
+                var sb = SelectedBrush;
+                if (sb != null)
                 {
-                    if (ak.Matches(e))
-                    {
-                        OnSelectedButtonClick(e);
-                        e.Handled = true;
-                        return;
-                    }
+                    SetCompositionBrush(sb);
+                }
+            }
+        }
+
+        void IAccessKeyParent.OnAccessKey(KeyEventArgs e) => OnAccessKey(e);
+        protected virtual void OnAccessKey(KeyEventArgs e)
+        {
+            if (AccessKeys == null || !IsEnabled || !IsFocused)
+                return;
+
+            foreach (var ak in AccessKeys)
+            {
+                if (ak.Matches(e))
+                {
+                    OnSelectedButtonClick(e);
+                    e.Handled = true;
+                    return;
                 }
             }
         }
@@ -210,6 +251,7 @@ namespace Wice
 
         protected virtual void OnSelectedButtonClick(EventArgs e)
         {
+            OnSelectedButtonClick(this, e);
             if (AutoSelect)
             {
                 IsSelected = !IsSelected;

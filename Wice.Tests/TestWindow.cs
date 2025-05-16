@@ -168,24 +168,56 @@ namespace Wice.Tests
 
         public void ShowTabs()
         {
-            var tabs = new Tab();
-            tabs.Margin = 10;
+            var tabs = new Tabs();
+            tabs.PagesHeader.Spacing = new D2D_SIZE_F(5, 5);
+            //tabs.PagesHeader.LastChildFill = true;
             tabs.VerticalAlignment = Alignment.Near;
-            tabs.PagesHeader.Height = 40;
-            //tabs.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
             Children.Add(tabs);
 
-            var page1 = new TabPage();
-            page1.Header.Text.Text = "Page 1";
-            //page1.Header.Text.BackgroundColor = _D3DCOLORVALUE.Red;
-            page1.Header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0).ToColor());
-            tabs.Pages.Add(page1);
+            TabPage plusPage = null;
+            addPage();
+            addPage();
+            addPage();
 
-            var page2 = new TabPage();
-            page2.Header.Text.Text = "Page 2";
-            //page2.Header.Text.BackgroundColor = _D3DCOLORVALUE.Blue;
-            page2.Header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0).ToColor());
-            tabs.Pages.Add(page2);
+            plusPage = new TabPage();
+            tabs.Pages.Add(plusPage);
+            plusPage.Header.AutoSelect = false;
+            plusPage.Header.Icon.Text = MDL2GlyphResource.Add;
+            plusPage.Header.Text.Text = string.Empty;
+            plusPage.Header.HorizontalAlignment = Alignment.Stretch;
+            plusPage.Header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0).ToColor());
+            plusPage.Header.SelectedButtonClick += (s, e) => addPage();
+
+            TabPage addPage()
+            {
+                var page = new TabPage();
+
+                int index;
+                if (plusPage != null)
+                {
+                    index = plusPage.Index;
+                    tabs.Pages.Insert(index, page);
+                    page.Header.IsSelected = true;
+                }
+                else
+                {
+                    index = tabs.Pages.Count;
+                    tabs.Pages.Add(page);
+                }
+
+                page.Header.Name = "tp" + index;
+                page.Header.Text.Text = "Page " + index;
+                page.Header.SelectedBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray.ToColor());
+                page.Header.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.DarkGray.ToColor());
+                page.Header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0).ToColor());
+                page.Header.CloseButton.IsVisible = true;
+                page.Header.CloseButtonClick += (s, e) =>
+                {
+                    tabs.Pages.Remove(page);
+                };
+
+                return page;
+            }
         }
 
         public void LongRunWithCursor()

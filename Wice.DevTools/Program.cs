@@ -71,6 +71,14 @@ namespace Wice.DevTools
                     UpdateWiceCoreSamplesGallery();
                     break;
 
+                case CommandType.All:
+                    UpdateWiceCore();
+                    UpdateWiceCoreTests();
+                    UpdateWiceSamplesGalleryCode(@"..\..\..\..\Wice.Samples.Gallery");
+                    UpdateWiceSamplesGalleryCode(@"..\..\..\..\WiceAot.Samples.Gallery");
+                    UpdateWiceCoreSamplesGallery();
+                    break;
+
                 default:
                     throw new NotSupportedException();
             }
@@ -314,6 +322,7 @@ namespace Wice.DevTools
             Console.WriteLine("    This tool is used to run a specific Wice Development command.");
             Console.WriteLine();
             Console.WriteLine("Commands:");
+            Console.WriteLine("    All                            Call all updates.");
             Console.WriteLine("    UpdateWiceCore                 Update the WiceCore project from the Wice project.");
             Console.WriteLine("    UpdateWiceCoreTests            Update the WiceCore.Tests project from the Wice.Tests project.");
             Console.WriteLine("    UpdateWiceCoreSamplesGallery   Update the WiceCore.Samples.Gallery project from the Wice.Samples.Gallery project.");

@@ -47,7 +47,6 @@ public class Theme
         TextBoxSelectionColor = ColorUtilities.GetSysColor(SYS_COLOR_INDEX.COLOR_HIGHLIGHTTEXT);
 
         SelectedColor = 0xFF0078D7; // blue
-        SelectedHoverColor = 0xFFCBE8F6;
         HeaderSelectionWidth = 4;
 
         FocusColor = D3DCOLORVALUE.Black;
@@ -123,7 +122,6 @@ public class Theme
     public virtual D3DCOLORVALUE TextBoxSelectionColor { get; set; }
 
     public virtual TimeSpan SelectionBrushAnimationDuration { get; set; }
-    public virtual D3DCOLORVALUE SelectedHoverColor { get; set; }
 
     public virtual TimeSpan BrushAnimationDuration { get; set; }
     public virtual TimeSpan SelectedAnimationDuration { get; set; }

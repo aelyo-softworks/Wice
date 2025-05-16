@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-
-namespace WiceAot.Tests;
+﻿namespace WiceAot.Tests;
 
 internal partial class TestWindow : Window
 {
@@ -62,19 +60,55 @@ internal partial class TestWindow : Window
 
     public void ShowTabs()
     {
-        var tabs = new Tab();
-        tabs.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
+        var tabs = new Tabs();
+        tabs.PagesHeader.Spacing = new D2D_SIZE_F(5, 5);
+        //tabs.PagesHeader.LastChildFill = true;
+        tabs.VerticalAlignment = Alignment.Near;
         Children.Add(tabs);
 
-        var page1 = new TabPage();
-        page1.Header.Text.Text = "Page 1";
-        page1.Header.Text.BackgroundColor = D3DCOLORVALUE.Red;
-        tabs.Pages.Add(page1);
+        TabPage? plusPage = null;
+        addPage();
+        addPage();
+        addPage();
 
-        var page2 = new TabPage();
-        page2.Header.Text.Text = "Page 2";
-        page2.Header.Text.BackgroundColor = D3DCOLORVALUE.Blue;
-        tabs.Pages.Add(page2);
+        plusPage = new TabPage();
+        tabs.Pages.Add(plusPage);
+        plusPage.Header.AutoSelect = false;
+        plusPage.Header.Icon.Text = DirectN.Extensions.Utilities.MDL2GlyphResource.Add;
+        plusPage.Header.Text.Text = string.Empty;
+        plusPage.Header.HorizontalAlignment = Alignment.Stretch;
+        plusPage.Header.HoverRenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
+        plusPage.Header.SelectedButtonClick += (s, e) => addPage();
+
+        TabPage addPage()
+        {
+            var page = new TabPage();
+
+            int index;
+            if (plusPage != null)
+            {
+                index = plusPage.Index;
+                tabs.Pages.Insert(index, page);
+                page.Header.IsSelected = true;
+            }
+            else
+            {
+                index = tabs.Pages.Count;
+                tabs.Pages.Add(page);
+            }
+
+            page.Header.Name = "tp" + index;
+            page.Header.Text.Text = "Page " + index;
+            page.Header.SelectedBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
+            page.Header.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.DarkGray.ToColor());
+            page.Header.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
+            page.Header.CloseButton!.IsVisible = true;
+            page.Header.CloseButtonClick += (s, e) =>
+            {
+                tabs.Pages.Remove(page);
+            };
+            return page;
+        }
     }
 
     public void ShowPdfView()

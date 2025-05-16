@@ -344,8 +344,8 @@
     <Compile Include="..\Wice\Interop\DROPEFFECT.cs" Link="Interop\DROPEFFECT.cs" />
     <Compile Include="..\Wice\Interop\MODIFIERKEYS_FLAGS.cs" Link="Interop\MODIFIERKEYS_FLAGS.cs" />
     <Compile Include="..\Wice\Utilities\ShellUtilities.cs" Link="Utilities\ShellUtilities.cs" />
-    <Compile Include="..\Wice\Tab.cs" Link="Tab.cs" />
     <Compile Include="..\Wice\TabPage.cs" Link="TabPage.cs" />
+    <Compile Include="..\Wice\Tabs.cs" Link="Tabs.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DirectNCore" Version="1.17.2" />

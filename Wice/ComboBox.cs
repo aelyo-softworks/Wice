@@ -133,8 +133,6 @@ namespace Wice
             tb.Click += OnIconClick;
             tb.IsFocusable = false; // the combo is focusable as a whole
             tb.Icon.Text = MDL2GlyphResource.ChevronDown;
-            //tb.Width = Application.CurrentTheme.VerticalScrollBarWidth;
-            //tb.Icon.Margin = D2D_RECT_F.Thickness(2, 0, 0, 0);
             return tb;
         }
 

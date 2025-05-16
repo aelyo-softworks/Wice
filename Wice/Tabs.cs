@@ -2,15 +2,17 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using DirectN;
 
 namespace Wice
 {
-    public partial class Tab : Stack
+    public partial class Tabs : Stack
     {
         public event EventHandler<ValueEventArgs<TabPage>> PageAdded;
         public event EventHandler<ValueEventArgs<TabPage>> PageRemoved;
+        public event EventHandler PageSelected;
 
-        public Tab()
+        public Tabs()
         {
             Orientation = Orientation.Vertical;
             Pages = CreatePages();
@@ -39,6 +41,7 @@ namespace Wice
         [Browsable(false)]
         public Canvas PagesContent { get; }
 
+        [Browsable(false)]
         public TabPage SelectedPage => Pages.FirstOrDefault(p => p.Header.IsSelected);
 
         protected virtual BaseObjectCollection<TabPage> CreatePages() => new BaseObjectCollection<TabPage>();
@@ -47,6 +50,7 @@ namespace Wice
 
         protected virtual void OnPageAdded(object sender, ValueEventArgs<TabPage> e) => PageAdded?.Invoke(sender, e);
         protected virtual void OnPageRemoved(object sender, ValueEventArgs<TabPage> e) => PageRemoved?.Invoke(sender, e);
+        protected virtual void OnPageSelected(object sender, EventArgs e) => PageSelected?.Invoke(sender, e);
 
         private void OnPagesCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
@@ -65,6 +69,7 @@ namespace Wice
                         page.Tab = null;
                         PagesHeader.Children.Remove(page.Header);
                         PagesContent.Children.Remove(page.Content);
+                        Invalidate(VisualPropertyInvalidateModes.Measure);
                         OnPageRemoved(this, new ValueEventArgs<TabPage>(page));
                     }
 
@@ -93,12 +98,30 @@ namespace Wice
                         throw new WiceException("0032: Page '" + page.Name + "' of type " + page.GetType().Name + " is already a children of tab '" + page.Tab.Name + "' of type " + page.Tab.GetType().Name + ".");
 
                     page.Tab = this;
-                    PagesHeader.Children.Add(page.Header);
-                    PagesContent.Children.Add(page.Content);
+
+                    if (e.NewStartingIndex >= PagesHeader.Children.Count)
+                    {
+                        PagesHeader.Children.Add(page.Header);
+                    }
+                    else
+                    {
+                        PagesHeader.Children.Insert(e.NewStartingIndex, page.Header);
+                    }
+
+                    if (e.NewStartingIndex >= PagesContent.Children.Count)
+                    {
+                        PagesContent.Children.Add(page.Content);
+                    }
+                    else
+                    {
+                        PagesContent.Children.Insert(e.NewStartingIndex, page.Content);
+                    }
+
                     page.Header.HorizontalAlignment = Alignment.Near;
                     page.Header.Panel.HorizontalAlignment = Alignment.Near;
                     page.Header.SelectedButton.IsVisible = false;
                     page.Header.IsSelectedChanged += OnHeaderIsSelectedChanged;
+                    page.Header.AccessKeys.Add(new AccessKey(VirtualKeys.Space));
                     if (SelectedPage == null)
                     {
                         page.Header.IsSelected = true;
@@ -120,6 +143,7 @@ namespace Wice
                     }
                 }
             }
+            OnPageSelected(sender, e);
         }
     }
 }
