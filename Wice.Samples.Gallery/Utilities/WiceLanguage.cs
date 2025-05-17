@@ -30,7 +30,7 @@ namespace Wice.Samples.Gallery.Utilities
             var types = typeof(Visual).Assembly.GetTypes().Where(t => t.IsPublic && t.GenericTypeArguments.Length == 0).Select(t => t.Name).ToList();
 
             // usual types
-            types.Add(nameof(_D3DCOLORVALUE));
+            types.Add(nameof(D3DCOLORVALUE));
             types.Add(nameof(D2D_RECT_F));
             types.Add(nameof(D2D_POINT_2F));
             types.Add(nameof(D2D_SIZE_F));

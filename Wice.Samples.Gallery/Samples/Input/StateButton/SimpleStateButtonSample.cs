@@ -34,7 +34,7 @@ namespace Wice.Samples.Gallery.Samples.Input.StateButton
 
             // select one value
             btn.Value = "state 0";
-            btn.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.OldLace.ToColor());
+            btn.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.OldLace.ToColor());
             stack.Children.Add(btn);
 
             // add results textbox

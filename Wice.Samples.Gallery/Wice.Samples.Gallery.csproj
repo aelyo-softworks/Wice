@@ -84,6 +84,7 @@
 		<Using Include="Windows.UI.Composition" />
 		<Using Include="Windows.UI.Composition.Core" />
 		<Using Include="Windows.UI.Composition.Diagnostics" />
+		
 		<Using Alias="D3DCOLORVALUE" Include="DirectN._D3DCOLORVALUE" />
 	</ItemGroup>
 

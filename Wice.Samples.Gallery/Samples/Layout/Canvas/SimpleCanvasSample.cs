@@ -12,12 +12,12 @@ namespace Wice.Samples.Gallery.Samples.Layout.Canvas
             var canvas = new Wice.Canvas();
             canvas.Width = 120;
             canvas.Height = 120;
-            canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Gray.ToColor());
+            canvas.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor());
             parent.Children.Add(canvas);
             Wice.Dock.SetDockType(canvas, DockType.Top); // remove from display
 
             var b0 = new Wice.Border();
-            b0.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
+            b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
             b0.Width = 40;
             b0.Height = 40;
             Wice.Canvas.SetLeft(b0, 0);
@@ -25,7 +25,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.Canvas
             canvas.Children.Add(b0);
 
             var b1 = new Wice.Border();
-            b1.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
+            b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
             b1.Width = 40;
             b1.Height = 40;
             Wice.Canvas.SetLeft(b1, 20);
@@ -33,7 +33,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.Canvas
             canvas.Children.Add(b1);
 
             var b2 = new Wice.Border();
-            b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
+            b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
             b2.Width = 40;
             b2.Height = 40;
             Wice.Canvas.SetLeft(b2, 40);
@@ -41,7 +41,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.Canvas
             canvas.Children.Add(b2);
 
             var b3 = new Wice.Border();
-            b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
+            b3.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
             b3.Width = 40;
             b3.Height = 40;
             Wice.Canvas.SetLeft(b3, 60);

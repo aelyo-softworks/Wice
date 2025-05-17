@@ -87,7 +87,7 @@ public class DiagnosticsInformation
     public string WindowDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.Native.DpiAwarenessDescription;
 
     [Category("Graphics")]
-    public int WindowDpiFromDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.Native.DpiFromDpiAwareness ?? 96;
+    public uint WindowDpiFromDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.Native.DpiFromDpiAwareness ?? 96;
 
     [Category("Graphics")]
     public string WindowMonitor
@@ -107,12 +107,6 @@ public class DiagnosticsInformation
             return s;
         }
     }
-
-    [Category("Graphics")]
-    public string ThreadDpiAwareness { get; } = NativeWindow.GetDpiAwarenessDescription(NativeWindow.GetThreadDpiAwarenessContext());
-
-    [Category("Graphics")]
-    public int ThreadDpiFromDpiAwareness { get; } = NativeWindow.GetDpiFromDpiAwarenessContext(NativeWindow.GetThreadDpiAwarenessContext());
 
     [Category("Graphics")]
     public string DesktopDpi

@@ -17,17 +17,17 @@ namespace Wice.Samples.Gallery.Samples.Media.Brush
             tb.Padding = 5;
             tb.Text = "This text is white";
 
-            // _D3DCOLORVALUE is the base DirectX color using single/float (0 => 1) ARGB.
+            // D3DCOLORVALUE is the base DirectX color using single/float (0 => 1) ARGB.
             // redefined by Wice with .NET
 
             // to create a composition brush, the visual must be attached to composition
             // to be able to use the Compositor instance corresponding to its parent Window.
-            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.MediumAquamarine.ToColor());
+            tb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.MediumAquamarine.ToColor());
 
             // in contrast, a Direct2D brush can be created off ground.
             // we need Direct2D colors when we use primitives that Windows composition doesn't support
             // such as DirectWrite, Images, etc.
-            tb.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White);
+            tb.ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White);
         }
     }
 }

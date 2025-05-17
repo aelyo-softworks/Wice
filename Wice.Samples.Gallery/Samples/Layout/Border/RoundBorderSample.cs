@@ -13,7 +13,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.Border
             var border = new Wice.Border();
             border.BorderThickness = 2.5f;
             border.CornerRadius = new Vector2(5);
-            border.BorderBrush = new SolidColorBrush(_D3DCOLORVALUE.YellowGreen); // well-known colors
+            border.BorderBrush = new SolidColorBrush(D3DCOLORVALUE.YellowGreen); // well-known colors
             parent.Children.Add(border);
             Wice.Dock.SetDockType(border, DockType.Top); // remove from display
 

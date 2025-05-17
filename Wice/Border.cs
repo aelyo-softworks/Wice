@@ -173,7 +173,7 @@ namespace Wice
             if (radius.IsNotZero())
             {
                 // draw rounded background
-                context.DeviceContext.Clear(_D3DCOLORVALUE.Transparent);
+                context.DeviceContext.Clear(D3DCOLORVALUE.Transparent);
                 var bg = BackgroundColor;
                 if (bg.HasValue)
                 {

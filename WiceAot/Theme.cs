@@ -14,12 +14,12 @@ public class Theme
 
         ToolTipBaseSize = 8;
         ToolTipVerticalOffset = 20; // don't know any API where to get that info from (that would support system cursor size change by end-user)
-        ToolTipColor = 0xFFFFFFE1; // SystemColors.Info.ToColor();
+        ToolTipColor = new D3DCOLORVALUE(0xFFFFFFE1);
         ToolTipShadowBlurRadius = 4;
         ToolTipCornerRadius = 3;
 
         // https://docs.microsoft.com/en-us/windows/win32/controls/ttm-setdelaytime#remarks
-        ToolTipInitialTime = Functions.GetDoubleClickTime();
+        ToolTipInitialTime = WiceCommons.GetDoubleClickTime();
         ToolTipVisibleTime = ToolTipInitialTime * 10;
         ToolTipReshowTime = ToolTipInitialTime / 5;
 
@@ -34,19 +34,19 @@ public class Theme
         BrushAnimationDuration = TimeSpan.FromSeconds(0.3f);
         SelectedAnimationDuration = TimeSpan.FromSeconds(0.3f);
 
-        ScrollBarBackgroundColor = 0xFFE9E9E9;
-        ScrollBarOverlayBackgroundColor = 0x40E9E9E9;
-        ScrollBarButtonStrokeColor = 0xFF969696;
-        ScrollBarButtonHoverColor = 0xFFC9C9C9;
-        ScrollBarThumbColor = 0xFFC9C9C9;
-        ScrollBarOverlayThumbColor = 0xA0393939;
+        ScrollBarBackgroundColor = new D3DCOLORVALUE(0xFFE9E9E9);
+        ScrollBarOverlayBackgroundColor = new D3DCOLORVALUE(0x40E9E9E9);
+        ScrollBarButtonStrokeColor = new D3DCOLORVALUE(0xFF969696);
+        ScrollBarButtonHoverColor = new D3DCOLORVALUE(0xFFC9C9C9);
+        ScrollBarThumbColor = new D3DCOLORVALUE(0xFFC9C9C9);
+        ScrollBarOverlayThumbColor = new D3DCOLORVALUE(0xA0393939);
         ScrollBarOverlayCornerRadius = 5;
         ScrollBarButtonStrokeThickness = 1;
 
         TextBoxForegroundColor = ColorUtilities.GetSysColor(SYS_COLOR_INDEX.COLOR_WINDOWTEXT);
         TextBoxSelectionColor = ColorUtilities.GetSysColor(SYS_COLOR_INDEX.COLOR_HIGHLIGHTTEXT);
 
-        SelectedColor = 0xFF0078D7; // blue
+        SelectedColor = new D3DCOLORVALUE(0xFF0078D7); // blue
         HeaderSelectionWidth = 4;
 
         FocusColor = D3DCOLORVALUE.Black;
@@ -61,7 +61,7 @@ public class Theme
         UnselectedColor = D3DCOLORVALUE.White;
         SplitterColor = ColorUtilities.GetSysColor(SYS_COLOR_INDEX.COLOR_ACTIVEBORDER);
 
-        ButtonColor = 0xFFCCCCCC;
+        ButtonColor = new D3DCOLORVALUE(0xFFCCCCCC);
         ButtonMargin = 6;
         ButtonMinWidth = 70; // not sure we can get this from Windows
         DialogBoxButtonFontSize = DefaultFontSize;
@@ -144,7 +144,7 @@ public class Theme
 
     public virtual float HeaderSelectionWidth { get; set; }
 
-    public virtual int GetVerticalScrollBarWidth(uint dpi) => Functions.GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX.SM_CXVSCROLL, dpi);
-    public virtual int GetHorizontalScrollBarHeight(uint dpi) => Functions.GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX.SM_CXHSCROLL, dpi);
-    public virtual int GetScrollBarOverlaySize(uint dpi) => Functions.GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX.SM_CXVSCROLL, dpi) / 3;
+    public virtual int GetVerticalScrollBarWidth(uint dpi) => WiceCommons.GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX.SM_CXVSCROLL, dpi);
+    public virtual int GetHorizontalScrollBarHeight(uint dpi) => WiceCommons.GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX.SM_CXHSCROLL, dpi);
+    public virtual int GetScrollBarOverlaySize(uint dpi) => WiceCommons.GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX.SM_CXVSCROLL, dpi) / 3;
 }

@@ -15,8 +15,8 @@ namespace Wice.Samples.Gallery.Samples.Text.TextBox
             Dock.SetDockType(tb, DockType.Top);
             tb.IsEditable = true;
 
-            tb.SelectionBrush = new SolidColorBrush(_D3DCOLORVALUE.Green);
-            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightSalmon.ToColor());
+            tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Green);
+            tb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightSalmon.ToColor());
             tb.Padding = D2D_RECT_F.Thickness(10);
             tb.Margin = D2D_RECT_F.Thickness(10);
             tb.Text = "Click me and edit!";

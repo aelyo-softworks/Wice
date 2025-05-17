@@ -607,14 +607,14 @@ internal partial class TestWindow : Window
         {
             var text = new TextBox();
             grid.Children.Add(text);
-            //var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
-            //text.BackgroundColor = _D3DCOLORVALUE.Transparent;
-            //text.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.LightGoldenrodYellow);
+            //var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            //text.BackgroundColor = D3DCOLORVALUE.Transparent;
+            //text.ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.LightGoldenrodYellow);
             text.Text = color.Item1.ToString();
 
             var html = new TextBox();
             grid.Children.Add(html);
-            //var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            //var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
             html.BackgroundColor = D3DCOLORVALUE.Transparent;
             html.ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.Gold);
             html.Text = color.Item2.ToString();
@@ -645,15 +645,15 @@ internal partial class TestWindow : Window
         {
             var text = new TextBox();
             grid.Children.Add(text);
-            //var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
-            //text.BackgroundColor = _D3DCOLORVALUE.Transparent;
-            //text.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.LightGoldenrodYellow);
+            //var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            //text.BackgroundColor = D3DCOLORVALUE.Transparent;
+            //text.ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.LightGoldenrodYellow);
             text.FontSize = 10;
             text.Text = color.Value.Name;
 
             var html = new TextBox();
             grid.Children.Add(html);
-            //var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
+            //var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
             html.FontSize = text.FontSize;
             html.Text = color.Value.Color.HtmlString;
 
@@ -802,11 +802,11 @@ internal partial class TestWindow : Window
         var stack = new Dock
         {
             //stack.Orientation = Orientation.Vertical;
-            //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
-            //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            //stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White);
+            //stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red);
             RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LemonChiffon.ToColor())
         };
-        //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
+        //stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue);
 
         //stack.LastChildFill = false;
         //stack.HorizontalAlignment = Alignment.Center;
@@ -819,7 +819,7 @@ internal partial class TestWindow : Window
             Dock.SetDockType(text, DockType.Top);
             text.IsEditable = true;
 
-            //text.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            //text.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red);
             text.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.GreenYellow.ToColor());
             text.Name = "text#" + i;
             text.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Red);

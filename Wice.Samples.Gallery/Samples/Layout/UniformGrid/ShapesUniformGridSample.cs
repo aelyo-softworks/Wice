@@ -11,7 +11,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.UniformGrid
         public override void Layout(Visual parent)
         {
             var grid = new Wice.UniformGrid();
-            grid.BackgroundColor = _D3DCOLORVALUE.Transparent;
+            grid.BackgroundColor = D3DCOLORVALUE.Transparent;
             grid.Rows = 10;
             grid.Columns = grid.Rows;
             parent.Children.Add(grid);
@@ -25,7 +25,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.UniformGrid
                 {
                     var shape = new Ellipse();
                     grid.Children.Add(shape);
-                    var color = new _D3DCOLORVALUE(0, i / (float)grid.Rows, j / (float)grid.Columns);
+                    var color = new D3DCOLORVALUE(0, i / (float)grid.Rows, j / (float)grid.Columns);
                     shape.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
                     shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
                     shape.Shape.StrokeThickness = 0.5f;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Reflection;
-using System.Text;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using Color = System.Drawing.Color;
 using Size = System.Drawing.Size;
@@ -86,7 +82,7 @@ internal class ErrorForm : Form
                 errorText = sb.ToString().Trim();
             }
 
-            if (NativeWindow.IsKeyPressed(VirtualKeys.ShiftKey))
+            if (NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT))
             {
                 errorText += Environment.NewLine + Environment.NewLine + "----------" + Environment.NewLine + Environment.NewLine + DiagnosticsInformation.Serialize(Assembly.GetEntryAssembly());
             }

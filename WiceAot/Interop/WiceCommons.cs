@@ -14,7 +14,30 @@ public static class WiceCommons
     public const int CW_USEDEFAULT = unchecked((int)0x80000000);
     public const uint SIZE_MINIMIZED = 1;
     public static readonly HRESULT S_OK = HRESULTS.S_OK;
+    public static readonly HRESULT DRAGDROP_E_NOTREGISTERED = 0x80040100;
+    public static readonly HRESULT DRAGDROP_E_ALREADYREGISTERED = 0x80040101;
+    public static readonly HRESULT DRAGDROP_S_DROP = 0x00040100;
+    public static readonly HRESULT DRAGDROP_S_CANCEL = 0x00040101;
+    public static readonly HRESULT DRAGDROP_S_USEDEFAULTCURSORS = 0x00040102;
+
     public static readonly Guid DXGI_DEBUG_ALL = new("e48ae283-da80-490b-87e6-43e9a9cfda08");
+
+    public const uint WM_MOUSEMOVE = MessageDecoder.WM_MOUSEMOVE;
+    public const uint WM_MOUSEHOVER = MessageDecoder.WM_MOUSEHOVER;
+    public const uint WM_XBUTTONUP = MessageDecoder.WM_XBUTTONUP;
+    public const uint WM_XBUTTONDOWN = MessageDecoder.WM_XBUTTONDOWN;
+    public const uint WM_MBUTTONUP = MessageDecoder.WM_MBUTTONUP;
+    public const uint WM_MBUTTONDOWN = MessageDecoder.WM_MBUTTONDOWN;
+    public const uint WM_RBUTTONUP = MessageDecoder.WM_RBUTTONUP;
+    public const uint WM_RBUTTONDOWN = MessageDecoder.WM_RBUTTONDOWN;
+    public const uint WM_LBUTTONUP = MessageDecoder.WM_LBUTTONUP;
+    public const uint WM_LBUTTONDOWN = MessageDecoder.WM_LBUTTONDOWN;
+
+    public static string? MsgToString(uint msg) => MessageDecoder.MsgToString((int)msg);
+    public static Monitor? GetMonitorFromWindow(HWND hwnd, MONITOR_FROM_FLAGS dwFlags) => Monitor.FromWindow(hwnd, (MFW)dwFlags);
+    public static IComObject<T>? GetComObjectFromPointer<T>(nint ptr) => ComObject.From<T>(ptr);
+    public static IComObject<T>? Cast<T>(this IComObject co) where T : class => co.AsComObject<T>();
+    public static IComObject<T>? AsComObject<T>(this object? winRTObject) => new ComObject<T>((T)winRTObject);
 
     public static int GetSystemMetrics(SYSTEM_METRICS_INDEX nIndex) => WindowsFunctions.GetSystemMetrics(nIndex);
     public static uint GetDoubleClickTime() => (uint)WindowsFunctions.GetDoubleClickTime();
@@ -22,22 +45,11 @@ public static class WiceCommons
     public static BOOL PostThreadMessageW(uint idThread, uint Msg, WPARAM wParam, LPARAM lParam) => PostThreadMessage(idThread, Msg, wParam, lParam);
     public static BOOL PostMessageW(HWND hWnd, uint Msg, WPARAM wParam, LPARAM lParam) => WindowsFunctions.PostMessage(hWnd, (int)Msg, wParam, lParam);
     public static LRESULT SendMessageW(HWND hWnd, uint Msg, WPARAM wParam, LPARAM lParam) => WindowsFunctions.SendMessage(hWnd, (int)Msg, wParam, lParam);
-    public static HMODULE GetModuleHandleW(string lpModuleName) => WindowsFunctions.GetModuleHandle(lpModuleName);
     public static uint GetDpiForWindow(HWND hwnd) => (uint)WindowsFunctions.GetDpiForWindow(hwnd);
-    public static BOOL AdjustWindowRectExForDpi(ref RECT lpRect, WINDOW_STYLE dwStyle, BOOL bMenu, WINDOW_EX_STYLE dwExStyle, uint dpi) => WindowsFunctions.AdjustWindowRectExForDpi(ref lpRect, dwStyle, bMenu, dwExStyle, (int)dpi);
     public static void PostQuitMessage(int nExitCode) => WindowsFunctions.PostQuitMessage(nExitCode);
-    public static BOOL TrackMouseEvent(ref TRACKMOUSEEVENT lpEventTrack) => WindowsFunctions.TrackMouseEvent(ref lpEventTrack);
     public static BOOL KillTimer(HWND hWnd, nuint uIDEvent) => WindowsFunctions.KillTimer(hWnd, (nint)uIDEvent);
     public static void SetTimer(HWND hWnd, nuint nIDEvent, uint uElapse, object? lpTimerFunc) => WindowsFunctions.SetTimer(hWnd, (nint)nIDEvent, (int)uElapse, IntPtr.Zero);
-    public static HRESULT SetWindowCompositionAttribute(HWND hwnd, ref WINDOWCOMPOSITIONATTRIBDATA data) => WindowsFunctions.SetWindowCompositionAttribute(hwnd, ref data);
     public static BOOL DeleteObject(HGDIOBJ ho) => WindowsFunctions.DeleteObject(ho);
-    public static BOOL GetIconInfo(HICON hIcon, out ICONINFO piconinfo) => WindowsFunctions.GetIconInfo(hIcon, out piconinfo);
-    public static BOOL GetMonitorInfoW(HMONITOR hMonitor, ref MONITORINFO lpmi) => WindowsFunctions.GetMonitorInfo(hMonitor, ref lpmi);
-    public static HMONITOR MonitorFromWindow(HWND hwnd, MONITOR_FROM_FLAGS dwFlags) => WindowsFunctions.MonitorFromWindow(hwnd, dwFlags);
-    public static BOOL GetWindowRect(HWND hWnd, out RECT lpRect) => WindowsFunctions.GetWindowRect(hWnd, out lpRect);
-    public static BOOL GetClientRect(HWND hWnd, out RECT lpRect) => WindowsFunctions.GetClientRect(hWnd, out lpRect);
-    public static BOOL UnregisterClassW(string lpClassName, HINSTANCE hInstance) => WindowsFunctions.UnregisterClass(lpClassName, hInstance);
-    public static HWND WindowFromPoint(POINT Point) => WindowsFunctions.WindowFromPoint(Point);
     public static BOOL IsChild(HWND hWndParent, HWND hWnd) => WindowsFunctions.IsChild(hWndParent, hWnd);
     public static uint GetMessagePos() => (uint)WindowsFunctions.GetMessagePos();
     public static BOOL ReleaseCapture() => WindowsFunctions.ReleaseCapture();
@@ -49,19 +61,15 @@ public static class WiceCommons
     public static HWND GetActiveWindow() => WindowsFunctions.GetActiveWindow();
     public static HWND GetForegroundWindow() => WindowsFunctions.GetForegroundWindow();
     public static HWND GetDesktopWindow() => WindowsFunctions.GetDesktopWindow();
-    public static int ShellAboutW(HWND hWnd, string szApp, string szOtherStuff, HICON hIcon) => WindowsFunctions.ShellAbout(hWnd, szApp, szOtherStuff, hIcon);
-    public static BOOL ScreenToClient(HWND hWnd, ref POINT lpPoint) => WindowsFunctions.ScreenToClient(hWnd, ref lpPoint);
-    public static BOOL ClientToScreen(HWND hWnd, ref POINT lpPoint) => WindowsFunctions.ClientToScreen(hWnd, ref lpPoint);
     public static BOOL SetCaretPos(int X, int Y) => WindowsFunctions.SetCaretPos(X, Y);
     public static BOOL CreateCaret(HWND hWnd, HBITMAP hBitmap, int nWidth, int nHeight) => WindowsFunctions.CreateCaret(hWnd, hBitmap, nWidth, nHeight);
     public static HWND SetCapture(HWND hWnd) => WindowsFunctions.SetCapture(hWnd);
     public static BOOL SetForegroundWindow(HWND hWnd) => WindowsFunctions.SetForegroundWindow(hWnd);
-    public static BOOL SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, SET_WINDOW_POS_FLAGS uFlags) => WindowsFunctions.SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags); 
+    public static BOOL SetWindowPos(HWND hWnd, HWND hWndInsertAfter, int X, int Y, int cx, int cy, SET_WINDOW_POS_FLAGS uFlags) => WindowsFunctions.SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
     public static BOOL ShowWindow(HWND hWnd, SHOW_WINDOW_CMD nCmdShow) => WindowsFunctions.ShowWindow(hWnd, nCmdShow);
     public static BOOL DestroyWindow(HWND hWnd) => WindowsFunctions.DestroyWindow(hWnd);
     public static BOOL IsZoomed(HWND hWnd) => WindowsFunctions.IsZoomed(hWnd);
     public static BOOL SetWindowDisplayAffinity(HWND hWnd, WINDOW_DISPLAY_AFFINITY dwAffinity) => WindowsFunctions.SetWindowDisplayAffinity(hWnd, dwAffinity);
-    public static BOOL SetWindowTextW(HWND hWnd, string lpString) => WindowsFunctions.SetWindowText(hWnd, lpString);
     public static BOOL IsWindowEnabled(HWND hWnd) => WindowsFunctions.IsWindowEnabled(hWnd);
     public static BOOL EnableWindow(HWND hWnd, BOOL bEnable) => WindowsFunctions.EnableWindow(hWnd, bEnable);
     public static uint GetDpiFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT value) => (uint)DpiUtilities.GetDpiFromDpiAwarenessContext(value);
@@ -72,30 +80,10 @@ public static class WiceCommons
     public static BOOL DestroyCaret() => WindowsFunctions.DestroyCaret();
     public static string? GetMessageBoxString(MESSAGEBOX_RESULT button, bool removeMnemonics = true) => WindowsFunctions.GetMessageBoxString(button, removeMnemonics);
 
-    public static BOOL GetCursorPos(out POINT lpPoint)
-    {
-        var point = new POINT();
-        var ret = WindowsFunctions.GetCursorPos(ref point);
-        lpPoint = point;
-        return ret;
-    }
-
     public static HRESULT DwmExtendFrameIntoClientArea(HWND hWnd, in MARGINS pMarInset)
     {
         var margins = pMarInset;
         return WindowsFunctions.DwmExtendFrameIntoClientArea(hWnd, ref margins);
-    }
-
-    public static BOOL GetClassInfoW(HINSTANCE hInstance, string lpClassName, out WNDCLASSW lpWndClass)
-    {
-        lpWndClass = new WNDCLASSW(); // unused
-        return WindowsFunctions.GetClassInfo(hInstance, lpClassName, out var cls);
-    }
-
-    public static ushort RegisterClassW(in WNDCLASSW lpWndClass)
-    {
-        var cls = lpWndClass;
-        return (ushort)WindowsFunctions.RegisterClass(ref cls);
     }
 
     public static BOOL EndPaint(HWND hWnd, in PAINTSTRUCT lpPaint)
@@ -111,9 +99,6 @@ public static class WiceCommons
         lpPaint = paint;
         return ret;
     }
-
-    public static HWND CreateWindowExW(WINDOW_EX_STYLE dwExStyle, string lpClassName, string  lpWindowName, WINDOW_STYLE dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, nint lpParam)
-        => WindowsFunctions.CreateWindowEx(dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 
     public static BOOL DwmDefWindowProc(HWND hWnd, uint msg, WPARAM wParam, LPARAM lParam, out LRESULT plResult)
     {
@@ -143,10 +128,79 @@ public static class WiceCommons
     }
 
     [DllImport("user32")]
+    public static extern BOOL GetCursorPos(out POINT lpPoint);
+
+    [DllImport("user32")]
+    public static extern BOOL AdjustWindowRectExForDpi(ref RECT lpRect, WINDOW_STYLE dwStyle, BOOL bMenu, WINDOW_EX_STYLE dwExStyle, uint dpi);
+
+    [DllImport("user32")]
+    public static extern BOOL ScreenToClient(HWND hWnd, ref POINT lpPoint);
+
+    [DllImport("user32")]
+    public static extern BOOL ClientToScreen(HWND hWnd, ref POINT lpPoint);
+
+    [DllImport("user32")]
+    public static extern BOOL GetWindowRect(HWND hWnd, out RECT lpRect);
+
+    [DllImport("user32")]
+    public static extern BOOL GetClientRect(HWND hWnd, out RECT lpRect);
+
+    [DllImport("user32")]
+    public static extern HWND WindowFromPoint(POINT Point);
+
+    [DllImport("user32")]
+    public static extern HWND CreateWindowExW(WINDOW_EX_STYLE dwExStyle, PWSTR lpClassName, PWSTR lpWindowName, WINDOW_STYLE dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, nint /* optional void* */ lpParam);
+
+    [DllImport("user32")]
+    public static extern BOOL TrackMouseEvent(ref TRACKMOUSEEVENT lpEventTrack);
+
+    [DllImport("user32")]
+    public static extern int GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX nIndex, uint dpi);
+
+    [DllImport("user32")]
+    public static extern BOOL SetWindowTextW(HWND hWnd, PWSTR lpString);
+
+    [DllImport("user32")]
+    public static extern BOOL GetClassInfoW(HINSTANCE hInstance, PWSTR lpClassName, out WNDCLASSW lpWndClass);
+
+    [DllImport("user32")]
+    public static extern BOOL UnregisterClassW(PWSTR lpClassName, HINSTANCE hInstance);
+
+    [DllImport("shell32")]
+    public static extern int ShellAboutW(HWND hWnd, PWSTR szApp, PWSTR szOtherStuff, HICON hIcon);
+
+    [DllImport("kernel32")]
+    public static extern HMODULE GetModuleHandleW(PWSTR lpModuleName);
+
+    [DllImport("user32")]
+    public static extern BOOL EnumChildWindows(HWND hWndParent, WNDENUMPROC lpEnumFunc, LPARAM lParam);
+
+    [DllImport("user32")]
+    public static extern BOOL EnumWindows(WNDENUMPROC lpEnumFunc, LPARAM lParam);
+
+    [DllImport("user32")]
+    public static extern HMONITOR MonitorFromWindow(HWND hwnd, MONITOR_FROM_FLAGS dwFlags);
+
+    [DllImport("user32")]
+    public static extern ushort RegisterClassW(in WNDCLASSW lpWndClass);
+
+    [DllImport("user32")]
+    public static extern BOOL GetMonitorInfoW(HMONITOR hMonitor, ref MONITORINFO lpmi);
+
+    [DllImport("user32")]
+    public static extern HRESULT SetWindowCompositionAttribute(HWND hwnd, ref WINDOWCOMPOSITIONATTRIBDATA data);
+
+    [DllImport("user32")]
+    public static extern HRESULT GetWindowCompositionAttribute(HWND hwnd, ref WINDOWCOMPOSITIONATTRIBDATA data);
+
+    [DllImport("user32")]
+    public static extern BOOL GetIconInfo(HICON hIcon, out ICONINFO piconinfo);
+
+    [DllImport("user32")]
     public static extern BOOL SystemParametersInfoW(SYSTEM_PARAMETERS_INFO_ACTION uiAction, uint uiParam, nint pvParam, SYSTEM_PARAMETERS_INFO_UPDATE_FLAGS fWinIni);
 
     [DllImport("kernel32")]
-    public static extern nint GetProcAddress(HMODULE hModule, string lpProcName);
+    public static extern nint GetProcAddress(HMODULE hModule, PSTR lpProcName);
 
     [DllImport("user32")]
     public static extern uint GetWindowThreadProcessId(HWND hWnd, nint lpdwProcessId);
@@ -155,14 +209,14 @@ public static class WiceCommons
     public static extern bool GetWindowDisplayAffinity(HWND hwnd, out WINDOW_DISPLAY_AFFINITY pdwAffinity);
 
     [DllImport("user32")]
-    public static extern HANDLE GetPropW(HWND hWnd, string lpString);
+    public static extern HANDLE GetPropW(HWND hWnd, PWSTR lpString);
 
     [DllImport("user32")]
     public static extern int EnumPropsW(HWND hWnd, PROPENUMPROCW lpEnumFunc);
 
     [DllImport("shell32")]
     public static extern bool SHGetPropertyStoreForWindow(HWND hwnd, in Guid riid, out nint ppv);
-    
+
     [DllImport("user32")]
     private static extern bool PostThreadMessage(uint idThread, uint msg, WPARAM wParam, LPARAM lParam);
 
@@ -170,7 +224,7 @@ public static class WiceCommons
     public static extern HRESULT RegisterDragDrop(HWND hwnd, IDropTarget pDropTarget);
 
     [DllImport("ole32")]
-    public  static extern HRESULT OleInitialize(nint pvReserved);
+    public static extern HRESULT OleInitialize(nint pvReserved);
 
     [DllImport("ole32")]
     public static extern HRESULT DoDragDrop(IDataObject pDataObj, IDropSource pDropSource, DROPEFFECT dwOKEffects, out DROPEFFECT pdwEffect);
@@ -183,16 +237,68 @@ public static class WiceCommons
 
     [DllImport("dwmapi")]
     public static extern HRESULT DwmSetWindowAttribute(HWND hwnd, uint dwAttribute, nint pvAttribute, uint cbAttribute);
-    
+
     [DllImport("gdi32")]
     public static extern int GetObjectW(HGDIOBJ h, int c, nint pv);
+
+    [DllImport("user32")]
+    public static extern BOOL DestroyIcon(HICON hIcon);
+
+    [DllImport("user32")]
+    public static extern BOOL GetPointerType(uint pointerId, out POINTER_INPUT_TYPE pointerType);
+
+    [DllImport("user32")]
+    public static extern BOOL GetPointerInfo(uint pointerId, out POINTER_INFO pointerInfo);
+
+    [DllImport("user32")]
+    public static extern BOOL GetPointerPenInfo(uint pointerId, out POINTER_PEN_INFO penInfo);
+
+    [DllImport("user32")]
+    public static extern BOOL GetPointerTouchInfo(uint pointerId, out POINTER_TOUCH_INFO touchInfo);
 
 #else
     public const int ICON_BIG = Constants.ICON_BIG;
     public const int CW_USEDEFAULT = Constants.CW_USEDEFAULT;
     public const uint SIZE_MINIMIZED = Constants.SIZE_MINIMIZED;
     public static readonly HRESULT S_OK = Constants.S_OK;
+    public static readonly HRESULT DRAGDROP_E_ALREADYREGISTERED = Constants.DRAGDROP_E_ALREADYREGISTERED;
+    public static readonly HRESULT DRAGDROP_E_NOTREGISTERED = Constants.DRAGDROP_E_NOTREGISTERED;
+    public static readonly HRESULT DRAGDROP_S_DROP = Constants.DRAGDROP_S_DROP;
+    public static readonly HRESULT DRAGDROP_S_CANCEL = Constants.DRAGDROP_S_CANCEL;
+    public static readonly HRESULT DRAGDROP_S_USEDEFAULTCURSORS = Constants.DRAGDROP_S_USEDEFAULTCURSORS;
+
     public static readonly Guid DXGI_DEBUG_ALL = Constants.DXGI_DEBUG_ALL;
+
+    public const uint WM_MOUSEMOVE = MessageDecoder.WM_MOUSEMOVE;
+    public const uint WM_MOUSEHOVER = MessageDecoder.WM_MOUSEHOVER;
+    public const uint WM_XBUTTONUP = MessageDecoder.WM_XBUTTONUP;
+    public const uint WM_XBUTTONDOWN = MessageDecoder.WM_XBUTTONDOWN;
+    public const uint WM_MBUTTONUP = MessageDecoder.WM_MBUTTONUP;
+    public const uint WM_MBUTTONDOWN = MessageDecoder.WM_MBUTTONDOWN;
+    public const uint WM_RBUTTONUP = MessageDecoder.WM_RBUTTONUP;
+    public const uint WM_RBUTTONDOWN = MessageDecoder.WM_RBUTTONDOWN;
+    public const uint WM_LBUTTONUP = MessageDecoder.WM_LBUTTONUP;
+    public const uint WM_LBUTTONDOWN = MessageDecoder.WM_LBUTTONDOWN;
+
+    public static string? MsgToString(uint msg) => MessageDecoder.MsgToString(msg);
+    public static Monitor? GetMonitorFromWindow(HWND hwnd, MONITOR_FROM_FLAGS dwFlags) => Monitor.FromWindow(hwnd, dwFlags);
+    public static IComObject<T>? GetComObjectFromPointer<T>(nint ptr) => ComObject.FromPointer<T>(ptr);
+    public static IComObject<T>? Cast<T>(this IComObject co) => co.As<T>();
+
+    // this is to replace the As<T> on C#/WinRT object which doesn't work well under AOT...
+    [return: NotNullIfNotNull(nameof(winRTObject))]
+    public static IComObject<T>? AsComObject<T>(this object? winRTObject, CreateObjectFlags flags = CreateObjectFlags.UniqueInstance)
+    {
+        if (winRTObject == null)
+            return null;
+
+        var ptr = WinRT.MarshalInspectable<object>.FromManaged(winRTObject);
+        var obj = ComObject.FromPointer<T>(ptr, flags);
+        if (obj == null)
+            throw new InvalidCastException($"Object of type '{winRTObject.GetType().FullName}' is not of type '{typeof(T).FullName}'.");
+
+        return obj;
+    }
 
     public static int GetSystemMetrics(SYSTEM_METRICS_INDEX nIndex) => Functions.GetSystemMetrics(nIndex);
     public static uint GetDoubleClickTime() => Functions.GetDoubleClickTime();
@@ -274,6 +380,14 @@ public static class WiceCommons
     public static BOOL DestroyCaret() => Functions.DestroyCaret();
     public static BOOL SystemParametersInfoW(SYSTEM_PARAMETERS_INFO_ACTION uiAction, uint uiParam, nint pvParam, SYSTEM_PARAMETERS_INFO_UPDATE_FLAGS fWinIni) => Functions.SystemParametersInfoW(uiAction, uiParam, pvParam, fWinIni);
     public static string? GetMessageBoxString(MESSAGEBOX_RESULT button, bool removeMnemonics = true) => Functions.GetMessageBoxString(button, removeMnemonics);
+    public static BOOL EnumChildWindows(HWND hWndParent, WNDENUMPROC lpEnumFunc, LPARAM lParam) => Functions.EnumChildWindows(hWndParent, lpEnumFunc, lParam);
+    public static BOOL EnumWindows(WNDENUMPROC lpEnumFunc, LPARAM lParam) => Functions.EnumWindows(lpEnumFunc, lParam);
+    public static BOOL DestroyIcon(HICON hIcon) => Functions.DestroyIcon(hIcon);
+    public static int GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX nIndex, uint dpi) => Functions.GetSystemMetricsForDpi(nIndex, dpi);
+    public static BOOL GetPointerType(uint pointerId, out POINTER_INPUT_TYPE pointerType) => Functions.GetPointerType(pointerId, out pointerType);  
+    public static BOOL GetPointerInfo(uint pointerId, out POINTER_INFO pointerInfo) => Functions.GetPointerInfo(pointerId, out pointerInfo);
+    public static BOOL GetPointerPenInfo(uint pointerId, out POINTER_PEN_INFO penInfo) => Functions.GetPointerPenInfo(pointerId, out penInfo);
+    public static BOOL GetPointerTouchInfo(uint pointerId, out POINTER_TOUCH_INFO touchInfo) => Functions.GetPointerTouchInfo(pointerId, out touchInfo);
 
 #endif
 }

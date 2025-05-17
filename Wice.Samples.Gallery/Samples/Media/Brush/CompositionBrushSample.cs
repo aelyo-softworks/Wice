@@ -17,7 +17,7 @@ namespace Wice.Samples.Gallery.Samples.Media.Brush
 
             // to create a composition brush, the visual must be attached to composition
             // to be able to use the Compositor instance corresponding to its parent Window.
-            box.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Aquamarine.ToColor());
+            box.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Aquamarine.ToColor());
         }
     }
 }

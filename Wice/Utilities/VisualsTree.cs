@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Design;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using Wice.Utilities;
-using Windows.UI.Composition;
 using Point = System.Drawing.Point;
 
 namespace Wice.Utilities;
@@ -225,7 +215,7 @@ public partial class VisualsTree : Form
         base.OnMouseMove(e);
         foreach (var window in Windows)
         {
-            var visual = window.GetIntersectingVisuals(window.ScreenToClient(PointToScreen(e.Location).TotagPOINT())).FirstOrDefault();
+            var visual = window.GetIntersectingVisuals(window.ScreenToClient(PointToScreen(e.Location).ToPOINT())).FirstOrDefault();
             if (visual != null)
             {
                 var node = EnsureVisible(visual);
@@ -309,7 +299,7 @@ public partial class VisualsTree : Form
         var window = visual.Window;
         if (window != null)
         {
-            if (window.IconHandle != IntPtr.Zero)
+            if (window.IconHandle.Value != IntPtr.Zero)
             {
                 _icon = Icon.FromHandle(window.IconHandle);
                 Icon = _icon;

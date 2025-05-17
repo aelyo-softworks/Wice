@@ -12,13 +12,13 @@ public partial class Dock : Visual
 
     public static void SetDockType(IPropertyOwner properties, DockType type)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         properties.SetPropertyValue(DockTypeProperty, type);
     }
 
     public static DockType GetDockType(IPropertyOwner properties)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return (DockType)properties.GetPropertyValue(DockTypeProperty)!;
     }
 
@@ -32,7 +32,7 @@ public partial class Dock : Visual
 
     public Visual? GetAt(Visual visual, DockType type)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
         if (!_docked.TryGetValue(visual, out var docked))
             return null;
 

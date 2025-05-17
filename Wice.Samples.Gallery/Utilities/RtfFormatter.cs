@@ -15,7 +15,7 @@ namespace Wice.Samples.Gallery.Utilities
     {
         private readonly static ConcurrentDictionary<string, ColorIndex> _scopeNames = new ConcurrentDictionary<string, ColorIndex>(StringComparer.OrdinalIgnoreCase);
 
-        public RtfFormatter(TextWriter writer, string fontName = null, IDictionary<string, _D3DCOLORVALUE> colors = null, _D3DCOLORVALUE? defaultColor = null)
+        public RtfFormatter(TextWriter writer, string fontName = null, IDictionary<string, D3DCOLORVALUE> colors = null, D3DCOLORVALUE? defaultColor = null)
             : base(null, null)
         {
             if (writer == null)
@@ -28,7 +28,7 @@ namespace Wice.Samples.Gallery.Utilities
             // write color table
             Writer.Write(@"{\colortbl;");
 
-            defaultColor = defaultColor ?? _D3DCOLORVALUE.Black;
+            defaultColor = defaultColor ?? D3DCOLORVALUE.Black;
             DefaultColor = defaultColor.Value;
             var defColors = GetDefaultColors(DefaultColor);
             var values = Enum.GetValues(typeof(ColorIndex));
@@ -61,19 +61,19 @@ namespace Wice.Samples.Gallery.Utilities
             Writer.WriteLine('}');
         }
 
-        public _D3DCOLORVALUE DefaultColor { get; }
+        public D3DCOLORVALUE DefaultColor { get; }
 
-        private static Dictionary<string, _D3DCOLORVALUE> GetDefaultColors(_D3DCOLORVALUE defaultColor)
+        private static Dictionary<string, D3DCOLORVALUE> GetDefaultColors(D3DCOLORVALUE defaultColor)
         {
-            var dic = new Dictionary<string, _D3DCOLORVALUE>(StringComparer.OrdinalIgnoreCase);
+            var dic = new Dictionary<string, D3DCOLORVALUE>(StringComparer.OrdinalIgnoreCase);
             dic[ColorIndex.Default.ToString()] = defaultColor;
-            dic[ColorIndex.Keyword.ToString()] = _D3DCOLORVALUE.Blue;
-            dic[ColorIndex.Comment.ToString()] = _D3DCOLORVALUE.FromArgb(0, 128, 0);
-            dic[ColorIndex.String.ToString()] = _D3DCOLORVALUE.FromArgb(128, 0, 0);
-            dic[ColorIndex.StringCSharpVerbatim.ToString()] = _D3DCOLORVALUE.FromArgb(128, 0, 0);
-            dic[ColorIndex.Number.ToString()] = _D3DCOLORVALUE.FromArgb(128, 0, 0);
-            dic[ColorIndex.ClassName.ToString()] = _D3DCOLORVALUE.FromArgb(43, 145, 175);
-            dic[ColorIndex.BuiltinFunction.ToString()] = _D3DCOLORVALUE.Olive;
+            dic[ColorIndex.Keyword.ToString()] = D3DCOLORVALUE.Blue;
+            dic[ColorIndex.Comment.ToString()] = D3DCOLORVALUE.FromArgb(0, 128, 0);
+            dic[ColorIndex.String.ToString()] = D3DCOLORVALUE.FromArgb(128, 0, 0);
+            dic[ColorIndex.StringCSharpVerbatim.ToString()] = D3DCOLORVALUE.FromArgb(128, 0, 0);
+            dic[ColorIndex.Number.ToString()] = D3DCOLORVALUE.FromArgb(128, 0, 0);
+            dic[ColorIndex.ClassName.ToString()] = D3DCOLORVALUE.FromArgb(43, 145, 175);
+            dic[ColorIndex.BuiltinFunction.ToString()] = D3DCOLORVALUE.Olive;
             return dic;
         }
 
@@ -149,7 +149,7 @@ namespace Wice.Samples.Gallery.Utilities
                 return;
             }
 
-            if (DefaultColor != _D3DCOLORVALUE.Black)
+            if (DefaultColor != D3DCOLORVALUE.Black)
             {
                 Write(parsedSourceCode, ColorIndex.Default);
             }

@@ -17,7 +17,7 @@ namespace Wice.Samples.Gallery.Samples.Misc.DragDrop
 
             var box = new Border
             {
-                RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor()),
+                RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor()),
                 Width = 400, // remove from display
                 Height = 200, // remove from display
                 AllowDrop = true, // enable the visual as a drop target

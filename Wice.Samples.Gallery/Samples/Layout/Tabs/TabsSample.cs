@@ -27,7 +27,7 @@ namespace Wice.Samples.Gallery.Samples.Layout.Tabs
             plusPage.Header.Icon.Text = MDL2GlyphResource.Add; // plus icon
             plusPage.Header.Text.Text = string.Empty; // no text
             plusPage.Header.HorizontalAlignment = Alignment.Stretch; // take all available space
-            plusPage.Header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0).ToColor());
+            plusPage.Header.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
             plusPage.Header.SelectedButtonClick += (s, e) => addPage();
 
             TabPage addPage()
@@ -49,9 +49,9 @@ namespace Wice.Samples.Gallery.Samples.Layout.Tabs
                 }
 
                 page.Header.Text.Text = "Page " + index;
-                page.Header.SelectedBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightGray.ToColor());
-                page.Header.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.DarkGray.ToColor());
-                page.Header.HoverRenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0x80C0C0C0).ToColor());
+                page.Header.SelectedBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
+                page.Header.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.DarkGray.ToColor());
+                page.Header.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
 
                 // by default header's close button is invisible
                 page.Header.CloseButton.IsVisible = true;

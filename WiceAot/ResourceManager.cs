@@ -8,7 +8,7 @@ public partial class ResourceManager
 
     public ResourceManager(Application application)
     {
-        ArgumentNullException.ThrowIfNull(application);
+        ExceptionExtensions.ThrowIfNull(application, nameof(application));
         Application = application;
         D2DFactory = D2D1Functions.D2D1CreateFactory1();
         DWriteFactory = DWriteFunctions.DWriteCreateFactory();
@@ -25,7 +25,7 @@ public partial class ResourceManager
         get => _theme;
         set
         {
-            ArgumentNullException.ThrowIfNull(value);
+            ExceptionExtensions.ThrowIfNull(value, nameof(value));
             if (_theme == value)
                 return;
 
@@ -132,14 +132,14 @@ public partial class ResourceManager
 
     public virtual IComObject<IDWriteTypography>? GetTypography(Typography typography)
     {
-        ArgumentNullException.ThrowIfNull(typography);
+        ExceptionExtensions.ThrowIfNull(typography, nameof(typography));
         var key = typography.CacheKey;
         return Get(null, Domain.Typography, key, () => CreateTypography(typography));
     }
 
     public virtual IComObject<IDWriteTypography> CreateTypography(Typography typography)
     {
-        ArgumentNullException.ThrowIfNull(typography);
+        ExceptionExtensions.ThrowIfNull(typography, nameof(typography));
         var tg = DWriteFactory.CreateTypography();
         foreach (var feature in typography.Features)
         {
@@ -176,14 +176,18 @@ public partial class ResourceManager
                 dashOffset = 0
             };
 
+#if NETFRAMEWORK
+            D2DFactory.Object.CreateStrokeStyle(ref strokeProps, dashes, (dashes?.Length).GetValueOrDefault(), out var stroke).ThrowOnError();
+#else
             D2DFactory.Object.CreateStrokeStyle(strokeProps, dashes.AsPointer(), dashes.Length(), out var stroke).ThrowOnError();
+#endif
             return new ComObject<ID2D1StrokeStyle>(stroke);
         });
     }
 
     public virtual IComObject<IWICBitmapSource>? GetWicBitmapSource(string filePath, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
-        ArgumentNullException.ThrowIfNull(filePath);
+        ExceptionExtensions.ThrowIfNull(filePath, nameof(filePath));
         filePath = System.IO.Path.GetFullPath(filePath);
         var key = filePath.ToLowerInvariant();
         return Get(null, Domain.WICBitmapSource, key, () => WicUtilities.LoadBitmapSource(filePath, options));
@@ -191,8 +195,8 @@ public partial class ResourceManager
 
     public virtual IComObject<IWICBitmapSource>? GetWicBitmapSource(Assembly assembly, string name, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
-        ArgumentNullException.ThrowIfNull(assembly);
-        ArgumentNullException.ThrowIfNull(name);
+        ExceptionExtensions.ThrowIfNull(assembly, nameof(assembly));
+        ExceptionExtensions.ThrowIfNull(name, nameof(name));
         var stream = assembly.GetManifestResourceStream(name);
         if (stream == null)
             throw new WiceException("0016: cannot find stream '" + name + "' from assembly '" + assembly.FullName + "'.");
@@ -204,8 +208,8 @@ public partial class ResourceManager
     // note: keep the stream open as wic lazy loads
     public virtual IComObject<IWICBitmapSource>? GetWicBitmapSource(Stream stream, string uniqueKey, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
-        ArgumentNullException.ThrowIfNull(stream);
-        ArgumentNullException.ThrowIfNull(uniqueKey);
+        ExceptionExtensions.ThrowIfNull(stream, nameof(stream));
+        ExceptionExtensions.ThrowIfNull(uniqueKey, nameof(uniqueKey));
         return Get(null, Domain.WICBitmapSource, uniqueKey, () => WicUtilities.LoadBitmapSource(stream, options));
     }
 
@@ -213,7 +217,7 @@ public partial class ResourceManager
     {
         if (pointer == 0)
             throw new ArgumentException(null, nameof(pointer));
-        ArgumentNullException.ThrowIfNull(uniqueKey);
+        ExceptionExtensions.ThrowIfNull(uniqueKey, nameof(uniqueKey));
         return Get(null, Domain.WICBitmapSource, uniqueKey, () => WicUtilities.LoadBitmapSource(pointer, byteLength));
     }
 
@@ -228,7 +232,7 @@ public partial class ResourceManager
     {
         if (pointer == 0)
             throw new ArgumentException(null, nameof(pointer));
-        ArgumentNullException.ThrowIfNull(uniqueKey);
+        ExceptionExtensions.ThrowIfNull(uniqueKey, nameof(uniqueKey));
         return Get(null, Domain.WICBitmapSource, uniqueKey, () => WicUtilities.LoadBitmapSourceFromMemory(width, height, pixelFormat, stride, bufferSize, pointer));
     }
 
@@ -254,7 +258,7 @@ public partial class ResourceManager
 
     public virtual IComObject<IDWriteTextFormat>? GetTextFormat(ITextFormat text)
     {
-        ArgumentNullException.ThrowIfNull(text);
+        ExceptionExtensions.ThrowIfNull(text, nameof(text));
         var family = text.FontFamilyName.Nullify() ?? Theme.DefaultFontFamilyName;
         var size = GetFontSize(text);
         var key = TextFormat.GetCacheKey(text, family, size);
@@ -275,7 +279,7 @@ public partial class ResourceManager
 
     public virtual IComObject<IDWriteTextFormat> CreateTextFormat(ITextFormat text)
     {
-        ArgumentNullException.ThrowIfNull(text);
+        ExceptionExtensions.ThrowIfNull(text, nameof(text));
         var family = text.FontFamilyName.Nullify() ?? Theme.DefaultFontFamilyName;
         IComObject<IDWriteTextFormat> format;
         IComObject<IDWriteInlineObject>? io = null;
@@ -332,14 +336,18 @@ public partial class ResourceManager
         var family = fontFamilyName.Nullify() ?? Theme.DefaultFontFamilyName;
         var size = GetFontSize(fontSize);
         var key = family + "\0" + size + "\0" + TextFormat.GetCacheKey(fonts);
+#if NETFRAMEWORK
+        DWriteFactory.Object.CreateTextFormat(family, fonts, fontWeight, fontStyle, fontStretch, size, string.Empty, out var format).ThrowOnError();
+#else
         DWriteFactory.Object.CreateTextFormat(PWSTR.From(family), fonts, fontWeight, fontStyle, fontStretch, size, PWSTR.From(string.Empty), out var format).ThrowOnError();
+#endif
         return new KeyComObject<IDWriteTextFormat>(format, key);
     }
 
     public IComObject<IDWriteTextLayout>? GetTextLayout(IComObject<IDWriteTextFormat> format, string? text, int textLength = 0, float maxWidth = float.MaxValue, float maxHeight = float.MaxValue) => GetTextLayout(format?.Object!, text, textLength, maxWidth, maxHeight);
     public virtual IComObject<IDWriteTextLayout>? GetTextLayout(IDWriteTextFormat format, string? text, int textLength = 0, float maxWidth = float.MaxValue, float maxHeight = float.MaxValue)
     {
-        ArgumentNullException.ThrowIfNull(format);
+        ExceptionExtensions.ThrowIfNull(format, nameof(format));
         if (text == null)
             return null;
 
@@ -352,8 +360,8 @@ public partial class ResourceManager
 
     public virtual IComObject<IDWriteTextLayout> CreateTextLayout(IComObject<IDWriteTextFormat> format, string text, int textLength = 0, float maxWidth = float.MaxValue, float maxHeight = float.MaxValue)
     {
-        ArgumentNullException.ThrowIfNull(text);
-        ArgumentNullException.ThrowIfNull(format);
+        ExceptionExtensions.ThrowIfNull(text, nameof(text));
+        ExceptionExtensions.ThrowIfNull(format, nameof(format));
         if (maxWidth.IsNotSet())
         {
             maxWidth = float.MaxValue;
@@ -376,7 +384,11 @@ public partial class ResourceManager
         ) where T : IDWriteTextLayout
     {
         textLength = textLength <= 0 ? text.Length : textLength;
+#if NETFRAMEWORK
+        DWriteFactory.Object.CreateTextLayout(text, (uint)textLength, format, maxWidth, maxHeight, out var layout).ThrowOnError();
+#else
         DWriteFactory.Object.CreateTextLayout(PWSTR.From(text), (uint)textLength, format, maxWidth, maxHeight, out var layout).ThrowOnError();
+#endif
         return new ComObject<T>((T)layout);
     }
 
@@ -528,7 +540,7 @@ public partial class ResourceManager
 
     public virtual void AddRenderDisposable(Window window, IDisposable disposable)
     {
-        ArgumentNullException.ThrowIfNull(window);
+        ExceptionExtensions.ThrowIfNull(window, nameof(window));
 
         if (disposable == null)
             return;
@@ -542,7 +554,7 @@ public partial class ResourceManager
 
     protected virtual void DisposeRenderDisposables(Window window)
     {
-        ArgumentNullException.ThrowIfNull(window);
+        ExceptionExtensions.ThrowIfNull(window, nameof(window));
 
         var win = window.Window;
         if (win == null)

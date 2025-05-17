@@ -7,18 +7,21 @@ public partial class Window : Canvas, ITitleBarParent
 
     private static Visual? _mouseCaptorVisual;
     public static Visual? MouseCaptorVisual => _mouseCaptorVisual;
-#if NETFRAMEWORK
-    private readonly object _lock = new();
-#else
     private readonly Lock _lock = new();
+
+#if NETFRAMEWORK
+    private System.Drawing.Icon _icon;
+    private IComObject<ICompositionTarget> _compositionTarget;
+#else
+    private Icon? _icon;
+    private CompositionTarget? _compositionTarget;
 #endif
 
+    private D2D_RECT_F _lastClientRect;
     private readonly ConcurrentList<Task> _tasks = [];
     private readonly List<WindowTimer> _timers = [];
     private readonly WNDPROC _windowProc;
     private int _animating;
-    private Icon? _icon;
-    private D2D_RECT_F _lastClientRect;
     private readonly Lazy<NativeWindow> _native;
     private int _renderQueued;
     private HWND _parentHandle;
@@ -34,7 +37,6 @@ public partial class Window : Canvas, ITitleBarParent
     private readonly Lazy<IComObject<ID2D1Device1>> _d2D1Device;
     private readonly Lazy<CompositorController> _compositorController;
     private readonly Lazy<CompositionGraphicsDevice> _compositionDevice;
-    private CompositionTarget? _compositionTarget;
     private ConcurrentQuadTree<Visual>? _visualsTree;
     private List<Visual> _mousedEnteredVisuals = [];
     private readonly ConcurrentDictionary<Visual, InvalidateMode> _invalidations = new();
@@ -667,7 +669,7 @@ public partial class Window : Canvas, ITitleBarParent
         {
             ExceptionExtensions.ThrowIfNull(x, nameof(x));
             ExceptionExtensions.ThrowIfNull(y, nameof(y));
-            var cmp = -x.ViewOrder.CompareTo(y.ViewOrder);
+            var cmp = -x!.ViewOrder.CompareTo(y!.ViewOrder);
 #if DEBUG
             //Application.Trace("x ► " + x.FullName + " y ► " + y.FullName + " => " + cmp);
 #endif
@@ -681,7 +683,7 @@ public partial class Window : Canvas, ITitleBarParent
         if (obj != null)
         {
             obj.Object.EnableLeakTrackingForThread();
-            var dxgiQueue = obj.As<IDXGIInfoQueue>();
+            var dxgiQueue = obj.Cast<IDXGIInfoQueue>();
             if (dxgiQueue != null)
             {
                 dxgiQueue.Object.SetBreakOnSeverity(WiceCommons.DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY.DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true).ThrowOnError();
@@ -689,7 +691,7 @@ public partial class Window : Canvas, ITitleBarParent
                 dxgiQueue.Object.SetBreakOnSeverity(WiceCommons.DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY.DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, true).ThrowOnError();
             }
 
-            var d3dQueue = obj.As<ID3D11InfoQueue>();
+            var d3dQueue = obj.Cast<ID3D11InfoQueue>();
             if (d3dQueue != null)
             {
                 d3dQueue.Object.SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY.D3D11_MESSAGE_SEVERITY_ERROR, true).ThrowOnError();
@@ -821,7 +823,7 @@ public partial class Window : Canvas, ITitleBarParent
                     using (var rect1 = Application.CurrentResourceManager.D2DFactory.CreateRectangleGeometry(new D2D_RECT_F(rc.Size).Deflate(1)))
                     using (var rect2 = Application.CurrentResourceManager.D2DFactory.CreateRectangleGeometry(new D2D_RECT_F(rc.Width - buttonsWidth, 0, new D2D_SIZE_F(buttonsWidth, buttonsHeight))))
                     {
-                        rect1.Object.CombineWithGeometry(rect2.Object, D2D1_COMBINE_MODE.D2D1_COMBINE_MODE_EXCLUDE, 0, 0, sink.Object).ThrowOnError();
+                        rect1.Object.CombineWithGeometry(rect2.Object, D2D1_COMBINE_MODE.D2D1_COMBINE_MODE_EXCLUDE, IntPtr.Zero, 0, sink.Object).ThrowOnError();
                     }
                     sink.Object.Close();
                 }
@@ -1060,14 +1062,14 @@ public partial class Window : Canvas, ITitleBarParent
 
         var flags = CreateDeviceFlags;
         var device = D3D11Functions.D3D11CreateDevice(adapter.Object, D3D_DRIVER_TYPE.D3D_DRIVER_TYPE_UNKNOWN, flags);
-        var mt = device.As<ID3D11Multithread>();
+        var mt = device.Cast<ID3D11Multithread>();
         mt?.Object.SetMultithreadProtected(true);
         return device;
     }
 
     protected virtual IComObject<ID2D1Device1> Create2D1Device()
     {
-        var dxDev = _d3D11Device.Value.As<IDXGIDevice1>()!; // we don't dispose or we dispose the whole device
+        var dxDev = _d3D11Device.Value.Cast<IDXGIDevice1>()!; // we don't dispose or we dispose the whole device
         Application.CurrentResourceManager.D2DFactory.Object.CreateDevice(dxDev.Object, out var dev).ThrowOnError();
         return new ComObject<ID2D1Device1>((ID2D1Device1)dev);
     }
@@ -1076,6 +1078,22 @@ public partial class Window : Canvas, ITitleBarParent
     {
         using var interop = CompositorController.Compositor.AsComObject<ICompositorInterop>();
         var d2d1 = _d2D1Device.Value;
+#if NETFRAMEWORK
+        var hr = interop.Object.CreateGraphicsDevice(d2d1.Object, out var unk);
+        var dev = unk.WinRTCast<CompositionGraphicsDevice>();
+        if (hr.Value < 0)
+        {
+            try
+            {
+                throw hr.GetException();
+            }
+            catch (Exception e)
+            {
+                Application.AddError(e);
+            }
+        }
+        return dev;
+#else
         return ComObject.WithComInstance(d2d1.Object, devUnk =>
         {
             var hr = interop.Object.CreateGraphicsDevice(devUnk, out var unk);
@@ -1093,6 +1111,7 @@ public partial class Window : Canvas, ITitleBarParent
             }
             return dev;
         });
+#endif
     }
 
     protected override ContainerVisual CreateCompositionVisual() => throw new NotSupportedException();
@@ -1104,6 +1123,23 @@ public partial class Window : Canvas, ITitleBarParent
         var controller = new CompositorController();
         controller.CommitNeeded += OnCompositorControllerCommitNeeded;
 
+#if NETFRAMEWORK
+
+        var interop = controller.Compositor.ComCast<ICompositorDesktopInterop>();
+        interop.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
+        _compositionTarget = new ComObject<ICompositionTarget>((ICompositionTarget)target);
+        CompositionVisual = CreateWindowVisual(controller.Compositor);
+        if (CompositionVisual == null)
+            throw new InvalidOperationException();
+
+        FrameVisual = CreateFrameVisual(controller.Compositor);
+        if (FrameVisual == null)
+            throw new InvalidOperationException();
+
+        FrameVisual.Children.InsertAtTop(CompositionVisual);
+        _compositionTarget.Object.Root = FrameVisual;
+
+#else
         using var interop = controller.Compositor.AsComObject<ICompositorDesktopInterop>();
         interop.Object.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
         _compositionTarget = WinRT.MarshalInspectable<CompositionTarget>.FromAbi(target);
@@ -1115,11 +1151,13 @@ public partial class Window : Canvas, ITitleBarParent
         if (FrameVisual == null)
             throw new InvalidOperationException();
 
+        FrameVisual.Children.InsertAtTop(CompositionVisual);
+        _compositionTarget.Root = FrameVisual;
+#endif
+
 #if DEBUG
         FrameVisual.Comment = "frame";
 #endif
-        FrameVisual.Children.InsertAtTop(CompositionVisual);
-        _compositionTarget.Root = FrameVisual;
         RunTaskOnMainThread(() =>
         {
             // make sure nothing happens during CompositorController lazy creation
@@ -1137,7 +1175,7 @@ public partial class Window : Canvas, ITitleBarParent
 
         var cr = ClientRect;
         var cs = cr.Size;
-        FrameVisual!.Size = new Vector2(cs.cx, cs.cy);
+        FrameVisual!.Size = cs.ToVector2();
 
         if (WindowsFrameMode == WindowsFrameMode.Standard)
             return;
@@ -1911,6 +1949,25 @@ public partial class Window : Canvas, ITitleBarParent
         }
         else
         {
+#if NETFRAMEWORK
+            try
+            {
+                _icon?.Dispose();
+                _icon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetEntryAssembly().Location);
+                if (_icon == null)
+                {
+                    native.IconHandle = IntPtr.Zero;
+                }
+                else
+                {
+                    native.IconHandle = _icon.Handle;
+                }
+            }
+            catch
+            {
+                // do nothing
+            }
+#else
             var location = Process.GetCurrentProcess().MainModule?.FileName;
             if (location != null)
             {
@@ -1932,6 +1989,7 @@ public partial class Window : Canvas, ITitleBarParent
                     // do nothing
                 }
             }
+#endif
         }
 
         if (_title != null)
@@ -2959,7 +3017,7 @@ public partial class Window : Canvas, ITitleBarParent
                         //Application.Trace("HT: " + htn);
                         if (htn.HasValue)
                         {
-                            ret = new LRESULT { Value = new nint((int)htn.Value) };
+                            ret = new LRESULT { Value = new IntPtr((int)htn.Value) };
                             callDef = false;
                         }
 
@@ -3157,7 +3215,7 @@ public partial class Window : Canvas, ITitleBarParent
                     if (!mb.HasValue)
                     {
                         // huh? which button then?
-                        Application.Trace("msg: " + MessageDecoder.MsgToString(msg) + " unhandled");
+                        Application.Trace("msg: " + WiceCommons.MsgToString(msg) + " unhandled");
                         break;
                     }
 
@@ -3171,7 +3229,7 @@ public partial class Window : Canvas, ITitleBarParent
                             }
                             else
                             {
-                                buttonMsg = isUp ? MessageDecoder.WM_LBUTTONUP : MessageDecoder.WM_LBUTTONDOWN;
+                                buttonMsg = isUp ? WiceCommons.WM_LBUTTONUP : WiceCommons.WM_LBUTTONDOWN;
                             }
                             break;
 
@@ -3182,7 +3240,7 @@ public partial class Window : Canvas, ITitleBarParent
                             }
                             else
                             {
-                                buttonMsg = isUp ? MessageDecoder.WM_RBUTTONUP : MessageDecoder.WM_RBUTTONDOWN;
+                                buttonMsg = isUp ? WiceCommons.WM_RBUTTONUP : WiceCommons.WM_RBUTTONDOWN;
                             }
                             break;
 
@@ -3193,7 +3251,7 @@ public partial class Window : Canvas, ITitleBarParent
                             }
                             else
                             {
-                                buttonMsg = isUp ? MessageDecoder.WM_MBUTTONUP : MessageDecoder.WM_MBUTTONDOWN;
+                                buttonMsg = isUp ? WiceCommons.WM_MBUTTONUP : WiceCommons.WM_MBUTTONDOWN;
                             }
                             break;
 
@@ -3204,7 +3262,7 @@ public partial class Window : Canvas, ITitleBarParent
                             }
                             else
                             {
-                                buttonMsg = isUp ? MessageDecoder.WM_XBUTTONUP : MessageDecoder.WM_XBUTTONDOWN;
+                                buttonMsg = isUp ? WiceCommons.WM_XBUTTONUP : WiceCommons.WM_XBUTTONDOWN;
                             }
                             break;
 
@@ -3215,7 +3273,7 @@ public partial class Window : Canvas, ITitleBarParent
                             }
                             else
                             {
-                                buttonMsg = isUp ? MessageDecoder.WM_XBUTTONUP : MessageDecoder.WM_XBUTTONDOWN;
+                                buttonMsg = isUp ? WiceCommons.WM_XBUTTONUP : WiceCommons.WM_XBUTTONDOWN;
                             }
                             break;
                     }
@@ -3364,7 +3422,7 @@ public partial class Window : Canvas, ITitleBarParent
                 // unhandled? send as mouse event
                 if (!ppe.Handled)
                 {
-                    win.OnMouseEvent(ppe.IsInContact ? MessageDecoder.WM_MOUSEMOVE : MessageDecoder.WM_MOUSEHOVER, new MouseEventArgs(ppe.X, ppe.Y, 0) { SourcePointerEvent = ppe });
+                    win.OnMouseEvent(ppe.IsInContact ? WiceCommons.WM_MOUSEMOVE : WiceCommons.WM_MOUSEHOVER, new MouseEventArgs(ppe.X, ppe.Y, 0) { SourcePointerEvent = ppe });
                 }
                 //Application.Trace("WM_POINTERUPDATE pt: " + ppe);
                 break;

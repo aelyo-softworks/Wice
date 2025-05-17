@@ -258,7 +258,7 @@
 
         public virtual bool UpdateItemSelection(ItemVisual visual, bool? select)
         {
-            ArgumentNullException.ThrowIfNull(visual);
+            ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
 
             var selected = visual.IsSelected;
             if (select.HasValue)
@@ -482,7 +482,7 @@
 
         protected virtual void BindDataItemVisual(DataBindContext context)
         {
-            ArgumentNullException.ThrowIfNull(context);
+            ExceptionExtensions.ThrowIfNull(context, nameof(context));
 
             if (context.DataVisual is not TextBox tb)
                 return;
@@ -492,7 +492,7 @@
 
         protected virtual void CreateDataItemVisual(DataBindContext context)
         {
-            ArgumentNullException.ThrowIfNull(context);
+            ExceptionExtensions.ThrowIfNull(context, nameof(context));
 
             var visual = new TextBox
             {
@@ -503,7 +503,7 @@
 
         protected virtual void CreateSeparatorVisual(DataBindContext context)
         {
-            ArgumentNullException.ThrowIfNull(context);
+            ExceptionExtensions.ThrowIfNull(context, nameof(context));
 
             return;
         }
@@ -512,7 +512,7 @@
 
         protected virtual void CreateItemVisual(DataBindContext context)
         {
-            ArgumentNullException.ThrowIfNull(context);
+            ExceptionExtensions.ThrowIfNull(context, nameof(context));
 
             var item = NewItemVisual();
             if (item == null)
@@ -613,7 +613,11 @@
                             }
                             else
                             {
+#if NETFRAMEWORK
+                                newChild = Children[Children.Count - 1];
+#else
                                 newChild = Children[^1];
+#endif
                             }
                         }
                         e.Handled = true;
@@ -625,7 +629,11 @@
                         break;
 
                     case VIRTUAL_KEY.VK_END:
+#if NETFRAMEWORK
+                        newChild = Children[Children.Count - 1];
+#else
                         newChild = Children[^1];
+#endif
                         e.Handled = true;
                         break;
 

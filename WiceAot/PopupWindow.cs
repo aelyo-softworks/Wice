@@ -144,7 +144,7 @@ public partial class PopupWindow : Window
 
     public static D2D_POINT_2F Place(PlacementParameters parameters)
     {
-        ArgumentNullException.ThrowIfNull(parameters);
+        ExceptionExtensions.ThrowIfNull(parameters, nameof(parameters));
         var target = parameters.Target ?? parameters.Visual.Parent;
         var left = 0f;
         var top = 0f;

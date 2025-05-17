@@ -59,7 +59,7 @@ public partial class FocusVisual : Border//, IModalVisual
 
     protected virtual internal void OnUpdateFocus(Visual newFocusedVisual)
     {
-        ArgumentNullException.ThrowIfNull(newFocusedVisual);
+        ExceptionExtensions.ThrowIfNull(newFocusedVisual, nameof(newFocusedVisual));
         if (!newFocusedVisual.IsActuallyVisible)
             throw new ArgumentException(null, nameof(newFocusedVisual));
 

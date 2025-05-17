@@ -78,6 +78,7 @@
 		<Using Include="Wice" />
 		<Using Include="Wice.Animation" />
 		<Using Include="Wice.Effects" />
+		<Using Include="Wice.Interop" />
 		<Using Include="Wice.Utilities" />
 		<Using Include="Wice.Samples.Gallery.Pages" />
 		<Using Include="Wice.Samples.Gallery.Samples" />

@@ -14,7 +14,7 @@ namespace Wice.Samples.Gallery.Samples.Media.Shape
             rectangle.CornerRadius = new System.Numerics.Vector2(50);
             rectangle.Width = 100;
             rectangle.Height = 100;
-            rectangle.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
+            rectangle.StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
             rectangle.StrokeThickness = 20;
             parent.Children.Add(rectangle);
             Dock.SetDockType(rectangle, DockType.Top); // remove from display

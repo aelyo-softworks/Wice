@@ -36,7 +36,7 @@ namespace Wice
             }
         }
 
-        public virtual IComObject<ID2D1Brush> CreateSolidColorBrush(_D3DCOLORVALUE? color)
+        public virtual IComObject<ID2D1Brush> CreateSolidColorBrush(D3DCOLORVALUE? color)
         {
             if (!color.HasValue)
                 return null;

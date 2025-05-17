@@ -17,7 +17,7 @@ namespace Wice.Effects
 {
     public static class AcrylicBrush
     {
-        private static readonly _D3DCOLORVALUE _exclusionColor = _D3DCOLORVALUE.FromArgb(26, 255, 255, 255);
+        private static readonly D3DCOLORVALUE _exclusionColor = D3DCOLORVALUE.FromArgb(26, 255, 255, 255);
         private const float _saturation = 1.25f;
         private const float _blurRadius = 30f;
         private const float _noiseOpacity = 0.02f;
@@ -47,7 +47,7 @@ namespace Wice.Effects
         private static IGraphicsEffectSource CombineNoiseWithTintEffectLuminosity(
             IGraphicsEffectSource blurredSource,
             IGraphicsEffectSource tintColorEffect,
-            _D3DCOLORVALUE initialLuminosityColor,
+            D3DCOLORVALUE initialLuminosityColor,
             List<string> animatedProperties
             )
         {
@@ -75,7 +75,7 @@ namespace Wice.Effects
             return colorBlendEffect;
         }
 
-        private static float GetTintOpacityModifier(_D3DCOLORVALUE tintColor)
+        private static float GetTintOpacityModifier(D3DCOLORVALUE tintColor)
         {
             if (!WinRTUtilities.Is19H1OrHigher)
                 return 1f;
@@ -119,7 +119,7 @@ namespace Wice.Effects
             return opacityModifier;
         }
 
-        private static _D3DCOLORVALUE GetEffectiveTintColor(_D3DCOLORVALUE tintColor, float tintOpacity, float? tintLuminosityOpacity)
+        private static D3DCOLORVALUE GetEffectiveTintColor(D3DCOLORVALUE tintColor, float tintOpacity, float? tintLuminosityOpacity)
         {
             if (tintLuminosityOpacity.HasValue)
             {
@@ -134,13 +134,13 @@ namespace Wice.Effects
             return tintColor;
         }
 
-        private static _D3DCOLORVALUE GetEffectiveLuminosityColor(_D3DCOLORVALUE tintColor, float tintOpacity, float? tintLuminosityOpacity)
+        private static D3DCOLORVALUE GetEffectiveLuminosityColor(D3DCOLORVALUE tintColor, float tintOpacity, float? tintLuminosityOpacity)
         {
             tintColor.a *= tintOpacity;
             return GetLuminosityColor(tintColor, tintLuminosityOpacity);
         }
 
-        private static _D3DCOLORVALUE GetLuminosityColor(_D3DCOLORVALUE tintColor, float? tintLuminosityOpacity)
+        private static D3DCOLORVALUE GetLuminosityColor(D3DCOLORVALUE tintColor, float? tintLuminosityOpacity)
         {
             if (tintLuminosityOpacity.HasValue)
                 return tintColor.ChangeAlpha(tintLuminosityOpacity.Value.Clamp(0f, 1f));
@@ -177,7 +177,7 @@ namespace Wice.Effects
                 var noiseDrawingSurface = device.CreateDrawingSurface(im.GetWinSize(), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
                 using (var dc = noiseDrawingSurface.BeginDraw())
                 {
-                    dc.Clear(_D3DCOLORVALUE.Transparent);
+                    dc.Clear(D3DCOLORVALUE.Transparent);
                     using (var bmp = dc.CreateBitmapFromWicBitmap(im))
                     {
                         dc.DrawBitmap(bmp);
@@ -195,7 +195,7 @@ namespace Wice.Effects
 
         public static CompositionEffectBrush CreateAcrylicBrush(
             CompositionGraphicsDevice device,
-            _D3DCOLORVALUE tintColor,
+            D3DCOLORVALUE tintColor,
             float tintOpacity,
             float? tintLuminosityOpacity = null,
             bool useLegacyEffect = false,
@@ -222,7 +222,7 @@ namespace Wice.Effects
             return acrylicBrush;
         }
 
-        public static _D3DCOLORVALUE? GetTintColor(CompositionEffectBrush brush)
+        public static D3DCOLORVALUE? GetTintColor(CompositionEffectBrush brush)
         {
             if (brush == null || brush.Comment == null)
                 return null;
@@ -234,7 +234,7 @@ namespace Wice.Effects
             var pos = htmlString.IndexOf('\0');
             if (pos > 0)
             {
-                if (_D3DCOLORVALUE.TryParseFromName(htmlString.Substring(0, pos), out var colorValue))
+                if (D3DCOLORVALUE.TryParseFromName(htmlString.Substring(0, pos), out var colorValue))
                     return colorValue;
             }
             return null;
@@ -242,8 +242,8 @@ namespace Wice.Effects
 
         private static CompositionEffectBrush CreateAcrylicBrushWorker(
             Compositor compositor,
-            _D3DCOLORVALUE initialTintColor,
-            _D3DCOLORVALUE initialLuminosityColor,
+            D3DCOLORVALUE initialTintColor,
+            D3DCOLORVALUE initialLuminosityColor,
             bool useLegacyEffect = false,
             bool useWindowsAcrylic = true
             )
@@ -271,8 +271,8 @@ namespace Wice.Effects
         // https://github.com/microsoft/microsoft-ui-xaml/blob/master/dev/Materials/Acrylic/AcrylicBrush.cpp
         private static CompositionEffectFactory CreateAcrylicBrushCompositionEffectFactory(
                     Compositor compositor,
-                    _D3DCOLORVALUE initialTintColor,
-                    _D3DCOLORVALUE initialLuminosityColor,
+                    D3DCOLORVALUE initialTintColor,
+                    D3DCOLORVALUE initialLuminosityColor,
                     bool useLegacyEffect = false,
                     bool useWindowsAcrylic = true
                     )

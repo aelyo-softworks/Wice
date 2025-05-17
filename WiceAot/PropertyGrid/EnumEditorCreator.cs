@@ -55,7 +55,7 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
                         // TODO
                         //if (e2.Value.ItemVisual != null)
                         //{
-                        //    e2.Value.ItemVisual.RenderBrush = null;// e2.Value.ItemVisual.Compositor.CreateColorBrush(_D3DCOLORVALUE.Black);
+                        //    e2.Value.ItemVisual.RenderBrush = null;// e2.Value.ItemVisual.Compositor.CreateColorBrush(D3DCOLORVALUE.Black);
                         //}
                     };
                 }

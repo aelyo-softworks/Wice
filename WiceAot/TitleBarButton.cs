@@ -43,8 +43,8 @@ public partial class TitleBarButton : ButtonBase
         var window = Window;
         if (window != null)
         {
-            var dpiSize = GetDpiAdjustedCaptionButtonSize(window);
-            var height = dpiSize.cy / 3;
+            var dpiSize = GetDpiAdjustedCaptionButtonSize(window).ToD2D_SIZE_F();
+            var height = dpiSize.height / 3;
             Path.Height = height;
             Path.Width = height;
         }
@@ -80,10 +80,10 @@ public partial class TitleBarButton : ButtonBase
     // this is dpi-adjusted but only when called *after* some message like SHOWWINDOW or NCPAINT (not sure)
     public unsafe static SIZE GetDpiAdjustedCaptionButtonSize(Window window)
     {
-        ArgumentNullException.ThrowIfNull(window);
+        ExceptionExtensions.ThrowIfNull(window, nameof(window));
         var bounds = new RECT();
         var size = (uint)sizeof(RECT);
-        Functions.DwmGetWindowAttribute(window.Handle, (uint)DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, (nint)(&bounds), size);
+        WiceCommons.DwmGetWindowAttribute(window.Handle, (uint)DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, (nint)(&bounds), size);
         var height = bounds.Height;
         height = AdjustForMonitorDpi(window, height, true);
         if (_strokeThickness % 2 == 1 && height % 2 == 1)

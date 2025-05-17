@@ -14,7 +14,7 @@ namespace Wice.Samples.Gallery.Samples.Media.Shape
             var line1 = new Line();
             line1.Width = 200;
             line1.Height = 100;
-            line1.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Maroon.ToColor());
+            line1.StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Maroon.ToColor());
             line1.StrokeThickness = 1;
             parent.Children.Add(line1);
             line1.Arranged += (s, e) =>
@@ -26,7 +26,7 @@ namespace Wice.Samples.Gallery.Samples.Media.Shape
             var line2 = new Line();
             line2.Width = 200;
             line2.Height = 100;
-            line2.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.BlueViolet.ToColor());
+            line2.StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.BlueViolet.ToColor());
             line2.StrokeThickness = 4;
             parent.Children.Add(line2);
             line2.Arranged += (s, e) =>

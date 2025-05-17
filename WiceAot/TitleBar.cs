@@ -144,8 +144,8 @@
             var window = Window;
             if (window != null)
             {
-                var buttonSize = TitleBarButton.GetDpiAdjustedCaptionButtonSize(window);
-                Height = buttonSize.cy;
+                var buttonSize = TitleBarButton.GetDpiAdjustedCaptionButtonSize(window).ToD2D_SIZE_F();
+                Height = buttonSize.height;
             }
 
             var size = base.MeasureCore(constraint);
@@ -181,20 +181,21 @@
             if (window == null || Compositor == null)
                 return;
 
-            var buttonSize = TitleBarButton.GetDpiAdjustedCaptionButtonSize(window);
-            Height = buttonSize.cy;
+            var size = TitleBarButton.GetDpiAdjustedCaptionButtonSize(window);
+            var buttonSize = size.ToD2D_SIZE_F();
+            Height = buttonSize.height;
 
             if (CloseButton != null)
             {
-                CloseButton.Height = buttonSize.cy;
-                CloseButton.Width = buttonSize.cx;
+                CloseButton.Height = buttonSize.height;
+                CloseButton.Width = buttonSize.width;
                 CloseButton.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
             }
 
             if (MinButton != null)
             {
-                MinButton.Height = buttonSize.cy;
-                MinButton.Width = buttonSize.cx;
+                MinButton.Height = buttonSize.height;
+                MinButton.Width = buttonSize.width;
                 MinButton.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
             }
 
@@ -215,8 +216,8 @@
 
             if (MaxButton != null)
             {
-                MaxButton.Height = buttonSize.cy;
-                MaxButton.Width = buttonSize.cx;
+                MaxButton.Height = buttonSize.height;
+                MaxButton.Width = buttonSize.width;
                 if (MaxButton is TitleBarButton tbb)
                 {
                     tbb.ButtonType = zoomed ? TitleBarButtonType.Restore : TitleBarButtonType.Maximize;
@@ -226,12 +227,12 @@
 
             foreach (var child in OtherVisuals.OfType<ButtonBase>())
             {
-                child.Height = buttonSize.cy;
-                child.Width = buttonSize.cx;
+                child.Height = buttonSize.height;
+                child.Width = buttonSize.width;
                 child.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
             }
 
-            OnUpdated(this, new ValueEventArgs<SIZE>(buttonSize));
+            OnUpdated(this, new ValueEventArgs<SIZE>(size));
         }
 
         protected override void OnAttachedToComposition(object? sender, EventArgs e)

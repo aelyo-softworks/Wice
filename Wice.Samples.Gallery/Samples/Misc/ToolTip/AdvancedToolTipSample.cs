@@ -27,12 +27,12 @@ namespace Wice.Samples.Gallery.Samples.Misc.ToolTip
 
                 // note we must use the tooltip's compositor, not our window's compositor
                 // as the tooltip has its own window
-                tt.Content.RenderBrush = tt.Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
+                tt.Content.RenderBrush = tt.Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
 
                 var tb = new TextBox();
                 tb.Margin = 4;
                 tb.Text = text;
-                tb.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White);
+                tb.ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White);
                 tb.FontSize = 25;
                 tt.Content.Children.Add(tb);
             }

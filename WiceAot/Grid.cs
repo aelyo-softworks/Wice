@@ -174,7 +174,7 @@ public partial class Grid : Visual
 
     public static void SetColumn(IPropertyOwner properties, int columnIndex)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         if (columnIndex < 0)
             throw new ArgumentException(null, nameof(columnIndex));
 
@@ -183,13 +183,13 @@ public partial class Grid : Visual
 
     public static int GetColumn(IPropertyOwner properties)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return Math.Max(0, (int)properties.GetPropertyValue(ColumnProperty)!);
     }
 
     public static void SetColumnSpan(IPropertyOwner properties, int span)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         if (span < 1)
             throw new ArgumentException(null, nameof(span));
 
@@ -199,13 +199,13 @@ public partial class Grid : Visual
 
     public static int GetColumnSpan(IPropertyOwner properties)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return Math.Max(1, (int)properties.GetPropertyValue(ColumnSpanProperty)!);
     }
 
     public static void SetRowSpan(IPropertyOwner properties, int span)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         if (span < 1)
             throw new ArgumentException(null, nameof(span));
 
@@ -215,13 +215,13 @@ public partial class Grid : Visual
 
     public static int GetRowSpan(IPropertyOwner properties)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return Math.Max(1, (int)properties.GetPropertyValue(RowSpanProperty)!);
     }
 
     public static void SetRow(IPropertyOwner properties, int rowIndex)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         if (rowIndex < 0)
             throw new ArgumentException(null, nameof(rowIndex));
 
@@ -230,7 +230,7 @@ public partial class Grid : Visual
 
     public static int GetRow(IPropertyOwner properties)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return Math.Max(0, (int)properties.GetPropertyValue(RowProperty)!);
     }
 
@@ -436,7 +436,9 @@ public partial class Grid : Visual
         return new D2D_SIZE_F(width, height);
     }
 
+#if !NETFRAMEWORK
     [MemberNotNull(nameof(_childrenByDimensions))]
+#endif
     private void InitializeDimensionsChildren()
     {
         _childrenByDimensions = [];

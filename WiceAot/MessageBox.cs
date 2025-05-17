@@ -23,8 +23,8 @@ public partial class MessageBox : DialogBox
 
     public static void Show(Window window, string text, string? title = null, Action<MessageBox>? onClose = null)
     {
-        ArgumentNullException.ThrowIfNull(window);
-        ArgumentNullException.ThrowIfNull(text);
+        ExceptionExtensions.ThrowIfNull(window, nameof(window));
+        ExceptionExtensions.ThrowIfNull(text, nameof(text));
         var dlg = new MessageBox { Title = title ?? Application.GetTitle(window.Handle) };
         var button = dlg.AddCloseButton();
         button.Click += (s, e) => dlg.MessageBoxResult = MESSAGEBOX_RESULT.IDOK;

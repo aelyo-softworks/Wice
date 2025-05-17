@@ -12,21 +12,8 @@ public class AccessKey
         Key = key;
     }
 
-    public static AccessKey Enter { get; } = new AccessKey(
-#if NETFRAMEWORK
-        VIRTUAL_KEY.Return
-#else
-        VIRTUAL_KEY.VK_RETURN
-#endif
-        );
-
-    public static AccessKey Escape { get; } = new AccessKey(
-#if NETFRAMEWORK
-        VIRTUAL_KEY.Escape
-#else
-        VIRTUAL_KEY.VK_ESCAPE
-#endif
-        );
+    public static AccessKey Enter { get; } = new AccessKey(VIRTUAL_KEY.VK_RETURN);
+    public static AccessKey Escape { get; } = new AccessKey(VIRTUAL_KEY.VK_ESCAPE);
 
     public virtual VIRTUAL_KEY Key { get; set; }
     public virtual bool WithShift { get; set; }

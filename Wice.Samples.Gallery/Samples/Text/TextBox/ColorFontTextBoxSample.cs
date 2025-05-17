@@ -15,8 +15,8 @@ namespace Wice.Samples.Gallery.Samples.Text.TextBox
             parent.Children.Add(tb);
             Dock.SetDockType(tb, DockType.Top);
 
-            tb.SelectionBrush = new SolidColorBrush(_D3DCOLORVALUE.Yellow);
-            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
+            tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Yellow);
+            tb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
             tb.Padding = D2D_RECT_F.Thickness(10);
             tb.Margin = D2D_RECT_F.Thickness(10);
 

@@ -4,6 +4,9 @@
 [System.Runtime.InteropServices.Marshalling.GeneratedComClass]
 #endif
 public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget, IDropSource, IDropSourceNotify
+#if NETFRAMEWORK
+    , System.Windows.Forms.IWin32Window
+#endif
 {
     private static readonly ConcurrentHashSet<string> _classesNames = [];
 
@@ -26,6 +29,10 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         Handle = handle;
     }
 
+#if NETFRAMEWORK
+    IntPtr System.Windows.Forms.IWin32Window.Handle => Handle;
+#endif
+
     public HWND Handle { get; }
     public string? ClassName => GetClassName(Handle);
     public HWND ParentHandle { get => WiceCommons.GetParent(Handle); set => WiceCommons.SetParent(Handle, value); }
@@ -34,13 +41,13 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public NativeWindow? Owner => FromHandle(OwnerHandle);
     public RECT WindowRect { get { WiceCommons.GetWindowRect(Handle, out var rc); return rc; } set => WiceCommons.SetWindowPos(Handle, HWND.Null, value.left, value.top, value.Width, value.Height, SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOREDRAW | SET_WINDOW_POS_FLAGS.SWP_NOZORDER); }
     public RECT ClientRect { get { WiceCommons.GetClientRect(Handle, out var rc); return rc; } }
-    public HICON IconHandle { get => new() { Value = WiceCommons.SendMessageW(Handle, MessageDecoder.WM_GETICON, new WPARAM { Value = WiceCommons.ICON_BIG }, LPARAM.Null).Value }; set { var ptr = WiceCommons.SendMessageW(Handle, MessageDecoder.WM_SETICON, new WPARAM { Value = Constants.ICON_BIG }, new LPARAM { Value = value.Value }); if (ptr.Value != 0) { Functions.DestroyIcon(new HICON { Value = ptr.Value }); } } }
+    public HICON IconHandle { get => new() { Value = WiceCommons.SendMessageW(Handle, MessageDecoder.WM_GETICON, new WPARAM { Value = WiceCommons.ICON_BIG }, LPARAM.Null).Value }; set { var ptr = WiceCommons.SendMessageW(Handle, MessageDecoder.WM_SETICON, new WPARAM { Value = WiceCommons.ICON_BIG }, new LPARAM { Value = value.Value }); if (ptr.Value != 0) { WiceCommons.DestroyIcon(new HICON { Value = ptr.Value }); } } }
     public uint Dpi { get { var dpi = WiceCommons.GetDpiForWindow(Handle); if (dpi <= 0) return 96; return dpi; } }
     public DPI_AWARENESS_CONTEXT DpiAwareness => DpiUtilities.GetWindowDpiAwarenessContext(Handle);
     public string DpiAwarenessDescription => DpiUtilities.GetDpiAwarenessDescription(DpiAwareness);
     public uint DpiFromDpiAwareness => WiceCommons.GetDpiFromDpiAwarenessContext(DpiAwareness);
-    public WINDOW_STYLE Style { get => (WINDOW_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_STYLE).ToInt64(); set => SetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_STYLE, new nint((int)value)); }
-    public WINDOW_EX_STYLE ExtendedStyle { get => (WINDOW_EX_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE).ToInt64(); set => SetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, new nint((int)value)); }
+    public WINDOW_STYLE Style { get => (WINDOW_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_STYLE).ToInt64(); set => SetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_STYLE, new IntPtr((int)value)); }
+    public WINDOW_EX_STYLE ExtendedStyle { get => (WINDOW_EX_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE).ToInt64(); set => SetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, new IntPtr((int)value)); }
     public bool IsEnabled { get => WiceCommons.IsWindowEnabled(Handle); set => WiceCommons.EnableWindow(Handle, value); }
     public uint ThreadId => WiceCommons.GetWindowThreadProcessId(Handle, 0);
     public int ManagedThreadId { get; internal set; }
@@ -173,7 +180,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
                 return true;
             }
             WiceCommons.EnumPropsW(Handle, enumProc);
-            return dic.AsReadOnly();
+            return dic;
         }
     }
 
@@ -183,7 +190,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         {
             var dic = new Dictionary<PROPERTYKEY, object?>();
             WiceCommons.SHGetPropertyStoreForWindow(Handle, typeof(IPropertyStore).GUID, out var unk);
-            using var ps = ComObject.FromPointer<IPropertyStore>(unk);
+            using var ps = WiceCommons.GetComObjectFromPointer<IPropertyStore>(unk);
             if (ps != null)
             {
                 ps.Object.GetCount(out var count);
@@ -193,12 +200,21 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
                     if (hr.IsError)
                         continue;
 
+#if NETFRAMEWORK
+                    using var pv = new PROPVARIANT();
+                    hr = ps.Object.GetValue(ref pk, pv);
+                    if (hr == 0)
+                    {
+                        dic[pk] = pv.Value;
+                    }
+#else
                     hr = ps.Object.GetValue(pk, out var pv);
                     if (hr == 0)
                     {
                         using var managed = PropVariant.Attach(ref pv);
                         dic[pk] = managed.Value;
                     }
+#endif
                 }
             }
             return dic;
@@ -218,15 +234,15 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
                 // we need to ensure this as STAThread doesn't always call it for some reason
                 WiceCommons.OleInitialize(0); // don't check error
                 var hr = WiceCommons.RegisterDragDrop(Handle, this);
-                if (hr.IsError && hr != Constants.DRAGDROP_E_ALREADYREGISTERED)
-                    throw new WiceException("0027: Cannot enable drag & drop operations. Make sure the thread is initialized as an STA thread.", Marshal.GetExceptionForHR(hr)!);
+                if (hr.IsError && hr != WiceCommons.DRAGDROP_E_ALREADYREGISTERED)
+                    throw new WiceException("0027: Cannot enable drag & drop operations. Make sure the thread is initialized as an STA thread.", Marshal.GetExceptionForHR((int)hr)!);
 
                 _isDropTarget = true;
             }
             else
             {
                 var hr = WiceCommons.RevokeDragDrop(Handle);
-                hr.ThrowOnErrorExcept(Constants.DRAGDROP_E_NOTREGISTERED);
+                hr.ThrowOnErrorExcept(WiceCommons.DRAGDROP_E_NOTREGISTERED);
                 _isDropTarget = false;
             }
         }
@@ -259,7 +275,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public POINT ScreenToClient(POINT pt) { WiceCommons.ScreenToClient(Handle, ref pt); return pt; }
     public POINT ClientToScreen(POINT pt) { WiceCommons.ClientToScreen(Handle, ref pt); return pt; }
     public POINT GetClientCursorPosition() => ScreenToClient(GetCursorPosition());
-    public Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => Monitor.FromWindow(Handle, flags);
+    public Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => WiceCommons.GetMonitorFromWindow(Handle, flags);
     public bool IsChild(HWND parentHandle) => WiceCommons.IsChild(parentHandle, Handle);
 
     public bool IsRunningAsMainThread => ManagedThreadId == Environment.CurrentManagedThreadId;
@@ -358,11 +374,11 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         var e = new DragDropQueryContinueEventArgs(escapePressed, flags);
         if (escapePressed || mouseButtons > 1)
         {
-            e.Result = Constants.DRAGDROP_S_CANCEL;
+            e.Result = WiceCommons.DRAGDROP_S_CANCEL;
         }
         else if (mouseButtons == 0)
         {
-            e.Result = Constants.DRAGDROP_S_DROP;
+            e.Result = WiceCommons.DRAGDROP_S_DROP;
         }
 
         DragDropQueryContinue?.Invoke(this, e);
@@ -571,9 +587,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public static string GetWindowText(HWND hwnd)
     {
 #if NETFRAMEWORK
-            var sb = new StringBuilder(256);
-            WindowsFunctions.GetWindowText(hwnd, sb, sb.Capacity - 1);
-            return sb.ToString();
+        var sb = new StringBuilder(256);
+        WindowsFunctions.GetWindowText(hwnd, sb, sb.Capacity - 1);
+        return sb.ToString();
 #else
         using var p = new AllocPwstr(1024);
         Functions.GetWindowTextW(hwnd, p, (int)p.SizeInChars);
@@ -797,7 +813,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public static IReadOnlyList<HWND> EnumerateChildWindows(HWND handle)
     {
         var list = new List<HWND>();
-        Functions.EnumChildWindows(handle, (h, l) =>
+        WiceCommons.EnumChildWindows(handle, (h, l) =>
         {
             list.Add(h);
             return true;
@@ -808,7 +824,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public static IReadOnlyList<HWND> EnumerateTopLevelWindows()
     {
         var list = new List<HWND>();
-        Functions.EnumWindows((h, l) =>
+        WiceCommons.EnumWindows((h, l) =>
         {
             list.Add(h);
             return true;

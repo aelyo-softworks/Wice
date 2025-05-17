@@ -12,7 +12,7 @@ namespace Wice.Samples.Gallery.Samples.Media.Shape
             var rectangle = new Rectangle();
             rectangle.Width = 200;
             rectangle.Height = 100;
-            rectangle.StrokeBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
+            rectangle.StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
             rectangle.StrokeThickness = 10;
             parent.Children.Add(rectangle);
             Dock.SetDockType(rectangle, DockType.Top); // remove from display

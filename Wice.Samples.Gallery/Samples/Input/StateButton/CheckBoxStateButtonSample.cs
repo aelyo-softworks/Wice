@@ -18,12 +18,12 @@ namespace Wice.Samples.Gallery.Samples.Input.StateButton
 
             // add state button
             var btn = new Wice.StateButton();
-            btn.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
+            btn.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
 
             // add "true" / checked state
             btn.AddState(new StateButtonState(true, (button, args, state) => new TextBox
             {
-                ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White),
+                ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White),
                 Text = "X",
                 VerticalAlignment = Alignment.Center,
                 HorizontalAlignment = Alignment.Center

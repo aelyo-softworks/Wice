@@ -10,7 +10,7 @@ namespace Wice.Samples.Gallery.Samples.Collections.CheckBoxList
         public override void Layout(Visual parent)
         {
             var lb = new Wice.CheckBoxList();
-            lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
+            lb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
             parent.Children.Add(lb);
             Dock.SetDockType(lb, DockType.Top); // remove from display
 
