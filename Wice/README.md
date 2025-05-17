@@ -1,2 +1,2 @@
 # Wice
-This is the main Wice project.
+This is the Wice for .NET Framework project.

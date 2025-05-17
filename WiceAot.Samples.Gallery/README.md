@@ -1,4 +1,4 @@
-# Wice Samples Gallery
-This projects contains the Gallery sample that demonstrates some Wice features.
+# WiceAot Samples Gallery
+This projects contains the .NET Core9+ AOT-compatible Gallery sample that demonstrates some Wice features.
 
 

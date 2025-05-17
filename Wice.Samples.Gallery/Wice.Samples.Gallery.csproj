@@ -12,15 +12,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Remove="Resources\aelyo_flat.png" />
-		<None Remove="Resources\lorem-cn.txt" />
-		<None Remove="Resources\rainier.jpg" />
-		<None Remove="Resources\samples.xml" />
-		<None Remove="Resources\tiger.svg" />
-		<None Remove="Resources\wice.rtf" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Compile Include="..\WiceAot.Samples.Gallery\GalleryWindow.cs" Link="GalleryWindow.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\AboutPage.cs" Link="Pages\AboutPage.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\CollectionsPage.cs" Link="Pages\CollectionsPage.cs" />
@@ -155,15 +146,10 @@
 
 	<ItemGroup>
 		<Content Include="..\Assets\wice_color.ico" Link="wice_color.ico" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Include="Resources\aelyo_flat.png" />
-		<EmbeddedResource Include="Resources\lorem-cn.txt" />
-		<EmbeddedResource Include="Resources\rainier.jpg" />
-		<EmbeddedResource Include="Resources\samples.xml" />
-		<EmbeddedResource Include="Resources\tiger.svg" />
-		<EmbeddedResource Include="Resources\wice.rtf" />
+		<EmbeddedResource Include="..\WiceAot.Samples.Gallery\Resources\aelyo_flat.png" Link="Resources\aelyo_flat.png" />
+		<EmbeddedResource Include="..\WiceAot.Samples.Gallery\Resources\lorem-cn.txt" Link="Resources\lorem-cn.txt" />
+		<EmbeddedResource Include="..\WiceAot.Samples.Gallery\Resources\rainier.jpg" Link="Resources\rainier.jpg" />
+		<EmbeddedResource Include="..\WiceAot.Samples.Gallery\Resources\samples.xml" Link="Resources\samples.xml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -269,6 +255,14 @@
 	  <Folder Include="Samples\Windows\MessageBox\" />
 	  <Folder Include="Samples\Windows\Window\" />
 	  <Folder Include="Utilities\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="..\WiceAot.Samples.Gallery\Resources\wice.rtf" Link="Resources\wice.rtf" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="..\WiceAot.Samples.Gallery\Resources\tiger.svg" Link="Resources\tiger.svg" />
 	</ItemGroup>
 
 </Project>
