@@ -4,7 +4,7 @@ public partial class SampleListVisual : Titled
 {
     public SampleListVisual(SampleList sampleList)
     {
-        ArgumentNullException.ThrowIfNull(sampleList);
+        ExceptionExtensions.ThrowIfNull(sampleList, nameof(sampleList));
 
         Title.Text = sampleList.Title;
 

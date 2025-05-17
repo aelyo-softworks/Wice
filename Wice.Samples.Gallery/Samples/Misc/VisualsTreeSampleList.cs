@@ -1,4 +1,4 @@
-﻿using DirectN;
+﻿using Wice.Samples.Gallery.Samples.Misc.VisualsTree;
 
 namespace Wice.Samples.Gallery.Samples.Misc
 {
@@ -6,5 +6,13 @@ namespace Wice.Samples.Gallery.Samples.Misc
     {
         public override string IconText => MDL2GlyphResource.Bug;
         public override string SubTitle => "The Visuals Tree is an integrated diagnostic tool that allows you browse the visual tree of the current WICE application, and modify visuals.";
+
+        protected override IEnumerable<Sample> Types
+        {
+            get
+            {
+                yield return new VisualsTreeSample();
+            }
+        }
     }
 }

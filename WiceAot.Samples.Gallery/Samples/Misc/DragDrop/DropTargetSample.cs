@@ -61,12 +61,20 @@ public class DropTargetSample : Sample
                     flags.Text = $"Keys: {e.KeyFlags}"; // remove from display
                     if (e.DataObject != null)
                     {
+#if NETFRAMEWORK
+                        var dataObject = new System.Windows.Forms.DataObject(e.DataObject);
+                        if (dataObject.ContainsFileDropList())
+                        {
+                            tb.Text = string.Join(Environment.NewLine, dataObject.GetFileDropList().Cast<string>());
+                        }
+#else
                         var dataObject = new DataObject(new ComObject<IDataObject>(e.DataObject), false);
                         var files = dataObject.GetFilesPath();
                         if (files.Count > 0)
                         {
                             tb.Text = string.Join(Environment.NewLine, files);
                         }
+#endif
                     }
                     break;
             }

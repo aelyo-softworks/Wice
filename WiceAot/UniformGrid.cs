@@ -66,7 +66,6 @@ public partial class UniformGrid : RenderVisual
 
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
-        //Application.Trace("rows=" + Rows);
         var cols = Columns;
         var rows = Rows;
         if (cols == 0 || rows == 0)

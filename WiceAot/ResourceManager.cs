@@ -580,10 +580,7 @@ public partial class ResourceManager
         res = _windowsResources.AddOrUpdate(window, res, (o, k) => k);
     }
 
-    internal void RemoveWindow(Window window)
-    {
-        DisposeRenderDisposables(window);
-    }
+    internal void RemoveWindow(Window window) => DisposeRenderDisposables(window);
 
     private interface IKeyable
     {
@@ -640,11 +637,9 @@ public partial class ResourceManager
         public DateTime LastAccess;
         public object? Object;
 
-        public void Dispose()
-        {
+        public void Dispose() =>
             //Application.Trace("Dispose " + Object + " " + LastAccess + " Elapsed: " + (DateTime.Now - LastAccess).ToString());
             ((IDisposable?)Object)?.Dispose();
-        }
 
         public override string ToString() => LastAccess + " " + Object?.ToString();
     }

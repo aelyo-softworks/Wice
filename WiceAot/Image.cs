@@ -76,7 +76,7 @@ public partial class Image : RenderVisual, IDisposable
     }
 
     public virtual D2D_RECT_F GetDestinationRectangle() => GetDestinationRectangle(
-                    Source?.GetSizeF() ?? D2D_SIZE_F.Zero,
+                    Source?.GetSizeF() ?? new D2D_SIZE_F(),
                     HorizontalAlignment,
                     VerticalAlignment,
                     Stretch,
@@ -159,7 +159,7 @@ public partial class Image : RenderVisual, IDisposable
             var bmp = _bitmap;
             if (bmp == null && Source != null)
             {
-                context.DeviceContext.Object.CreateBitmapFromWicBitmap(Source.Object, 0, out ID2D1Bitmap bitmap).ThrowOnError();
+                context.DeviceContext.Object.CreateBitmapFromWicBitmap(Source.Object, IntPtr.Zero, out ID2D1Bitmap bitmap).ThrowOnError();
                 bmp = new ComObject<ID2D1Bitmap>(bitmap);
                 _bitmap = bmp;
                 OnBitmapCreated(this, EventArgs.Empty);

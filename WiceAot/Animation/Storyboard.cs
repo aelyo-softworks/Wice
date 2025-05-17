@@ -2,11 +2,7 @@
 
 public abstract class Storyboard : AnimationObject
 {
-#if NET9_0_OR_GREATER
-    private static readonly Lock _lock = new();
-#else
     private static readonly object _lock = new();
-#endif
 
     public event EventHandler? Stopped;
     public event EventHandler? Starting;

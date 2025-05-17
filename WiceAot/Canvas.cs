@@ -12,7 +12,7 @@ public partial class Canvas : Visual
 
     public static D2D_RECT_F GetRect(D2D_SIZE_F parentSize, Visual child, GetRectOptions options = GetRectOptions.Default)
     {
-        ArgumentNullException.ThrowIfNull(child);
+        ExceptionExtensions.ThrowIfNull(child, nameof(child));
         var csize = child.DesiredSize;
         var size = csize;
         var keepProportions = options.HasFlag(GetRectOptions.KeepProportions);
@@ -235,7 +235,7 @@ public partial class Canvas : Visual
 
     public static void SetRect(IPropertyOwner properties, D2D_RECT_F rect)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         SetLeft(properties, rect.left);
         SetTop(properties, rect.top);
         SetRight(properties, rect.right);
@@ -244,7 +244,7 @@ public partial class Canvas : Visual
 
     public static void SetLeft(IPropertyOwner properties, float value)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         if (value.IsNotSet())
         {
             properties.ResetPropertyValue(LeftProperty, out _);
@@ -255,13 +255,13 @@ public partial class Canvas : Visual
 
     public static float GetLeft(IPropertyOwner properties)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return (float)properties.GetPropertyValue(LeftProperty)!;
     }
 
     public static void SetTop(IPropertyOwner properties, float value)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         if (value.IsNotSet())
         {
             properties.ResetPropertyValue(TopProperty, out _);
@@ -272,13 +272,13 @@ public partial class Canvas : Visual
 
     public static float GetTop(IPropertyOwner properties)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return (float)properties.GetPropertyValue(TopProperty)!;
     }
 
     public static void SetRight(IPropertyOwner properties, float value)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         if (value.IsNotSet())
         {
             properties.ResetPropertyValue(RightProperty, out _);
@@ -289,13 +289,13 @@ public partial class Canvas : Visual
 
     public static float GetRight(IPropertyOwner properties)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return (float)properties.GetPropertyValue(RightProperty)!;
     }
 
     public static void SetBottom(IPropertyOwner properties, float value)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         if (value.IsNotSet())
         {
             properties.ResetPropertyValue(BottomProperty, out _);
@@ -306,7 +306,7 @@ public partial class Canvas : Visual
 
     public static float GetBottom(IPropertyOwner properties)
     {
-        ArgumentNullException.ThrowIfNull(properties);
+        ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return (float)properties.GetPropertyValue(BottomProperty)!;
     }
 }

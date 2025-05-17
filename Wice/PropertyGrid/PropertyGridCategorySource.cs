@@ -53,8 +53,10 @@ public class PropertyGridCategorySource : BaseObject
         }
         else
         {
-            var cat = new PropertyGridCategory(this);
-            cat.Name = "All";
+            var cat = new PropertyGridCategory(this)
+            {
+                Name = "All"
+            };
             var list = new List<PropertyGridProperty>();
             foreach (var prop in source.Properties)
             {

@@ -524,10 +524,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    private void StopEdit()
-    {
-        HideCaret();
-    }
+    private void StopEdit() => HideCaret();
 
     private void Edit()
     {
@@ -950,10 +947,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 #endif
     });
 
-    protected override void ArrangeCore(D2D_RECT_F finalRect)
-    {
-        SetCaretLocation();
-    }
+    protected override void ArrangeCore(D2D_RECT_F finalRect) => SetCaretLocation();
 
     private IComObject<ID2D1Brush> GetSelectionBrush(RenderContext context, IComObject<ID2D1Brush> brush)
     {
@@ -1584,13 +1578,11 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    private static bool HandleChar(KeyPressEventArgs e)
-    {
+    private static bool HandleChar(KeyPressEventArgs e) =>
         //if (e.UTF32Character == '\t' && AcceptsTab)
         //    return true;
 
-        return e.UTF16Character >= ' ';
-    }
+        e.UTF16Character >= ' ';
 
     protected override void OnKeyPress(object? sender, KeyPressEventArgs e)
     {
@@ -1634,10 +1626,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         RemoveTextAt((uint)position, (uint?)lengthToRemove);
     }
 
-    public void Select(TextBoxSetSelection mode, int? advance = 0, bool extend = false)
-    {
-        SetSelection(mode, (uint?)advance, extend);
-    }
+    public void Select(TextBoxSetSelection mode, int? advance = 0, bool extend = false) => SetSelection(mode, (uint?)advance, extend);
 
     public virtual bool Undo()
     {

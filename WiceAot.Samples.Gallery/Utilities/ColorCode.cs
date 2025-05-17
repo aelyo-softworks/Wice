@@ -2856,52 +2856,50 @@ namespace ColorCode
 
     public interface ILanguageParser
     {
-        void Parse(string sourceCode,
-                   ILanguage language,
-                   Action<string, IList<Scope>> parseHandler);
+        void Parse(string sourceCode, ILanguage language, Action<string, IList<Scope>> parseHandler);
     }
 
-    public class LanguageParser(ILanguageCompiler languageCompiler,
-                          ILanguageRepository languageRepository) : ILanguageParser
+    public class LanguageParser(ILanguageCompiler languageCompiler, ILanguageRepository languageRepository) : ILanguageParser
     {
         private readonly ILanguageCompiler languageCompiler = languageCompiler;
         private readonly ILanguageRepository languageRepository = languageRepository;
 
-        public void Parse(string sourceCode,
-                          ILanguage language,
-                          Action<string, IList<Scope>> parseHandler)
+        public void Parse(string sourceCode, ILanguage language, Action<string, IList<Scope>> parseHandler)
         {
             if (string.IsNullOrEmpty(sourceCode))
                 return;
 
-            CompiledLanguage compiledLanguage = languageCompiler.Compile(language);
-
+            var compiledLanguage = languageCompiler.Compile(language);
             Parse(sourceCode, compiledLanguage, parseHandler);
         }
 
-        private void Parse(string sourceCode,
-                           CompiledLanguage compiledLanguage,
-                           Action<string, IList<Scope>> parseHandler)
+        private void Parse(string sourceCode, CompiledLanguage compiledLanguage, Action<string, IList<Scope>> parseHandler)
         {
-            Match regexMatch = compiledLanguage.Regex.Match(sourceCode);
-
+            var regexMatch = compiledLanguage.Regex.Match(sourceCode);
             if (!regexMatch.Success)
+            {
                 parseHandler(sourceCode, []);
+            }
             else
             {
-                int currentIndex = 0;
-
+                var currentIndex = 0;
                 while (regexMatch.Success)
                 {
-                    string sourceCodeBeforeMatch = sourceCode[currentIndex..regexMatch.Index];
+#if NETFRAMEWORK
+                    var sourceCodeBeforeMatch = sourceCode.Substring(currentIndex, regexMatch.Index - currentIndex);
+#else
+                    var sourceCodeBeforeMatch = sourceCode[currentIndex..regexMatch.Index];
+#endif
                     if (!string.IsNullOrEmpty(sourceCodeBeforeMatch))
+                    {
                         parseHandler(sourceCodeBeforeMatch, []);
+                    }
 
-                    string matchedSourceCode = sourceCode.Substring(regexMatch.Index, regexMatch.Length);
+                    var matchedSourceCode = sourceCode.Substring(regexMatch.Index, regexMatch.Length);
                     if (!string.IsNullOrEmpty(matchedSourceCode))
                     {
-                        List<Scope> capturedStylesForMatchedFragment = GetCapturedStyles(regexMatch, regexMatch.Index, compiledLanguage);
-                        List<Scope> capturedStyleTree = CreateCapturedStyleTree(capturedStylesForMatchedFragment);
+                        var capturedStylesForMatchedFragment = GetCapturedStyles(regexMatch, regexMatch.Index, compiledLanguage);
+                        var capturedStyleTree = CreateCapturedStyleTree(capturedStylesForMatchedFragment);
                         parseHandler(matchedSourceCode, capturedStyleTree);
                     }
 
@@ -2909,9 +2907,15 @@ namespace ColorCode
                     regexMatch = regexMatch.NextMatch();
                 }
 
-                string sourceCodeAfterAllMatches = sourceCode[currentIndex..];
+#if NETFRAMEWORK
+                var sourceCodeAfterAllMatches = sourceCode.Substring(currentIndex);
+#else
+                var sourceCodeAfterAllMatches = sourceCode[currentIndex..];
+#endif
                 if (!string.IsNullOrEmpty(sourceCodeAfterAllMatches))
+                {
                     parseHandler(sourceCodeAfterAllMatches, []);
+                }
             }
         }
 
@@ -2937,9 +2941,7 @@ namespace ColorCode
             return capturedStyleTree;
         }
 
-        private static void AddScopeToNestedScopes(Scope scope,
-                                                   ref Scope? currentScope,
-                                                   ICollection<Scope> capturedStyleTree)
+        private static void AddScopeToNestedScopes(Scope scope, ref Scope? currentScope, ICollection<Scope> capturedStyleTree)
         {
             if (currentScope != null && scope.Index >= currentScope.Index && (scope.Index + scope.Length <= currentScope.Index + currentScope.Length))
             {
@@ -2951,29 +2953,32 @@ namespace ColorCode
                 currentScope = currentScope?.Parent;
 
                 if (currentScope != null)
+                {
                     AddScopeToNestedScopes(scope, ref currentScope, capturedStyleTree);
+                }
                 else
+                {
                     capturedStyleTree.Add(scope);
+                }
             }
         }
 
 
-        private List<Scope> GetCapturedStyles(Match regexMatch,
-                                                      int currentIndex,
-                                                      CompiledLanguage compiledLanguage)
+        private List<Scope> GetCapturedStyles(Match regexMatch, int currentIndex, CompiledLanguage compiledLanguage)
         {
             var capturedStyles = new List<Scope>();
-
-            for (int i = 0; i < regexMatch.Groups.Count; i++)
+            for (var i = 0; i < regexMatch.Groups.Count; i++)
             {
-                Group regexGroup = regexMatch.Groups[i];
+                var regexGroup = regexMatch.Groups[i];
                 if (regexGroup.Length > 0 && i < compiledLanguage.Captures.Count)
                 {  //note: i can be >= Captures.Count due to named groups; these do capture a group but always get added after all non-named groups (which is why we do not count them in numberOfCaptures)
                     var styleName = compiledLanguage.Captures[i];
                     if (!string.IsNullOrEmpty(styleName))
                     {
                         foreach (Capture regexCapture in regexGroup.Captures)
-                            AppendCapturedStylesForRegexCapture(regexCapture, currentIndex, styleName, capturedStyles);
+                        {
+                            AppendCapturedStylesForRegexCapture(regexCapture, currentIndex, styleName!, capturedStyles);
+                        }
                     }
                 }
             }
@@ -2981,76 +2986,65 @@ namespace ColorCode
             return capturedStyles;
         }
 
-        private void AppendCapturedStylesForRegexCapture(Capture regexCapture,
-                                                         int currentIndex,
-                                                         string styleName,
-                                                         List<Scope> capturedStyles)
+        private void AppendCapturedStylesForRegexCapture(Capture regexCapture, int currentIndex, string styleName, List<Scope> capturedStyles)
         {
             if (styleName.StartsWith(ScopeName.LanguagePrefix))
             {
-                string nestedGrammarId = styleName[1..];
+#if NETFRAMEWORK
+                var nestedGrammarId = styleName.Substring(1);
+#else
+                var nestedGrammarId = styleName[1..];
+#endif
                 AppendCapturedStylesForNestedLanguage(regexCapture, regexCapture.Index - currentIndex, nestedGrammarId, capturedStyles);
             }
             else
-                capturedStyles.Add(new Scope(styleName, regexCapture.Index - currentIndex, regexCapture.Length));
-        }
-
-        private void AppendCapturedStylesForNestedLanguage(Capture regexCapture,
-                                                           int offset,
-                                                           string nestedLanguageId,
-                                                           List<Scope> capturedStyles)
-        {
-            ILanguage nestedLanguage = languageRepository.FindById(nestedLanguageId);
-
-            if (nestedLanguage == null)
-                throw new InvalidOperationException("The nested language was not found in the language repository.");
-            else
             {
-                CompiledLanguage nestedCompiledLanguage = languageCompiler.Compile(nestedLanguage);
-
-                Match regexMatch = nestedCompiledLanguage.Regex.Match(regexCapture.Value, 0, regexCapture.Value.Length);
-
-                if (!regexMatch.Success)
-                    return;
-                else
-                {
-                    while (regexMatch.Success)
-                    {
-                        List<Scope> capturedStylesForMatchedFragment = GetCapturedStyles(regexMatch, 0, nestedCompiledLanguage);
-                        List<Scope> capturedStyleTree = CreateCapturedStyleTree(capturedStylesForMatchedFragment);
-
-                        foreach (Scope nestedCapturedStyle in capturedStyleTree)
-                        {
-                            IncreaseCapturedStyleIndicies(capturedStyleTree, offset);
-                            capturedStyles.Add(nestedCapturedStyle);
-                        }
-
-                        regexMatch = regexMatch.NextMatch();
-                    }
-                }
+                capturedStyles.Add(new Scope(styleName, regexCapture.Index - currentIndex, regexCapture.Length));
             }
         }
 
-        private static void IncreaseCapturedStyleIndicies(IList<Scope> capturedStyles,
-                                                          int amountToIncrease)
+        private void AppendCapturedStylesForNestedLanguage(Capture regexCapture, int offset, string nestedLanguageId, List<Scope> capturedStyles)
         {
-            for (int i = 0; i < capturedStyles.Count; i++)
+            ILanguage nestedLanguage = languageRepository.FindById(nestedLanguageId);
+            if (nestedLanguage == null)
+                throw new InvalidOperationException("The nested language was not found in the language repository.");
+
+            var nestedCompiledLanguage = languageCompiler.Compile(nestedLanguage);
+            var regexMatch = nestedCompiledLanguage.Regex.Match(regexCapture.Value, 0, regexCapture.Value.Length);
+            if (!regexMatch.Success)
+                return;
+
+            while (regexMatch.Success)
             {
-                Scope scope = capturedStyles[i];
+                var capturedStylesForMatchedFragment = GetCapturedStyles(regexMatch, 0, nestedCompiledLanguage);
+                var capturedStyleTree = CreateCapturedStyleTree(capturedStylesForMatchedFragment);
+                foreach (var nestedCapturedStyle in capturedStyleTree)
+                {
+                    IncreaseCapturedStyleIndicies(capturedStyleTree, offset);
+                    capturedStyles.Add(nestedCapturedStyle);
+                }
 
+                regexMatch = regexMatch.NextMatch();
+            }
+        }
+
+        private static void IncreaseCapturedStyleIndicies(IList<Scope> capturedStyles, int amountToIncrease)
+        {
+            for (var i = 0; i < capturedStyles.Count; i++)
+            {
+                var scope = capturedStyles[i];
                 scope.Index += amountToIncrease;
-
                 if (scope.Children.Count > 0)
+                {
                     IncreaseCapturedStyleIndicies(scope.Children, amountToIncrease);
+                }
             }
         }
     }
 
     public class Scope
     {
-        public Scope(string name,
-                     int index,
-                     int length)
+        public Scope(string name, int index, int length)
         {
             Guard.ArgNotNullAndNotEmpty(name, nameof(name));
 
@@ -3072,7 +3066,6 @@ namespace ColorCode
                 throw new InvalidOperationException("The child scope already has a parent.");
 
             childScope.Parent = this;
-
             Children.Add(childScope);
         }
     }

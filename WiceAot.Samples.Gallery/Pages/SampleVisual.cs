@@ -4,7 +4,7 @@ public partial class SampleVisual : Dock
 {
     public SampleVisual(Sample sample)
     {
-        ArgumentNullException.ThrowIfNull(sample);
+        ExceptionExtensions.ThrowIfNull(sample, nameof(sample));
 
         var desc = sample.Description.Nullify();
         if (desc != null)

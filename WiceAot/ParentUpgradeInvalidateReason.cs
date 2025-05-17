@@ -5,7 +5,7 @@ public class ParentUpgradeInvalidateReason : InvalidateReason
     public ParentUpgradeInvalidateReason(Type type, Type childType, InvalidateMode initialModes, VisualPropertyInvalidateModes finalModes, InvalidateReason? innerReason = null)
         : base(type, innerReason)
     {
-        ArgumentNullException.ThrowIfNull(childType);
+        ExceptionExtensions.ThrowIfNull(childType, nameof(ExceptionExtensions));
         ChildType = childType;
         InitialModes = initialModes;
         FinalModes = finalModes;

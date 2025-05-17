@@ -2690,6 +2690,18 @@ public partial class Window : Canvas, ITitleBarParent
             }
         }
 
+#if NETFRAMEWORK
+        if (e.Key == VIRTUAL_KEY.VK_F9)
+        {
+            if (e.IsDown)
+            {
+                var vt = new VisualsTree();
+                vt.SetCurrentWindow(this);
+                vt.Show(NativeWindow.FromHandle(Handle));
+            }
+        }
+#endif
+
         if (e.Key == VIRTUAL_KEY.VK_F11)
         {
             if (e.IsDown)

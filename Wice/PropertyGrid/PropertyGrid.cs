@@ -22,11 +22,13 @@ public class PropertyGrid : Grid
 #endif
         Columns.Add(column);
 
-        column = new GridColumn();
+        column = new GridColumn
+        {
 #if DEBUG
-        column.Name = "valuesCol";
+            Name = "valuesCol",
 #endif
-        column.Size = float.NaN;
+            Size = float.NaN
+        };
         Columns.Add(column);
 
         Splitter = new GridSplitter();
@@ -148,13 +150,15 @@ public class PropertyGrid : Grid
         if (visual == null)
             throw new ArgumentNullException(nameof(visual));
 
-        var host = new EditorHost();
+        var host = new EditorHost
+        {
 #if DEBUG
-        host.Name = "editor[" + visual.Property.Name + "]";
+            Name = "editor[" + visual.Property.Name + "]",
 #endif
 
-        host.EditorMode = EditorMode.NonModal;
-        host.HorizontalAlignment = Alignment.Stretch;
+            EditorMode = EditorMode.NonModal,
+            HorizontalAlignment = Alignment.Stretch
+        };
         host.Header.Text.Text = visual.Property.TextValue;
         host.Header.Text.CopyFrom(this);
         host.Header.Panel.Margin = 0;
@@ -184,9 +188,11 @@ public class PropertyGrid : Grid
         if (property == null)
             throw new ArgumentNullException(nameof(property));
 
-        var value = new PropertyValueVisual(property);
-        value.Margin = CellMargin;
-        value.RenderBrush = RenderBrush;
+        var value = new PropertyValueVisual(property)
+        {
+            Margin = CellMargin,
+            RenderBrush = RenderBrush
+        };
         value.CreateEditor();
         return value;
     }
@@ -196,10 +202,12 @@ public class PropertyGrid : Grid
         if (property == null)
             throw new ArgumentNullException(nameof(property));
 
-        var text = new TextBox();
-        text.IsEditable = false;
-        text.Margin = CellMargin;
-        text.TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER;
+        var text = new TextBox
+        {
+            IsEditable = false,
+            Margin = CellMargin,
+            TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER
+        };
         text.CopyFrom(this);
         text.Text = property.DisplayName;
         return text;
@@ -223,8 +231,10 @@ public class PropertyGrid : Grid
 
             Rows[rowIndex].Size = float.NaN;
 
-            var visuals = new PropertyVisuals();
-            visuals.Text = CreatePropertyTextVisual(property);
+            var visuals = new PropertyVisuals
+            {
+                Text = CreatePropertyTextVisual(property)
+            };
 #if DEBUG
             visuals.Text.Name = "pgText#" + rowIndex + "[" + property.Name + "]";
 #endif

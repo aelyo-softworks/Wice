@@ -23,7 +23,10 @@ public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISe
     public bool IsSelected { get => (bool)GetPropertyValue(IsSelectedProperty)!; set => SetPropertyValue(IsSelectedProperty, value); }
 
     Visual? IFocusableParent.FocusableVisual => Child;
+
+#if !NETFRAMEWORK
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
     Type? IFocusableParent.FocusVisualShapeType => null;
     float? IFocusableParent.FocusOffset => null;
 

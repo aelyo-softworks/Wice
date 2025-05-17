@@ -7,7 +7,11 @@ public partial class SvgImage : RenderVisual, IDisposable
     public static VisualProperty StretchDirectionProperty { get; } = VisualProperty.Add(typeof(SvgImage), nameof(StretchDirection), VisualPropertyInvalidateModes.Measure, StretchDirection.Both);
 
     private bool _disposedValue;
+#if NETFRAMEWORK
+    private DirectN.UnmanagedMemoryStream _documentBuffer;
+#else
     private DirectN.Extensions.Utilities.UnmanagedMemoryStream? _documentBuffer;
+#endif
     private bool _bufferStream;
 
     public SvgImage()
@@ -90,8 +94,11 @@ public partial class SvgImage : RenderVisual, IDisposable
                 using var stream = doc.GetReadStream();
                 if (stream != null)
                 {
+#if NETFRAMEWORK
+                    _documentBuffer = new DirectN.UnmanagedMemoryStream(stream);
+#else
                     _documentBuffer = new DirectN.Extensions.Utilities.UnmanagedMemoryStream(stream);
-                    //Application.Trace("loaded buffer size:" + _documentBuffer.Length);
+#endif
                 }
             }
 
@@ -99,7 +106,6 @@ public partial class SvgImage : RenderVisual, IDisposable
             {
                 _documentBuffer.Position = 0;
                 svg = dc.CreateSvgDocument(_documentBuffer, rc.Size);
-                //Application.Trace("loaded doc from buffer");
             }
         }
         else
@@ -108,14 +114,16 @@ public partial class SvgImage : RenderVisual, IDisposable
             if (stream != null)
             {
                 svg = dc.CreateSvgDocument(new ManagedIStream(stream), rc.Size);
-                //Application.Trace("loaded doc");
             }
         }
         if (svg == null)
             return;
 
-        //Application.Trace("draw");
+#if NETFRAMEWORK
+        dc.DrawSvgDocument(svg.Object);
+#else
         dc.DrawSvgDocument(svg);
+#endif
     }
 
     protected virtual void Dispose(bool disposing)

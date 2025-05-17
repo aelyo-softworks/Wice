@@ -44,11 +44,7 @@ public sealed class PropertyGridPropertyOptionsAttribute : Attribute
     {
         var currentDomain = AppDomain.CurrentDomain;
         var name = new AssemblyName(typeof(PropertyGridPropertyOptionsAttribute).Namespace + ".Enums");
-#if NET
-        var ab = AssemblyBuilder.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
-#else
         var ab = currentDomain.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run);
-#endif
         var mb = ab.DefineDynamicModule(name.Name);
         return mb;
     }
@@ -107,10 +103,6 @@ public sealed class PropertyGridPropertyOptionsAttribute : Attribute
             eb.DefineLiteral(EnumNames[i], value);
         }
 
-#if NET
-        return eb.CreateTypeInfo();
-#else
         return eb.CreateType();
-#endif
     }
 }

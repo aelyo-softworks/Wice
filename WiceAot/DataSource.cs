@@ -28,7 +28,7 @@ public class DataSource
     public DataSource(object? source, string memberName)
         : this(source)
     {
-        ArgumentNullException.ThrowIfNull(memberName);
+        ExceptionExtensions.ThrowIfNull(memberName, nameof(memberName));
         Source = source;
         MemberName = memberName;
     }

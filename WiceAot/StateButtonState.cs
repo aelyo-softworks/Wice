@@ -4,7 +4,7 @@ public class StateButtonState : IEquatable<StateButtonState>
 {
     public StateButtonState(object? value, Func<StateButton, EventArgs, StateButtonState, Visual> createChildFunc)
     {
-        ArgumentNullException.ThrowIfNull(createChildFunc);
+        ExceptionExtensions.ThrowIfNull(createChildFunc, nameof(createChildFunc));
         Value = value;
         CreateChildFunc = createChildFunc;
     }

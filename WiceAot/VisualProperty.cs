@@ -60,17 +60,14 @@
             return GetValue(target.Parent, true);
         }
 
-        public static VisualPropertyInvalidateModes ToInvalidateModes(InvalidateMode mode)
+        public static VisualPropertyInvalidateModes ToInvalidateModes(InvalidateMode mode) => mode switch
         {
-            return mode switch
-            {
-                InvalidateMode.Render => VisualPropertyInvalidateModes.Render,
-                InvalidateMode.Arrange => VisualPropertyInvalidateModes.Arrange,
-                InvalidateMode.Measure => VisualPropertyInvalidateModes.Measure,
-                InvalidateMode.None => VisualPropertyInvalidateModes.None,
-                _ => throw new NotSupportedException(),
-            };
-        }
+            InvalidateMode.Render => VisualPropertyInvalidateModes.Render,
+            InvalidateMode.Arrange => VisualPropertyInvalidateModes.Arrange,
+            InvalidateMode.Measure => VisualPropertyInvalidateModes.Measure,
+            InvalidateMode.None => VisualPropertyInvalidateModes.None,
+            _ => throw new NotSupportedException(),
+        };
 
         public static InvalidateMode GetParentInvalidateMode(VisualPropertyInvalidateModes modes)
         {

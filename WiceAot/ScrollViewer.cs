@@ -219,15 +219,12 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent
         return f;
     }
 
-    protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
+    protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => ScrollMode switch
     {
-        return ScrollMode switch
-        {
-            ScrollViewerMode.Overlay => Canvas.MeasureCore(this, constraint, DimensionOptions.WidthAndHeight),
-            ScrollViewerMode.Dock => base.MeasureCore(constraint),
-            _ => throw new NotSupportedException(),
-        };
-    }
+        ScrollViewerMode.Overlay => Canvas.MeasureCore(this, constraint, DimensionOptions.WidthAndHeight),
+        ScrollViewerMode.Dock => base.MeasureCore(constraint),
+        _ => throw new NotSupportedException(),
+    };
 
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {

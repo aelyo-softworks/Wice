@@ -7,7 +7,7 @@ public class RtfFormatter : CodeColorizerBase
     public RtfFormatter(TextWriter writer, string? fontName = null, IDictionary<string, D3DCOLORVALUE>? colors = null, D3DCOLORVALUE? defaultColor = null)
         : base(null, null)
     {
-        ArgumentNullException.ThrowIfNull(writer);
+        ExceptionExtensions.ThrowIfNull(writer, nameof(writer));
 
         Writer = writer;
         fontName ??= "Consolas";
@@ -19,8 +19,13 @@ public class RtfFormatter : CodeColorizerBase
         defaultColor ??= D3DCOLORVALUE.Black;
         DefaultColor = defaultColor.Value;
         var defColors = GetDefaultColors(DefaultColor);
-        var values = Enum.GetValues<ColorIndex>();
+#if NETFRAMEWORK
+        var values = Enum.GetValues(typeof(ColorIndex));
         var names = Enum.GetNames(typeof(ColorIndex));
+#else
+        var values = Enum.GetValues<ColorIndex>();
+        var names = Enum.GetNames<ColorIndex>();
+#endif
         for (var i = 0; i < names.Length; i++)
         {
             if (colors == null || !colors.TryGetValue(names[i], out var color))
@@ -119,7 +124,11 @@ public class RtfFormatter : CodeColorizerBase
             Scope? PreviousScope = null;
             foreach (var styleinsertion in styleInsertions)
             {
+#if NETFRAMEWORK
+                var text = parsedSourceCode.Substring(offset, styleinsertion.Index - offset);
+#else
                 var text = parsedSourceCode[offset..styleinsertion.Index];
+#endif
                 CreateSpan(text, PreviousScope);
                 if (!string.IsNullOrWhiteSpace(styleinsertion.Text))
                 {
@@ -130,7 +139,11 @@ public class RtfFormatter : CodeColorizerBase
                 PreviousScope = styleinsertion.Scope;
             }
 
+#if NETFRAMEWORK
+            var remaining = parsedSourceCode.Substring(offset);
+#else
             var remaining = parsedSourceCode[offset..];
+#endif
             if (remaining != "\r")
             {
                 CreateSpan(remaining, null);
@@ -149,7 +162,7 @@ public class RtfFormatter : CodeColorizerBase
         }
     }
 
-    private void Write(string text, ColorIndex index)
+    private void Write(string? text, ColorIndex index)
     {
         Writer.Write(@"{\cf");
         Writer.Write(1 + (int)index);
@@ -186,7 +199,9 @@ public class RtfFormatter : CodeColorizerBase
 
     private static bool IsRtfSpec(char c) => c == '{' || c == '}' || c == '\\';
 
+#if !NETFRAMEWORK
     [return: NotNullIfNotNull(nameof(text))]
+#endif
     private static string? Escape(string? text)
     {
         if (text == null)

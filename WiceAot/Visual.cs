@@ -2192,10 +2192,7 @@ public partial class Visual : BaseObject
         //Application.Trace("this: " + this + " fr:" + finalRect + " ar:" + ArrangedRect);
     }
 
-    protected virtual void LayoutRound(ref D2D_RECT_F rect)
-    {
-        rect = rect.ToRound();
-    }
+    protected virtual void LayoutRound(ref D2D_RECT_F rect) => rect = rect.ToRound();
 
     // returning zero means "I will adapt myself to parent"
     protected virtual D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => new(); // does not include margin

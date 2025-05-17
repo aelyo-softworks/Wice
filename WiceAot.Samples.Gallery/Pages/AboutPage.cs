@@ -22,8 +22,12 @@ public partial class AboutPage : Page
         var tb = new TextBox { VerticalAlignment = Alignment.Near, WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD };
         var asm = typeof(Application).Assembly;
         var url = "https://github.com/aelyo-softworks/Wice";
+#if NETFRAMEWORK
+        tb.Text = "Wice .NET Framework v" + asm.GetInformationalVersion() + " based on DirectN v" + typeof(ComObject).Assembly.GetInformationalVersion() + Environment.NewLine
+#else
         tb.Text = "Wice AOT v" + asm.GetInformationalVersion() + " based on DirectN AOT v" + typeof(ComObject).Assembly.GetInformationalVersion() + Environment.NewLine
-            + RuntimeInformation.FrameworkDescription + " - " + DiagnosticsInformation.GetBitness() + Environment.NewLine
+#endif
+        + RuntimeInformation.FrameworkDescription + " - " + DiagnosticsInformation.GetBitness() + Environment.NewLine
             + asm.GetCopyright() + Environment.NewLine
             + "Source code: " + url;
         stack.Children.Add(tb);
@@ -43,11 +47,11 @@ public partial class AboutPage : Page
         SetDockType(settings, DockType.Top);
         Children.Add(settings);
 
-        var mipEnabled = Functions.IsMouseInPointerEnabled();
+        var mipEnabled = WiceCommons.IsMouseInPointerEnabled();
         var cb = new CheckBox { IsEnabled = !mipEnabled, Value = mipEnabled, VerticalAlignment = Alignment.Near };
         cb.Click += (s, e) =>
         {
-            Functions.EnableMouseInPointer(new BOOL(true));
+            WiceCommons.EnableMouseInPointer(new BOOL(true));
             cb.IsEnabled = false;
         };
         settings.Children.Add(cb);
@@ -81,14 +85,19 @@ public partial class AboutPage : Page
             tlb.MinButton!.IsVisible = false;
             dlg.Content.Children.Add(tlb);
 
+#if NETFRAMEWORK
+            var pg = new PropertyGrid.PropertyGrid();
+            pg.CellMargin = D2D_RECT_F.Thickness(5, 0);
+            pg.Margin = D2D_RECT_F.Thickness(10);
+            pg.SelectedObject = new DiagnosticsInformation(null, Window);
+#else
             var pg = new PropertyGrid.PropertyGrid<SystemInformation>
             {
                 CellMargin = D2D_RECT_F.Thickness(5, 0),
-                //pg.MaxWidth = 600;
-                //TextBox.WordWrappingProperty.SetValue(pg, DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER);
                 Margin = D2D_RECT_F.Thickness(10),
                 SelectedObject = new SystemInformation(null)
             };
+#endif
             dlg.Content.Children.Add(pg);
         };
         SetDockType(btn, DockType.Top);

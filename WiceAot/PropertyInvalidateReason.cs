@@ -3,9 +3,9 @@
 public class PropertyInvalidateReason : InvalidateReason
 {
     public PropertyInvalidateReason(BaseObjectProperty property, InvalidateReason? innerReason = null)
-        : base(property?.DeclaringType!, innerReason)
+        : base(property.DeclaringType!, innerReason)
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(ExceptionExtensions));
         Property = property;
     }
 

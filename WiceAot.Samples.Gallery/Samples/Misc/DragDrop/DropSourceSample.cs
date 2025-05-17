@@ -25,6 +25,26 @@ public class DropSourceSample : Sample
             if (e.Button == MouseButton.Left)
             {
                 // create an IDataObject from the gallery.exe file
+#if NETFRAMEWORK
+                using (var dataObject = ShellUtilities.CreateDataObject(new[] { Process.GetCurrentProcess().MainModule.FileName }))
+                {
+                    // optionally hook events to be notified of windows being dragged over
+                    Window!.DragDropTarget += (s2, e2) =>
+                    {
+                        if (e2.Type == DragDropTargetEventType.Leave)
+                        {
+                            target.Text = string.Empty;
+                        }
+                        else
+                        {
+                            var window = NativeWindow.FromHandle(e2.Hwnd);
+                            target.Text = $"Target Window: {e2.Hwnd.Value.ToHexa()} '{window?.Text}' process: '{window?.Process?.ProcessName}'";
+                        }
+                    };
+
+                    btn.DoDragDrop(dataObject.Object, DROPEFFECT.DROPEFFECT_COPY);
+                }
+#else
                 using var dataObject = ShellUtilities.CreateDataObject([Environment.ProcessPath!]);
 
                 // optionally hook events to be notified of windows being dragged over
@@ -42,6 +62,7 @@ public class DropSourceSample : Sample
                 };
 
                 btn.DoDragDrop(dataObject.NativeObject, DROPEFFECT.DROPEFFECT_COPY);
+#endif
             }
         };
     }

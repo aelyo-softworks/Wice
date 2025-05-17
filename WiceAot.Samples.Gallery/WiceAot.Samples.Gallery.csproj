@@ -85,6 +85,8 @@
 		<Using Include="Wice.Samples.Gallery.Utilities" />
 		<Using Include="Windows.UI.Composition" />
 		<Using Include="Windows.Graphics.DirectX" />
+
+		<Using Alias="Monitor" Include="DirectN.Extensions.Utilities.Monitor" />
 	</ItemGroup>
 
 	<ItemGroup>

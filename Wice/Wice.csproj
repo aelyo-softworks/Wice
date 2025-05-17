@@ -56,12 +56,22 @@
 	  <Compile Include="..\WiceAot\BaseObjectProperty.cs" Link="BaseObjectProperty.cs" />
 	  <Compile Include="..\WiceAot\BaseObjectPropertyOptions.cs" Link="BaseObjectPropertyOptions.cs" />
 	  <Compile Include="..\WiceAot\BaseObjectSetOptions.cs" Link="BaseObjectSetOptions.cs" />
+	  <Compile Include="..\WiceAot\BitmapBrush.cs" Link="BitmapBrush.cs" />
+	  <Compile Include="..\WiceAot\Border.cs" Link="Border.cs" />
 	  <Compile Include="..\WiceAot\Brush.cs" Link="Brush.cs" />
 	  <Compile Include="..\WiceAot\Button.cs" Link="Button.cs" />
 	  <Compile Include="..\WiceAot\ButtonBase.cs" Link="ButtonBase.cs" />
+	  <Compile Include="..\WiceAot\Canvas.cs" Link="Canvas.cs" />
+	  <Compile Include="..\WiceAot\Caret.cs" Link="Caret.cs" />
+	  <Compile Include="..\WiceAot\CheckBox.cs" Link="CheckBox.cs" />
+	  <Compile Include="..\WiceAot\CheckBoxList.cs" Link="CheckBoxList.cs" />
 	  <Compile Include="..\WiceAot\ClosingEventArgs.cs" Link="ClosingEventArgs.cs" />
 	  <Compile Include="..\WiceAot\CollectionChangedInvalidateReason.cs" Link="CollectionChangedInvalidateReason.cs" />
+	  <Compile Include="..\WiceAot\ComboBox.cs" Link="ComboBox.cs" />
 	  <Compile Include="..\WiceAot\CompositionUpdateParts.cs" Link="CompositionUpdateParts.cs" />
+	  <Compile Include="..\WiceAot\DataBindContext.cs" Link="DataBindContext.cs" />
+	  <Compile Include="..\WiceAot\DataBinder.cs" Link="DataBinder.cs" />
+	  <Compile Include="..\WiceAot\DataSource.cs" Link="DataSource.cs" />
 	  <Compile Include="..\WiceAot\DataSourceEnumerateOptions.cs" Link="DataSourceEnumerateOptions.cs" />
 	  <Compile Include="..\WiceAot\Dialog.cs" Link="Dialog.cs" />
 	  <Compile Include="..\WiceAot\DialogBox.cs" Link="DialogBox.cs" />
@@ -81,6 +91,7 @@
 	  <Compile Include="..\WiceAot\DragDropTargetEventType.cs" Link="DragDropTargetEventType.cs" />
 	  <Compile Include="..\WiceAot\DragEventArgs.cs" Link="DragEventArgs.cs" />
 	  <Compile Include="..\WiceAot\DragState.cs" Link="DragState.cs" />
+	  <Compile Include="..\WiceAot\EditorHost.cs" Link="EditorHost.cs" />
 	  <Compile Include="..\WiceAot\EditorMode.cs" Link="EditorMode.cs" />
 	  <Compile Include="..\WiceAot\Effects\AffineTransformEffect.cs" Link="Effects\AffineTransformEffect.cs" />
 	  <Compile Include="..\WiceAot\Effects\AlphaMaskEffect.cs" Link="Effects\AlphaMaskEffect.cs" />
@@ -147,21 +158,30 @@
 	  <Compile Include="..\WiceAot\Effects\UnpremultiplyEffect.cs" Link="Effects\UnpremultiplyEffect.cs" />
 	  <Compile Include="..\WiceAot\Effects\VignetteEffect.cs" Link="Effects\VignetteEffect.cs" />
 	  <Compile Include="..\WiceAot\Effects\WhiteLevelAdjustmentEffect.cs" Link="Effects\WhiteLevelAdjustmentEffect.cs" />
+	  <Compile Include="..\WiceAot\Ellipse.cs" Link="Ellipse.cs" />
+	  <Compile Include="..\WiceAot\EnumListBox.cs" Link="EnumListBox.cs" />
 	  <Compile Include="..\WiceAot\EventTrigger.cs" Link="EventTrigger.cs" />
+	  <Compile Include="..\WiceAot\FastTextBox.cs" Link="FastTextBox.cs" />
+	  <Compile Include="..\WiceAot\FlagsEnumListBox.cs" Link="FlagsEnumListBox.cs" />
 	  <Compile Include="..\WiceAot\FocusDirection.cs" Link="FocusDirection.cs" />
 	  <Compile Include="..\WiceAot\FocusVisual.cs" Link="FocusVisual.cs" />
 	  <Compile Include="..\WiceAot\GetRectOptions.cs" Link="GetRectOptions.cs" />
+	  <Compile Include="..\WiceAot\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
 	  <Compile Include="..\WiceAot\Grid.cs" Link="Grid.cs" />
 	  <Compile Include="..\WiceAot\GridColumn.cs" Link="GridColumn.cs" />
 	  <Compile Include="..\WiceAot\GridDimension.cs" Link="GridDimension.cs" />
 	  <Compile Include="..\WiceAot\GridRow.cs" Link="GridRow.cs" />
 	  <Compile Include="..\WiceAot\GridSplitter.cs" Link="GridSplitter.cs" />
+	  <Compile Include="..\WiceAot\Header.cs" Link="Header.cs" />
+	  <Compile Include="..\WiceAot\HeaderedContent.cs" Link="HeaderedContent.cs" />
+	  <Compile Include="..\WiceAot\HorizontalScrollBar.cs" Link="HorizontalScrollBar.cs" />
 	  <Compile Include="..\WiceAot\IAccessKeyParent.cs" Link="IAccessKeyParent.cs" />
 	  <Compile Include="..\WiceAot\IBindingDisplayName.cs" Link="IBindingDisplayName.cs" />
 	  <Compile Include="..\WiceAot\IClickable.cs" Link="IClickable.cs" />
 	  <Compile Include="..\WiceAot\IContentParent.cs" Link="IContentParent.cs" />
 	  <Compile Include="..\WiceAot\IDataSourceVisual.cs" Link="IDataSourceVisual.cs" />
 	  <Compile Include="..\WiceAot\IFocusableParent.cs" Link="IFocusableParent.cs" />
+	  <Compile Include="..\WiceAot\Image.cs" Link="Image.cs" />
 	  <Compile Include="..\WiceAot\IModalVisual.cs" Link="IModalVisual.cs" />
 	  <Compile Include="..\WiceAot\Interop\WiceCommons.cs" Link="Interop\WiceCommons.cs" />
 	  <Compile Include="..\WiceAot\InvalidateMode.cs" Link="InvalidateMode.cs" />
@@ -172,6 +192,7 @@
 	  <Compile Include="..\WiceAot\IReadStreamer.cs" Link="IReadStreamer.cs" />
 	  <Compile Include="..\WiceAot\ISelectable.cs" Link="ISelectable.cs" />
 	  <Compile Include="..\WiceAot\ISelectorVisual.cs" Link="ISelectorVisual.cs" />
+	  <Compile Include="..\WiceAot\ItemVisual.cs" Link="ItemVisual.cs" />
 	  <Compile Include="..\WiceAot\ITextBoxProperties.cs" Link="ITextBoxProperties.cs" />
 	  <Compile Include="..\WiceAot\ITextFormat.cs" Link="ITextFormat.cs" />
 	  <Compile Include="..\WiceAot\ITitleBarParent.cs" Link="ITitleBarParent.cs" />
@@ -179,6 +200,7 @@
 	  <Compile Include="..\WiceAot\IViewerParent.cs" Link="IViewerParent.cs" />
 	  <Compile Include="..\WiceAot\KeyEventArgs.cs" Link="KeyEventArgs.cs" />
 	  <Compile Include="..\WiceAot\KeyPressEventArgs.cs" Link="KeyPressEventArgs.cs" />
+	  <Compile Include="..\WiceAot\Line.cs" Link="Line.cs" />
 	  <Compile Include="..\WiceAot\LinearGradientBrush.cs" Link="LinearGradientBrush.cs" />
 	  <Compile Include="..\WiceAot\ListBox.cs" Link="ListBox.cs" />
 	  <Compile Include="..\WiceAot\ListBoxDataBindContext.cs" Link="ListBoxDataBindContext.cs" />
@@ -190,8 +212,13 @@
 	  <Compile Include="..\WiceAot\MouseEventArgs.cs" Link="MouseEventArgs.cs" />
 	  <Compile Include="..\WiceAot\MouseWheelEventArgs.cs" Link="MouseWheelEventArgs.cs" />
 	  <Compile Include="..\WiceAot\NativeWindow.cs" Link="NativeWindow.cs" />
+	  <Compile Include="..\WiceAot\NullableCheckBox.cs" Link="NullableCheckBox.cs" />
+	  <Compile Include="..\WiceAot\NullableCheckBoxList.cs" Link="NullableCheckBoxList.cs" />
 	  <Compile Include="..\WiceAot\Orientation.cs" Link="Orientation.cs" />
+	  <Compile Include="..\WiceAot\ParentUpgradeInvalidateReason.cs" Link="ParentUpgradeInvalidateReason.cs" />
+	  <Compile Include="..\WiceAot\Path.cs" Link="Path.cs" />
 	  <Compile Include="..\WiceAot\PlacementMode.cs" Link="PlacementMode.cs" />
+	  <Compile Include="..\WiceAot\PlacementParameters.cs" Link="PlacementParameters.cs" />
 	  <Compile Include="..\WiceAot\PointerActivateEventArgs.cs" Link="PointerActivateEventArgs.cs" />
 	  <Compile Include="..\WiceAot\PointerContactChangedEventArgs.cs" Link="PointerContactChangedEventArgs.cs" />
 	  <Compile Include="..\WiceAot\PointerDragEventArgs.cs" Link="PointerDragEventArgs.cs" />
@@ -201,32 +228,56 @@
 	  <Compile Include="..\WiceAot\PointerPositionEventArgs.cs" Link="PointerPositionEventArgs.cs" />
 	  <Compile Include="..\WiceAot\PointerUpdateEventArgs.cs" Link="PointerUpdateEventArgs.cs" />
 	  <Compile Include="..\WiceAot\PointerWheelEventArgs.cs" Link="PointerWheelEventArgs.cs" />
+	  <Compile Include="..\WiceAot\Popup.cs" Link="Popup.cs" />
 	  <Compile Include="..\WiceAot\PopupWindow.cs" Link="PopupWindow.cs" />
 	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridCategoryOptionsAttribute.cs" Link="PropertyGrid\PropertyGridCategoryOptionsAttribute.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridItem.cs" Link="PropertyGrid\PropertyGridItem.cs" />
+	  <Compile Include="..\WiceAot\PropertyInvalidateReason.cs" Link="PropertyInvalidateReason.cs" />
 	  <Compile Include="..\WiceAot\RadialGradientBrush.cs" Link="RadialGradientBrush.cs" />
+	  <Compile Include="..\WiceAot\RadioButton.cs" Link="RadioButton.cs" />
+	  <Compile Include="..\WiceAot\Rectangle.cs" Link="Rectangle.cs" />
+	  <Compile Include="..\WiceAot\RenderContext.cs" Link="RenderContext.cs" />
+	  <Compile Include="..\WiceAot\RenderLayerVisual.cs" Link="RenderLayerVisual.cs" />
+	  <Compile Include="..\WiceAot\RenderVisual.cs" Link="RenderVisual.cs" />
 	  <Compile Include="..\WiceAot\ResourceManager.cs" Link="ResourceManager.cs" />
+	  <Compile Include="..\WiceAot\RichTextBox.cs" Link="RichTextBox.cs" />
+	  <Compile Include="..\WiceAot\RoundedRectangle.cs" Link="RoundedRectangle.cs" />
+	  <Compile Include="..\WiceAot\ScrollBar.cs" Link="ScrollBar.cs" />
+	  <Compile Include="..\WiceAot\ScrollbarButton.cs" Link="ScrollbarButton.cs" />
 	  <Compile Include="..\WiceAot\ScrollBarMode.cs" Link="ScrollBarMode.cs" />
 	  <Compile Include="..\WiceAot\ScrollBarVisibility.cs" Link="ScrollBarVisibility.cs" />
 	  <Compile Include="..\WiceAot\ScrollViewer.cs" Link="ScrollViewer.cs" />
 	  <Compile Include="..\WiceAot\ScrollViewerMode.cs" Link="ScrollViewerMode.cs" />
 	  <Compile Include="..\WiceAot\SelectionMode.cs" Link="SelectionMode.cs" />
+	  <Compile Include="..\WiceAot\Shape.cs" Link="Shape.cs" />
+	  <Compile Include="..\WiceAot\SingleShape.cs" Link="SingleShape.cs" />
 	  <Compile Include="..\WiceAot\SolidColorBrush.cs" Link="SolidColorBrush.cs" />
+	  <Compile Include="..\WiceAot\Stack.cs" Link="Stack.cs" />
+	  <Compile Include="..\WiceAot\StateButton.cs" Link="StateButton.cs" />
+	  <Compile Include="..\WiceAot\StateButtonListBox.cs" Link="StateButtonListBox.cs" />
+	  <Compile Include="..\WiceAot\StateButtonState.cs" Link="StateButtonState.cs" />
 	  <Compile Include="..\WiceAot\Stretch.cs" Link="Stretch.cs" />
 	  <Compile Include="..\WiceAot\StretchDirection.cs" Link="StretchDirection.cs" />
 	  <Compile Include="..\WiceAot\SurfaceCreationOptions.cs" Link="SurfaceCreationOptions.cs" />
+	  <Compile Include="..\WiceAot\SvgImage.cs" Link="SvgImage.cs" />
+	  <Compile Include="..\WiceAot\SymbolHeader.cs" Link="SymbolHeader.cs" />
+	  <Compile Include="..\WiceAot\SymbolHeaderedContent.cs" Link="SymbolHeaderedContent.cs" />
 	  <Compile Include="..\WiceAot\TabPage.cs" Link="TabPage.cs" />
 	  <Compile Include="..\WiceAot\Tabs.cs" Link="Tabs.cs" />
 	  <Compile Include="..\WiceAot\TextBox.cs" Link="TextBox.cs" />
 	  <Compile Include="..\WiceAot\TextBoxSetSelection.cs" Link="TextBoxSetSelection.cs" />
 	  <Compile Include="..\WiceAot\TextFormat.cs" Link="TextFormat.cs" />
+	  <Compile Include="..\WiceAot\TextRenderingParameters.cs" Link="TextRenderingParameters.cs" />
 	  <Compile Include="..\WiceAot\Theme.cs" Link="Theme.cs" />
+	  <Compile Include="..\WiceAot\Thumb.cs" Link="Thumb.cs" />
 	  <Compile Include="..\WiceAot\TitleBar.cs" Link="TitleBar.cs" />
 	  <Compile Include="..\WiceAot\TitleBarButton.cs" Link="TitleBarButton.cs" />
 	  <Compile Include="..\WiceAot\TitleBarButtonType.cs" Link="TitleBarButtonType.cs" />
+	  <Compile Include="..\WiceAot\ToggleSwitch.cs" Link="ToggleSwitch.cs" />
 	  <Compile Include="..\WiceAot\ToolTip.cs" Link="ToolTip.cs" />
 	  <Compile Include="..\WiceAot\Typography.cs" Link="Typography.cs" />
+	  <Compile Include="..\WiceAot\UniformGrid.cs" Link="UniformGrid.cs" />
 	  <Compile Include="..\WiceAot\Utilities\AssemblyResourceStreamer.cs" Link="Utilities\AssemblyResourceStreamer.cs" />
 	  <Compile Include="..\WiceAot\Utilities\CompositionObjectEqualityComparer.cs" Link="Utilities\CompositionObjectEqualityComparer.cs" />
 	  <Compile Include="..\WiceAot\Utilities\CompositionUtilities.cs" Link="Utilities\CompositionUtilities.cs" />
@@ -238,12 +289,15 @@
 	  <Compile Include="..\WiceAot\Utilities\IOUtilities.cs" Link="Utilities\IOUtilities.cs" />
 	  <Compile Include="..\WiceAot\Utilities\IQuadTree.cs" Link="Utilities\IQuadTree.cs" />
 	  <Compile Include="..\WiceAot\Utilities\QuadTree.cs" Link="Utilities\QuadTree.cs" />
+	  <Compile Include="..\WiceAot\Utilities\ResourcesUtilities.cs" Link="Utilities\ResourcesUtilities.cs" />
 	  <Compile Include="..\WiceAot\Utilities\ShellUtilities.cs" Link="Utilities\ShellUtilities.cs" />
 	  <Compile Include="..\WiceAot\Utilities\StreamStreamer.cs" Link="Utilities\StreamStreamer.cs" />
 	  <Compile Include="..\WiceAot\Utilities\UIExtensions.cs" Link="Utilities\UIExtensions.cs" />
 	  <Compile Include="..\WiceAot\Utilities\UndoStack.cs" Link="Utilities\UndoStack.cs" />
 	  <Compile Include="..\WiceAot\Utilities\WicUtilities.cs" Link="Utilities\WicUtilities.cs" />
 	  <Compile Include="..\WiceAot\ValueEventArgs.cs" Link="ValueEventArgs.cs" />
+	  <Compile Include="..\WiceAot\VerticalScrollBar.cs" Link="VerticalScrollBar.cs" />
+	  <Compile Include="..\WiceAot\Viewer.cs" Link="Viewer.cs" />
 	  <Compile Include="..\WiceAot\Visual.cs" Link="Visual.cs" />
 	  <Compile Include="..\WiceAot\VisualDoOptions.cs" Link="VisualDoOptions.cs" />
 	  <Compile Include="..\WiceAot\VisualProperty.cs" Link="VisualProperty.cs" />
@@ -253,6 +307,7 @@
 	  <Compile Include="..\WiceAot\Window.cs" Link="Window.cs" />
 	  <Compile Include="..\WiceAot\WindowsFrameMode.cs" Link="WindowsFrameMode.cs" />
 	  <Compile Include="..\WiceAot\WindowTimer.cs" Link="WindowTimer.cs" />
+	  <Compile Include="..\WiceAot\Wrap.cs" Link="Wrap.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

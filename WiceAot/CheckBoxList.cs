@@ -4,7 +4,7 @@ public partial class CheckBoxList : StateButtonListBox
 {
     protected override StateButton CreateStateButton(DataBindContext context)
     {
-        ArgumentNullException.ThrowIfNull(context);
+        ExceptionExtensions.ThrowIfNull(context, nameof(context));
         var cb = new CheckBox();
         cb.Click += (s, e) =>
         {
@@ -18,7 +18,7 @@ public partial class CheckBoxList : StateButtonListBox
 
     public override bool UpdateItemSelection(ItemVisual visual, bool? select)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
         var changed = base.UpdateItemSelection(visual, select);
         var cb = visual.AllChildren.OfType<CheckBox>().FirstOrDefault();
         if (cb != null)

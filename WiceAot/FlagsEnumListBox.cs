@@ -33,7 +33,7 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
 
     public override bool UpdateItemSelection(ItemVisual visual, bool? select)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
 
         if (select.HasValue && !_in && visual.Data is EnumBitValue bitValue)
         {
@@ -54,7 +54,11 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
                 var oldValue = Conversions.ChangeType<ulong>(Value);
                 if (oldValue != value)
                 {
+#if NETFRAMEWORK
+                    Value = Conversions.ChangeType(value, ((IBindList)this).Type!);
+#else
                     Value = Conversions.ChangeObjectType(value, ((IBindList)this).Type!);
+#endif
                     var ds = EnumDataSource.FromValue(Value);
                     if (ds != null)
                     {

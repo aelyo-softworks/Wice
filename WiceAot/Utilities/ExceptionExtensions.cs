@@ -1,6 +1,6 @@
 ﻿namespace Wice.Utilities;
 
-internal static class ExceptionExtensions
+public static class ExceptionExtensions
 {
     public static void ThrowIfNull(this object? obj, string paramName)
     {

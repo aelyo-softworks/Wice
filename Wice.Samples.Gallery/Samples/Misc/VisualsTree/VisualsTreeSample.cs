@@ -13,7 +13,7 @@
                 // note with .NET Framework you must reference Windows Forms to use the VisualsTree window
                 var vt = new Wice.Utilities.VisualsTree();
                 vt.SetCurrentWindow(parent.Window);
-                vt.Show(NativeWindow.FromHandle(parent.Window.Handle));
+                vt.Show(NativeWindow.FromHandle(parent!.Window!.Handle));
             };
 
             btn.HorizontalAlignment = Alignment.Near; // remove from display

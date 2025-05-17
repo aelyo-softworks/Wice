@@ -11,12 +11,9 @@ public abstract class StateButtonListBox : ListBox
 
     protected override void CreateDataItemVisual(DataBindContext context)
     {
-        ArgumentNullException.ThrowIfNull(context);
+        ExceptionExtensions.ThrowIfNull(context, nameof(context));
         var panel = new Dock
         {
-            // TODO: check this...
-            //panel.HorizontalAlignment = Alignment.Center;
-            //panel.VerticalAlignment = Alignment.Center;
             IsFocusable = true
         };
 
@@ -43,7 +40,7 @@ public abstract class StateButtonListBox : ListBox
 
     protected override void BindDataItemVisual(DataBindContext context)
     {
-        ArgumentNullException.ThrowIfNull(context);
+        ExceptionExtensions.ThrowIfNull(context, nameof(context));
         if (context.DataVisual is not Dock dock)
             return;
 

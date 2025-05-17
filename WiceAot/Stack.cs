@@ -5,7 +5,7 @@ public partial class Stack : Visual
     public static VisualProperty OrientationProperty { get; } = VisualProperty.Add(typeof(Stack), nameof(Orientation), VisualPropertyInvalidateModes.Measure, Orientation.Vertical);
     public static VisualProperty LinesSizeProperty { get; } = VisualProperty.Add(typeof(Stack), nameof(LinesSize), VisualPropertyInvalidateModes.Measure, 0f);
     public static VisualProperty LastChildFillProperty { get; } = VisualProperty.Add(typeof(Stack), nameof(LastChildFill), VisualPropertyInvalidateModes.Measure, true);
-    public static VisualProperty SpacingProperty { get; } = VisualProperty.Add(typeof(Stack), nameof(Spacing), VisualPropertyInvalidateModes.Measure, D2D_SIZE_F.Zero);
+    public static VisualProperty SpacingProperty { get; } = VisualProperty.Add(typeof(Stack), nameof(Spacing), VisualPropertyInvalidateModes.Measure, new D2D_SIZE_F());
 
     [Category(CategoryLayout)]
     public Orientation Orientation { get => (Orientation)GetPropertyValue(OrientationProperty)!; set => SetPropertyValue(OrientationProperty, value); }

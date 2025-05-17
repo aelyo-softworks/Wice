@@ -256,6 +256,12 @@ public static class WiceCommons
     [DllImport("user32")]
     public static extern BOOL GetPointerTouchInfo(uint pointerId, out POINTER_TOUCH_INFO touchInfo);
 
+    [DllImport("user32")]
+    public static extern BOOL IsMouseInPointerEnabled();
+
+    [DllImport("user32")]
+    public static extern BOOL EnableMouseInPointer(BOOL fEnable);
+
 #else
     public const int ICON_BIG = Constants.ICON_BIG;
     public const int CW_USEDEFAULT = Constants.CW_USEDEFAULT;
@@ -388,6 +394,8 @@ public static class WiceCommons
     public static BOOL GetPointerInfo(uint pointerId, out POINTER_INFO pointerInfo) => Functions.GetPointerInfo(pointerId, out pointerInfo);
     public static BOOL GetPointerPenInfo(uint pointerId, out POINTER_PEN_INFO penInfo) => Functions.GetPointerPenInfo(pointerId, out penInfo);
     public static BOOL GetPointerTouchInfo(uint pointerId, out POINTER_TOUCH_INFO touchInfo) => Functions.GetPointerTouchInfo(pointerId, out touchInfo);
+    public static BOOL IsMouseInPointerEnabled() => Functions.IsMouseInPointerEnabled();
+    public static BOOL EnableMouseInPointer(BOOL fEnable) => Functions.EnableMouseInPointer(fEnable);
 
 #endif
 }

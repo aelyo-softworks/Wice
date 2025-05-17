@@ -1,6 +1,8 @@
 ﻿namespace Wice.Samples.Gallery.Pages;
 
+#if !NETFRAMEWORK
 [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
 public abstract class Titled : Dock
 {
     protected Titled()

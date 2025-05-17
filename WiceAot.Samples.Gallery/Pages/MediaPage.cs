@@ -19,8 +19,10 @@ public partial class MediaPage : SampleListPage
             yield return new ImageSampleList();
             yield return new ShapeSampleList();
             yield return new SvgImageSampleList();
+#if !NETFRAMEWORK
             yield return new WebViewSampleList();
             yield return new PdfViewSampleList();
+#endif
         }
     }
 }

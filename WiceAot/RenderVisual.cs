@@ -113,7 +113,7 @@ public abstract class RenderVisual : Visual
     protected internal virtual void RenderCore(RenderContext context) => RenderBackgroundCore(context);
     protected virtual void RenderBackgroundCore(RenderContext context)
     {
-        ArgumentNullException.ThrowIfNull(context);
+        ExceptionExtensions.ThrowIfNull(context, nameof(ExceptionExtensions));
         if (context.DeviceContext == null)
             throw new InvalidOperationException();
 
@@ -130,7 +130,7 @@ public abstract class RenderVisual : Visual
 
     protected override void SetCompositionVisualSizeAndOffset(ContainerVisual visual)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(ExceptionExtensions));
 
         // I don't think it's documented but experience shows sprite visuals (backed by DirectX texture) width or height
         // must be below D2D bitmap limit (which is 16384), with a slight 2px offset

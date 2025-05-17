@@ -4,7 +4,7 @@ public partial class NullableCheckBoxList : StateButtonListBox
 {
     protected override StateButton CreateStateButton(DataBindContext context)
     {
-        ArgumentNullException.ThrowIfNull(context);
+        ExceptionExtensions.ThrowIfNull(context, nameof(ExceptionExtensions));
         var ncb = new NullableCheckBox();
         ncb.Click += (s, e) =>
         {
@@ -18,7 +18,7 @@ public partial class NullableCheckBoxList : StateButtonListBox
 
     public override bool UpdateItemSelection(ItemVisual visual, bool? select)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(ExceptionExtensions));
         var changed = base.UpdateItemSelection(visual, select);
         var ncb = visual.AllChildren.OfType<NullableCheckBox>().FirstOrDefault();
         if (ncb != null)

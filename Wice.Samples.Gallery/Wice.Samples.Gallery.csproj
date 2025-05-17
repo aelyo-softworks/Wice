@@ -8,6 +8,7 @@
 		<ApplicationIcon>..\Assets\wice_color.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<LangVersion>default</LangVersion>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -20,6 +21,135 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Include="..\WiceAot.Samples.Gallery\GalleryWindow.cs" Link="GalleryWindow.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\AboutPage.cs" Link="Pages\AboutPage.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\CollectionsPage.cs" Link="Pages\CollectionsPage.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\EffectsPage.cs" Link="Pages\EffectsPage.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\HomePage.cs" Link="Pages\HomePage.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\InputPage.cs" Link="Pages\InputPage.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\LayoutPage.cs" Link="Pages\LayoutPage.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\MediaPage.cs" Link="Pages\MediaPage.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\MiscPage.cs" Link="Pages\MiscPage.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\Page.cs" Link="Pages\Page.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\SampleButton.cs" Link="Pages\SampleButton.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\SampleListPage.cs" Link="Pages\SampleListPage.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\SampleListVisual.cs" Link="Pages\SampleListVisual.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\SampleVisual.cs" Link="Pages\SampleVisual.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\TextPage.cs" Link="Pages\TextPage.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\Titled.cs" Link="Pages\Titled.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\WindowsPage.cs" Link="Pages\WindowsPage.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Program.cs" Link="Program.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\RoundedButton.cs" Link="RoundedButton.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\CheckBoxListSampleList.cs" Link="Samples\Collections\CheckBoxListSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\CheckBoxList\CheckBoxListSample.cs" Link="Samples\Collections\CheckBoxList\CheckBoxListSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\EnumListBoxSampleList.cs" Link="Samples\Collections\EnumListBoxSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\EnumListBox\EnumListBoxSample.cs" Link="Samples\Collections\EnumListBox\EnumListBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\FlagsEnumListBoxSampleList.cs" Link="Samples\Collections\FlagsEnumListBoxSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\FlagsEnumListBox\FlagsEnumListBoxSample.cs" Link="Samples\Collections\FlagsEnumListBox\FlagsEnumListBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\ListBoxSampleList.cs" Link="Samples\Collections\ListBoxSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\ListBox\AdvancedListBoxSample.cs" Link="Samples\Collections\ListBox\AdvancedListBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\ListBox\ListBoxSample.cs" Link="Samples\Collections\ListBox\ListBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\ContrastSampleList.cs" Link="Samples\Effects\ContrastSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\Contrast\ContrastSample.cs" Link="Samples\Effects\Contrast\ContrastSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\GaussianBlurSampleList.cs" Link="Samples\Effects\GaussianBlurSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\GaussianBlur\GaussianBlurSample.cs" Link="Samples\Effects\GaussianBlur\GaussianBlurSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\GrayscaleSampleList.cs" Link="Samples\Effects\GrayscaleSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\Grayscale\GrayscaleSample.cs" Link="Samples\Effects\Grayscale\GrayscaleSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\SepiaSampleList.cs" Link="Samples\Effects\SepiaSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\Sepia\SepiaSample.cs" Link="Samples\Effects\Sepia\SepiaSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\TemperatureTintSampleList.cs" Link="Samples\Effects\TemperatureTintSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\TemperatureTint\TemperatureTintSample.cs" Link="Samples\Effects\TemperatureTint\TemperatureTintSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\ButtonSampleList.cs" Link="Samples\Input\ButtonSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\Button\ButtonDockSample.cs" Link="Samples\Input\Button\ButtonDockSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\Button\SimpleButtonSample.cs" Link="Samples\Input\Button\SimpleButtonSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\CheckBoxSampleList.cs" Link="Samples\Input\CheckBoxSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\CheckBox\ThreeStateCheckBoxSample.cs" Link="Samples\Input\CheckBox\ThreeStateCheckBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\CheckBox\TwoStateCheckBoxSample.cs" Link="Samples\Input\CheckBox\TwoStateCheckBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\RadioButtonSampleList.cs" Link="Samples\Input\RadioButtonSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\RadioButton\RadioButtonsSample.cs" Link="Samples\Input\RadioButton\RadioButtonsSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\RadioButton\SimpleRadioButtonSample.cs" Link="Samples\Input\RadioButton\SimpleRadioButtonSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\StateButtonSampleList.cs" Link="Samples\Input\StateButtonSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\StateButton\CheckBoxStateButtonSample.cs" Link="Samples\Input\StateButton\CheckBoxStateButtonSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\StateButton\SimpleStateButtonSample.cs" Link="Samples\Input\StateButton\SimpleStateButtonSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\ToggleSwitchSampleList.cs" Link="Samples\Input\ToggleSwitchSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\ToggleSwitch\GroupedToggleSwitchesSample.cs" Link="Samples\Input\ToggleSwitch\GroupedToggleSwitchesSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Input\ToggleSwitch\ToggleSwitchSample.cs" Link="Samples\Input\ToggleSwitch\ToggleSwitchSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\BorderSampleList.cs" Link="Samples\Layout\BorderSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Border\BordersSample.cs" Link="Samples\Layout\Border\BordersSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Border\RoundBorderSample.cs" Link="Samples\Layout\Border\RoundBorderSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Border\SimpleBorderSample.cs" Link="Samples\Layout\Border\SimpleBorderSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\CanvasSampleList.cs" Link="Samples\Layout\CanvasSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Canvas\BoundsCanvasSample.cs" Link="Samples\Layout\Canvas\BoundsCanvasSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Canvas\SimpleCanvasSample.cs" Link="Samples\Layout\Canvas\SimpleCanvasSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\DockSampleList.cs" Link="Samples\Layout\DockSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\DockSplitterSampleList.cs" Link="Samples\Layout\DockSplitterSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\DockSplitter\SimpleDockSplitterSample.cs" Link="Samples\Layout\DockSplitter\SimpleDockSplitterSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Dock\SimpleDockSample.cs" Link="Samples\Layout\Dock\SimpleDockSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\GridSampleList.cs" Link="Samples\Layout\GridSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\GridSplitterSampleList.cs" Link="Samples\Layout\GridSplitterSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\GridSplitter\SimpleGridSplitterSample.cs" Link="Samples\Layout\GridSplitter\SimpleGridSplitterSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Grid\SimpleGridSample.cs" Link="Samples\Layout\Grid\SimpleGridSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\ScrollViewerSampleList.cs" Link="Samples\Layout\ScrollViewerSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\ScrollViewer\ScrollViewerBasicSample.cs" Link="Samples\Layout\ScrollViewer\ScrollViewerBasicSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\StackSampleList.cs" Link="Samples\Layout\StackSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Stack\BoxesStackSample.cs" Link="Samples\Layout\Stack\BoxesStackSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Stack\SimpleHorizontalStackSample.cs" Link="Samples\Layout\Stack\SimpleHorizontalStackSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Stack\SimpleVerticalStackSample.cs" Link="Samples\Layout\Stack\SimpleVerticalStackSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\TabsSampleList.cs" Link="Samples\Layout\TabsSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Tabs\TabsSample.cs" Link="Samples\Layout\Tabs\TabsSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\UniformGridSampleList.cs" Link="Samples\Layout\UniformGridSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\UniformGrid\ShapesUniformGridSample.cs" Link="Samples\Layout\UniformGrid\ShapesUniformGridSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\UniformGrid\SimpleUniformGridSample.cs" Link="Samples\Layout\UniformGrid\SimpleUniformGridSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\WrapSampleList.cs" Link="Samples\Layout\WrapSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Layout\Wrap\SimpleWrapSample.cs" Link="Samples\Layout\Wrap\SimpleWrapSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\BrushSampleList.cs" Link="Samples\Media\BrushSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\Brush\CompositionBrushSample.cs" Link="Samples\Media\Brush\CompositionBrushSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\Brush\Direct2DBrushSample.cs" Link="Samples\Media\Brush\Direct2DBrushSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\ImageSampleList.cs" Link="Samples\Media\ImageSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\Image\BasicImageSample.cs" Link="Samples\Media\Image\BasicImageSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\ShapeSampleList.cs" Link="Samples\Media\ShapeSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\Shape\EllipseRectangleShapeSample.cs" Link="Samples\Media\Shape\EllipseRectangleShapeSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\Shape\LineShapeSample.cs" Link="Samples\Media\Shape\LineShapeSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\Shape\RectangleShapeSample.cs" Link="Samples\Media\Shape\RectangleShapeSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\Shape\RoundedRectangleShapeSample.cs" Link="Samples\Media\Shape\RoundedRectangleShapeSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\SvgImageSampleList.cs" Link="Samples\Media\SvgImageSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\SvgImage\BasicSvgImageSample.cs" Link="Samples\Media\SvgImage\BasicSvgImageSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\ApplicationSampleList.cs" Link="Samples\Misc\ApplicationSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\Application\ApplicationSample.cs" Link="Samples\Misc\Application\ApplicationSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\Application\MultipleApplicationSample.cs" Link="Samples\Misc\Application\MultipleApplicationSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\DragDropSampleList.cs" Link="Samples\Misc\DragDropSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\DragDrop\DropSourceSample.cs" Link="Samples\Misc\DragDrop\DropSourceSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\DragDrop\DropTargetSample.cs" Link="Samples\Misc\DragDrop\DropTargetSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\FocusSampleList.cs" Link="Samples\Misc\FocusSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\Focus\FocusSample.cs" Link="Samples\Misc\Focus\FocusSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\TitleBarSampleList.cs" Link="Samples\Misc\TitleBarSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\TitleBar\TitleBarSample.cs" Link="Samples\Misc\TitleBar\TitleBarSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\ToolTipSampleList.cs" Link="Samples\Misc\ToolTipSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\ToolTip\AdvancedToolTipSample.cs" Link="Samples\Misc\ToolTip\AdvancedToolTipSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Misc\ToolTip\ToolTipSample.cs" Link="Samples\Misc\ToolTip\ToolTipSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Sample.cs" Link="Samples\Sample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\SampleList.cs" Link="Samples\SampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Text\RichTextBoxSampleList.cs" Link="Samples\Text\RichTextBoxSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Text\RichTextBox\DocumentRichTextBoxSample.cs" Link="Samples\Text\RichTextBox\DocumentRichTextBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Text\RichTextBox\RtfRichTextBoxSample.cs" Link="Samples\Text\RichTextBox\RtfRichTextBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Text\RichTextBox\SimpleRichTextBoxSample.cs" Link="Samples\Text\RichTextBox\SimpleRichTextBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Text\TextBoxSampleList.cs" Link="Samples\Text\TextBoxSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Text\TextBox\ColorFontTextBoxSample.cs" Link="Samples\Text\TextBox\ColorFontTextBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Text\TextBox\EditableTextBoxSample.cs" Link="Samples\Text\TextBox\EditableTextBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Text\TextBox\FormattedTextBoxSample.cs" Link="Samples\Text\TextBox\FormattedTextBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Text\TextBox\SimpleTextBoxSample.cs" Link="Samples\Text\TextBox\SimpleTextBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Text\TextBox\UnicodeTextBoxSample.cs" Link="Samples\Text\TextBox\UnicodeTextBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Windows\DialogSampleList.cs" Link="Samples\Windows\DialogSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Windows\Dialog\DialogBoxSimpleSample.cs" Link="Samples\Windows\Dialog\DialogBoxSimpleSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Windows\Dialog\DialogSimpleSample.cs" Link="Samples\Windows\Dialog\DialogSimpleSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Windows\MessageBoxSampleList.cs" Link="Samples\Windows\MessageBoxSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Windows\MessageBox\MessageBoxSample.cs" Link="Samples\Windows\MessageBox\MessageBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Windows\WindowSampleList.cs" Link="Samples\Windows\WindowSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Windows\Window\WindowSample.cs" Link="Samples\Windows\Window\WindowSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Utilities\CodeBox.cs" Link="Utilities\CodeBox.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Utilities\ColorCode.cs" Link="Utilities\ColorCode.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Utilities\RtfFormatter.cs" Link="Utilities\RtfFormatter.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Utilities\WiceLanguage.cs" Link="Utilities\WiceLanguage.cs" />
 	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
 	</ItemGroup>
 
@@ -51,6 +181,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Using Include="ColorCode" />
 		<Using Include="DirectN" />
 		<Using Include="Microsoft.Win32" />
 		<Using Include="System" />
@@ -63,6 +194,7 @@
 		<Using Include="System.Diagnostics" />
 		<Using Include="System.Diagnostics.CodeAnalysis" />
 		<Using Include="System.Globalization" />
+		<Using Include="System.IO" />
 		<Using Include="System.Linq" />
 		<Using Include="System.Numerics" />
 		<Using Include="System.Reflection" />
@@ -72,10 +204,14 @@
 		<Using Include="System.Runtime.Versioning" />
 		<Using Include="System.Text" />
 		<Using Include="System.Threading" />
+		<Using Include="System.Xml" />
 		<Using Include="Wice.Animation" />
 		<Using Include="Wice.Effects" />
 		<Using Include="Wice.Interop" />
 		<Using Include="Wice.Utilities" />
+		<Using Include="Wice.Samples.Gallery.Pages" />
+		<Using Include="Wice.Samples.Gallery.Samples" />
+		<Using Include="Wice.Samples.Gallery.Utilities" />
 		<Using Include="Windows.Foundation" />
 		<Using Include="Windows.Graphics" />
 		<Using Include="Windows.Graphics.DirectX" />
@@ -84,8 +220,55 @@
 		<Using Include="Windows.UI.Composition" />
 		<Using Include="Windows.UI.Composition.Core" />
 		<Using Include="Windows.UI.Composition.Diagnostics" />
-		
+
+		<Using Alias="Monitor" Include="DirectN.Monitor" />
+
 		<Using Alias="D3DCOLORVALUE" Include="DirectN._D3DCOLORVALUE" />
+		<Using Alias="RECT" Include="DirectN.tagRECT" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Pages\" />
+	  <Folder Include="Samples\Collections\CheckBoxList\" />
+	  <Folder Include="Samples\Collections\EnumListBox\" />
+	  <Folder Include="Samples\Collections\FlagsEnumListBox\" />
+	  <Folder Include="Samples\Collections\ListBox\" />
+	  <Folder Include="Samples\Effects\Contrast\" />
+	  <Folder Include="Samples\Effects\GaussianBlur\" />
+	  <Folder Include="Samples\Effects\Grayscale\" />
+	  <Folder Include="Samples\Effects\Sepia\" />
+	  <Folder Include="Samples\Effects\TemperatureTint\" />
+	  <Folder Include="Samples\Input\Button\" />
+	  <Folder Include="Samples\Input\CheckBox\" />
+	  <Folder Include="Samples\Input\RadioButton\" />
+	  <Folder Include="Samples\Input\StateButton\" />
+	  <Folder Include="Samples\Input\ToggleSwitch\" />
+	  <Folder Include="Samples\Layout\Border\" />
+	  <Folder Include="Samples\Layout\Canvas\" />
+	  <Folder Include="Samples\Layout\DockSplitter\" />
+	  <Folder Include="Samples\Layout\Dock\" />
+	  <Folder Include="Samples\Layout\GridSplitter\" />
+	  <Folder Include="Samples\Layout\Grid\" />
+	  <Folder Include="Samples\Layout\ScrollViewer\" />
+	  <Folder Include="Samples\Layout\Stack\" />
+	  <Folder Include="Samples\Layout\Tabs\" />
+	  <Folder Include="Samples\Layout\UniformGrid\" />
+	  <Folder Include="Samples\Layout\Wrap\" />
+	  <Folder Include="Samples\Media\Brush\" />
+	  <Folder Include="Samples\Media\Image\" />
+	  <Folder Include="Samples\Media\Shape\" />
+	  <Folder Include="Samples\Media\SvgImage\" />
+	  <Folder Include="Samples\Misc\Application\" />
+	  <Folder Include="Samples\Misc\DragDrop\" />
+	  <Folder Include="Samples\Misc\Focus\" />
+	  <Folder Include="Samples\Misc\TitleBar\" />
+	  <Folder Include="Samples\Misc\ToolTip\" />
+	  <Folder Include="Samples\Text\RichTextBox\" />
+	  <Folder Include="Samples\Text\TextBox\" />
+	  <Folder Include="Samples\Windows\Dialog\" />
+	  <Folder Include="Samples\Windows\MessageBox\" />
+	  <Folder Include="Samples\Windows\Window\" />
+	  <Folder Include="Utilities\" />
 	</ItemGroup>
 
 </Project>

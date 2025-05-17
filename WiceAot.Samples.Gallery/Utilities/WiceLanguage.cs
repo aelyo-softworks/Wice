@@ -1,6 +1,4 @@
-﻿using Wice.Interop;
-
-namespace Wice.Samples.Gallery.Utilities;
+﻿namespace Wice.Samples.Gallery.Utilities;
 
 // so we can add our own colors for Wice's classes
 public class WiceLanguage : ILanguage
@@ -111,7 +109,9 @@ public class WiceLanguage : ILanguage
             nameof(Orientation),
             nameof(ParentUpgradeInvalidateReason),
             nameof(Path),
+#if !NETFRAMEWORK
             nameof(PdfView),
+#endif
             nameof(PlacementMode),
             nameof(PlacementParameters),
             nameof(PointerActivateEventArgs),
@@ -178,7 +178,9 @@ public class WiceLanguage : ILanguage
             nameof(VisualProperty),
             nameof(VisualPropertyInvalidateModes),
             nameof(VisualSetOptions),
+#if !NETFRAMEWORK
             nameof(WebView),
+#endif
             nameof(WiceException),
             nameof(Window),
             nameof(WindowsFrameMode),

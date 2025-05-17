@@ -12,13 +12,15 @@ public partial class RadioButton : StateButton, IFocusableParent
     public new bool Value { get => (bool)base.Value!; set => base.Value = value; }
 
     Visual? IFocusableParent.FocusableVisual => null;
+#if !NETFRAMEWORK
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
     Type IFocusableParent.FocusVisualShapeType => typeof(Ellipse);
     float? IFocusableParent.FocusOffset => null;
 
     public static Visual CreateDefaultTrueVisual(Compositor compositor)
     {
-        ArgumentNullException.ThrowIfNull(compositor);
+        ExceptionExtensions.ThrowIfNull(compositor, nameof(ExceptionExtensions));
         var border = new Border();
         var canvas = new Canvas();
         border.Child = canvas;
@@ -46,7 +48,7 @@ public partial class RadioButton : StateButton, IFocusableParent
 
     public static Visual CreateDefaultFalseVisual(Compositor compositor)
     {
-        ArgumentNullException.ThrowIfNull(compositor);
+        ExceptionExtensions.ThrowIfNull(compositor, nameof(ExceptionExtensions));
         var ellipse = new Ellipse
         {
             StrokeBrush = compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor()),

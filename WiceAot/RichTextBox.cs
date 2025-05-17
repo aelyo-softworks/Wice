@@ -1,12 +1,9 @@
-﻿using System.Runtime.InteropServices.Marshalling;
-
-namespace Wice;
+﻿namespace Wice;
 
 // this currently is only read-only
 // note this visual sits on a COM object so we must dispose it on the same thread that created it
 public partial class RichTextBox : RenderVisual, IDisposable
 {
-    private RichTextBoxTextHost? _host;
     private bool _disposedValue;
 
     public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
@@ -17,14 +14,34 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
 
         Generator = generator;
+
+#if NETFRAMEWORK
+        _host = new TextHost(generator)
+        {
+            TextColor = 0
+        };
+#else
         _host = CreateTextHost(generator, this);
+#endif
         BackgroundColor = D3DCOLORVALUE.Transparent;
     }
+
+#if NETFRAMEWORK
+    private TextHost _host;
+
+    [Category(CategoryLive)]
+    public dynamic Document => _host?.Document;
+
+    [Category(CategoryBehavior)]
+    public string GeneratorVersion => Document.Generator;
+
+#else
+    private RichTextBoxTextHost? _host;
 
     protected RichTextBoxTextHost? Host => _host;
     protected virtual RichTextBoxTextHost CreateTextHost(TextServicesGenerator generator, RichTextBox richTextBox) => new(generator, richTextBox);
 
-    [GeneratedComClass]
+    [System.Runtime.InteropServices.Marshalling.GeneratedComClass]
     protected partial class RichTextBoxTextHost(TextServicesGenerator generator, RichTextBox richTextBox) : TextHost(generator)
     {
         public RichTextBox RichTextBox { get; } = richTextBox;
@@ -113,10 +130,12 @@ public partial class RichTextBox : RenderVisual, IDisposable
     public IComObject<ITextDocument2>? Document => _host?.Document;
 
     [Category(CategoryBehavior)]
-    public TextServicesGenerator Generator { get; }
+    public string GeneratorVersion => _host?.Generator ?? string.Empty;
+
+#endif
 
     [Category(CategoryBehavior)]
-    public string GeneratorVersion => _host?.Generator ?? string.Empty;
+    public TextServicesGenerator Generator { get; }
 
     [Category(CategoryRender)]
     public virtual D3DCOLORVALUE TextColor
@@ -137,7 +156,11 @@ public partial class RichTextBox : RenderVisual, IDisposable
     [Category(CategoryLayout)]
     public virtual TextHostOptions Options
     {
+#if NETFRAMEWORK
+        get => (_host?.Options).GetValueOrDefault();
+#else
         get => _host?.Options ?? TextHostOptions.Default;
+#endif
         set
         {
             var host = _host;
@@ -234,7 +257,11 @@ public partial class RichTextBox : RenderVisual, IDisposable
     [Category(CategoryLayout)]
     public virtual ushort FontWeight
     {
+#if NETFRAMEWORK
+        get => (ushort)(_host?.Weight ?? 0);
+#else
         get => _host?.Weight ?? 0;
+#endif
         set
         {
             var host = _host;
@@ -242,11 +269,16 @@ public partial class RichTextBox : RenderVisual, IDisposable
                 return;
 
             OnPropertyChanging();
+#if NETFRAMEWORK
+            host.Weight = (short)value;
+#else
             host.Weight = value;
+#endif
             Invalidate();
         }
     }
 
+#if !NETFRAMEWORK
     [Category(CategoryLayout)]
     public virtual TXTBACKSTYLE BackStyle
     {
@@ -262,6 +294,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
             Invalidate();
         }
     }
+#endif
 
     protected virtual void Invalidate(VisualPropertyInvalidateModes modes = VisualPropertyInvalidateModes.Measure, [CallerMemberName] string? propertyName = null)
     {
@@ -380,6 +413,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         {
             rc.Height = finalRect.Height;
         }
+
         return rc.ToRECT();
     }
 
@@ -459,18 +493,28 @@ public partial class RichTextBox : RenderVisual, IDisposable
             }
         }
 
+#if NETFRAMEWORK
+        // TODO when DirectN nuget is updated, uncomment these lines and remove the one above
+        //var rr = RelativeRenderRect;
+        //var urc = rc;
+        //urc.top = -(int)rr.top;
+        //host.Draw(context.DeviceContext.Object, rc, urc);
+
+        _host.Draw(context.DeviceContext.Object, rc);
+#else
         host.Draw(context.DeviceContext.Object, rc, urc);
+#endif
     }
 
     private IViewerParent? GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;
 
     // seems like richedit is relative to primary monitor's dpi
-    private static (int Primary, int Monitor) GetMonitorDpiRatioToPrimary(DirectN.Extensions.Utilities.Monitor? monitor)
+    private static (int Primary, int Monitor) GetMonitorDpiRatioToPrimary(Monitor? monitor)
     {
         if (monitor == null || monitor.IsPrimary || monitor.EffectiveDpi.width == 0)
             return (1, 1);
 
-        var primary = DirectN.Extensions.Utilities.Monitor.Primary;
+        var primary = Monitor.Primary;
         if (primary == null || primary.EffectiveDpi.width == 0)
             return (1, 1);
 
@@ -522,10 +566,14 @@ public partial class RichTextBox : RenderVisual, IDisposable
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 
     // allow command line change
+#if NETFRAMEWORK
+    public static TextServicesGenerator GetDefaultTextServicesGenerator() => CommandLine.GetArgument(nameof(TextServicesGenerator), TextServicesGenerator.Default);
+#else
     public static TextServicesGenerator GetDefaultTextServicesGenerator() => CommandLine.Current.GetArgument(nameof(TextServicesGenerator), TextServicesGenerator.Default);
+#endif
 
     private static readonly Lazy<string> _defaultTextServicesGeneratorVersion = new(GetDefaultTextServicesGeneratorVersion);
-    private static string GetDefaultTextServicesGeneratorVersion()
+    public static string GetDefaultTextServicesGeneratorVersion()
     {
         using var rtb = new RichTextBox();
         return rtb.GeneratorVersion;

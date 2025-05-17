@@ -736,17 +736,23 @@ public partial class VisualsTree : Form
             Height = 600;
             StartPosition = FormStartPosition.CenterParent;
 
-            var sc = new SplitContainer();
-            sc.Dock = DockStyle.Fill;
+            var sc = new SplitContainer
+            {
+                Dock = DockStyle.Fill
+            };
             Controls.Add(sc);
 
-            var lb = new System.Windows.Forms.ListBox();
-            lb.Dock = DockStyle.Fill;
+            var lb = new System.Windows.Forms.ListBox
+            {
+                Dock = DockStyle.Fill
+            };
             sc.Panel1.Controls.Add(lb);
 
-            var pg = new System.Windows.Forms.PropertyGrid();
-            pg.Dock = DockStyle.Fill;
-            pg.HelpVisible = false;
+            var pg = new System.Windows.Forms.PropertyGrid
+            {
+                Dock = DockStyle.Fill,
+                HelpVisible = false
+            };
             sc.Panel2.Controls.Add(pg);
 
             lb.SelectedIndexChanged += (s, e) =>

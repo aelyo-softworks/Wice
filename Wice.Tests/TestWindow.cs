@@ -113,12 +113,12 @@ public class TestWindow : Window
 
         //KeyDown += (s, e) =>
         //{
-        //    //if (e.Key == VirtualKeys.P)
+        //    //if (e.Key == VIRTUAL_KEY.P)
         //    //{
         //    //    AddPopup();
         //    //}
 
-        //    if (e.Key == VirtualKeys.S)
+        //    if (e.Key == VIRTUAL_KEY.S)
         //    {
         //        RunTaskOnMainThread(() =>
         //        {
@@ -433,7 +433,7 @@ public class TestWindow : Window
         Dialog dlg = null;
         KeyDown += (s, e) =>
         {
-            if (e.Key == VirtualKeys.Escape)
+            if (e.Key == VIRTUAL_KEY.VK_ESCAPE)
             {
                 if (dlg != null)
                 {
@@ -443,7 +443,7 @@ public class TestWindow : Window
                 return;
             }
 
-            if (e.Key != VirtualKeys.D)
+            if (e.Key != VIRTUAL_KEY.VK_D)
                 return;
 
             if (dlg == null)
@@ -536,7 +536,7 @@ public class TestWindow : Window
 
         KeyDown += (s, e) =>
         {
-            if (e.Key != VirtualKeys.P)
+            if (e.Key != VIRTUAL_KEY.VK_P)
                 return;
 
             header.Child.Height = 100;
@@ -612,13 +612,13 @@ public class TestWindow : Window
         PopupWindow popup = null;
         KeyDown += (s, e) =>
         {
-            if (e.Key == VirtualKeys.M)
+            if (e.Key == VIRTUAL_KEY.VK_M)
             {
                 MessageBox.Show(this, "hello word");
                 return;
             }
 
-            if (e.Key == VirtualKeys.Escape)
+            if (e.Key == VIRTUAL_KEY.VK_ESCAPE)
             {
                 if (popup != null)
                 {
@@ -628,7 +628,7 @@ public class TestWindow : Window
                 return;
             }
 
-            if (e.Key == VirtualKeys.P)
+            if (e.Key == VIRTUAL_KEY.VK_P)
             {
                 if (popup == null)
                 {
@@ -898,7 +898,7 @@ public class TestWindow : Window
 
         KeyDown += (s, e) =>
         {
-            if (e.Key == VirtualKeys.L)
+            if (e.Key == VIRTUAL_KEY.VK_L)
             {
                 foreach (var item in lb.Items)
                 {
@@ -930,7 +930,7 @@ public class TestWindow : Window
 
         KeyDown += (s, e) =>
         {
-            if (e.Key == VirtualKeys.L)
+            if (e.Key == VIRTUAL_KEY.VK_L)
             {
                 foreach (var item in lb.Items)
                 {
@@ -1105,7 +1105,7 @@ public class TestWindow : Window
 
         //KeyDown += (s, e) =>
         //    {
-        //        if (e.Key == VirtualKeys.End)
+        //        if (e.Key == VIRTUAL_KEY.End)
         //        {
         //            MessageBox.Show(this, "p:" + cus.Password);
         //        }
@@ -1213,7 +1213,7 @@ public class TestWindow : Window
 
         KeyDown += (s, e) =>
         {
-            if (e.Key == VirtualKeys.Space)
+            if (e.Key == VIRTUAL_KEY.VK_SPACE)
             {
                 if (vbt.IsRunning)
                 {
@@ -1325,7 +1325,7 @@ public class TestWindow : Window
 
         KeyDown += (s, e) =>
         {
-            if (e.Key == VirtualKeys.A)
+            if (e.Key == VIRTUAL_KEY.VK_A)
             {
                 var b4 = new Border();
                 b4.Name = nameof(b4);
@@ -1570,7 +1570,7 @@ public class TestWindow : Window
 
         parent.KeyDown += (s, e) =>
         {
-            if (e.Key == VirtualKeys.F)
+            if (e.Key == VIRTUAL_KEY.VK_F)
             {
                 var fs = Environment.TickCount % 40;
                 if (fs > 7)
@@ -1656,7 +1656,7 @@ public class TestWindow : Window
 
         KeyDown += (s, e) =>
         {
-            if (e.Key == VirtualKeys.D)
+            if (e.Key == VIRTUAL_KEY.VK_D)
             {
                 if (sv.ScrollMode == ScrollViewerMode.Dock)
                 {
@@ -1834,15 +1834,15 @@ public class TestWindow : Window
         {
             //scrollView.VerticalScrollBar.CompositionBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange);
             //scrollView.HorizontalScrollBar.IsVisible = !scroller.HorizontalScrollBar.IsVisible;
-            if (e.Key == VirtualKeys.Add)
+            if (e.Key == VIRTUAL_KEY.VK_ADD)
             {
                 scrollView.HorizontalOffset++;
             }
-            else if (e.Key == VirtualKeys.Subtract)
+            else if (e.Key == VIRTUAL_KEY.VK_SUBTRACT)
             {
                 scrollView.HorizontalOffset--;
             }
-            else if (e.Key == VirtualKeys.M)
+            else if (e.Key == VIRTUAL_KEY.VK_M)
             {
                 scrollView.ScrollMode = scrollView.ScrollMode == ScrollViewerMode.Dock ? ScrollViewerMode.Overlay : ScrollViewerMode.Dock;
             }
@@ -1871,19 +1871,19 @@ public class TestWindow : Window
         {
             var i = visual.Children.Count / visual.Rows;
             var j = visual.Children.Count % visual.Columns;
-            if (e.Key == VirtualKeys.R)
+            if (e.Key == VIRTUAL_KEY.VK_R)
             {
                 visual.Rows++;
             }
-            else if (e.Key == VirtualKeys.C)
+            else if (e.Key == VIRTUAL_KEY.VK_C)
             {
                 visual.Columns++;
             }
-            else if (e.Key == VirtualKeys.T)
+            else if (e.Key == VIRTUAL_KEY.VK_T)
             {
                 addRoundedRectangle(i, j);
             }
-            else if (e.Key == VirtualKeys.L)
+            else if (e.Key == VIRTUAL_KEY.VK_L)
             {
                 addLine(i, j);
             }
@@ -2048,15 +2048,15 @@ public class TestWindow : Window
 
         KeyDown += (s, e) =>
         {
-            if (e.Key == VirtualKeys.R)
+            if (e.Key == VIRTUAL_KEY.VK_R)
             {
                 visual.Rows++;
             }
-            else if (e.Key == VirtualKeys.C)
+            else if (e.Key == VIRTUAL_KEY.VK_C)
             {
                 visual.Columns++;
             }
-            else if (e.Key == VirtualKeys.A)
+            else if (e.Key == VIRTUAL_KEY.VK_A)
             {
                 var i = visual.Children.Count / visual.Rows;
                 var j = visual.Children.Count % visual.Columns;
@@ -2152,7 +2152,7 @@ public class TestWindow : Window
 
         KeyDown += (s, e) =>
         {
-            if (e.Key == VirtualKeys.S)
+            if (e.Key == VIRTUAL_KEY.VK_S)
             {
                 if (wrap.Orientation == Orientation.Horizontal)
                 {
@@ -2206,7 +2206,7 @@ public class TestWindow : Window
 
         KeyDown += (s, e) =>
         {
-            if (e.Key == VirtualKeys.S)
+            if (e.Key == VIRTUAL_KEY.VK_S)
             {
                 if (stack.Orientation == Orientation.Horizontal)
                 {
@@ -2217,7 +2217,7 @@ public class TestWindow : Window
                     stack.Orientation = Orientation.Horizontal;
                 }
             }
-            else if (e.Key == VirtualKeys.V)
+            else if (e.Key == VIRTUAL_KEY.VK_V)
             {
                 b0.IsVisible = !b0.IsVisible;
                 b1.HorizontalAlignment = Alignment.Stretch;

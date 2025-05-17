@@ -12,7 +12,7 @@ public partial class Thumb : RoundedRectangle
 
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
-        ArgumentNullException.ThrowIfNull(e);
+        ExceptionExtensions.ThrowIfNull(e, nameof(e));
 
         e.Handled = true;
         if (e.Button == MouseButton.Left)
@@ -27,14 +27,14 @@ public partial class Thumb : RoundedRectangle
 
     protected override void OnMouseDrag(object? sender, DragEventArgs e)
     {
-        ArgumentNullException.ThrowIfNull(e);
+        ExceptionExtensions.ThrowIfNull(e, nameof(e));
         OnDragDelta(sender, e);
         base.OnMouseDrag(sender, e);
     }
 
     protected override DragState? CancelDragMove(EventArgs e)
     {
-        ArgumentNullException.ThrowIfNull(e);
+        ExceptionExtensions.ThrowIfNull(e, nameof(e));
         var state = base.CancelDragMove(e);
         OnDragCompleted(this, e);
         return state;

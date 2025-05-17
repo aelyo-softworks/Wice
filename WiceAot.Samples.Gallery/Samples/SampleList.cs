@@ -19,7 +19,11 @@ public abstract class SampleList
             const string postfix = nameof(SampleList);
             var typeName = GetType().Name;
             if (typeName.Length > postfix.Length && typeName.EndsWith(postfix))
+#if NETFRAMEWORK
+                return typeName.Substring(0, typeName.Length - postfix.Length);
+#else
                 return typeName[..^postfix.Length];
+#endif
 
             return typeName;
         }

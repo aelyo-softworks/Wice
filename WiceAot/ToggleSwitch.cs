@@ -95,8 +95,13 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         _button.Name = nameof(_button);
 #endif
         Child = _canvas;
+#if NETFRAMEWORK
+        var on = WindowsUtilities.LoadString("shell32.dll", 50225);
+        var off = WindowsUtilities.LoadString("shell32.dll", 50224);
+#else
         var on = DirectN.Extensions.Utilities.Extensions.LoadString("shell32.dll", 50225);
         var off = DirectN.Extensions.Utilities.Extensions.LoadString("shell32.dll", 50224);
+#endif
 
         ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, Value ? on : off);
     }

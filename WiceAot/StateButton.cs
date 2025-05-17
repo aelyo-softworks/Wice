@@ -73,8 +73,7 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
 
     public virtual void AddState(StateButtonState state)
     {
-        ArgumentNullException.ThrowIfNull(state);
-
+        ExceptionExtensions.ThrowIfNull(state, nameof(state));
         if (Parent != null)
             throw new WiceException("0017: Cannot add a state once attached to the UI tree.");
 

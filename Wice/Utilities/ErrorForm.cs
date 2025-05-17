@@ -49,13 +49,15 @@ internal class ErrorForm : Form
             _details.Enabled = false;
             MinimumSize = Size;
             _table.RowCount = 3;
-            var errorTextBox = new System.Windows.Forms.TextBox();
-            errorTextBox.Multiline = true;
-            errorTextBox.Dock = DockStyle.Fill;
-            errorTextBox.ReadOnly = true;
-            errorTextBox.BackColor = Color.White;
-            errorTextBox.ScrollBars = ScrollBars.Both;
-            errorTextBox.Font = new Font("Consolas", 9);
+            var errorTextBox = new System.Windows.Forms.TextBox
+            {
+                Multiline = true,
+                Dock = DockStyle.Fill,
+                ReadOnly = true,
+                BackColor = Color.White,
+                ScrollBars = ScrollBars.Both,
+                Font = new Font("Consolas", 9)
+            };
 
             string errorText;
             if (errors.Count == 1)
@@ -123,15 +125,19 @@ internal class ErrorForm : Form
         _titlePanel.RowCount = 1;
         _titlePanel.ColumnCount = 2;
 
-        var picture = new PictureBox();
-        picture.Size = new Size(iconSize, iconSize);
-        picture.SizeMode = PictureBoxSizeMode.StretchImage;
-        picture.Image = SystemIcons.Error.ToBitmap();
+        var picture = new PictureBox
+        {
+            Size = new Size(iconSize, iconSize),
+            SizeMode = PictureBoxSizeMode.StretchImage,
+            Image = SystemIcons.Error.ToBitmap()
+        };
         _titlePanel.Controls.Add(picture, 0, 0);
 
-        var errorLabel = new Label();
-        errorLabel.Margin = new Padding(margin);
-        errorLabel.Dock = DockStyle.Fill;
+        var errorLabel = new Label
+        {
+            Margin = new Padding(margin),
+            Dock = DockStyle.Fill
+        };
         var errText = " occurred in a component of your application. If you press Details, you can view more details that could help us diagnose the problem." +
             Environment.NewLine +
             "If you press Quit, the application will terminate.";

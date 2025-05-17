@@ -150,10 +150,7 @@ public partial class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
         return true;
     }
 
-    protected virtual void OnIconClick(object? sender, EventArgs e)
-    {
-        _popup.IsVisible = !_popup.IsVisible;
-    }
+    protected virtual void OnIconClick(object? sender, EventArgs e) => _popup.IsVisible = !_popup.IsVisible;
 
     protected virtual TextBox CreateText()
     {
@@ -180,11 +177,7 @@ public partial class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
     void IDataSourceVisual.BindDataSource() => BindDataSource();
     protected virtual void BindDataSource() => _dataSourceVisual.BindDataSource();
 
-    protected override void OnArranged(object? sender, EventArgs e)
-    {
-        base.OnArranged(sender, e);
-        //_popup.Width = ArrangedRect.Width;
-    }
+    protected override void OnArranged(object? sender, EventArgs e) => base.OnArranged(sender, e);//_popup.Width = ArrangedRect.Width;
 
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {

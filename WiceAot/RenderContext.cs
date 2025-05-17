@@ -15,8 +15,8 @@ public class RenderContext
 
     public static void WithRenderContext(IComObject<ID2D1DeviceContext> deviceContext, Action<RenderContext> action, SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
     {
-        ArgumentNullException.ThrowIfNull(deviceContext);
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(deviceContext, nameof(ExceptionExtensions));
+        ExceptionExtensions.ThrowIfNull(action, nameof(ExceptionExtensions));
         var rc = new RenderContext(deviceContext, creationOptions, rect);
         try
         {
@@ -28,7 +28,9 @@ public class RenderContext
         }
     }
 
+#if !NETFRAMEWORK
     [return: NotNullIfNotNull(nameof(color))]
+#endif
     public virtual IComObject<ID2D1Brush>? CreateSolidColorBrush(D3DCOLORVALUE? color)
     {
         if (DeviceContext == null)
@@ -38,18 +40,25 @@ public class RenderContext
             return null;
 
         var value = color.Value;
-        DeviceContext.Object.CreateSolidColorBrush(value, 0, out var brush).ThrowOnError();
+        DeviceContext.Object.CreateSolidColorBrush(value, IntPtr.Zero, out var brush).ThrowOnError();
         return new ComObject<ID2D1Brush>(brush);
     }
 
     public virtual IComObject<T> CreateBitmapBrush<T>(ID2D1Bitmap bitmap, D2D1_BITMAP_BRUSH_PROPERTIES? bitmapBrushProperties = null, D2D1_BRUSH_PROPERTIES? brushProperties = null) where T : ID2D1BitmapBrush
     {
-        ArgumentNullException.ThrowIfNull(bitmap);
+        ExceptionExtensions.ThrowIfNull(bitmap, nameof(ExceptionExtensions));
         if (DeviceContext == null)
             throw new InvalidOperationException();
 
+#if NETFRAMEWORK
+        using var bprops = new ComMemory(bitmapBrushProperties);
+        using var props = new ComMemory(brushProperties);
+        DeviceContext.Object.CreateBitmapBrush(bitmap, bprops.Pointer, props.Pointer, out ID2D1BitmapBrush brush).ThrowOnError();
+        return new ComObject<T>((T)brush);
+#else
         DeviceContext.Object.CreateBitmapBrush(bitmap, bitmapBrushProperties.CopyToPointer(), brushProperties.CopyToPointer(), out ID2D1BitmapBrush brush).ThrowOnError();
         return new ComObject<T>((T)brush);
+#endif
     }
 
     public virtual IComObject<ID2D1Brush> CreateLinearGradientBrush(D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES properties, params D2D1_GRADIENT_STOP[] stops)
@@ -61,15 +70,26 @@ public class RenderContext
             throw new InvalidOperationException();
 
         var value = properties;
+#if NETFRAMEWORK
+        DeviceContext.Object.CreateGradientStopCollection(stops, stops.Length, D2D1_GAMMA.D2D1_GAMMA_2_2, D2D1_EXTEND_MODE.D2D1_EXTEND_MODE_CLAMP, out var coll).ThrowOnError();
+#else
         DeviceContext.Object.CreateGradientStopCollection(stops, (uint)stops.Length, D2D1_GAMMA.D2D1_GAMMA_2_2, D2D1_EXTEND_MODE.D2D1_EXTEND_MODE_CLAMP, out var coll).ThrowOnError();
+#endif
         try
         {
-            DeviceContext.Object.CreateLinearGradientBrush(value, 0, coll, out var brush).ThrowOnError();
+            DeviceContext.Object.CreateLinearGradientBrush(value, IntPtr.Zero, coll, out var brush).ThrowOnError();
             return new ComObject<ID2D1Brush>(brush);
         }
         finally
         {
+#if NETFRAMEWORK
+            if (coll != null)
+            {
+                Marshal.ReleaseComObject(coll);
+            }
+#else
             coll.FinalRelease();
+#endif
         }
     }
 
@@ -82,15 +102,26 @@ public class RenderContext
             throw new InvalidOperationException();
 
         var value = properties;
+#if NETFRAMEWORK
+        DeviceContext.Object.CreateGradientStopCollection(stops, stops.Length, gamma, extendMode, out var coll).ThrowOnError();
+#else
         DeviceContext.Object.CreateGradientStopCollection(stops, (uint)stops.Length, gamma, extendMode, out var coll).ThrowOnError();
+#endif
         try
         {
-            DeviceContext.Object.CreateRadialGradientBrush(value, 0, coll, out var brush).ThrowOnError();
+            DeviceContext.Object.CreateRadialGradientBrush(value, IntPtr.Zero, coll, out var brush).ThrowOnError();
             return new ComObject<ID2D1Brush>(brush);
         }
         finally
         {
+#if NETFRAMEWORK
+            if (coll != null)
+            {
+                Marshal.ReleaseComObject(coll);
+            }
+#else
             coll.FinalRelease();
+#endif
         }
     }
 }

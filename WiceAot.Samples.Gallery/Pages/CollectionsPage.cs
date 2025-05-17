@@ -19,6 +19,9 @@ public partial class CollectionsPage : SampleListPage
             yield return new EnumListBoxSampleList();
             yield return new FlagsEnumListBoxSampleList();
             yield return new ListBoxSampleList();
+#if NETFRAMEWORK
+            yield return new PropertyGridSampleList();
+#endif
         }
     }
 }

@@ -20,7 +20,7 @@ public class TextRenderingParameters
 
     public virtual void Set(HMONITOR monitorHandle, ID2D1DeviceContext context)
     {
-        ArgumentNullException.ThrowIfNull(context);
+        ExceptionExtensions.ThrowIfNull(context, nameof(context));
 
         var fac = Application.CurrentResourceManager.DWriteFactory.Object;
         var existing = FromMonitor(monitorHandle);

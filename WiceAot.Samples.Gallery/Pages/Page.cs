@@ -15,7 +15,11 @@ public abstract class Page : Titled
             const string postfix = nameof(Page);
             var typeName = GetType().Name;
             if (typeName.Length > postfix.Length && typeName.EndsWith(postfix))
+#if NETFRAMEWORK
+                return typeName.Substring(0, typeName.Length - postfix.Length);
+#else
                 return typeName[..^postfix.Length];
+#endif
 
             return typeName;
         }

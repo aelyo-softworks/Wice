@@ -5,7 +5,7 @@ public partial class SampleButton : ButtonBase
 {
     public SampleButton(SampleList sample)
     {
-        ArgumentNullException.ThrowIfNull(sample);
+        ExceptionExtensions.ThrowIfNull(sample, nameof(sample));
 
         Margin = D2D_RECT_F.Thickness(5);
         DoWhenAttachedToComposition(() => RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGray.ChangeAlpha(128).ToColor()));

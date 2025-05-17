@@ -60,10 +60,12 @@ public class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
             if (browsable != null && !browsable.Browsable)
                 continue;
 
-            var ev = new EnumBitValue(field.GetValue(null));
-            ev.Name = field.Name;
-            ev.BitValue = field.GetValue(null);
-            ev.DisplayName = field.GetCustomAttribute<DescriptionAttribute>()?.Description;
+            var ev = new EnumBitValue(field.GetValue(null))
+            {
+                Name = field.Name,
+                BitValue = field.GetValue(null),
+                DisplayName = field.GetCustomAttribute<DescriptionAttribute>()?.Description
+            };
             if (ev.DisplayName == null)
             {
                 ev.DisplayName = Decamelizer.Decamelize(ev.Name);

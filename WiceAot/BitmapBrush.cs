@@ -4,7 +4,7 @@ public class BitmapBrush : Brush
 {
     public BitmapBrush(ID2D1Bitmap bitmap, D2D1_BITMAP_BRUSH_PROPERTIES? bitmapBrushProperties = null, D2D1_BRUSH_PROPERTIES? brushProperties = null)
     {
-        ArgumentNullException.ThrowIfNull(bitmap);
+        ExceptionExtensions.ThrowIfNull(bitmap, nameof(bitmap));
         Bitmap = bitmap;
         BitmapBrushProperties = bitmapBrushProperties;
         BrushProperties = brushProperties;

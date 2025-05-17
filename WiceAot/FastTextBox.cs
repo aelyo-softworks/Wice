@@ -226,7 +226,11 @@ public partial class FastTextBox : TextBox
             var format = Visual.GetFormat();
             using var layout = Application.CurrentResourceManager.CreateTextLayout(format, sample);
             var metrics = layout.GetMetrics1();
+#if NETFRAMEWORK
+            return new D2D_SIZE_F(metrics.width / sample.Length, metrics.height);
+#else
             return new D2D_SIZE_F(metrics.Base.width / sample.Length, metrics.Base.height);
+#endif
         }
 
         public D2D_SIZE_F EnsureLinesParsed(D2D_SIZE_F constraint, bool refresh = false)
@@ -429,7 +433,11 @@ public partial class FastTextBox : TextBox
 
             var firstLine = Lines[firstLineIndex];
             if (lastLineIndex >= Lines.Length)
+#if NETFRAMEWORK
+                return Text.Substring(firstLine.Position);
+#else
                 return Text[firstLine.Position..];
+#endif
 
             var length = Lines[lastLineIndex].Position - firstLine.Position + Lines[lastLineIndex].Length;
             return Text.Substring(firstLine.Position, length);

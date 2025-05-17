@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.InteropServices;
-
-#if DEBUG
+﻿#if DEBUG
 [assembly: AssemblyConfiguration("DEBUG")]
 #else
 [assembly: AssemblyConfiguration("RELEASE")]
@@ -11,11 +8,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Wice")]
 [assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks 2020-2025. All rights reserved.")]
 [assembly: AssemblyCulture("")]
-
 [assembly: ComVisible(false)]
-
 [assembly: Guid("896d181f-1ad4-4c1b-b59d-0b07cffef070")]
-
-#if NET
-[assembly: System.Runtime.Versioning.SupportedOSPlatform("Windows10.0.17763.0")]
-#endif

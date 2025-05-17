@@ -5,6 +5,7 @@ public static class Extensions
     public static Size ToSize(this D2D_SIZE_F size) => new(size.width, size.height);
     public static Size ToSize(this SIZE size) => new(size.width, size.height);
     public static D2D_SIZE_F ToD2D_SIZE_F(this SIZE size) => new(size.width, size.height);
+    public static RECT ToRECT(this D2D_RECT_F rect) => new(rect.left, rect.top, rect.right, rect.bottom);
     public static Vector2 ToVector2(this SIZE size) => new(size.width, size.height);
     public static D2D_RECT_F ToRound(this D2D_RECT_F rect) => new(rect.left.Round(), rect.top.Round(), rect.right.Round(), rect.bottom.Round());
     public static System.Drawing.Point ToPoint(this POINT pt) => new(pt.x, pt.y);

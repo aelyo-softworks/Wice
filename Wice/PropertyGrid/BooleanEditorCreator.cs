@@ -7,8 +7,10 @@ public class BooleanEditorCreator : IEditorCreator
         if (value == null)
             throw new ArgumentNullException(nameof(value));
 
-        var toggle = new ToggleSwitch();
-        toggle.HorizontalAlignment = Alignment.Near;
+        var toggle = new ToggleSwitch
+        {
+            HorizontalAlignment = Alignment.Near
+        };
 
         if (value.Property.TryGetTargetValue(out bool targetValue))
         {

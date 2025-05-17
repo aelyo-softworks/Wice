@@ -49,7 +49,7 @@ public sealed partial class GalleryWindow : Window, IDisposable
         get
         {
             var cursor = NativeWindow.GetCursorPosition();
-            var area = DirectN.Extensions.Utilities.Monitor.All.First(m => m.Handle == DirectN.Extensions.Utilities.Monitor.GetNearestFromPoint(cursor.x, cursor.y)).WorkingArea;
+            var area = Monitor.All.First(m => m.Handle == Monitor.GetNearestFromPoint(cursor.x, cursor.y)).WorkingArea;
             return area;
         }
     }
@@ -137,6 +137,7 @@ public sealed partial class GalleryWindow : Window, IDisposable
         header.Height = 40;
         header.Icon.Text = page.IconText;
         header.Text.Text = page.HeaderText;
+        header.Text.IsEnabled = false;
         header.HoverRenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
         ConfigureHeaderText(header.Text);
         header.SelectedButton.IsVisible = false;
