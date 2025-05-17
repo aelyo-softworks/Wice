@@ -7,7 +7,11 @@ public partial class Window : Canvas, ITitleBarParent
 
     private static Visual? _mouseCaptorVisual;
     public static Visual? MouseCaptorVisual => _mouseCaptorVisual;
+#if NETFRAMEWORK
+    private readonly object _lock = new();
+#else
     private readonly Lock _lock = new();
+#endif
 
     private readonly ConcurrentList<Task> _tasks = [];
     private readonly List<WindowTimer> _timers = [];
@@ -95,9 +99,9 @@ public partial class Window : Canvas, ITitleBarParent
 
         FrameSize = 1;
         FrameColor = D3DCOLORVALUE.DimGray;
-        BorderWidth = Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXFRAME) + Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXPADDEDBORDER);
-        BorderHeight = Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYFRAME) + Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXPADDEDBORDER);
-        CreateRect = new RECT(Constants.CW_USEDEFAULT, Constants.CW_USEDEFAULT, Constants.CW_USEDEFAULT, Constants.CW_USEDEFAULT);
+        BorderWidth = WiceCommons.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXFRAME) + WiceCommons.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXPADDEDBORDER);
+        BorderHeight = WiceCommons.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYFRAME) + WiceCommons.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXPADDEDBORDER);
+        CreateRect = new RECT(WiceCommons.CW_USEDEFAULT, WiceCommons.CW_USEDEFAULT, WiceCommons.CW_USEDEFAULT, WiceCommons.CW_USEDEFAULT);
         Application.AddWindow(this);
         IsFocusable = true;
     }
@@ -167,7 +171,7 @@ public partial class Window : Canvas, ITitleBarParent
     public HMONITOR MonitorHandle { get; private set; }
 
     [Browsable(false)]
-    public DirectN.Extensions.Utilities.Monitor? Monitor => MonitorHandle != 0 ? new DirectN.Extensions.Utilities.Monitor(MonitorHandle) : null;
+    public Monitor? Monitor => MonitorHandle != 0 ? new Monitor(MonitorHandle) : null;
 
     [Category(CategoryLayout)]
     public RECT WindowRect => Native.WindowRect;
@@ -514,8 +518,7 @@ public partial class Window : Canvas, ITitleBarParent
         public WindowBaseObjectCollection(Window window, int maxChildrenCount = int.MaxValue)
             : base(maxChildrenCount)
         {
-            ArgumentNullException.ThrowIfNull(window);
-
+            ExceptionExtensions.ThrowIfNull(window, nameof(window));
             _window = window;
         }
 
@@ -662,8 +665,8 @@ public partial class Window : Canvas, ITitleBarParent
     {
         public int Compare(Visual? x, Visual? y)
         {
-            ArgumentNullException.ThrowIfNull(x);
-            ArgumentNullException.ThrowIfNull(y);
+            ExceptionExtensions.ThrowIfNull(x, nameof(x));
+            ExceptionExtensions.ThrowIfNull(y, nameof(y));
             var cmp = -x.ViewOrder.CompareTo(y.ViewOrder);
 #if DEBUG
             //Application.Trace("x ► " + x.FullName + " y ► " + y.FullName + " => " + cmp);
@@ -681,9 +684,9 @@ public partial class Window : Canvas, ITitleBarParent
             var dxgiQueue = obj.As<IDXGIInfoQueue>();
             if (dxgiQueue != null)
             {
-                dxgiQueue.Object.SetBreakOnSeverity(Constants.DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY.DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true).ThrowOnError();
-                dxgiQueue.Object.SetBreakOnSeverity(Constants.DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY.DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true).ThrowOnError();
-                dxgiQueue.Object.SetBreakOnSeverity(Constants.DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY.DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, true).ThrowOnError();
+                dxgiQueue.Object.SetBreakOnSeverity(WiceCommons.DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY.DXGI_INFO_QUEUE_MESSAGE_SEVERITY_ERROR, true).ThrowOnError();
+                dxgiQueue.Object.SetBreakOnSeverity(WiceCommons.DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY.DXGI_INFO_QUEUE_MESSAGE_SEVERITY_CORRUPTION, true).ThrowOnError();
+                dxgiQueue.Object.SetBreakOnSeverity(WiceCommons.DXGI_DEBUG_ALL, DXGI_INFO_QUEUE_MESSAGE_SEVERITY.DXGI_INFO_QUEUE_MESSAGE_SEVERITY_WARNING, true).ThrowOnError();
             }
 
             var d3dQueue = obj.As<ID3D11InfoQueue>();
@@ -698,7 +701,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     public static void CreateDefaultToolTipContent(ToolTip parent, string text)
     {
-        ArgumentNullException.ThrowIfNull(parent);
+        ExceptionExtensions.ThrowIfNull(parent, nameof(parent));
         if (parent.Compositor == null)
             throw new InvalidOperationException();
 
@@ -747,7 +750,7 @@ public partial class Window : Canvas, ITitleBarParent
     public bool Center() => Native.Center();
     public bool Center(HWND alternateOwner) => Native.Center(alternateOwner);
     public bool SetForeground() => Native.SetForeground();
-    public DirectN.Extensions.Utilities.Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => Native?.GetMonitor(flags);
+    public Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => Native?.GetMonitor(flags);
     public void EnableBlurBehind() => Native.EnableBlurBehind();
     public bool Resize(int width, int height) => Native.Resize(width, height);
     public POINT ScreenToClient(POINT pt) => Native.ScreenToClient(pt);
@@ -779,7 +782,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     public virtual Task RunTaskOnMainThread(Action action, bool startNew = false)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!startNew && IsRunningAsMainThread)
         {
             action();
@@ -948,11 +951,11 @@ public partial class Window : Canvas, ITitleBarParent
 
     public virtual DROPEFFECT DoDragDrop(Visual visual, IDataObject dataObject, DROPEFFECT allowedEffects)
     {
-        ArgumentNullException.ThrowIfNull(visual);
-        ArgumentNullException.ThrowIfNull(dataObject);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
+        ExceptionExtensions.ThrowIfNull(dataObject, nameof(dataObject));
         try
         {
-            Functions.DoDragDrop(dataObject, Native, allowedEffects, out var effect).ThrowOnError();
+            WiceCommons.DoDragDrop(dataObject, Native, allowedEffects, out var effect).ThrowOnError();
             return effect;
         }
         catch (Exception ex)
@@ -1200,7 +1203,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     public void WithInvalidationsProcessingSuspended(Action action)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (Interlocked.Increment(ref _invalidationsSuspended) == 1)
         {
             _suspendedInvalidations.Clear();
@@ -1229,7 +1232,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     public virtual void Invalidate(Visual visual, VisualPropertyInvalidateModes modes, InvalidateReason? reason = null)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
         reason ??= new InvalidateReason(GetType());
 
         if (_invalidationsSuspended > 0)
@@ -1746,7 +1749,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     public virtual void Animate(Action action, Action? onCompleted = null, CompositionBatchTypes types = CompositionBatchTypes.Animation)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
 
         var compositor = Compositor;
         if (compositor == null)
@@ -1795,13 +1798,13 @@ public partial class Window : Canvas, ITitleBarParent
                 else
                 {
                     var rcFrame = new RECT();
-                    var dpi = Functions.GetDpiForWindow(handle);
+                    var dpi = WiceCommons.GetDpiForWindow(handle);
                     if (dpi <= 0)
                     {
                         dpi = 96;
                     }
 
-                    Functions.AdjustWindowRectExForDpi(ref rcFrame, FinalStyle, false, ExtendedStyle, dpi);
+                    WiceCommons.AdjustWindowRectExForDpi(ref rcFrame, FinalStyle, false, ExtendedStyle, dpi);
                     rc = rcFrame.Abs;
                 }
                 _extendFrameIntoClientRect = rc;
@@ -1896,7 +1899,7 @@ public partial class Window : Canvas, ITitleBarParent
             title = Conversions.Decamelize(Assembly.GetEntryAssembly().GetTitle());
         }
 
-        var hwnd = Functions.CreateWindowExW(FinalExtendedStyle, PWSTR.From(ClassName), PWSTR.From(title), FinalStyle, rc.left, rc.top, rc.Width, rc.Height, ParentHandle, HMENU.Null, HINSTANCE.Null, ptr);
+        var hwnd = WiceCommons.CreateWindowExW(FinalExtendedStyle, PWSTR.From(ClassName), PWSTR.From(title), FinalStyle, rc.left, rc.top, rc.Width, rc.Height, ParentHandle, HMENU.Null, HINSTANCE.Null, ptr);
         if (hwnd.Value == 0)
             throw new Win32Exception(Marshal.GetLastWin32Error());
 
@@ -2405,8 +2408,8 @@ public partial class Window : Canvas, ITitleBarParent
 
     protected virtual void AddToolTip(Visual placementTarget, Action<ToolTip> contentCreator, EventArgs e)
     {
-        ArgumentNullException.ThrowIfNull(placementTarget);
-        ArgumentNullException.ThrowIfNull(contentCreator);
+        ExceptionExtensions.ThrowIfNull(placementTarget, nameof(placementTarget));
+        ExceptionExtensions.ThrowIfNull(contentCreator, nameof(contentCreator));
 
         var tt = CreateToolTip();
         if (tt == null)
@@ -2802,7 +2805,7 @@ public partial class Window : Canvas, ITitleBarParent
         protected override IEnumerable<Task> GetScheduledTasks() => Window._tasks;
         protected override void QueueTask(Task task)
         {
-            ArgumentNullException.ThrowIfNull(task);
+            ExceptionExtensions.ThrowIfNull(task, nameof(task));
 
             Window._tasks.Add(task);
             Window.Native.PostMessage(WM_PROCESS_TASKS);
@@ -2840,7 +2843,7 @@ public partial class Window : Canvas, ITitleBarParent
     private static LRESULT CompositionWindowProc(Window? win, HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam, out bool callDef)
     {
         RECT rc;
-        callDef = !Functions.DwmDefWindowProc(hwnd, msg, wParam, lParam, out var ret);
+        callDef = !WiceCommons.DwmDefWindowProc(hwnd, msg, wParam, lParam, out var ret);
         switch (msg)
         {
             case MessageDecoder.WM_NCCREATE:
@@ -3069,22 +3072,22 @@ public partial class Window : Canvas, ITitleBarParent
                     switch (ht)
                     {
                         case HT.HTCLOSE:
-                            Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_CLOSE });
+                            WiceCommons.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_CLOSE });
                             break;
 
                         case HT.HTMAXBUTTON:
                             if (win.IsZoomed)
                             {
-                                Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_RESTORE });
+                                WiceCommons.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_RESTORE });
                             }
                             else
                             {
-                                Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_MAXIMIZE });
+                                WiceCommons.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_MAXIMIZE });
                             }
                             break;
 
                         case HT.HTMINBUTTON:
-                            Functions.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_MINIMIZE });
+                            WiceCommons.SendMessageW(hwnd, MessageDecoder.WM_SYSCOMMAND, new WPARAM { Value = (int)SC.SC_MINIMIZE });
                             break;
                     }
                 }
@@ -3128,10 +3131,10 @@ public partial class Window : Canvas, ITitleBarParent
                 // determine double click
                 if (!isUp)
                 {
-                    var cx = Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXDOUBLECLK);
-                    var cy = Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYDOUBLECLK);
+                    var cx = WiceCommons.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CXDOUBLECLK);
+                    var cy = WiceCommons.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_CYDOUBLECLK);
 
-                    pce.IsDoubleClick = ((win._lastPointerDownTime + Functions.GetDoubleClickTime() * 10000) > info.PerformanceCount)
+                    pce.IsDoubleClick = ((win._lastPointerDownTime + WiceCommons.GetDoubleClickTime() * 10000) > info.PerformanceCount)
                         && (Math.Abs(win._lastPointerDownPositionX - pt.x) < cx)
                         && (Math.Abs(win._lastPointerDownPositionY - pt.y) < cy);
 
@@ -3320,7 +3323,7 @@ public partial class Window : Canvas, ITitleBarParent
                         time = Application.CurrentTheme.ToolTipReshowTime;
                         if (time <= 0)
                         {
-                            time = Functions.GetDoubleClickTime() / 5;
+                            time = WiceCommons.GetDoubleClickTime() / 5;
                         }
                     }
                     else
@@ -3328,16 +3331,16 @@ public partial class Window : Canvas, ITitleBarParent
                         time = Application.CurrentTheme.ToolTipInitialTime;
                         if (time <= 0)
                         {
-                            time = Functions.GetDoubleClickTime();
+                            time = WiceCommons.GetDoubleClickTime();
                         }
                     }
 
                     tme.dwHoverTime = time;
-                    Functions.TrackMouseEvent(ref tme);
+                    WiceCommons.TrackMouseEvent(ref tme);
                     //Application.Trace("Tracking");
 
                     // https://stackoverflow.com/a/51037982/403671
-                    Functions.SetTimer(hwnd, MOUSE_TRACK_TIMER_ID, 250, null);
+                    WiceCommons.SetTimer(hwnd, MOUSE_TRACK_TIMER_ID, 250, null);
                 }
 
                 win.OnMouseEvent(msg, new MouseEventArgs(lParam.Value.SignedLOWORD(), lParam.Value.SignedHIWORD(), (POINTER_MOD)wParam.Value.ToUInt32()));
@@ -3406,7 +3409,7 @@ public partial class Window : Canvas, ITitleBarParent
                     win._mouseTracking = false;
 
                     // https://stackoverflow.com/a/51037982/403671
-                    Functions.KillTimer(hwnd, MOUSE_TRACK_TIMER_ID);
+                    WiceCommons.KillTimer(hwnd, MOUSE_TRACK_TIMER_ID);
                 }
                 return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
@@ -3492,7 +3495,7 @@ public partial class Window : Canvas, ITitleBarParent
             case MessageDecoder.WM_SIZE:
                 var sized = wParam.Value.ToUInt32();
                 //Application.Trace("WM_SIZE sized: " + sized);
-                if (sized == Constants.SIZE_MINIMIZED)
+                if (sized == WiceCommons.SIZE_MINIMIZED)
                     break;
 
                 if (win == null)

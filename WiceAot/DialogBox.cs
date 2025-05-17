@@ -146,7 +146,7 @@ public partial class DialogBox : Dialog
 #if DEBUG
         button.Name = command + "Button";
 #endif
-        button.Text.Text = Functions.GetMessageBoxString(command) ?? string.Empty;
+        button.Text.Text = WiceCommons.GetMessageBoxString(command) ?? string.Empty;
         button.Command = command;
         button.AccessKeys.AddRange(accessKeys);
 

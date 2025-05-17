@@ -28,6 +28,6 @@ public partial class GeometrySource2D : IGeometrySource2D, Windows.Graphics.IGeo
     HRESULT Windows.Graphics.IGeometrySource2DInterop.GetGeometry(out ID2D1Geometry value)
     {
         value = Geometry!;
-        return value == null ? Constants.E_FAIL : Constants.S_OK;
+        return value == null ? Constants.E_FAIL : WiceCommons.S_OK;
     }
 }

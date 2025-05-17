@@ -5,29 +5,9 @@ public class KeyEventArgs : HandledEventArgs
     internal KeyEventArgs(VIRTUAL_KEY vk, uint states)
     {
         Key = vk;
-        WithShift = NativeWindow.IsKeyPressed(
-#if NETFRAMEWORK
-            VIRTUAL_KEY.ShiftKey
-#else
-            VIRTUAL_KEY.VK_SHIFT
-#endif
-            );
-
-        WithControl = NativeWindow.IsKeyPressed(
-#if NETFRAMEWORK
-            VIRTUAL_KEY.ControlKey
-#else
-            VIRTUAL_KEY.VK_CONTROL
-#endif
-            );
-
-        WithMenu = NativeWindow.IsKeyPressed(
-#if NETFRAMEWORK
-            VIRTUAL_KEY.Menu
-#else
-            VIRTUAL_KEY.VK_MENU
-#endif
-            );
+        WithShift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
+        WithControl = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
+        WithMenu = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_MENU);
 
         // https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-keydown
         ScanCode = (int)((states >> 16) & 0xF);

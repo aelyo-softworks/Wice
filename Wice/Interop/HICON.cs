@@ -1,6 +1,6 @@
-﻿namespace Wice;
+﻿namespace Wice.Interop;
 
-public partial struct HICON : IEquatable<HICON>
+public struct HICON : IEquatable<HICON>
 {
     public static readonly HICON Null = new();
 

@@ -194,7 +194,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetEffectId(out Guid id)
     {
         id = Clsid;
-        return Constants.S_OK;
+        return WiceCommons.S_OK;
     }
 
     HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetNamedPropertyMapping(PWSTR name, out uint index, out GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
@@ -214,7 +214,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
 
         index = (uint)def.Index;
         mapping = def.Mapping;
-        return Constants.S_OK;
+        return WiceCommons.S_OK;
     }
 
     HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetPropertyCount(out uint count)
@@ -222,7 +222,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         var defs = GetPropDefs(GetType());
         count = (uint)defs.Count;
         //Application.Trace(this + " count:" + count);
-        return Constants.S_OK;
+        return WiceCommons.S_OK;
     }
 
     HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetProperty(uint index, out nint value)
@@ -259,7 +259,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         }
 
         source = _sources[(int)index];
-        return Constants.S_OK;
+        return WiceCommons.S_OK;
     }
 
     HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetSourceCount(out uint count)
@@ -273,6 +273,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
             count = MaximumSourcesCount;
         }
         //Application.Trace(this + " count:" + count);
-        return Constants.S_OK;
+        return WiceCommons.S_OK;
     }
 }

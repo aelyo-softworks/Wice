@@ -1,30 +1,9 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using DirectN;
-using Windows.Foundation;
-
-namespace Wice.Interop
+﻿namespace Wice.Interop
 {
-#if NET
-    [ComImport, Guid("629BDBC8-D932-4FF4-96B9-8D96C5C1E858"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    public interface IPropertyValueStatics : IInspectable
-    {
-        // IInspectable
-        [PreserveSig]
-        new HRESULT GetIids(out int iidCount, out IntPtr iids);
-
-        [PreserveSig]
-        new HRESULT GetRuntimeClassName([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(HStringMarshaler))] out string className);
-
-        [PreserveSig]
-        new HRESULT GetTrustLevel(out TrustLevel trustLevel);
-
-#else
     // note: we can't use IInspectable or IPropertyValue for return values here, as the .NET Framework plays too many tricks with these
     [ComImport, Guid("629BDBC8-D932-4FF4-96B9-8D96C5C1E858"), InterfaceType(ComInterfaceType.InterfaceIsIInspectable)]
     public interface IPropertyValueStatics
     {
-#endif
         [PreserveSig]
         HRESULT CreateEmpty(out IntPtr propertyValue);
 

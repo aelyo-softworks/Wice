@@ -847,7 +847,7 @@ public partial class Visual : BaseObject
 
     public T? DoWhenAttachedToParent<T>(Func<T> func, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(func);
+        ExceptionExtensions.ThrowIfNull(func, nameof(func));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Parent != null)
@@ -869,7 +869,7 @@ public partial class Visual : BaseObject
 
     public void DoWhenAttachedToParent(Action action, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Parent != null)
@@ -894,7 +894,7 @@ public partial class Visual : BaseObject
 
     public T? DoWhenDetachingFromParent<T>(Func<T> func, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(func);
+        ExceptionExtensions.ThrowIfNull(func, nameof(func));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Parent != null)
@@ -916,7 +916,7 @@ public partial class Visual : BaseObject
 
     public void DoWhenDetachingFromParent(Action action, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Parent != null)
@@ -941,7 +941,7 @@ public partial class Visual : BaseObject
 
     public T? DoWhenDetachedFromParent<T>(Func<T> func, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(func);
+        ExceptionExtensions.ThrowIfNull(func, nameof(func));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Parent == null)
@@ -963,7 +963,7 @@ public partial class Visual : BaseObject
 
     public void DoWhenDetachedFromParent(Action action, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Parent == null)
@@ -988,7 +988,7 @@ public partial class Visual : BaseObject
 
     public T? DoWhenAttachedToComposition<T>(Func<T> func, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(func);
+        ExceptionExtensions.ThrowIfNull(func, nameof(func));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Window != null)
@@ -1010,7 +1010,7 @@ public partial class Visual : BaseObject
 
     public void DoWhenAttachedToComposition(Action action, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Window != null)
@@ -1035,7 +1035,7 @@ public partial class Visual : BaseObject
 
     public T? DoWhenDetachingFromComposition<T>(Func<T> func, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(func);
+        ExceptionExtensions.ThrowIfNull(func, nameof(func));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Window != null)
@@ -1057,7 +1057,7 @@ public partial class Visual : BaseObject
 
     public void DoWhenDetachingFromComposition(Action action, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Window != null)
@@ -1082,7 +1082,7 @@ public partial class Visual : BaseObject
 
     public T? DoWhenDetachedFromComposition<T>(Func<T> func, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(func);
+        ExceptionExtensions.ThrowIfNull(func, nameof(func));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Window == null)
@@ -1104,7 +1104,7 @@ public partial class Visual : BaseObject
 
     public void DoWhenDetachedFromComposition(Action action, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (Window == null)
@@ -1129,7 +1129,7 @@ public partial class Visual : BaseObject
 
     public T? DoWhenMeasured<T>(Func<T> func, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(func);
+        ExceptionExtensions.ThrowIfNull(func, nameof(func));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (DesiredSize.IsValid)
@@ -1151,7 +1151,7 @@ public partial class Visual : BaseObject
 
     public void DoWhenMeasured(Action action, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (DesiredSize.IsValid)
@@ -1176,7 +1176,7 @@ public partial class Visual : BaseObject
 
     public T? DoWhenArranged<T>(Func<T> func, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(func);
+        ExceptionExtensions.ThrowIfNull(func, nameof(func));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (ArrangedRect.IsValid)
@@ -1198,7 +1198,7 @@ public partial class Visual : BaseObject
 
     public void DoWhenArranged(Action action, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (ArrangedRect.IsValid)
@@ -1223,7 +1223,7 @@ public partial class Visual : BaseObject
 
     public T? DoWhenRendered<T>(Func<T> func, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(func);
+        ExceptionExtensions.ThrowIfNull(func, nameof(func));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (AbsoluteRenderBounds.IsValid)
@@ -1245,7 +1245,7 @@ public partial class Visual : BaseObject
 
     public void DoWhenRendered(Action action, VisualDoOptions options = VisualDoOptions.None)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!options.HasFlag(VisualDoOptions.DeferredOnly))
         {
             if (AbsoluteRenderBounds.IsValid)
@@ -1364,7 +1364,11 @@ public partial class Visual : BaseObject
             {
                 case FocusDirection.Previous:
                     if (index < 0)
+#if NETFRAMEWORK
+                        return all[all.Count - 1];
+#else
                         return all[^1];
+#endif
 
                     if ((index - 1) >= 0)
                         return all[index - 1];
@@ -1400,7 +1404,11 @@ public partial class Visual : BaseObject
             {
                 case FocusDirection.Previous:
                     if (index == 0 && all.Count > 1)
+#if NETFRAMEWORK
+                        return all[all.Count - 1];
+#else
                         return all[^1];
+#endif
 
                     break;
 
@@ -1894,7 +1902,7 @@ public partial class Visual : BaseObject
     protected bool SetPropertyValue(BaseObjectProperty property, object? value, VisualPropertyInvalidateModes modes) => SetPropertyValue(property, value, new VisualSetOptions { InvalidateModes = modes });
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
         property = BaseObjectProperty.GetFinal(GetType(), property);
         var im = ((property as VisualProperty)?.InvalidateModes).GetValueOrDefault();
 
@@ -2365,7 +2373,7 @@ public partial class Visual : BaseObject
 
     protected virtual void SetCompositionVisualSizeAndOffset(ContainerVisual visual)
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
 
         var rr = RelativeRenderRect;
         if (!SuspendedCompositionParts.HasFlag(CompositionUpdateParts.Size))
@@ -2636,7 +2644,7 @@ public partial class Visual : BaseObject
 
     protected virtual DragState DragMove(MouseButtonEventArgs e)
     {
-        ArgumentNullException.ThrowIfNull(e);
+        ExceptionExtensions.ThrowIfNull(e, nameof(e));
         if (DragState != null)
             return DragState;
 

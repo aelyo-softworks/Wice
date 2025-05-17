@@ -15,7 +15,7 @@ public partial class Caret : Border
     {
         DisableKeyEvents = true;
         DisablePointerEvents = true;
-        BlinkTime = Functions.GetCaretBlinkTime();
+        BlinkTime = WiceCommons.GetCaretBlinkTime();
         if (BlinkTime == 0 || BlinkTime == uint.MaxValue) // we always want to display a caret
         {
             // default seems 530
@@ -52,7 +52,7 @@ public partial class Caret : Border
             uint width = 0;
             unsafe
             {
-                Functions.SystemParametersInfoW(SYSTEM_PARAMETERS_INFO_ACTION.SPI_GETCARETWIDTH, 0, (nint)(&width), 0);
+                WiceCommons.SystemParametersInfoW(SYSTEM_PARAMETERS_INFO_ACTION.SPI_GETCARETWIDTH, 0, (nint)(&width), 0);
             }
             return width;
         }
@@ -127,7 +127,7 @@ public partial class Caret : Border
             }
             else
             {
-                Functions.DestroyCaret(); // mostly for UI automation support
+                WiceCommons.DestroyCaret(); // mostly for UI automation support
                 StopBlinking();
                 IsVisible = false;
             }

@@ -4,58 +4,18 @@ public class KeyPressEventArgs : HandledEventArgs
 {
     internal KeyPressEventArgs(char[] characters)
     {
-        WithShift = NativeWindow.IsKeyPressed(
-#if NETFRAMEWORK
-            VIRTUAL_KEY.ShiftKey
-#else
-            VIRTUAL_KEY.VK_SHIFT
-#endif
-            );
-
-        WithControl = NativeWindow.IsKeyPressed(
-#if NETFRAMEWORK
-            VIRTUAL_KEY.ControlKey
-#else
-            VIRTUAL_KEY.VK_CONTROL
-#endif
-            );
-
-        WithMenu = NativeWindow.IsKeyPressed(
-#if NETFRAMEWORK
-            VIRTUAL_KEY.Menu
-#else
-            VIRTUAL_KEY.VK_MENU
-#endif
-            );
+        WithShift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
+        WithControl = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
+        WithMenu = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_MENU);
         UTF32Character = characters[0];
         Characters = characters;
     }
 
     internal KeyPressEventArgs(uint character)
     {
-        WithShift = NativeWindow.IsKeyPressed(
-#if NETFRAMEWORK
-            VIRTUAL_KEY.ShiftKey
-#else
-            VIRTUAL_KEY.VK_SHIFT
-#endif
-            );
-
-        WithControl = NativeWindow.IsKeyPressed(
-#if NETFRAMEWORK
-            VIRTUAL_KEY.ControlKey
-#else
-            VIRTUAL_KEY.VK_CONTROL
-#endif
-            );
-
-        WithMenu = NativeWindow.IsKeyPressed(
-#if NETFRAMEWORK
-            VIRTUAL_KEY.Menu
-#else
-            VIRTUAL_KEY.VK_MENU
-#endif
-            );
+        WithShift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
+        WithControl = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
+        WithMenu = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_MENU);
         UTF32Character = character;
 
         // convert the UTF32 character code from the Window message to UTF16, yielding 1-2 code-units.

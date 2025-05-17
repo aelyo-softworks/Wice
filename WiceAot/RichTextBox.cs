@@ -82,7 +82,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
             {
                 *(WINDOW_EX_STYLE*)pdwExStyle = window.ExtendedStyle;
             }
-            return Constants.S_OK;
+            return WiceCommons.S_OK;
         }
 
         public unsafe override HRESULT TxGetWindow(nint phwnd)
@@ -95,7 +95,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
                 return base.TxGetWindow(phwnd);
 
             *(HWND*)phwnd = window.Handle;
-            return Constants.S_OK;
+            return WiceCommons.S_OK;
         }
 
         public override void TxViewChange(BOOL fUpdate)

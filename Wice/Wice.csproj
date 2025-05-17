@@ -5,6 +5,7 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<LangVersion>default</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -152,6 +153,7 @@
 	  <Compile Include="..\WiceAot\IDataSourceVisual.cs" Link="IDataSourceVisual.cs" />
 	  <Compile Include="..\WiceAot\IFocusableParent.cs" Link="IFocusableParent.cs" />
 	  <Compile Include="..\WiceAot\IModalVisual.cs" Link="IModalVisual.cs" />
+	  <Compile Include="..\WiceAot\Interop\WiceCommons.cs" Link="Interop\WiceCommons.cs" />
 	  <Compile Include="..\WiceAot\InvalidateMode.cs" Link="InvalidateMode.cs" />
 	  <Compile Include="..\WiceAot\InvalidateReason.cs" Link="InvalidateReason.cs" />
 	  <Compile Include="..\WiceAot\IOneChildParent.cs" Link="IOneChildParent.cs" />
@@ -172,6 +174,7 @@
 	  <Compile Include="..\WiceAot\MouseButtonEventArgs.cs" Link="MouseButtonEventArgs.cs" />
 	  <Compile Include="..\WiceAot\MouseEventArgs.cs" Link="MouseEventArgs.cs" />
 	  <Compile Include="..\WiceAot\MouseWheelEventArgs.cs" Link="MouseWheelEventArgs.cs" />
+	  <Compile Include="..\WiceAot\NativeWindow.cs" Link="NativeWindow.cs" />
 	  <Compile Include="..\WiceAot\Orientation.cs" Link="Orientation.cs" />
 	  <Compile Include="..\WiceAot\PlacementMode.cs" Link="PlacementMode.cs" />
 	  <Compile Include="..\WiceAot\PointerActivateEventArgs.cs" Link="PointerActivateEventArgs.cs" />
@@ -215,11 +218,13 @@
 	  <Compile Include="..\WiceAot\Utilities\UIExtensions.cs" Link="Utilities\UIExtensions.cs" />
 	  <Compile Include="..\WiceAot\Utilities\UndoStack.cs" Link="Utilities\UndoStack.cs" />
 	  <Compile Include="..\WiceAot\ValueEventArgs.cs" Link="ValueEventArgs.cs" />
+	  <Compile Include="..\WiceAot\Visual.cs" Link="Visual.cs" />
 	  <Compile Include="..\WiceAot\VisualDoOptions.cs" Link="VisualDoOptions.cs" />
 	  <Compile Include="..\WiceAot\VisualProperty.cs" Link="VisualProperty.cs" />
 	  <Compile Include="..\WiceAot\VisualPropertyInvalidateModes.cs" Link="VisualPropertyInvalidateModes.cs" />
 	  <Compile Include="..\WiceAot\VisualSetOptions.cs" Link="VisualSetOptions.cs" />
 	  <Compile Include="..\WiceAot\WiceException.cs" Link="WiceException.cs" />
+	  <Compile Include="..\WiceAot\Window.cs" Link="Window.cs" />
 	  <Compile Include="..\WiceAot\WindowsFrameMode.cs" Link="WindowsFrameMode.cs" />
 	  <Compile Include="..\WiceAot\WindowTimer.cs" Link="WindowTimer.cs" />
 	</ItemGroup>
@@ -259,6 +264,7 @@
 		<Using Include="System.Security.Cryptography" />
 		<Using Include="System.Text" />
 		<Using Include="System.Threading" />
+		<Using Include="System.Threading.Tasks" />
 		<Using Include="Wice.Animation" />
 		<Using Include="Wice.Effects" />
 		<Using Include="Wice.Interop" />
@@ -271,10 +277,23 @@
 		<Using Include="Windows.UI.Composition" />
 		<Using Include="Windows.UI.Composition.Core" />
 		<Using Include="Windows.UI.Composition.Diagnostics" />
+		<Using Alias="Lock" Include="System.Object" />
+		<Using Alias="Monitor" Include="DirectN.Monitor" />
 		<Using Alias="D3DCOLORVALUE" Include="DirectN._D3DCOLORVALUE" />
+		<Using Alias="MESSAGEBOX_RESULT" Include="DirectN.DialogBoxCommand" />
+		<Using Alias="MONITOR_FROM_FLAGS" Include="DirectN.MONITOR_FLAGS" />
 		<Using Alias="POINT" Include="DirectN.tagPOINT" />
+		<Using Alias="POINTL" Include="DirectN.tagPOINT" />
 		<Using Alias="RECT" Include="DirectN.tagRECT" />
-		<Using Alias="VIRTUAL_KEY" Include="DirectN.VirtualKeys" />
+		<Using Alias="SHOW_WINDOW_CMD" Include="DirectN.SW" />
+		<Using Alias="SIZE" Include="DirectN.tagSIZE" />
+		<Using Alias="SYSTEM_METRICS_INDEX" Include="DirectN.SM" />
+		<Using Alias="SET_WINDOW_POS_FLAGS" Include="DirectN.SWP" />
+		<Using Alias="WINDOW_STYLE" Include="DirectN.WS" />
+		<Using Alias="WINDOW_EX_STYLE" Include="DirectN.WS_EX" />
+		<Using Alias="WINDOW_DISPLAY_AFFINITY" Include="DirectN.WDA" />
+		<Using Alias="WNDCLASSW" Include="DirectN.WNDCLASS" />
+	
 	</ItemGroup>
 
 	<ItemGroup>
