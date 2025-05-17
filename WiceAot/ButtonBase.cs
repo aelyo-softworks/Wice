@@ -59,7 +59,7 @@ public partial class ButtonBase : Border, IAccessKeyParent, IClickable
 
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (!IsEnabled)
+        if (!IsEnabled || !IsFocused)
             return;
 
         if (e.Key == VIRTUAL_KEY.VK_SPACE)
