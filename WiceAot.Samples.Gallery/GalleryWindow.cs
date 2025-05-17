@@ -138,6 +138,7 @@ public sealed partial class GalleryWindow : Window, IDisposable
         header.Icon.Text = page.IconText;
         header.Text.Text = page.HeaderText;
         header.Text.IsEnabled = false;
+        header.AccessKeys.Add(new AccessKey(VIRTUAL_KEY.VK_SPACE));
         header.HoverRenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
         ConfigureHeaderText(header.Text);
         header.SelectedButton.IsVisible = false;
