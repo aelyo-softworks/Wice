@@ -6,10 +6,12 @@ public class SimpleDockSample : Sample
 
     public override void Layout(Visual parent)
     {
-        var dock = new Wice.Dock();
-        dock.Width = 120;
-        dock.Height = 120;
-        dock.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor());
+        var dock = new Wice.Dock
+        {
+            Width = 120,
+            Height = 120,
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor())
+        };
         parent.Children.Add(dock);
         Wice.Dock.SetDockType(dock, DockType.Top); // remove from display
 

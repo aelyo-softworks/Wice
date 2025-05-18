@@ -86,10 +86,12 @@ public partial class AboutPage : Page
             dlg.Content.Children.Add(tlb);
 
 #if NETFRAMEWORK
-            var pg = new PropertyGrid.PropertyGrid();
-            pg.CellMargin = D2D_RECT_F.Thickness(5, 0);
-            pg.Margin = D2D_RECT_F.Thickness(10);
-            pg.SelectedObject = new DiagnosticsInformation(null, Window);
+            var pg = new PropertyGrid.PropertyGrid
+            {
+                CellMargin = D2D_RECT_F.Thickness(5, 0),
+                Margin = D2D_RECT_F.Thickness(10),
+                SelectedObject = new DiagnosticsInformation(null, Window)
+            };
 #else
             var pg = new PropertyGrid.PropertyGrid<SystemInformation>
             {

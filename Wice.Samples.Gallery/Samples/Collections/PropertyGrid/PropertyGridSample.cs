@@ -7,13 +7,17 @@ public class PropertyGridSample : Sample
     public override void Layout(Visual parent)
     {
         // wrap the property grid in a scroll viewer
-        var sv = new ScrollViewer();
-        sv.Height = 500;
-        sv.Width = 500;
+        var sv = new ScrollViewer
+        {
+            Height = 500,
+            Width = 500
+        };
         parent.Children.Add(sv);
 
-        var pg = new Wice.PropertyGrid.PropertyGrid();
-        pg.CellMargin = 5;
+        var pg = new Wice.PropertyGrid.PropertyGrid
+        {
+            CellMargin = 5
+        };
         sv.Viewer.Child = pg;
 
         // use a custom complex object for demonstration

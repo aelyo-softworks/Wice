@@ -178,17 +178,21 @@ internal partial class TestWindow : Window
 
     public void ShowPdfView()
     {
-        var pdfView = new PdfView();
-        pdfView.SourceFilePath = @"resources\sample.pdf";
-        pdfView.Margin = D2D_RECT_F.Thickness(10, 10, 10, 10);
+        var pdfView = new PdfView
+        {
+            SourceFilePath = @"resources\sample.pdf",
+            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10)
+        };
         Children.Add(pdfView);
     }
 
     public void ShowWebView()
     {
-        var webView = new WebView();
-        webView.SourceUri = "https://www.bing.com";
-        webView.Margin = D2D_RECT_F.Thickness(10, 10, 10, 10);
+        var webView = new WebView
+        {
+            SourceUri = "https://www.bing.com",
+            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10)
+        };
         Children.Add(webView);
     }
 
@@ -494,9 +498,11 @@ internal partial class TestWindow : Window
         Children.Add(sv);
         //Children.Add(txt);
 
-        var btn = new Button();
-        btn.VerticalAlignment = Alignment.Near;
-        btn.Name = "btn";
+        var btn = new Button
+        {
+            VerticalAlignment = Alignment.Near,
+            Name = "btn"
+        };
         btn.Text.Text = "click";
         //Children.Add(btn);
     }

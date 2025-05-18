@@ -278,9 +278,11 @@ public class TestWindow : Window
         Dock.SetDockType(sv, DockType.Bottom);
         dock.Children.Add(sv);
 
-        var rtb = new RichTextBox();
-        rtb.VerticalAlignment = Alignment.Near;
-        rtb.Text = pages[0];
+        var rtb = new RichTextBox
+        {
+            VerticalAlignment = Alignment.Near,
+            Text = pages[0]
+        };
         sv.Viewer.Child = rtb;
 
         foreach (var i in Enumerable.Range(0, pagesCount))
@@ -394,9 +396,11 @@ public class TestWindow : Window
         Children.Add(sv);
         //Children.Add(txt);
 
-        var btn = new Button();
-        btn.VerticalAlignment = Alignment.Near;
-        btn.Name = "btn";
+        var btn = new Button
+        {
+            VerticalAlignment = Alignment.Near,
+            Name = "btn"
+        };
         btn.Text.Text = "click";
         //Children.Add(btn);
     }
@@ -448,8 +452,10 @@ public class TestWindow : Window
 
             if (dlg == null)
             {
-                dlg = new Dialog();
-                dlg.Name = "dlg";
+                dlg = new Dialog
+                {
+                    Name = "dlg"
+                };
                 resize();
                 Resized += (s2, e2) => resize();
 
@@ -468,8 +474,10 @@ public class TestWindow : Window
 
     public void AddShadow()
     {
-        var b = new Canvas();
-        b.Margin = 20;
+        var b = new Canvas
+        {
+            Margin = 20
+        };
         //b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.YellowGreen);
         Children.Add(b);
 
@@ -477,10 +485,12 @@ public class TestWindow : Window
         shadow.BlurRadius = 20;
         b.RenderShadow = shadow;
 
-        var rr = new RoundedRectangle();
-        //rr.Margin = 30;
-        rr.CornerRadius = new Vector2(10, 10);
-        rr.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightPink.ToColor());
+        var rr = new RoundedRectangle
+        {
+            //rr.Margin = 30;
+            CornerRadius = new Vector2(10, 10),
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightPink.ToColor())
+        };
         b.Children.Add(rr);
 
         rr.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello world!");
@@ -551,9 +561,11 @@ public class TestWindow : Window
 
     public SymbolHeaderedContent CreateHeader(string text, string iconText)
     {
-        var header = new SymbolHeaderedContent();
-        header.Name = "shc" + text;
-        header.Margin = D2D_RECT_F.Thickness(10, 0);
+        var header = new SymbolHeaderedContent
+        {
+            Name = "shc" + text,
+            Margin = D2D_RECT_F.Thickness(10, 0)
+        };
         header.Header.Height = 40;
         header.Header.Icon.Text = iconText;
         header.Header.Text.Margin = D2D_RECT_F.Thickness(10, 0, 10, 0);
@@ -574,21 +586,25 @@ public class TestWindow : Window
 
     public void AddPopup()
     {
-        var popup = new PopupWindow();
-        popup.ParentHandle = Native.Handle;
-        popup.HorizontalOffset = 300;
-        popup.VerticalOffset = 300;
-        popup.IsFocusable = false;
+        var popup = new PopupWindow
+        {
+            ParentHandle = Native.Handle,
+            HorizontalOffset = 300,
+            VerticalOffset = 300,
+            IsFocusable = false
+        };
         popup.DoWhenAttachedToComposition(() =>
         {
             popup.ResizeClient(100, 100);
         });
         popup.Show();
 
-        var border = new Border();
-        border.Height = 100;
-        border.Width = 200;
-        border.RenderBrush = popup.Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
+        var border = new Border
+        {
+            Height = 100,
+            Width = 200,
+            RenderBrush = popup.Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor())
+        };
         popup.Children.Add(border);
     }
 
@@ -632,9 +648,11 @@ public class TestWindow : Window
             {
                 if (popup == null)
                 {
-                    popup = new PopupWindow();
-                    popup.Width = 100;
-                    popup.Height = 100;
+                    popup = new PopupWindow
+                    {
+                        Width = 100,
+                        Height = 100
+                    };
                     popup.Name = nameof(popup);
                     popup.PlacementTarget = this;
                     popup.FollowPlacementTarget = true;
@@ -644,9 +662,11 @@ public class TestWindow : Window
                     popup.IsFocusable = false;
                     popup.Show();
 
-                    var pborder = new Border();
-                    pborder.Height = 100;
-                    pborder.Width = 50;
+                    var pborder = new Border
+                    {
+                        Height = 100,
+                        Width = 50
+                    };
                     pborder.DoWhenAttachedToComposition(() =>
                     {
                         pborder.RenderBrush = popup.Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
@@ -660,8 +680,10 @@ public class TestWindow : Window
 
     public void AddTitleBar()
     {
-        var tb = new TitleBar();
-        tb.IsMain = true;
+        var tb = new TitleBar
+        {
+            IsMain = true
+        };
         Children.Add(tb);
 
         KeyDown += (s, e) =>
@@ -731,8 +753,10 @@ public class TestWindow : Window
 
     public void AddButtonInCanvas()
     {
-        var canvas = new Canvas();
-        canvas.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
+        var canvas = new Canvas
+        {
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor())
+        };
         var btn = new Button();
         //btn.Width = 100;
         //btn.Height = 30;
@@ -762,9 +786,11 @@ public class TestWindow : Window
 
     public void AddButtonInDock()
     {
-        var dock = new Dock();
-        dock.LastChildFill = false;
-        dock.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
+        var dock = new Dock
+        {
+            LastChildFill = false,
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor())
+        };
         var btn = new Button();
         //btn.Width = 100;
         //btn.Height = 30;
@@ -824,9 +850,11 @@ public class TestWindow : Window
 
     public void AddComboBox()
     {
-        var cb = new ComboBox();
-        //cb.IntegralHeight = true;
-        cb.MaxDropDownHeight = 125;
+        var cb = new ComboBox
+        {
+            //cb.IntegralHeight = true;
+            MaxDropDownHeight = 125
+        };
 
         //cb.Text.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink);
         ((TextBox)cb.Text).Text = "hello";
@@ -845,9 +873,11 @@ public class TestWindow : Window
 
     public void AddScollableListBox()
     {
-        var sv = new ScrollViewer();
-        sv.HorizontalAlignment = Alignment.Center;
-        sv.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
+        var sv = new ScrollViewer
+        {
+            HorizontalAlignment = Alignment.Center,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Visible
+        };
         Children.Add(sv);
 
         var lb = new ListBox();
@@ -889,11 +919,13 @@ public class TestWindow : Window
 
     public void AddEnumListBox()
     {
-        var lb = new EnumListBox();
-        lb.Value = UriHostNameType.Basic;
-        //var lb = new ListBox();
-        //lb.DataSource = new object[] { "titi", 123, DateTime.Now, "hello world" };
-        lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
+        var lb = new EnumListBox
+        {
+            Value = UriHostNameType.Basic,
+            //var lb = new ListBox();
+            //lb.DataSource = new object[] { "titi", 123, DateTime.Now, "hello world" };
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor())
+        };
         Children.Add(lb);
 
         KeyDown += (s, e) =>
@@ -921,11 +953,13 @@ public class TestWindow : Window
 
     public void AddFlagsEnumListBox()
     {
-        var lb = new FlagsEnumListBox();
-        //lb.Value = MyFlagsEnum.Value0 | MyFlagsEnum.Value2 | MyFlagsEnum.Value4_x;
-        //lb.Value = MyFlagsEnum.Value0;
-        lb.Value = Samples.Gallery.Samples.Collections.PropertyGrid.SampleDaysOfWeek.WeekDays;
-        lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
+        var lb = new FlagsEnumListBox
+        {
+            //lb.Value = MyFlagsEnum.Value0 | MyFlagsEnum.Value2 | MyFlagsEnum.Value4_x;
+            //lb.Value = MyFlagsEnum.Value0;
+            Value = Samples.Gallery.Samples.Collections.PropertyGrid.SampleDaysOfWeek.WeekDays,
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor())
+        };
         Children.Add(lb);
 
         KeyDown += (s, e) =>
@@ -942,8 +976,10 @@ public class TestWindow : Window
 
     public void AddCheckBoxList()
     {
-        var lb = new CheckBoxList();
-        lb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor());
+        var lb = new CheckBoxList
+        {
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White.ToColor())
+        };
         Children.Add(lb);
         //lb.DataSource = new List<string> { "hello", "world" };
         var i = 0;
@@ -958,10 +994,12 @@ public class TestWindow : Window
 
     public void AddResizableListBox()
     {
-        var b = new Border();
-        b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
-        b.HorizontalAlignment = Alignment.Center;
-        b.VerticalAlignment = Alignment.Center;
+        var b = new Border
+        {
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor()),
+            HorizontalAlignment = Alignment.Center,
+            VerticalAlignment = Alignment.Center
+        };
         //b.Height = 200;
         //b.Width = 100;
         Children.Add(b);
@@ -974,21 +1012,25 @@ public class TestWindow : Window
             Replace(",", string.Empty)
             .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(10).Select(s => i++ + " : " + s).ToList();
 
-        var lb = new ListBox();
-        lb.DataBinder = new DataBinder
+        var lb = new ListBox
         {
-            DataItemVisualCreator = (ctx) =>
+            DataBinder = new DataBinder
             {
-                var tb = new TextBox();
-                tb.Height = 20;
-                tb.TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER;
-                tb.Margin = D2D_RECT_F.Thickness(10, 5, 10, 5);
-                tb.IsFocusable = true;
-                ctx.DataVisual = tb;
-            },
-            DataItemVisualBinder = (ctx) =>
-            {
-                ((TextBox)ctx.DataVisual).Text = (string)ctx.Data;
+                DataItemVisualCreator = (ctx) =>
+                {
+                    var tb = new TextBox
+                    {
+                        Height = 20,
+                        TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER,
+                        Margin = D2D_RECT_F.Thickness(10, 5, 10, 5),
+                        IsFocusable = true
+                    };
+                    ctx.DataVisual = tb;
+                },
+                DataItemVisualBinder = (ctx) =>
+                {
+                    ((TextBox)ctx.DataVisual).Text = (string)ctx.Data;
+                }
             }
         };
 
@@ -1053,14 +1095,18 @@ public class TestWindow : Window
     {
         var sv = new ScrollViewer();
         Children.Add(sv);
-        var pg = new PropertyGrid.PropertyGrid();
-        pg.CellMargin = 5;
+        var pg = new PropertyGrid.PropertyGrid
+        {
+            CellMargin = 5
+        };
         sv.Viewer.Child = pg;
 
-        var tpg = new TestPg();
-        tpg.Text1 = "hello world";
-        tpg.Text2 = "hello world" + Environment.NewLine + " and again";
-        tpg.Text3 = "héllo world";
+        var tpg = new TestPg
+        {
+            Text1 = "hello world",
+            Text2 = "hello world" + Environment.NewLine + " and again",
+            Text3 = "héllo world"
+        };
         pg.SelectedObject = tpg;
     }
 
@@ -1074,12 +1120,14 @@ public class TestWindow : Window
         tlb.MinButton.IsVisible = false;
         dlg.Content.Children.Add(tlb);
 
-        var pg = new PropertyGrid.PropertyGrid();
-        pg.CellMargin = 5;
-        //pg.MaxWidth = 600;
-        //TextBox.WordWrappingProperty.SetValue(pg, DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER);
-        pg.Margin = D2D_RECT_F.Thickness(10);
-        pg.SelectedObject = new DiagnosticsInformation(null, this);
+        var pg = new PropertyGrid.PropertyGrid
+        {
+            CellMargin = 5,
+            //pg.MaxWidth = 600;
+            //TextBox.WordWrappingProperty.SetValue(pg, DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_CHARACTER);
+            Margin = D2D_RECT_F.Thickness(10),
+            SelectedObject = new DiagnosticsInformation(null, this)
+        };
         dlg.Content.Children.Add(pg);
     }
 
@@ -1087,9 +1135,11 @@ public class TestWindow : Window
     {
         var sv = new ScrollViewer();
         Children.Add(sv);
-        var pg = new PropertyGrid.PropertyGrid();
-        pg.CellMargin = 5;
-        pg.LiveSync = true;
+        var pg = new PropertyGrid.PropertyGrid
+        {
+            CellMargin = 5,
+            LiveSync = true
+        };
         //TextBox.FontSizeProperty.SetValue(pg, 12f);
 
         //pg.Padding = D2D_RECT_F.Thickness(5);
@@ -1123,8 +1173,10 @@ public class TestWindow : Window
 
     public void AddSimplePropertyGrid2()
     {
-        var pg = new PropertyGrid.PropertyGrid();
-        pg.VerticalAlignment = Alignment.Center;
+        var pg = new PropertyGrid.PropertyGrid
+        {
+            VerticalAlignment = Alignment.Center
+        };
         TextBox.FontSizeProperty.SetValue(pg, 12f);
         TextBox.ForegroundBrushProperty.SetValue(pg, new SolidColorBrush(_D3DCOLORVALUE.Black));
         Children.Add(pg);
@@ -1139,10 +1191,12 @@ public class TestWindow : Window
         //var grid = new Grid();
         //Children.Add(grid);
 
-        var b = new Border();
-        //b.VerticalAlignment = Alignment.Near;
-        b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightSalmon.ToColor());
-        b.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello world!");
+        var b = new Border
+        {
+            //b.VerticalAlignment = Alignment.Near;
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LightSalmon.ToColor()),
+            ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello world!")
+        };
         Children.Add(b);
 
         var dock = new Dock();
@@ -1198,8 +1252,10 @@ public class TestWindow : Window
         tb.Text = rnd.Next(int.MinValue, int.MaxValue).ToString();
 
         //long l = 0;
-        var vbt = new VerticalBlankTicker();
-        vbt.TickDivider = tickDivider;
+        var vbt = new VerticalBlankTicker
+        {
+            TickDivider = tickDivider
+        };
         vbt.Tick += (se, ev) =>
         {
             RunTaskOnMainThread(() =>
@@ -1358,8 +1414,10 @@ public class TestWindow : Window
         text.Text = Environment.TickCount.ToString();
         KeyDown += (s, e) =>
         {
-            var vbt = new VerticalBlankTicker();
-            vbt.TickDivider = tickDivider;
+            var vbt = new VerticalBlankTicker
+            {
+                TickDivider = tickDivider
+            };
             vbt.Tick += (se, ev) =>
             {
                 RunTaskOnMainThread(() =>
@@ -1373,11 +1431,13 @@ public class TestWindow : Window
 
     public void AddEditableTexts()
     {
-        var stack = new Dock();
-        //stack.Orientation = Orientation.Vertical;
-        //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
-        //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
-        stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LemonChiffon.ToColor());
+        var stack = new Dock
+        {
+            //stack.Orientation = Orientation.Vertical;
+            //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.White);
+            //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red);
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.LemonChiffon.ToColor())
+        };
         //stack.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue);
 
         //stack.LastChildFill = false;
@@ -1440,8 +1500,10 @@ public class TestWindow : Window
                     sink.Close();
                 }
 
-                var geoSource = new GeometrySource2D(Guid.NewGuid().ToString());
-                geoSource.Geometry = geo.Object;
+                var geoSource = new GeometrySource2D(Guid.NewGuid().ToString())
+                {
+                    Geometry = geo.Object
+                };
                 path.GeometrySource2D = geoSource.GetIGeometrySource2();
 
                 // draw points
@@ -1480,8 +1542,10 @@ public class TestWindow : Window
 
     public void AddSvg()
     {
-        var svg = new SvgImage();
-        svg.Document = new FileStreamer(@"Resources\tiger.svg");
+        var svg = new SvgImage
+        {
+            Document = new FileStreamer(@"Resources\tiger.svg")
+        };
         Children.Add(svg);
     }
 
@@ -1542,12 +1606,16 @@ public class TestWindow : Window
 
     public void AddScrollableRtbRtfFile()
     {
-        var sv = new ScrollViewer();
-        sv.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+        var sv = new ScrollViewer
+        {
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto
+        };
         Children.Add(sv);
 
-        var rtf = new RichTextBox();
-        rtf.Width = 500;
+        var rtf = new RichTextBox
+        {
+            Width = 500
+        };
         rtf.Options |= TextHostOptions.WordWrap;
         rtf.RtfText = File.ReadAllText(@"resources\wice.rtf");
         sv.Viewer.Child = rtf;
@@ -1556,9 +1624,11 @@ public class TestWindow : Window
     public void AddReadOnlyText() => AddReadOnlyText(this);
     public static void AddReadOnlyText(Visual parent)
     {
-        var text = new TextBox();
-        //text.Margin = 30;
-        text.Name = "text";
+        var text = new TextBox
+        {
+            //text.Margin = 30;
+            Name = "text"
+        };
         //text.BackgroundColor = _D3DCOLORVALUE.DarkBlue;
         //text.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.LightGoldenrodYellow);
         parent.Children.Add(text);
@@ -1585,8 +1655,10 @@ public class TestWindow : Window
 
     public void AddReadOnlyTexts()
     {
-        var dock = new Stack();
-        dock.LastChildFill = false;
+        var dock = new Stack
+        {
+            LastChildFill = false
+        };
         Children.Add(dock);
 
         var text1 = new TextBox();
@@ -1612,11 +1684,13 @@ public class TestWindow : Window
 
     public static void AddDrawText(Visual parent)
     {
-        var text = new TextBox();
-        text.Margin = 10;
-        text.Name = "text";
-        text.BackgroundColor = _D3DCOLORVALUE.Blue;
-        text.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.LightGoldenrodYellow);
+        var text = new TextBox
+        {
+            Margin = 10,
+            Name = "text",
+            BackgroundColor = _D3DCOLORVALUE.Blue,
+            ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.LightGoldenrodYellow)
+        };
         parent.Children.Add(text);
         text.Text = "hello world";
         text.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
@@ -1630,8 +1704,10 @@ public class TestWindow : Window
         parent.Children.Add(dock);
         for (var i = 0; i < 10; i++)
         {
-            var text = new TextBox();
-            text.Name = "text" + i;
+            var text = new TextBox
+            {
+                Name = "text" + i
+            };
             dock.Children.Add(text);
 
             if (i != 5)
@@ -1672,9 +1748,11 @@ public class TestWindow : Window
 
     public void AddUniformGridSysColors()
     {
-        var grid = new UniformGrid();
-        grid.BackgroundColor = _D3DCOLORVALUE.Transparent;
-        grid.Name = "ugrid";
+        var grid = new UniformGrid
+        {
+            BackgroundColor = _D3DCOLORVALUE.Transparent,
+            Name = "ugrid"
+        };
         Children.Add(grid);
 
         var colors = ColorUtilities.SysColors.ToArray();
@@ -1705,9 +1783,11 @@ public class TestWindow : Window
 
     public void AddUniformGridImmersiveColors()
     {
-        var grid = new UniformGrid();
-        grid.BackgroundColor = _D3DCOLORVALUE.Transparent;
-        grid.Name = "ugrid";
+        var grid = new UniformGrid
+        {
+            BackgroundColor = _D3DCOLORVALUE.Transparent,
+            Name = "ugrid"
+        };
         Children.Add(grid);
 
         var max = 50;
@@ -1743,10 +1823,12 @@ public class TestWindow : Window
 
     public void AddScrollViewSmall()
     {
-        var scrollView = new ScrollViewer();
-        scrollView.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
-        scrollView.Height = 200;
-        scrollView.Width = 200;
+        var scrollView = new ScrollViewer
+        {
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+            Height = 200,
+            Width = 200
+        };
         //scrollView.Mode = ScrollViewerMode.Overlay;
         //scrollView.Viewer.ClipChildren = false;
         Children.Add(scrollView);
@@ -1764,23 +1846,27 @@ public class TestWindow : Window
 
     public static UniformGrid CreateMeasureUniformGrid(int size, int width, int height)
     {
-        var grid = new UniformGrid();
-        grid.Width = width;
-        grid.Height = height;
-        grid.Columns = size;
-        grid.Rows = size;
-        grid.LineBrush = new SolidColorBrush(_D3DCOLORVALUE.Red);
-        grid.LineStrokeWidth = 1;
+        var grid = new UniformGrid
+        {
+            Width = width,
+            Height = height,
+            Columns = size,
+            Rows = size,
+            LineBrush = new SolidColorBrush(_D3DCOLORVALUE.Red),
+            LineStrokeWidth = 1
+        };
         //parent.Children.Add(grid);
         for (var i = 0; i < grid.Rows; i++)
         {
             for (var j = 0; j < grid.Columns; j++)
             {
-                var cell = new TextBox();
-                cell.IsFocusable = true;
-                cell.Text = i + "x" + j;
-                cell.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
-                cell.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER;
+                var cell = new TextBox
+                {
+                    IsFocusable = true,
+                    Text = i + "x" + j,
+                    ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+                    Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER
+                };
                 var color = new _D3DCOLORVALUE(0, i / (float)grid.Rows, j / (float)grid.Columns);
                 cell.BackgroundColor = color;
                 cell.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White);
@@ -1792,27 +1878,33 @@ public class TestWindow : Window
 
     public void AddStackImageText()
     {
-        var dlgPanel = new Stack();
-        dlgPanel.Name = "panel";
-        dlgPanel.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor());
-        dlgPanel.LastChildFill = false;
-        dlgPanel.Orientation = Orientation.Horizontal;
+        var dlgPanel = new Stack
+        {
+            Name = "panel",
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Blue.ToColor()),
+            LastChildFill = false,
+            Orientation = Orientation.Horizontal
+        };
         Children.Add(dlgPanel);
 
-        var image = new Image();
-        image.Name = "img";
-        image.HorizontalAlignment = Alignment.Center;
-        image.VerticalAlignment = Alignment.Center;
-        image.Stretch = Stretch.None;
-        image.Source = Application.CurrentResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), GetType().Namespace + ".Resources.aelyo_flat.png");
+        var image = new Image
+        {
+            Name = "img",
+            HorizontalAlignment = Alignment.Center,
+            VerticalAlignment = Alignment.Center,
+            Stretch = Stretch.None,
+            Source = Application.CurrentResourceManager.GetWicBitmapSource(Assembly.GetExecutingAssembly(), GetType().Namespace + ".Resources.aelyo_flat.png")
+        };
         dlgPanel.Children.Add(image);
 
-        var tb = new TextBox();
-        tb.Name = "tb";
-        tb.Text = "hello world!";
-        tb.FontSize = 20;
-        tb.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.Black);
-        tb.BackgroundColor = _D3DCOLORVALUE.Yellow;
+        var tb = new TextBox
+        {
+            Name = "tb",
+            Text = "hello world!",
+            FontSize = 20,
+            ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.Black),
+            BackgroundColor = _D3DCOLORVALUE.Yellow
+        };
         //tb.FontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_ULTRA_CONDENSED;
         //tb.DrawOptions = D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT;
         tb.SetTypography(Typography.WithLigatures.DWriteTypography.Object);
@@ -1825,9 +1917,11 @@ public class TestWindow : Window
         Children.Add(scrollView);
         scrollView.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
 
-        var image = new Image();
-        image.Name = "image";
-        image.Source = Application.CurrentResourceManager.GetWicBitmapSource(@"Resources\rainier.jpg");
+        var image = new Image
+        {
+            Name = "image",
+            Source = Application.CurrentResourceManager.GetWicBitmapSource(@"Resources\rainier.jpg")
+        };
         scrollView.Viewer.Child = image;
 
         KeyDown += (s, e) =>
@@ -1851,10 +1945,12 @@ public class TestWindow : Window
 
     public void AddUniformGridShapes(int size)
     {
-        var visual = new UniformGrid();
-        visual.BackgroundColor = _D3DCOLORVALUE.Transparent;
-        visual.Name = "ugrid";
-        visual.Rows = size;
+        var visual = new UniformGrid
+        {
+            BackgroundColor = _D3DCOLORVALUE.Transparent,
+            Name = "ugrid",
+            Rows = size
+        };
         visual.Columns = visual.Rows;
         Children.Add(visual);
 
@@ -1972,8 +2068,10 @@ public class TestWindow : Window
 
     public void AddSimpleGrid2()
     {
-        var grid = new Grid();
-        grid.VerticalAlignment = Alignment.Near;
+        var grid = new Grid
+        {
+            VerticalAlignment = Alignment.Near
+        };
         Children.Add(grid);
         grid.Name = nameof(grid);
         grid.Margin = 10;
@@ -2032,9 +2130,11 @@ public class TestWindow : Window
 
     public void AddUniformColorGrid(int size)
     {
-        var visual = new UniformGrid();
-        visual.Name = "ugrid";
-        visual.Rows = size;
+        var visual = new UniformGrid
+        {
+            Name = "ugrid",
+            Rows = size
+        };
         visual.Columns = visual.Rows;
         Children.Add(visual);
 
@@ -2066,8 +2166,10 @@ public class TestWindow : Window
 
         void addCell(int i, int j)
         {
-            var cell = new Border();
-            cell.Name = "cell " + i + "x" + j;
+            var cell = new Border
+            {
+                Name = "cell " + i + "x" + j
+            };
             visual.Children.Add(cell);
             var color = new _D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
             cell.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
@@ -2076,16 +2178,20 @@ public class TestWindow : Window
 
     public void AddHorizontalButtonsDock()
     {
-        var doc = new Dock();
-        doc.Height = 50;
+        var doc = new Dock
+        {
+            Height = 50
+        };
         doc.Name = nameof(doc);
         doc.LastChildFill = false;
         doc.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFF0F0F0).ToColor());
         Children.Add(doc);
 
-        var okButton = new Button();
-        okButton.Margin = 10;
-        okButton.MinWidth = 70;
+        var okButton = new Button
+        {
+            Margin = 10,
+            MinWidth = 70
+        };
         okButton.Click += (s, e) => Destroy();
         okButton.VerticalAlignment = Alignment.Center;
         okButton.Name = nameof(okButton);
@@ -2093,9 +2199,11 @@ public class TestWindow : Window
         Dock.SetDockType(okButton, DockType.Right);
         doc.Children.Add(okButton);
 
-        var cancelButton = new Button();
-        cancelButton.Margin = 3;
-        cancelButton.MinWidth = 70;
+        var cancelButton = new Button
+        {
+            Margin = 3,
+            MinWidth = 70
+        };
         cancelButton.Click += (s, e) => Destroy();
         cancelButton.Name = nameof(cancelButton);
         cancelButton.Text.Text = "Cancel";
@@ -2106,8 +2214,10 @@ public class TestWindow : Window
 
     public void AddVerticalButtonsDock()
     {
-        var doc = new Dock();
-        doc.Width = 150;
+        var doc = new Dock
+        {
+            Width = 150
+        };
         doc.Name = nameof(doc);
         doc.LastChildFill = false;
         doc.RenderBrush = Compositor.CreateColorBrush(new _D3DCOLORVALUE(0xFFF0F0F0).ToColor());
@@ -2121,8 +2231,10 @@ public class TestWindow : Window
         Dock.SetDockType(okButton, DockType.Bottom);
         doc.Children.Add(okButton);
 
-        var cancelButton = new Button();
-        cancelButton.HorizontalAlignment = Alignment.Center;
+        var cancelButton = new Button
+        {
+            HorizontalAlignment = Alignment.Center
+        };
         cancelButton.Click += (s, e) => Destroy();
         cancelButton.Name = nameof(cancelButton);
         cancelButton.Text.Text = "Cancel";
@@ -2132,16 +2244,20 @@ public class TestWindow : Window
 
     public void AddWrap()
     {
-        var wrap = new Wrap();
-        wrap.Orientation = Orientation.Horizontal;
+        var wrap = new Wrap
+        {
+            Orientation = Orientation.Horizontal
+        };
         Children.Add(wrap);
 
         var r = new Random(Environment.TickCount);
         var max = 100;
         for (var i = 0; i < max; i++)
         {
-            var b = new Border();
-            b.Name = "border" + i;
+            var b = new Border
+            {
+                Name = "border" + i
+            };
             wrap.Children.Add(b);
             b.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Green.ToColor());
             var color = new _D3DCOLORVALUE(0, 1 - (i / (float)max), 1 - (i / (float)max));
@@ -2190,17 +2306,21 @@ public class TestWindow : Window
         b1.Width = 200;
         //b1.Height = 200;
 
-        var b2 = new Border();
-        b2.Name = "b2";
-        b2.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor());
-        b2.Width = 50;
-        b2.Height = 60;
+        var b2 = new Border
+        {
+            Name = "b2",
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Yellow.ToColor()),
+            Width = 50,
+            Height = 60
+        };
         b1.Children.Add(b2);
 
-        var b3 = new Border();
-        b3.Name = "b3";
-        b3.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor());
-        b3.Width = 70;
+        var b3 = new Border
+        {
+            Name = "b3",
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Pink.ToColor()),
+            Width = 70
+        };
         //b3.Height = 20;
         b1.Children.Add(b3);
 
@@ -2287,14 +2407,18 @@ public class TestWindow : Window
 
     public void AddOneDockChild()
     {
-        var doc = new Dock();
-        doc.LastChildFill = false;
-        doc.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange.ToColor());
+        var doc = new Dock
+        {
+            LastChildFill = false,
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange.ToColor())
+        };
         Children.Add(doc);
 
-        var border = new Border();
-        border.Width = 100;
-        border.Height = 100;
+        var border = new Border
+        {
+            Width = 100,
+            Height = 100
+        };
         doc.Children.Add(border);
         Dock.SetDockType(border, DockType.Right);
         border.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Red.ToColor());
@@ -2302,9 +2426,11 @@ public class TestWindow : Window
 
     public void AddDockAbout()
     {
-        var doc = new Dock();
-        //doc.AllowOverlap = true;
-        doc.LastChildFill = false;
+        var doc = new Dock
+        {
+            //doc.AllowOverlap = true;
+            LastChildFill = false
+        };
         Children.Add(doc);
 
         for (var i = 0; i < 10; i++)
@@ -2313,12 +2439,14 @@ public class TestWindow : Window
             Dock.SetDockType(border, DockType.Top);
             doc.Children.Add(border);
 
-            var tb = new TextBox();
-            tb.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
-            tb.FontSize = 30;
-            tb.Text = i.ToString();
-            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ChangeAlpha(i / 10f).ToColor());
-            tb.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White.ChangeAlpha((10 - i) / 10f));
+            var tb = new TextBox
+            {
+                ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+                FontSize = 30,
+                Text = i.ToString(),
+                RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ChangeAlpha(i / 10f).ToColor()),
+                ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White.ChangeAlpha((10 - i) / 10f))
+            };
             border.Children.Add(tb);
         }
 
@@ -2327,18 +2455,22 @@ public class TestWindow : Window
         Dock.SetDockType(borderAbout, DockType.Bottom);
         doc.Children.Add(borderAbout);
 
-        var tbAbout = new TextBox();
-        tbAbout.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
-        tbAbout.FontSize = 30;
-        tbAbout.Text = "About";
+        var tbAbout = new TextBox
+        {
+            ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+            FontSize = 30,
+            Text = "About"
+        };
         borderAbout.Children.Add(tbAbout);
     }
 
     public void AddDockNumbers()
     {
-        var doc = new Dock();
-        doc.LastChildFill = false;
-        doc.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange.ToColor());
+        var doc = new Dock
+        {
+            LastChildFill = false,
+            RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Orange.ToColor())
+        };
         Children.Add(doc);
 
         for (var i = 0; i < 10; i++)
@@ -2349,12 +2481,14 @@ public class TestWindow : Window
             Dock.SetDockType(border, DockType.Right);
             doc.Children.Add(border);
 
-            var tb = new TextBox();
-            tb.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
-            tb.FontSize = 30;
-            tb.Text = i.ToString();
-            tb.RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ChangeAlpha(i / 10f).ToColor());
-            tb.ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White.ChangeAlpha((10 - i) / 10f));
+            var tb = new TextBox
+            {
+                ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+                FontSize = 30,
+                Text = i.ToString(),
+                RenderBrush = Compositor.CreateColorBrush(_D3DCOLORVALUE.Black.ChangeAlpha(i / 10f).ToColor()),
+                ForegroundBrush = new SolidColorBrush(_D3DCOLORVALUE.White.ChangeAlpha((10 - i) / 10f))
+            };
             border.Children.Add(tb);
         }
     }
