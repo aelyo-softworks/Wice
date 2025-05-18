@@ -58,6 +58,7 @@
 		<Using Include="Windows.UI.Composition.Diagnostics" />
 
 		<Using Alias="Monitor" Include="DirectN.Extensions.Utilities.Monitor" />
+		<Using Alias="IGraphicsEffectD2D1Interop" Include="Windows.Graphics.Effects.IGraphicsEffectD2D1Interop" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -23,9 +23,9 @@ public partial class AboutPage : Page
         var asm = typeof(Application).Assembly;
         var url = "https://github.com/aelyo-softworks/Wice";
 #if NETFRAMEWORK
-        tb.Text = "Wice .NET Framework v" + asm.GetInformationalVersion() + " based on DirectN v" + typeof(ComObject).Assembly.GetInformationalVersion() + Environment.NewLine
+        tb.Text = "Wice for .NET Framework v" + asm.GetInformationalVersion() + " based on DirectN v" + typeof(ComObject).Assembly.GetInformationalVersion() + Environment.NewLine
 #else
-        tb.Text = "Wice AOT v" + asm.GetInformationalVersion() + " based on DirectN AOT v" + typeof(ComObject).Assembly.GetInformationalVersion() + Environment.NewLine
+        tb.Text = "Wice for .NET Native AOT v" + asm.GetInformationalVersion() + " based on DirectN AOT v" + typeof(ComObject).Assembly.GetInformationalVersion() + Environment.NewLine
 #endif
         + RuntimeInformation.FrameworkDescription + " - " + DiagnosticsInformation.GetBitness() + Environment.NewLine
             + asm.GetCopyright() + Environment.NewLine

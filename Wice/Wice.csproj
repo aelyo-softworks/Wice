@@ -93,6 +93,7 @@
 	  <Compile Include="..\WiceAot\DragState.cs" Link="DragState.cs" />
 	  <Compile Include="..\WiceAot\EditorHost.cs" Link="EditorHost.cs" />
 	  <Compile Include="..\WiceAot\EditorMode.cs" Link="EditorMode.cs" />
+	  <Compile Include="..\WiceAot\Effects\AcrylicBrush.cs" Link="Effects\AcrylicBrush.cs" />
 	  <Compile Include="..\WiceAot\Effects\AffineTransformEffect.cs" Link="Effects\AffineTransformEffect.cs" />
 	  <Compile Include="..\WiceAot\Effects\AlphaMaskEffect.cs" Link="Effects\AlphaMaskEffect.cs" />
 	  <Compile Include="..\WiceAot\Effects\ArithmeticCompositeEffect.cs" Link="Effects\ArithmeticCompositeEffect.cs" />
@@ -116,6 +117,7 @@
 	  <Compile Include="..\WiceAot\Effects\DistantSpecularEffect.cs" Link="Effects\DistantSpecularEffect.cs" />
 	  <Compile Include="..\WiceAot\Effects\DpiCompensationEffect.cs" Link="Effects\DpiCompensationEffect.cs" />
 	  <Compile Include="..\WiceAot\Effects\EdgeDetectionEffect.cs" Link="Effects\EdgeDetectionEffect.cs" />
+	  <Compile Include="..\WiceAot\Effects\Effect.cs" Link="Effects\Effect.cs" />
 	  <Compile Include="..\WiceAot\Effects\EffectProperty.cs" Link="Effects\EffectProperty.cs" />
 	  <Compile Include="..\WiceAot\Effects\EffectWithSource.cs" Link="Effects\EffectWithSource.cs" />
 	  <Compile Include="..\WiceAot\Effects\EffectWithTwoSources.cs" Link="Effects\EffectWithTwoSources.cs" />
@@ -376,6 +378,7 @@
 		<Using Alias="WINDOW_EX_STYLE" Include="DirectN.WS_EX" />
 		<Using Alias="WINDOW_DISPLAY_AFFINITY" Include="DirectN.WDA" />
 
+		<Using Alias="IGraphicsEffectD2D1Interop" Include="Wice.Interop.IGraphicsEffectD2D1Interop" />
 		<Using Alias="DPI_AWARENESS_CONTEXT" Include="Wice.Interop.DPI_AWARENESS_CONTEXT" />
 		<Using Alias="MONITORINFO" Include="Wice.Interop.MONITORINFO" />
 		<Using Alias="POINTER_INFO" Include="Wice.Interop.POINTER_INFO" />

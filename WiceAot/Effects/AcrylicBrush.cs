@@ -1,4 +1,8 @@
-﻿using WinRT;
+﻿#if NETFRAMEWORK
+using IGraphicsEffectSource = Windows.Graphics.Effects.IGraphicsEffectSource;
+#else
+using WinRT;
+#endif
 
 namespace Wice.Effects;
 
@@ -78,8 +82,13 @@ public static class AcrylicBrush
 
     private static float GetTintOpacityModifier(D3DCOLORVALUE tintColor)
     {
+#if NETFRAMEWORK
+        if (!WinRTUtilities.Is19H1OrHigher)
+            return 1f;
+#else
         if (!Utilities.Extensions.Is19H1OrHigher)
             return 1f;
+#endif
 
         const float midPoint = 0.50f;
         const float whiteMaxOpacity = 0.45f;
@@ -166,7 +175,7 @@ public static class AcrylicBrush
 
     private static CompositionSurfaceBrush CreateNoiseBrush(CompositionGraphicsDevice device)
     {
-        ArgumentNullException.ThrowIfNull(device);
+        Wice.Utilities.ExceptionExtensions.ThrowIfNull(device, nameof(device));
 
         const string name = "NoiseAsset_256X256.png";
 
@@ -199,7 +208,7 @@ public static class AcrylicBrush
         bool useLegacyEffect = false,
         bool useWindowsAcrylic = true)
     {
-        ArgumentNullException.ThrowIfNull(device);
+        Wice.Utilities.ExceptionExtensions.ThrowIfNull(device, nameof(device));
 
         var effectiveTintColor = GetEffectiveTintColor(tintColor, tintOpacity, tintLuminosityOpacity);
         var luminosityColor = GetEffectiveLuminosityColor(tintColor, tintOpacity, tintLuminosityOpacity);
@@ -209,7 +218,11 @@ public static class AcrylicBrush
         acrylicBrush.SetSourceParameter("Noise", CreateNoiseBrush(device));
         acrylicBrush.Properties.InsertColor("TintColor.Color", effectiveTintColor.ToColor());
 
+#if NETFRAMEWORK
+        if (!useLegacyEffect && WinRTUtilities.Is19H1OrHigher)
+#else
         if (!useLegacyEffect && Utilities.Extensions.Is19H1OrHigher)
+#endif
         {
             acrylicBrush.Properties.InsertColor("LuminosityColor.Color", luminosityColor.ToColor());
         }
@@ -227,11 +240,19 @@ public static class AcrylicBrush
         if (!brush.Comment.StartsWith(typeof(AcrylicBrush).Name))
             return null;
 
+#if NETFRAMEWORK
+        var htmlString = brush.Comment.Substring(typeof(AcrylicBrush).Name.Length);
+#else
         var htmlString = brush.Comment[typeof(AcrylicBrush).Name.Length..];
+#endif
         var pos = htmlString.IndexOf('\0');
         if (pos > 0)
         {
+#if NETFRAMEWORK
+            if (D3DCOLORVALUE.TryParseFromName(htmlString.Substring(0, pos), out var colorValue))
+#else
             if (D3DCOLORVALUE.TryParseFromName(htmlString[..pos], out var colorValue))
+#endif
                 return colorValue;
         }
         return null;
@@ -245,7 +266,7 @@ public static class AcrylicBrush
         bool useWindowsAcrylic = true
         )
     {
-        ArgumentNullException.ThrowIfNull(compositor);
+        Wice.Utilities.ExceptionExtensions.ThrowIfNull(compositor, nameof(compositor));
 
         var effectFactory = CreateAcrylicBrushCompositionEffectFactory(compositor, initialTintColor, initialLuminosityColor, useLegacyEffect, useWindowsAcrylic);
         var acrylicBrush = effectFactory.CreateBrush();
@@ -273,7 +294,7 @@ public static class AcrylicBrush
                 bool useWindowsAcrylic = true
                 )
     {
-        ArgumentNullException.ThrowIfNull(compositor);
+        Wice.Utilities.ExceptionExtensions.ThrowIfNull(compositor, nameof(compositor));
 
         var tintColorEffect = new FloodEffect
         {
@@ -291,7 +312,11 @@ public static class AcrylicBrush
         IGraphicsEffectSource blurredSource;
         if (useWindowsAcrylic)
         {
+#if NETFRAMEWORK
+            blurredSource = backdropEffectSourceParameter.ComCast<IGraphicsEffectSource>();
+#else
             blurredSource = backdropEffectSourceParameter.As<IGraphicsEffectSource>();
+#endif
         }
         else
         {
@@ -300,12 +325,20 @@ public static class AcrylicBrush
                 Name = "Blur",
                 BorderMode = D2D1_BORDER_MODE.D2D1_BORDER_MODE_HARD,
                 StandardDeviation = _blurRadius,
+#if NETFRAMEWORK
+                Source = backdropEffectSourceParameter.ComCast<IGraphicsEffectSource>()
+#else
                 Source = backdropEffectSourceParameter.As<IGraphicsEffectSource>()
+#endif
             };
             blurredSource = gaussianBlurEffect;
         }
 
+#if NETFRAMEWORK
+        if (!WinRTUtilities.Is19H1OrHigher)
+#else
         if (!Utilities.Extensions.Is19H1OrHigher)
+#endif
         {
             useLegacyEffect = true;
         }
@@ -319,7 +352,11 @@ public static class AcrylicBrush
         {
             EdgeModeX = D2D1_BORDER_EDGE_MODE.D2D1_BORDER_EDGE_MODE_WRAP,
             EdgeModeY = D2D1_BORDER_EDGE_MODE.D2D1_BORDER_EDGE_MODE_WRAP,
+#if NETFRAMEWORK
+            Source = new CompositionEffectSourceParameter("Noise").ComCast<IGraphicsEffectSource>()
+#else
             Source = new CompositionEffectSourceParameter("Noise").As<IGraphicsEffectSource>()
+#endif
         };
 
         var noiseOpacityEffect = new OpacityEffect

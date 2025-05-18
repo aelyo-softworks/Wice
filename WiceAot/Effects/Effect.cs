@@ -1,11 +1,19 @@
 ﻿namespace Wice.Effects;
 
+#if !NETFRAMEWORK
 [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
-public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraphicsEffect, IGraphicsEffectSource, Windows.Graphics.Effects.IGraphicsEffectD2D1Interop
+#endif
+public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraphicsEffect, IGraphicsEffectSource, IGraphicsEffectD2D1Interop
 {
     private static readonly ConcurrentDictionary<Type, List<PropDef>> _properties = new();
     private readonly List<IGraphicsEffectSource?> _sources = [];
-    private readonly Lazy<IComObject<IPropertyValueStatics>> _statics = new(() => ComObject.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue")!);
+    private readonly Lazy<IComObject<IPropertyValueStatics>> _statics = new(() =>
+#if NETFRAMEWORK
+        new ComObject<IPropertyValueStatics>(WinRTUtilities.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue"))!
+#else
+        ComObject.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue")!
+#endif
+    );
     private string? _name;
 
     public uint MaximumSourcesCount { get; } = sourcesCount;
@@ -25,6 +33,10 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
             return new Guid(att.Value);
         }
     }
+
+#if NETFRAMEWORK
+    public IGraphicsEffect GetIGraphicsEffect() => this;
+#endif
 
     protected virtual IGraphicsEffectSource? GetSource(int index)
     {
@@ -160,19 +172,26 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
                     if (value is float[] floats)
                         return statics.Object.CreateSingleArray(floats, out ptr);
 
+#if NETFRAMEWORK
+                    if (value is IInspectable inspectable)
+#else
                     if (value is Interop.IInspectable inspectable)
+#endif
                         return statics.Object.CreateInspectable(inspectable, out ptr);
-
                     break;
             }
 
             ptr = 0;
             Application.Trace(this + " " + this + " E_NOTIMPL");
-            return Constants.E_NOTIMPL;
+            return WiceCommons.E_NOTIMPL;
         }
     }
 
-    private static List<PropDef> GetPropDefs([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] Type type)
+    private static List<PropDef> GetPropDefs(
+#if !NETFRAMEWORK
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] 
+#endif
+        Type type)
     {
         if (!_properties.TryGetValue(type, out var list))
         {
@@ -191,13 +210,13 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return list;
     }
 
-    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetEffectId(out Guid id)
+    HRESULT IGraphicsEffectD2D1Interop.GetEffectId(out Guid id)
     {
         id = Clsid;
         return WiceCommons.S_OK;
     }
 
-    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetNamedPropertyMapping(PWSTR name, out uint index, out GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
+    HRESULT IGraphicsEffectD2D1Interop.GetNamedPropertyMapping(PWSTR name, out uint index, out GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
     {
         //Application.Trace(this + "name:" + name);
 
@@ -209,7 +228,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
             index = 0;
             mapping = 0;
             Application.Trace(this + " name:'" + name + "' E_INVALIDARG");
-            return Constants.E_INVALIDARG;
+            return WiceCommons.E_INVALIDARG;
         }
 
         index = (uint)def.Index;
@@ -217,7 +236,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return WiceCommons.S_OK;
     }
 
-    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetPropertyCount(out uint count)
+    HRESULT IGraphicsEffectD2D1Interop.GetPropertyCount(out uint count)
     {
         var defs = GetPropDefs(GetType());
         count = (uint)defs.Count;
@@ -225,7 +244,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return WiceCommons.S_OK;
     }
 
-    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetProperty(uint index, out nint value)
+    HRESULT IGraphicsEffectD2D1Interop.GetProperty(uint index, out nint value)
     {
         try
         {
@@ -235,7 +254,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
             {
                 value = 0;
                 Application.Trace(this + " index:" + index + " E_BOUNDS");
-                return Constants.E_BOUNDS;
+                return WiceCommons.E_BOUNDS;
             }
 
             return defs[(int)index].GetPropertyValue(this, out value);
@@ -244,25 +263,25 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         {
             Application.Trace(this + " index:" + index + " E_FAIL");
             value = 0;
-            return Constants.E_FAIL;
+            return WiceCommons.E_FAIL;
         }
     }
 
-    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource? source)
+    HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource? source)
     {
         //Application.Trace(this + " index:" + index);
         if (index >= MaximumSourcesCount || index >= _sources.Count)
         {
             source = null;
             Application.Trace(this + " index:" + index + " E_BOUNDS");
-            return Constants.E_BOUNDS;
+            return WiceCommons.E_BOUNDS;
         }
 
         source = _sources[(int)index];
         return WiceCommons.S_OK;
     }
 
-    HRESULT Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.GetSourceCount(out uint count)
+    HRESULT IGraphicsEffectD2D1Interop.GetSourceCount(out uint count)
     {
         if (MaximumSourcesCount == int.MaxValue)
         {

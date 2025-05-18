@@ -19,6 +19,10 @@ public static class WiceCommons
     public static readonly HRESULT DRAGDROP_S_DROP = 0x00040100;
     public static readonly HRESULT DRAGDROP_S_CANCEL = 0x00040101;
     public static readonly HRESULT DRAGDROP_S_USEDEFAULTCURSORS = 0x00040102;
+    public static readonly HRESULT E_BOUNDS = 0x8000000B;
+    public static readonly HRESULT E_FAIL = 0x80004005;
+    public static readonly HRESULT E_INVALIDARG = 0x80070057;
+    public static readonly HRESULT E_NOTIMPL = 0x80004001;
 
     public static readonly Guid DXGI_DEBUG_ALL = new("e48ae283-da80-490b-87e6-43e9a9cfda08");
 
@@ -272,6 +276,10 @@ public static class WiceCommons
     public static readonly HRESULT DRAGDROP_S_DROP = Constants.DRAGDROP_S_DROP;
     public static readonly HRESULT DRAGDROP_S_CANCEL = Constants.DRAGDROP_S_CANCEL;
     public static readonly HRESULT DRAGDROP_S_USEDEFAULTCURSORS = Constants.DRAGDROP_S_USEDEFAULTCURSORS;
+    public static readonly HRESULT E_BOUNDS = Constants.E_BOUNDS;
+    public static readonly HRESULT E_FAIL = Constants.E_FAIL;
+    public static readonly HRESULT E_INVALIDARG = Constants.E_INVALIDARG;
+    public static readonly HRESULT E_NOTIMPL = Constants.E_NOTIMPL;
 
     public static readonly Guid DXGI_DEBUG_ALL = Constants.DXGI_DEBUG_ALL;
 
@@ -390,7 +398,7 @@ public static class WiceCommons
     public static BOOL EnumWindows(WNDENUMPROC lpEnumFunc, LPARAM lParam) => Functions.EnumWindows(lpEnumFunc, lParam);
     public static BOOL DestroyIcon(HICON hIcon) => Functions.DestroyIcon(hIcon);
     public static int GetSystemMetricsForDpi(SYSTEM_METRICS_INDEX nIndex, uint dpi) => Functions.GetSystemMetricsForDpi(nIndex, dpi);
-    public static BOOL GetPointerType(uint pointerId, out POINTER_INPUT_TYPE pointerType) => Functions.GetPointerType(pointerId, out pointerType);  
+    public static BOOL GetPointerType(uint pointerId, out POINTER_INPUT_TYPE pointerType) => Functions.GetPointerType(pointerId, out pointerType);
     public static BOOL GetPointerInfo(uint pointerId, out POINTER_INFO pointerInfo) => Functions.GetPointerInfo(pointerId, out pointerInfo);
     public static BOOL GetPointerPenInfo(uint pointerId, out POINTER_PEN_INFO penInfo) => Functions.GetPointerPenInfo(pointerId, out penInfo);
     public static BOOL GetPointerTouchInfo(uint pointerId, out POINTER_TOUCH_INFO touchInfo) => Functions.GetPointerTouchInfo(pointerId, out touchInfo);
