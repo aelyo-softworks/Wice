@@ -1940,6 +1940,7 @@ public partial class Visual : BaseObject
         return true;
     }
 
+    [Browsable(false)]
     public bool IsRunningAsMainThread
     {
         get

@@ -1,4 +1,6 @@
-﻿namespace WiceAot.Tests;
+﻿using WebView2;
+
+namespace WiceAot.Tests;
 
 internal partial class TestWindow : Window
 {
@@ -61,26 +63,42 @@ internal partial class TestWindow : Window
 
     public void ShowBrowser()
     {
+        var pages = new string[]
+            {
+            "https://www.bing.com",
+            "https://www.google.com",
+            "https://www.microsoft.com",
+            "https://www.github.com",
+            "https://www.reddit.com",
+            "https://www.stackoverflow.com",
+        };
+
+        var pagesIndex = 0;
+
         var tabs = new Tabs();
         tabs.PagesHeader.Spacing = new D2D_SIZE_F(5, 5);
-        //tabs.PagesHeader.LastChildFill = true;
-        tabs.VerticalAlignment = Alignment.Near;
         Children.Add(tabs);
 
         TabPage? plusPage = null;
-        addPage("https://www.bing.com");
+        _ = addPage(null);
 
-        plusPage = new TabPage();
+        plusPage = new TabPage { IsSelectable = false };
         tabs.Pages.Add(plusPage);
         plusPage.Header.AutoSelect = false;
         plusPage.Header.Icon.Text = DirectN.Extensions.Utilities.MDL2GlyphResource.Add;
         plusPage.Header.Text.Text = string.Empty;
         plusPage.Header.HorizontalAlignment = Alignment.Stretch;
         plusPage.Header.HoverRenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
-        plusPage.Header.SelectedButtonClick += (s, e) => addPage("https://www.bing.com");
+        plusPage.Header.SelectedButtonClick += (s, e) => _ = addPage(null);
 
-        TabPage addPage(string url)
+        async ValueTask<TabPage> addPage(ICoreWebView2NewWindowRequestedEventArgs? e)
         {
+            var url = pages[pagesIndex++];
+            if (pagesIndex >= pages.Length)
+            {
+                pagesIndex = 0;
+            }
+
             var page = new TabPage();
 
             int index;
@@ -96,8 +114,17 @@ internal partial class TestWindow : Window
                 tabs.Pages.Add(page);
             }
 
-            page.Header.Name = "tp" + index;
-            page.Header.Text.Text = "Page " + index;
+            if (e != null)
+            {
+                var uri = PWSTR.Null;
+                e.get_Uri(ref uri).ThrowOnError();
+                page.Header.Text.Text = uri.ToString() ?? string.Empty;
+            }
+            else
+            {
+                page.Header.Text.Text = url;
+            }
+
             page.Header.SelectedBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
             page.Header.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.DarkGray.ToColor());
             page.Header.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
@@ -107,18 +134,26 @@ internal partial class TestWindow : Window
                 tabs.Pages.Remove(page);
             };
 
-            //page.Content.Children.Add(new WebView
-            //{
-            //    SourceUri = url,
-            //    Margin = D2D_RECT_F.Thickness(10, 10, 10, 10)
-            //});
-
-            page.Content.Children.Add(new Border
+            var wv = new WebView();
+            wv.DocumentTitleChanged += (s, e) => page.Header.Text.Text = e.Value ?? url;
+            wv.NewWindowRequested += (s, e) =>
             {
-                Width = 300,
-                Height = 300,
-                Margin = D2D_RECT_F.Thickness(10, 10, 10, 10)
-            });
+                _ = addPage(e.Value);
+            };
+            page.Content = wv;
+            if (e != null)
+            {
+                e.GetDeferral(out var deferral).ThrowOnError();
+                e.put_Handled(true).ThrowOnError();
+                var wv2 = await wv.EnsureWebView2Loaded(false);
+                e.put_NewWindow(wv2!.Object).ThrowOnError();
+                deferral.Complete().ThrowOnError();
+            }
+            else
+            {
+                wv.SourceUri = url;
+            }
+
             return page;
         }
     }
@@ -841,5 +876,46 @@ internal partial class TestWindow : Window
             //text.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_JUSTIFIED;
             //text.WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD;
         }
+    }
+
+
+    public void AddWrap()
+    {
+        var wrap = new Wrap
+        {
+            Orientation = Orientation.Horizontal
+        };
+        Children.Add(wrap);
+
+        var r = new Random(Environment.TickCount);
+        var max = 1000;
+        for (var i = 0; i < max; i++)
+        {
+            var b = new Border
+            {
+                Name = "border" + i
+            };
+            wrap.Children.Add(b);
+            b.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+            var color = new D3DCOLORVALUE(0, 1 - (i / (float)max), 1 - (i / (float)max));
+            b.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
+            b.Width = r.Next(10, 60);
+            b.Height = r.Next(10, 60);
+        }
+
+        KeyDown += (s, e) =>
+        {
+            if (e.Key == VIRTUAL_KEY.VK_S)
+            {
+                if (wrap.Orientation == Orientation.Horizontal)
+                {
+                    wrap.Orientation = Orientation.Vertical;
+                }
+                else
+                {
+                    wrap.Orientation = Orientation.Horizontal;
+                }
+            }
+        };
     }
 }

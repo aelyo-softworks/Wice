@@ -11,7 +11,13 @@ public partial class ResourceManager
         ExceptionExtensions.ThrowIfNull(application, nameof(application));
         Application = application;
         D2DFactory = D2D1Functions.D2D1CreateFactory1();
+#if NETFRAMEWORK
+        // note sure why we need this on .NET framework...
+        // but it seems to fix the issue with multiple application (on multiple threads) sample
+        DWriteFactory = DWriteFunctions.DWriteCreateFactory(DWRITE_FACTORY_TYPE.DWRITE_FACTORY_TYPE_ISOLATED);
+#else
         DWriteFactory = DWriteFunctions.DWriteCreateFactory();
+#endif
         _theme = CreateTheme();
         if (_theme == null)
             throw new InvalidOperationException();

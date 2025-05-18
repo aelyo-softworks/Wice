@@ -1,29 +1,39 @@
 ﻿namespace Wice;
 
-public partial class Tabs : Stack
+public partial class Tabs : Dock
 {
     public event EventHandler<ValueEventArgs<TabPage>>? PageAdded;
     public event EventHandler<ValueEventArgs<TabPage>>? PageRemoved;
-    public event EventHandler? PageSelected;
+    public event EventHandler? SelectionChanged;
 
     public Tabs()
     {
-        Orientation = Orientation.Vertical;
+        LastChildFill = true;
         Pages = CreatePages();
         Pages.CollectionChanged += (s, e) => OnPagesCollectionChanged(e);
-
-        PagesContent = CreatePagesContent();
-        if (PagesContent == null)
-            throw new InvalidOperationException();
-
-        Children.Add(PagesContent);
-        PagesContent.IsVisible = false;
 
         PagesHeader = CreatePagesHeader();
         if (PagesHeader == null)
             throw new InvalidOperationException();
 
+#if DEBUG
+        PagesHeader.Name = nameof(PagesHeader);
+#endif
+
+        SetDockType(PagesHeader, DockType.Top);
         Children.Add(PagesHeader);
+
+        PagesContent = CreatePagesContent();
+        PagesContent.MeasureToContent = DimensionOptions.WidthAndHeight;
+        if (PagesContent == null)
+            throw new InvalidOperationException();
+
+#if DEBUG
+        PagesContent.Name = nameof(PagesContent);
+#endif
+
+        SetDockType(PagesContent, DockType.Bottom);
+        Children.Add(PagesContent);
     }
 
     [Browsable(false)]
@@ -36,7 +46,7 @@ public partial class Tabs : Stack
     public Canvas PagesContent { get; }
 
     [Browsable(false)]
-    public TabPage? SelectedPage => Pages.FirstOrDefault(p => p.Header.IsSelected);
+    public TabPage? SelectedPage => Pages.FirstOrDefault(p => p.IsSelectable && p.Header.IsSelected);
 
     protected virtual BaseObjectCollection<TabPage> CreatePages() => [];
     protected virtual Stack CreatePagesHeader() => new() { Orientation = Orientation.Horizontal, LastChildFill = false };
@@ -44,7 +54,7 @@ public partial class Tabs : Stack
 
     protected virtual void OnPageAdded(object sender, ValueEventArgs<TabPage> e) => PageAdded?.Invoke(sender, e);
     protected virtual void OnPageRemoved(object sender, ValueEventArgs<TabPage> e) => PageRemoved?.Invoke(sender, e);
-    protected virtual void OnPageSelected(object? sender, EventArgs e) => PageSelected?.Invoke(sender, e);
+    protected virtual void OnSelectionChanged(object? sender, EventArgs e) => SelectionChanged?.Invoke(sender, e);
 
     private void OnPagesCollectionChanged(NotifyCollectionChangedEventArgs e)
     {
@@ -62,9 +72,34 @@ public partial class Tabs : Stack
 
                     page.Tab = null;
                     PagesHeader.Children.Remove(page.Header);
-                    PagesContent.Children.Remove(page.Content);
+#if DEBUG
+                    page.Header.Name = null;
+#endif
+                    if (page.Content != null)
+                    {
+                        RemovePageContent(page.Content);
+                    }
+
                     Invalidate(VisualPropertyInvalidateModes.Measure);
                     OnPageRemoved(this, new ValueEventArgs<TabPage>(page));
+
+                    // make sure we have at least one selected page if possible
+                    if (SelectedPage == null)
+                    {
+                        var selectablePages = Pages.Where(p => p.IsSelectable).ToArray();
+                        if (selectablePages.Length > 0)
+                        {
+                            if (selectablePages.Length == 1)
+                            {
+                                selectablePages[0].Header.IsSelected = true;
+                            }
+                            else
+                            {
+                                var index = Math.Min(e.OldStartingIndex, selectablePages.Length - 1);
+                                selectablePages[index].Header.IsSelected = true;
+                            }
+                        }
+                    }
                 }
 
                 if (e.Action == NotifyCollectionChangedAction.Replace)
@@ -102,14 +137,14 @@ public partial class Tabs : Stack
                     PagesHeader.Children.Insert(e.NewStartingIndex, page.Header);
                 }
 
-                if (e.NewStartingIndex >= PagesContent.Children.Count)
+                if (page.Content != null)
                 {
-                    PagesContent.Children.Add(page.Content);
+                    AddPageContent(e.NewStartingIndex, page.Content);
                 }
-                else
-                {
-                    PagesContent.Children.Insert(e.NewStartingIndex, page.Content);
-                }
+
+#if DEBUG
+                page.Header.Name = "tabPageHeader#" + e.NewStartingIndex;
+#endif
 
                 page.Header.HorizontalAlignment = Alignment.Near;
                 page.Header.Panel.HorizontalAlignment = Alignment.Near;
@@ -125,18 +160,88 @@ public partial class Tabs : Stack
         }
     }
 
+    protected virtual void RemovePageContent(Visual content)
+    {
+        ExceptionExtensions.ThrowIfNull(content, nameof(content));
+        PagesContent.Children.Remove(content);
+#if DEBUG
+        content.Name = null;
+#endif
+    }
+
+    protected virtual void AddPageContent(int index, Visual content)
+    {
+        ExceptionExtensions.ThrowIfNull(content, nameof(content));
+        if (index >= PagesContent.Children.Count)
+        {
+            PagesContent.Children.Add(content);
+        }
+        else
+        {
+            PagesContent.Children.Insert(index, content);
+        }
+
+        Canvas.SetLeft(content, 0);
+        Canvas.SetTop(content, 0);
+#if DEBUG
+        content.Name = "tabPageContent#" + index;
+#endif
+    }
+
+    protected internal void OnPageContentChanged(TabPage page, Visual? newContent, Visual? oldContent)
+    {
+        ExceptionExtensions.ThrowIfNull(page, nameof(page));
+        var index = page.Index;
+        if (oldContent != null)
+        {
+            PagesContent.Children.Remove(oldContent);
+        }
+
+        if (newContent != null)
+        {
+            AddPageContent(index, newContent);
+        }
+    }
+
+#pragma warning disable CA1822  // Mark members as static
+    protected internal void OnPageIsSelectableChanged(TabPage page, bool newValue)
+#pragma warning restore CA1822  // Mark members as static
+    {
+        ExceptionExtensions.ThrowIfNull(page, nameof(page));
+        if (!page.Header.IsSelected)
+            return;
+
+        if (!newValue)
+        {
+            page.Header.IsSelected = false;
+        }
+    }
+
     private void OnHeaderIsSelectedChanged(object? sender, ValueEventArgs<bool> e)
     {
         if (e.Value)
         {
             foreach (var page in Pages)
             {
-                if (!page.Header.Equals(sender))
+                if (!page.Header.Equals(sender) || !page.IsSelectable)
                 {
                     page.Header.IsSelected = false;
+                    if (page.Content != null)
+                    {
+                        page.Content.IsVisible = false;
+                    }
+                }
+                else
+                {
+                    if (page.Content != null)
+                    {
+                        page.Content.IsVisible = true;
+                    }
                 }
             }
         }
-        OnPageSelected(sender, e);
+
+        var selectedPage = SelectedPage;
+        OnSelectionChanged(sender, e);
     }
 }

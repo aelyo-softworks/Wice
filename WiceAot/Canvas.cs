@@ -229,7 +229,6 @@ public partial class Canvas : Visual
     [Category(CategoryLayout)]
     public DimensionOptions MeasureToContent { get => (DimensionOptions)GetPropertyValue(MeasureToContentProperty)!; set => SetPropertyValue(MeasureToContentProperty, value); }
 
-    // we only support stretch alignment (means we adapt to parent's constraint)
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => MeasureCore(this, constraint, MeasureToContent);
     protected override void ArrangeCore(D2D_RECT_F finalRect) => ArrangeCore(this, finalRect);
 

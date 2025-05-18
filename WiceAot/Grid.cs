@@ -236,9 +236,6 @@ public partial class Grid : Visual
 
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
-        //Application.Trace("this: " + this + " constraint: " + constraint);
-        //var padding = Padding;
-
         // reset all
         foreach (var col in Columns)
         {

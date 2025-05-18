@@ -8,24 +8,24 @@
     ".NETCoreApp,Version=v9.0": {
       "WebView2/1.0.0": {
         "dependencies": {
-          "DirectNAot": "1.3.0",
+          "DirectNAot": "1.3.1",
           "Microsoft.DotNet.ILCompiler": "9.0.4",
-          "Microsoft.NET.ILLink.Tasks": "9.0.4"
+          "Microsoft.NET.ILLink.Tasks": "9.0.5"
         },
         "runtime": {
           "WebView2.dll": {}
         }
       },
-      "DirectNAot/1.3.0": {
+      "DirectNAot/1.3.1": {
         "runtime": {
           "lib/net9.0/DirectN.dll": {
-            "assemblyVersion": "1.3.0.0",
-            "fileVersion": "1.3.0.0"
+            "assemblyVersion": "1.3.1.0",
+            "fileVersion": "1.3.1.0"
           }
         }
       },
       "Microsoft.DotNet.ILCompiler/9.0.4": {},
-      "Microsoft.NET.ILLink.Tasks/9.0.4": {}
+      "Microsoft.NET.ILLink.Tasks/9.0.5": {}
     }
   },
   "libraries": {
@@ -34,12 +34,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "DirectNAot/1.3.0": {
+    "DirectNAot/1.3.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-SZFwLJZ6nqwtFwdYL8JnPGEPZvSPWVVkCFlTtmOov7v3KTXrl+nB+IqAzyIsFKn0E92hsS228CMiRKTbq+IcmQ==",
-      "path": "directnaot/1.3.0",
-      "hashPath": "directnaot.1.3.0.nupkg.sha512"
+      "sha512": "sha512-DUpbMnw5a3vO6v7D5UTP/pD9GrWBG95f/ksCfGhxALo4c6N25w//497HbcW0A82Gl3c9vyo2nalQ5JzOJG+v4g==",
+      "path": "directnaot/1.3.1",
+      "hashPath": "directnaot.1.3.1.nupkg.sha512"
     },
     "Microsoft.DotNet.ILCompiler/9.0.4": {
       "type": "package",
@@ -48,12 +48,12 @@
       "path": "microsoft.dotnet.ilcompiler/9.0.4",
       "hashPath": "microsoft.dotnet.ilcompiler.9.0.4.nupkg.sha512"
     },
-    "Microsoft.NET.ILLink.Tasks/9.0.4": {
+    "Microsoft.NET.ILLink.Tasks/9.0.5": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-xUdlUxiFwXhTYhB4VxKg/IA0+jlZXJPo70LYuMryWbJHdonIpZjw+7DO2B0pWwpXIOs6MlH5WVXPEtfrGEcVZA==",
-      "path": "microsoft.net.illink.tasks/9.0.4",
-      "hashPath": "microsoft.net.illink.tasks.9.0.4.nupkg.sha512"
+      "sha512": "sha512-4L7wbb3Y4BJgIeSnmAf/C6S/qCs9rT1b0dX72uj3qo0qvUH7D0U1tU5ZlC7A3Wb8E/dXK4caOi4JkdLTVJaXhw==",
+      "path": "microsoft.net.illink.tasks/9.0.5",
+      "hashPath": "microsoft.net.illink.tasks.9.0.5.nupkg.sha512"
     }
   }
 }

@@ -9,24 +9,51 @@ public partial class WebView : Border, IDisposable
     public static VisualProperty SourceUriProperty { get; } = VisualProperty.Add<string>(typeof(WebView), nameof(SourceUri), VisualPropertyInvalidateModes.Render, convert: ValidateNonNullString);
     public static VisualProperty SourceStringProperty { get; } = VisualProperty.Add<string>(typeof(WebView), nameof(SourceString), VisualPropertyInvalidateModes.Render, convert: ValidateNonNullString);
 
+    public static bool UseSharedEnvironmentDefault { get; set; } = true;
+
     public event EventHandler<ValueEventArgs<ICoreWebView2>>? WebViewSetup;
     public event EventHandler<ValueEventArgs<ICoreWebView2CompositionController>>? WebViewControllerSetup;
+    public event EventHandler<ValueEventArgs<ICoreWebView2NavigationCompletedEventArgs>>? NavigationCompleted;
+    public event EventHandler<ValueEventArgs<ICoreWebView2NavigationCompletedEventArgs>>? FrameNavigationCompleted;
+    public event EventHandler<ValueEventArgs<ICoreWebView2NewWindowRequestedEventArgs>>? NewWindowRequested;
+    public event EventHandler<ValueEventArgs<string?>>? DocumentTitleChanged;
 
+    private WebViewInfo? _webViewInfo;
+    private bool _loadingWebView2;
     private ComObject<ICoreWebView2CompositionController>? _controller;
-    private ComObject<ICoreWebView2Environment3>? _environment;
     private ComObject<ICoreWebView2>? _webView2;
     private WebView2.EventRegistrationToken _cursorChangedToken;
+    private WebView2.EventRegistrationToken _navigationCompleted;
+    private WebView2.EventRegistrationToken _documentTitleChanged;
+    private WebView2.EventRegistrationToken _newWindowRequested;
+    private WebView2.EventRegistrationToken _frameNavigationCompleted;
 
     private bool _disposedValue;
     private string? _browserExecutableFolder;
     private string? _userDataFolder;
+    private ICoreWebView2EnvironmentOptions? _options;
+    private bool _firstTimeNavigated;
     private MouseButton? _captureButton;
+    private bool _useSharedEnvironment = UseSharedEnvironmentDefault;
 
     [Category(CategoryLayout)]
     public virtual string SourceUri { get => (string?)GetPropertyValue(SourceUriProperty) ?? string.Empty; set => SetPropertyValue(SourceUriProperty, value); }
 
     [Category(CategoryLayout)]
     public virtual string SourceString { get => (string?)GetPropertyValue(SourceStringProperty) ?? string.Empty; set => SetPropertyValue(SourceStringProperty, value); }
+
+    public virtual bool UseSharedEnvironment
+    {
+        get => _useSharedEnvironment;
+        set
+        {
+            if (_useSharedEnvironment == value)
+                return;
+
+            WebViewInfo.ThrowIfInitialized(_webViewInfo);
+            _useSharedEnvironment = value;
+        }
+    }
 
     public virtual string? BrowserExecutableFolder
     {
@@ -36,9 +63,7 @@ public partial class WebView : Border, IDisposable
             if (_browserExecutableFolder == value)
                 return;
 
-            if (_webView2 != null)
-                throw new InvalidOperationException("BrowserExecutableFolder cannot be set after WebView2 is created.");
-
+            WebViewInfo.ThrowIfInitialized(_webViewInfo);
             _browserExecutableFolder = value;
         }
     }
@@ -51,17 +76,29 @@ public partial class WebView : Border, IDisposable
             if (_userDataFolder == value)
                 return;
 
-            if (_webView2 != null)
-                throw new InvalidOperationException("UserDataFolder cannot be set after WebView2 is created.");
-
+            WebViewInfo.ThrowIfInitialized(_webViewInfo);
             _userDataFolder = value;
         }
     }
 
-    public virtual ICoreWebView2EnvironmentOptions? Options { get; set; }
-    public virtual HRESULT? WebViewInitializationResult { get; protected set; }
-    public string? WebViewVersion { get; protected set; }
-    public IComObject<ICoreWebView2Environment3>? Environment => _environment;
+    public virtual ICoreWebView2EnvironmentOptions? Options
+    {
+        get => _options;
+        set
+        {
+            if (_options == value)
+                return;
+
+            WebViewInfo.ThrowIfInitialized(_webViewInfo);
+            _options = value;
+        }
+    }
+
+    public bool WebViewInitialized => _webViewInfo?.Initialized == true;
+    public HRESULT? WebViewInitializationResult => _webViewInfo?.WebViewInitializationResult;
+    public string? WebViewInitializationErrorMessage => _webViewInfo?.ErrorMessage;
+    public string? WebViewVersion => _webViewInfo?.WebViewVersion;
+    public IComObject<ICoreWebView2Environment3>? Environment => _webViewInfo?.Environment;
     public IComObject<ICoreWebView2CompositionController>? Controller => _controller;
     public IComObject<ICoreWebView2>? WebView2 => _webView2;
 
@@ -281,7 +318,7 @@ public partial class WebView : Border, IDisposable
     protected virtual IComObject<ICoreWebView2PointerInfo>? CreateInfo(PointerEventArgs e)
     {
         ArgumentNullException.ThrowIfNull(e);
-        var environment = _environment;
+        var environment = Environment;
         var ar = AbsoluteRenderRect;
         if (environment == null || environment.IsDisposed || ar.IsInvalid)
             return null;
@@ -376,12 +413,15 @@ public partial class WebView : Border, IDisposable
             ctrl.Object.put_Bounds(ar).ThrowOnError();
         }
 
-        Navigate();
+        if (!_firstTimeNavigated)
+        {
+            _ = FirstTimeNavigate();
+        }
     }
 
-    protected virtual void Navigate()
+    protected virtual async Task FirstTimeNavigate()
     {
-        EnsureWebView2Loaded();
+        await EnsureWebView2Loaded(false);
         var webView2 = _webView2;
         if (webView2 == null || webView2.IsDisposed)
             return;
@@ -403,17 +443,35 @@ public partial class WebView : Border, IDisposable
                 webView2.Object.Navigate(PWSTR.From("about:blank")).ThrowOnError();
             }
         }
+        _firstTimeNavigated = true;
     }
 
-    public virtual void EnsureWebView2Loaded()
+    public virtual IComObject<ICoreWebView2Environment3>? EnsureWebView2EnvironmentLoaded()
     {
-        var webView2 = _webView2;
-        if (webView2 != null && !webView2.IsDisposed)
-            return;
+        if (_webViewInfo != null && _webViewInfo.Initialized)
+            return _webViewInfo.Environment;
 
-        var hr = WebView2Utilities.Initialize(Assembly.GetEntryAssembly(), false);
-        WebViewInitializationResult = hr;
-        if (hr.IsError)
+        Application.Current?.CheckRunningAsMainThread();
+        if (UseSharedEnvironment)
+        {
+            WebViewInfo.Shared.EnsureEnvironment(BrowserExecutableFolder, UserDataFolder, Options);
+            _webViewInfo = WebViewInfo.Shared;
+            Interlocked.Increment(ref WebViewInfo.SharedCount);
+            _browserExecutableFolder = WebViewInfo.Shared.BrowserExecutableFolder;
+            _userDataFolder = WebViewInfo.Shared.UserDataFolder;
+            _options = WebViewInfo.Shared.Options;
+        }
+        else
+        {
+            _webViewInfo = new WebViewInfo();
+            _webViewInfo.EnsureEnvironment(BrowserExecutableFolder, UserDataFolder, Options);
+        }
+
+        var environment = _webViewInfo.Environment;
+        if (environment != null && !environment.IsDisposed)
+            return environment;
+
+        if (_webViewInfo.WebViewInitializationResult?.IsError == true)
         {
             if (Child == null)
             {
@@ -422,95 +480,108 @@ public partial class WebView : Border, IDisposable
                     HorizontalAlignment = Alignment.Center,
                     VerticalAlignment = Alignment.Center,
                     WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WRAP,
-                    Text = $"WebView2 could not be initialized. Make sure it's installed properly, and WebView2Loader.dll is reachable (error: {WebViewInitializationResult})."
+                    Text = _webViewInfo.ErrorMessage ?? "WebView2 initialization has failed."
                 };
                 Child = tb;
             }
-            return;
+            return null;
         }
+
+        return _webViewInfo.Environment;
+    }
+
+    public virtual Task<IComObject<ICoreWebView2>?> EnsureWebView2Loaded(bool firstTimeNavigate)
+    {
+        var webView2 = _webView2;
+        if (webView2 != null && !webView2.IsDisposed)
+            return Task.FromResult<IComObject<ICoreWebView2>?>(webView2);
+
+        var environment = EnsureWebView2EnvironmentLoaded();
+        if (environment == null || environment.IsDisposed)
+            return Task.FromResult<IComObject<ICoreWebView2>?>(null);
 
         var window = Window;
         if (window == null)
-            return;
+            return Task.FromResult<IComObject<ICoreWebView2>?>(null);
 
-        var ar = AbsoluteRenderRect;
-        if (ar.IsInvalid)
-            return;
+        if (_loadingWebView2)
+            return Task.FromResult<IComObject<ICoreWebView2>?>(null);
 
-        global::WebView2.Functions.CreateCoreWebView2EnvironmentWithOptions(PWSTR.From(BrowserExecutableFolder), PWSTR.From(UserDataFolder), Options!,
-            new CoreWebView2CreateCoreWebView2EnvironmentCompletedHandler((result, env) =>
+        var tcs = new TaskCompletionSource<IComObject<ICoreWebView2>?>();
+        _loadingWebView2 = true;
+        environment.Object.CreateCoreWebView2CompositionController(window.Handle, new CoreWebView2CreateCoreWebView2CompositionControllerCompletedHandler((result, controller) =>
+        {
+            _controller = new ComObject<ICoreWebView2CompositionController>(controller);
+
+            _controller.Object.add_CursorChanged(new CoreWebView2CursorChangedEventHandler((sender, args) =>
             {
-                if (result.IsError)
+                var cursor = new HCURSOR();
+                if (sender.get_Cursor(ref cursor).IsSuccess)
                 {
-                    if (Child == null)
-                    {
-                        var text = $"WebView2 environment could not be created (error: {result}).";
-                        if (result == DirectN.Constants.RPC_E_CHANGED_MODE)
-                        {
-                            text += " Make sure the thread is initialized as an STA thread.";
-                        }
-
-                        var tb = new TextBox
-                        {
-                            HorizontalAlignment = Alignment.Center,
-                            VerticalAlignment = Alignment.Center,
-                            WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WRAP,
-                            Text = text
-                        };
-                        Child = tb;
-                    }
-                    return;
+                    Cursor = new Cursor(cursor.Value);
                 }
 
-                if (env is not ICoreWebView2Environment3 env3)
-                {
-                    if (Child == null)
-                    {
-                        var tb = new TextBox
-                        {
-                            HorizontalAlignment = Alignment.Center,
-                            VerticalAlignment = Alignment.Center,
-                            WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WRAP,
-                            Text = $"Current WebView2 version ({WebView2Utilities.GetAvailableCoreWebView2BrowserVersionString(BrowserExecutableFolder)}) is not supported, please upgrade WebView2."
-                        };
-                        Child = tb;
-                    }
-                    return;
-                }
+            }), ref _cursorChangedToken);
+            var cb = CompositionVisual.As<IUnknown>();
+            _controller.Object.put_RootVisualTarget(cb).ThrowOnError();
+            OnWebViewControllerSetup(this, _controller.Object);
 
-                env3.CreateCoreWebView2CompositionController(window.Handle, new CoreWebView2CreateCoreWebView2CompositionControllerCompletedHandler((result, controller) =>
-                {
-                    _environment = new ComObject<ICoreWebView2Environment3>(env3);
-                    _controller = new ComObject<ICoreWebView2CompositionController>(controller);
+            var ctrl = (ICoreWebView2Controller)_controller.Object;
+            ctrl.get_CoreWebView2(out var webView2).ThrowOnError();
 
-                    _controller.Object.add_CursorChanged(new CoreWebView2CursorChangedEventHandler((sender, args) =>
-                    {
-                        var cursor = new HCURSOR();
-                        if (sender.get_Cursor(ref cursor).IsSuccess)
-                        {
-                            Cursor = new Cursor(cursor.Value);
-                        }
+            var ar = AbsoluteRenderRect;
+            if (ar.IsValid)
+            {
+                ctrl.put_Bounds(ar).ThrowOnError();
+            }
 
-                    }), ref _cursorChangedToken);
-                    var cb = CompositionVisual.As<IUnknown>();
-                    _controller.Object.put_RootVisualTarget(cb).ThrowOnError();
-                    OnWebViewControllerSetup(this, _controller.Object);
+            _webView2 = new ComObject<ICoreWebView2>(webView2);
+            _webView2.Object.add_FrameNavigationCompleted(new CoreWebView2NavigationCompletedEventHandler((sender, args) =>
+            {
+                OnFrameNavigationCompleted(this, args);
+            }), ref _frameNavigationCompleted);
 
-                    var ctrl = (ICoreWebView2Controller)_controller.Object;
-                    ctrl.get_CoreWebView2(out var webView2).ThrowOnError();
-                    ctrl.put_Bounds(ar).ThrowOnError();
+            _webView2.Object.add_NavigationCompleted(new CoreWebView2NavigationCompletedEventHandler((sender, args) =>
+            {
+                OnNavigationCompleted(this, args);
+            }), ref _navigationCompleted);
 
-                    _webView2 = new ComObject<ICoreWebView2>(webView2);
-                    WebViewVersion = WebView2Utilities.GetAvailableCoreWebView2BrowserVersionString(BrowserExecutableFolder);
-                    OnWebViewSetup(this, _webView2.Object);
+            _webView2.Object.add_DocumentTitleChanged(new CoreWebView2DocumentTitleChangedEventHandler((sender, args) =>
+            {
+                var title = PWSTR.Null;
+                sender.get_DocumentTitle(ref title);
+                OnDocumentTitleChanged(this, title.ToString());
+            }), ref _documentTitleChanged);
 
-                    Navigate();
-                }));
-            }));
+            _webView2.Object.add_NewWindowRequested(new CoreWebView2NewWindowRequestedEventHandler((sender, args) =>
+            {
+                OnNewWindowRequested(this, args);
+            }), ref _newWindowRequested);
+
+
+            OnWebViewSetup(this, _webView2.Object);
+            tcs.SetResult(_webView2);
+            _loadingWebView2 = false;
+
+            if (firstTimeNavigate)
+            {
+                _ = FirstTimeNavigate();
+            }
+            else
+            {
+                _firstTimeNavigated = true;
+            }
+        }));
+
+        return tcs.Task;
     }
 
     protected virtual void OnWebViewControllerSetup(object? sender, ICoreWebView2CompositionController controller) => WebViewControllerSetup?.Invoke(sender, new ValueEventArgs<ICoreWebView2CompositionController>(controller));
     protected virtual void OnWebViewSetup(object? sender, ICoreWebView2 webView) => WebViewSetup?.Invoke(this, new ValueEventArgs<ICoreWebView2>(webView));
+    protected virtual void OnNavigationCompleted(object? sender, ICoreWebView2NavigationCompletedEventArgs args) => NavigationCompleted?.Invoke(this, new ValueEventArgs<ICoreWebView2NavigationCompletedEventArgs>(args));
+    protected virtual void OnFrameNavigationCompleted(object? sender, ICoreWebView2NavigationCompletedEventArgs args) => FrameNavigationCompleted?.Invoke(this, new ValueEventArgs<ICoreWebView2NavigationCompletedEventArgs>(args));
+    protected virtual void OnDocumentTitleChanged(object? sender, string? title) => DocumentTitleChanged?.Invoke(this, new ValueEventArgs<string?>(title));
+    protected virtual void OnNewWindowRequested(object? sender, ICoreWebView2NewWindowRequestedEventArgs args) => NewWindowRequested?.Invoke(this, new ValueEventArgs<ICoreWebView2NewWindowRequestedEventArgs>(args));
 
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
     protected virtual void Dispose(bool disposing)
@@ -525,15 +596,130 @@ public partial class WebView : Border, IDisposable
                     _cursorChangedToken.value = 0;
                 }
 
+                if (_navigationCompleted.value != 0)
+                {
+                    _webView2?.Object.remove_FrameNavigationCompleted(_navigationCompleted);
+                    _navigationCompleted.value = 0;
+                }
+
+                if (_frameNavigationCompleted.value != 0)
+                {
+                    _webView2?.Object.remove_FrameNavigationCompleted(_frameNavigationCompleted);
+                    _frameNavigationCompleted.value = 0;
+                }
+
+                if (_documentTitleChanged.value != 0)
+                {
+                    _webView2?.Object.remove_DocumentTitleChanged(_documentTitleChanged);
+                    _documentTitleChanged.value = 0;
+                }
+
+                if (_newWindowRequested.value != 0)
+                {
+                    _webView2?.Object.remove_NewWindowRequested(_newWindowRequested);
+                    _newWindowRequested.value = 0;
+                }
+
                 _webView2?.Dispose();
                 _webView2 = null;
                 _controller?.Dispose();
                 _controller = null;
-                _environment?.Dispose();
-                _environment = null;
+
+                if (_webViewInfo != null)
+                {
+                    if (_webViewInfo.IsShared)
+                    {
+                        var count = Interlocked.Decrement(ref WebViewInfo.SharedCount);
+                        if (count == 0)
+                        {
+                            _webViewInfo.Dispose();
+                        }
+                    }
+                    else
+                    {
+                        _webViewInfo.Dispose();
+                    }
+                    _webViewInfo = null;
+                }
             }
 
             _disposedValue = true;
+        }
+    }
+
+    private sealed partial class WebViewInfo : IDisposable
+    {
+        // shared environment
+        public static WebViewInfo Shared { get; } = new() { IsShared = true };
+        public static int SharedCount;
+
+        public bool Initialized;
+        public ComObject<ICoreWebView2Environment3>? Environment;
+        public HRESULT? WebViewInitializationResult;
+        public string? WebViewVersion;
+        public string? ErrorMessage;
+
+        public bool IsShared { get; private set; }
+        public string? BrowserExecutableFolder { get; private set; }
+        public string? UserDataFolder { get; private set; }
+        public ICoreWebView2EnvironmentOptions? Options { get; private set; }
+
+        public void EnsureEnvironment(string? browserExecutableFolder, string? userDataFolder, ICoreWebView2EnvironmentOptions? options)
+        {
+            if (Initialized)
+                return;
+
+            var hr = WebView2Utilities.Initialize(Assembly.GetEntryAssembly(), false);
+            WebViewInitializationResult = hr;
+            if (hr.IsError)
+            {
+                ErrorMessage = $"WebView2 could not be initialized. Make sure it's installed properly, and WebView2Loader.dll is reachable (error: {WebViewInitializationResult}).";
+                return;
+            }
+
+            WebViewVersion = WebView2Utilities.GetAvailableCoreWebView2BrowserVersionString(browserExecutableFolder);
+            global::WebView2.Functions.CreateCoreWebView2EnvironmentWithOptions(PWSTR.From(browserExecutableFolder), PWSTR.From(userDataFolder), options!,
+                new CoreWebView2CreateCoreWebView2EnvironmentCompletedHandler((result, env) =>
+                {
+                    if (result.IsError)
+                    {
+                        ErrorMessage = $"WebView2 environment could not be created (error: {result}).";
+                        if (result == DirectN.Constants.RPC_E_CHANGED_MODE)
+                        {
+                            ErrorMessage += " Make sure the thread is initialized as an STA thread.";
+                        }
+                        return;
+                    }
+
+                    if (env is not ICoreWebView2Environment3 env3)
+                    {
+                        ErrorMessage = $"Current WebView2 version ({WebView2Utilities.GetAvailableCoreWebView2BrowserVersionString(browserExecutableFolder)}) is not supported, please upgrade WebView2.";
+                        return;
+                    }
+
+                    Environment = new ComObject<ICoreWebView2Environment3>(env3);
+                }));
+
+            Initialized = true;
+            BrowserExecutableFolder = browserExecutableFolder;
+            UserDataFolder = userDataFolder;
+            Options = options;
+        }
+
+        public void Dispose()
+        {
+            Environment?.Dispose();
+            Environment = null;
+            WebViewInitializationResult = null;
+            WebViewVersion = null;
+            ErrorMessage = null;
+            Initialized = false;
+        }
+
+        public static void ThrowIfInitialized(WebViewInfo? info, [CallerMemberName] string? methodName = null)
+        {
+            if (info != null && info.Initialized)
+                throw new InvalidOperationException($"{methodName} cannot be set after WebView2 Environment is created.");
         }
     }
 }

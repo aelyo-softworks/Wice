@@ -156,6 +156,12 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
     protected virtual void OnSelectedButtonClick(object sender, EventArgs e) => SelectedButtonClick?.Invoke(sender, e);
     protected virtual void OnCloseButtonClick(object sender, EventArgs e) => CloseButtonClick?.Invoke(sender, e);
 
+    protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
+    {
+        base.MeasureCore(constraint);
+        return Panel.DesiredSize;
+    }
+
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
