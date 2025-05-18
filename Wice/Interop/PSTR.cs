@@ -1,6 +1,6 @@
 ﻿namespace Wice.Interop;
 
-public partial struct PSTR
+public struct PSTR
 {
     public nint Value;
 

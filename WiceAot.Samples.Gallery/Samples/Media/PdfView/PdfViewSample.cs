@@ -1,5 +1,7 @@
 ﻿using Windows.Storage.Pickers;
+#if !NETFRAMEWORK
 using WinRT.Interop;
+#endif
 
 namespace Wice.Samples.Gallery.Samples.Media.PdfView;
 

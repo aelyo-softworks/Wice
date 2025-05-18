@@ -219,6 +219,7 @@
 	  <Compile Include="..\WiceAot\Orientation.cs" Link="Orientation.cs" />
 	  <Compile Include="..\WiceAot\ParentUpgradeInvalidateReason.cs" Link="ParentUpgradeInvalidateReason.cs" />
 	  <Compile Include="..\WiceAot\Path.cs" Link="Path.cs" />
+	  <Compile Include="..\WiceAot\PdfView.cs" Link="PdfView.cs" />
 	  <Compile Include="..\WiceAot\PlacementMode.cs" Link="PlacementMode.cs" />
 	  <Compile Include="..\WiceAot\PlacementParameters.cs" Link="PlacementParameters.cs" />
 	  <Compile Include="..\WiceAot\PointerActivateEventArgs.cs" Link="PointerActivateEventArgs.cs" />

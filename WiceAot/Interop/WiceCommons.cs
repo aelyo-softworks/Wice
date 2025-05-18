@@ -266,6 +266,9 @@ public static class WiceCommons
     [DllImport("user32")]
     public static extern BOOL EnableMouseInPointer(BOOL fEnable);
 
+    [DllImport("windows.data.pdf.dll", ExactSpelling = true)]
+    public static extern HRESULT PdfCreateRenderer(IDXGIDevice pDevice, out IPdfRendererNative ppRenderer);
+
 #else
     public const int ICON_BIG = Constants.ICON_BIG;
     public const int CW_USEDEFAULT = Constants.CW_USEDEFAULT;
@@ -404,6 +407,7 @@ public static class WiceCommons
     public static BOOL GetPointerTouchInfo(uint pointerId, out POINTER_TOUCH_INFO touchInfo) => Functions.GetPointerTouchInfo(pointerId, out touchInfo);
     public static BOOL IsMouseInPointerEnabled() => Functions.IsMouseInPointerEnabled();
     public static BOOL EnableMouseInPointer(BOOL fEnable) => Functions.EnableMouseInPointer(fEnable);
+    public static HRESULT PdfCreateRenderer(IDXGIDevice pDevice, out IPdfRendererNative ppRenderer) => Functions.PdfCreateRenderer(pDevice, out ppRenderer);
 
 #endif
 }

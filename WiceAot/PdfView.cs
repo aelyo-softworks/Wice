@@ -149,7 +149,7 @@ public partial class PdfView : RenderVisual, IDisposable
 
     protected virtual bool OnLoadError(Exception exception)
     {
-        ArgumentNullException.ThrowIfNull(exception);
+        ExceptionExtensions.ThrowIfNull(exception, nameof(exception));
         LoadError = exception;
         OnDocumentLoadError(this, EventArgs.Empty);
         return true;
@@ -180,7 +180,11 @@ public partial class PdfView : RenderVisual, IDisposable
         if (device == null)
             return null;
 
-        Functions.PdfCreateRenderer(device.Object, out var obj).ThrowOnError();
+#if NETFRAMEWORK
+        WiceCommons.PdfCreateRenderer(device, out var obj).ThrowOnError();
+#else
+        WiceCommons.PdfCreateRenderer(device.Object, out var obj).ThrowOnError();
+#endif
         _pdfRendererNative = new ComObject<IPdfRendererNative>(obj);
         return _pdfRendererNative;
     }
@@ -189,7 +193,7 @@ public partial class PdfView : RenderVisual, IDisposable
     {
         var page = EnsurePage();
         if (page == null)
-            return D2D_RECT_F.Zero;
+            return new D2D_RECT_F();
 
         var pageSize = page.Size;
         var size = new D2D_SIZE_F(pageSize.Width, pageSize.Height);
@@ -220,17 +224,30 @@ public partial class PdfView : RenderVisual, IDisposable
         if (page == null)
             return;
 
+#if NETFRAMEWORK
+        var pageUnk = Marshal.GetIUnknownForObject(page);
+#else
         var pageUnk = ((WinRT.IWinRTObject)page).NativeObject.ThisPtr; // no AddRef needed
+#endif
 
         var rc = GetDestinationRectangle();
         var renderParams = new PDF_RENDER_PARAMS
         {
             BackgroundColor = D3DCOLORVALUE.White,
+#if NETFRAMEWORK
+            DestinationWidth = (int)rc.Width,
+            DestinationHeight = (int)rc.Height,
+#else
             DestinationWidth = (uint)rc.Width,
             DestinationHeight = (uint)rc.Height,
+#endif
             IgnoreHighContrast = IgnoreHighContrast,
         };
         renderer.Object.RenderPageToDeviceContext(pageUnk, context.DeviceContext.Object, (nint)(&renderParams)).ThrowOnError();
+
+#if NETFRAMEWORK
+        Marshal.Release(pageUnk);
+#endif
     }
 
     protected virtual void OnDocumentDisposed(object sender, EventArgs args) => DocumentDisposed?.Invoke(sender, args);

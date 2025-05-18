@@ -98,6 +98,8 @@
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\Brush\Direct2DBrushSample.cs" Link="Samples\Media\Brush\Direct2DBrushSample.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\ImageSampleList.cs" Link="Samples\Media\ImageSampleList.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\Image\BasicImageSample.cs" Link="Samples\Media\Image\BasicImageSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\PdfViewSampleList.cs" Link="Samples\Media\PdfViewSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\PdfView\PdfViewSample.cs" Link="Samples\Media\PdfView\PdfViewSample.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\ShapeSampleList.cs" Link="Samples\Media\ShapeSampleList.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\Shape\EllipseRectangleShapeSample.cs" Link="Samples\Media\Shape\EllipseRectangleShapeSample.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Media\Shape\LineShapeSample.cs" Link="Samples\Media\Shape\LineShapeSample.cs" />
@@ -242,6 +244,7 @@
 	  <Folder Include="Samples\Layout\Wrap\" />
 	  <Folder Include="Samples\Media\Brush\" />
 	  <Folder Include="Samples\Media\Image\" />
+	  <Folder Include="Samples\Media\PdfView\" />
 	  <Folder Include="Samples\Media\Shape\" />
 	  <Folder Include="Samples\Media\SvgImage\" />
 	  <Folder Include="Samples\Misc\Application\" />
@@ -263,6 +266,10 @@
 
 	<ItemGroup>
 	  <EmbeddedResource Include="..\WiceAot.Samples.Gallery\Resources\tiger.svg" Link="Resources\tiger.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="..\WiceAot.Samples.Gallery\Resources\sample.pdf" Link="Resources\sample.pdf" />
 	</ItemGroup>
 
 </Project>
