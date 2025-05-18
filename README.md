@@ -88,7 +88,7 @@ A **WebView2** visual (WiceAOT only):
 
 ![image](https://github.com/user-attachments/assets/1a232fbe-aa9b-47dd-b141-f18db386297d)
 
-A **Pdf** visual (WiceAOT only):
+A **Pdf** visual
 
 ![image](https://github.com/user-attachments/assets/4e9c56da-4908-4ddc-a2c4-14f3e7ab14c0)
 
