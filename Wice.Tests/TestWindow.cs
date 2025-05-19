@@ -158,6 +158,7 @@ public class TestWindow : Window
 
         TabPage? plusPage = null;
         addPage("https://www.bing.com", D3DCOLORVALUE.Red);
+        addPage("https://www.github.com", D3DCOLORVALUE.Pink);
 
         plusPage = new TabPage();
         tabs.Pages.Add(plusPage);
@@ -197,11 +198,11 @@ public class TestWindow : Window
 
             page.Content = new Border
             {
+                Margin = D2D_RECT_F.Thickness(10 * tabs.Pages.Count),
                 Width = 300,
                 Height = 300,
                 BackgroundColor = color,
                 BorderThickness = 1,
-                Margin = D2D_RECT_F.Thickness(10, 10, 10, 10)
             };
             return page;
         }

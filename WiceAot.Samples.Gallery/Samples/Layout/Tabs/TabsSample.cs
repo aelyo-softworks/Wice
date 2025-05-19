@@ -53,6 +53,13 @@ public class TabsSample : Sample
             // by default header's close button is invisible
             page.Header.CloseButton!.IsVisible = true;
             page.Header.CloseButtonClick += (s, e) => tabs.Pages.Remove(page);
+
+            page.Content = new TextBox
+            {
+                Margin = D2D_RECT_F.Thickness(10, 50, 10, 50),
+                Text = "This is the content of page #" + index,
+            };
+
             return page;
         }
     }

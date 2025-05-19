@@ -77,7 +77,7 @@ public partial class Tabs : Dock
 #endif
                     if (page.Content != null)
                     {
-                        RemovePageContent(page.Content);
+                        RemovePageContent(page, e.OldStartingIndex, page.Content);
                     }
 
                     Invalidate(VisualPropertyInvalidateModes.Measure);
@@ -139,7 +139,7 @@ public partial class Tabs : Dock
 
                 if (page.Content != null)
                 {
-                    AddPageContent(e.NewStartingIndex, page.Content);
+                    AddPageContent(page, e.NewStartingIndex, page.Content);
                 }
 
 #if DEBUG
@@ -160,8 +160,9 @@ public partial class Tabs : Dock
         }
     }
 
-    protected virtual void RemovePageContent(Visual content)
+    protected virtual void RemovePageContent(TabPage page, int index, Visual content)
     {
+        ExceptionExtensions.ThrowIfNull(page, nameof(page));
         ExceptionExtensions.ThrowIfNull(content, nameof(content));
         PagesContent.Children.Remove(content);
 #if DEBUG
@@ -169,8 +170,9 @@ public partial class Tabs : Dock
 #endif
     }
 
-    protected virtual void AddPageContent(int index, Visual content)
+    protected virtual void AddPageContent(TabPage page, int index, Visual content)
     {
+        ExceptionExtensions.ThrowIfNull(page, nameof(page));
         ExceptionExtensions.ThrowIfNull(content, nameof(content));
         if (index >= PagesContent.Children.Count)
         {
@@ -181,6 +183,7 @@ public partial class Tabs : Dock
             PagesContent.Children.Insert(index, content);
         }
 
+        content.IsVisible = page.IsSelectable && page.Header.IsSelected;
         Canvas.SetLeft(content, 0);
         Canvas.SetTop(content, 0);
 #if DEBUG
@@ -199,7 +202,7 @@ public partial class Tabs : Dock
 
         if (newContent != null)
         {
-            AddPageContent(index, newContent);
+            AddPageContent(page, index, newContent);
         }
     }
 
