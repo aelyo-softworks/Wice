@@ -19,64 +19,24 @@ public partial class DialogBox : Dialog
             throw new InvalidOperationException();
 
 #if DEBUG
-        BackPanel.Name = "backPanel";
+        BackPanel.Name ??= "backPanel";
 #endif
         Content.Children.Add(BackPanel);
-        BackPanel.Arranged += (s, e) =>
-        {
-            var ar = BackPanel.ArrangedRect;
-
-            // avoid infinite loops
-            const float minDiff = 0.01f;
-            if (Math.Abs(Width - ar.Width) > minDiff)
-            {
-                Width = ar.Width;
-            }
-
-            if (Math.Abs(Height - ar.Height) > minDiff)
-            {
-                Height = ar.Height;
-            }
-        };
 
         TitleBar = CreateTitleBar();
         if (TitleBar == null)
             throw new InvalidOperationException();
 #if DEBUG
-        TitleBar.Name = "titleBar";
+        TitleBar.Name ??= "titleBar";
 #endif
-
-        var margin = Application.CurrentTheme.ButtonMargin;
-        if (TitleBar.Title != null)
-        {
-            TitleBar.Title.FontSize = Application.CurrentTheme.DefaultFontSize;
-            TitleBar.Title.Margin = D2D_RECT_F.Thickness(margin, 0, margin, 0);
-        }
-
-        if (TitleBar.MaxButton != null)
-        {
-            TitleBar.MaxButton.IsVisible = false;
-        }
-
-        if (TitleBar.MinButton != null)
-        {
-            TitleBar.MinButton.IsVisible = false;
-        }
-
-        if (TitleBar.CloseButton is IClickable clickable)
-        {
-            clickable.Click += (s2, e2) => { Result = false; if (TryClose()) Close(); };
-        }
 
         BackPanel.Children.Add(TitleBar);
 
         DialogContent = CreateDialogContent();
-        DialogContent.Margin = margin;
-        DialogContent.VerticalAlignment = Alignment.Center;
         if (DialogContent == null)
             throw new InvalidOperationException();
 #if DEBUG
-        DialogContent.Name = "dialogContent";
+        DialogContent.Name ??= "dialogContent";
 #endif
         BackPanel.Children.Add(DialogContent);
 
@@ -84,9 +44,8 @@ public partial class DialogBox : Dialog
         if (ButtonsPanel == null)
             throw new InvalidOperationException();
 #if DEBUG
-        ButtonsPanel.Name = "buttonsPanel";
+        ButtonsPanel.Name ??= "buttonsPanel";
 #endif
-        ButtonsPanel.Margin = margin;
         BackPanel.Children.Add(ButtonsPanel);
     }
 
@@ -119,10 +78,66 @@ public partial class DialogBox : Dialog
     [Browsable(false)]
     public Visual ButtonsPanel { get; }
 
-    protected virtual Visual CreateDialogContent() => new Dock();
-    protected virtual TitleBar CreateTitleBar() => new();
-    protected virtual Visual CreateBackPanel() => new Stack() { Orientation = Orientation.Vertical, LastChildFill = true };
-    protected virtual Visual CreateButtonsPanel() => new Dock() { LastChildFill = false };
+    protected virtual Visual CreateDialogContent()
+    {
+        var dock = new Dock
+        {
+            Margin = Application.CurrentTheme.ButtonMargin,
+            VerticalAlignment = Alignment.Center
+        };
+        return dock;
+    }
+
+    protected virtual TitleBar CreateTitleBar()
+    {
+        var bar = new TitleBar();
+        if (bar.Title != null)
+        {
+            var margin = Application.CurrentTheme.ButtonMargin;
+            bar.Title.FontSize = Application.CurrentTheme.DefaultFontSize;
+            bar.Title.Margin = D2D_RECT_F.Thickness(margin, 0, margin, 0);
+        }
+
+        if (bar.MaxButton != null)
+        {
+            bar.MaxButton.IsVisible = false;
+        }
+
+        if (bar.MinButton != null)
+        {
+            bar.MinButton.IsVisible = false;
+        }
+
+        if (bar.CloseButton is IClickable clickable)
+        {
+            clickable.Click += (s2, e2) => { Result = false; if (TryClose()) Close(); };
+        }
+        return bar;
+    }
+
+    protected virtual Visual CreateBackPanel()
+    {
+        var panel = new Stack() { Orientation = Orientation.Vertical, LastChildFill = true };
+        panel.Arranged += (s, e) =>
+        {
+            var ar = panel.ArrangedRect;
+
+            // avoid infinite loops
+            const float minDiff = 0.01f;
+            if (Math.Abs(Width - ar.Width) > minDiff)
+            {
+                Width = ar.Width;
+            }
+
+            if (Math.Abs(Height - ar.Height) > minDiff)
+            {
+                Height = ar.Height;
+            }
+        };
+        return panel;
+    }
+
+    protected virtual Visual CreateButtonsPanel() => new Dock() { LastChildFill = false, Margin = Application.CurrentTheme.ButtonMargin };
     protected virtual Button CreateButton() => new();
 
     public Button? GetCommandButton(MESSAGEBOX_RESULT command) => Buttons.FirstOrDefault(b => command.Equals(b.Command));
@@ -144,7 +159,7 @@ public partial class DialogBox : Dialog
     {
         var button = AddButton();
 #if DEBUG
-        button.Name = command + "Button";
+        button.Name ??= command + "Button";
 #endif
         button.Text.Text = WiceCommons.GetMessageBoxString(command) ?? string.Empty;
         button.Command = command;

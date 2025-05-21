@@ -14,7 +14,7 @@ public partial class Button : ButtonBase
 
         Icon.PropertyChanged += OnIconPropertyChanged;
 #if DEBUG
-        Icon.Name = nameof(Icon);
+        Icon.Name ??= nameof(Icon);
 #endif
         Child.Children.Add(Icon);
 
@@ -25,7 +25,7 @@ public partial class Button : ButtonBase
 
         Text.PropertyChanged += OnTextPropertyChanged;
 #if DEBUG
-        Text.Name = nameof(Text);
+        Text.Name ??= nameof(Text);
 #endif
         Child.Children.Add(Text);
 

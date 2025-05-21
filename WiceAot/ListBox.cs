@@ -519,7 +519,7 @@
                 return;
 
 #if DEBUG
-            item.Name = nameof(ItemVisual) + string.Format(" '{0}'", context.Data);
+            item.Name ??= nameof(ItemVisual) + string.Format(" '{0}'", context.Data);
 #endif
 
             item.DataBinder = DataBinder;

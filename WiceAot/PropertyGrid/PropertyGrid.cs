@@ -9,7 +9,6 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     public static VisualProperty CellMarginProperty { get; } = VisualProperty.Add(typeof(PropertyGrid<T>), nameof(CellMargin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
 
     private readonly ConcurrentDictionary<string, PropertyVisuals<T>> _propertyVisuals = new();
-    //private EditorHost _openedHost;
 
     public PropertyGrid()
     {

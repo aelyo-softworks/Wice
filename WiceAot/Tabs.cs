@@ -17,7 +17,7 @@ public partial class Tabs : Dock
             throw new InvalidOperationException();
 
 #if DEBUG
-        PagesHeader.Name = nameof(PagesHeader);
+        PagesHeader.Name ??= nameof(PagesHeader);
 #endif
 
         SetDockType(PagesHeader, DockType.Top);
@@ -29,7 +29,7 @@ public partial class Tabs : Dock
             throw new InvalidOperationException();
 
 #if DEBUG
-        PagesContent.Name = nameof(PagesContent);
+        PagesContent.Name ??= nameof(PagesContent);
 #endif
 
         SetDockType(PagesContent, DockType.Bottom);
@@ -72,9 +72,6 @@ public partial class Tabs : Dock
 
                     page.Tab = null;
                     PagesHeader.Children.Remove(page.Header);
-#if DEBUG
-                    page.Header.Name = null;
-#endif
                     if (page.Content != null)
                     {
                         RemovePageContent(page, e.OldStartingIndex, page.Content);
@@ -143,7 +140,7 @@ public partial class Tabs : Dock
                 }
 
 #if DEBUG
-                page.Header.Name = "tabPageHeader#" + e.NewStartingIndex;
+                page.Header.Name ??= "tabPageHeader#" + e.NewStartingIndex;
 #endif
 
                 page.Header.HorizontalAlignment = Alignment.Near;
@@ -165,9 +162,6 @@ public partial class Tabs : Dock
         ExceptionExtensions.ThrowIfNull(page, nameof(page));
         ExceptionExtensions.ThrowIfNull(content, nameof(content));
         PagesContent.Children.Remove(content);
-#if DEBUG
-        content.Name = null;
-#endif
     }
 
     protected virtual void AddPageContent(TabPage page, int index, Visual content)
@@ -187,7 +181,7 @@ public partial class Tabs : Dock
         Canvas.SetLeft(content, 0);
         Canvas.SetTop(content, 0);
 #if DEBUG
-        content.Name = "tabPageContent#" + index;
+        content.Name ??= "tabPageContent#" + index;
 #endif
     }
 
@@ -244,7 +238,6 @@ public partial class Tabs : Dock
             }
         }
 
-        var selectedPage = SelectedPage;
         OnSelectionChanged(sender, e);
     }
 }

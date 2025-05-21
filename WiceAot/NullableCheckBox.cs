@@ -37,7 +37,7 @@ public partial class NullableCheckBox : StateButton
         };
         canvas.Children.Add(b);
 #if DEBUG
-        canvas.Name = nameof(NullableCheckBox) + ".null";
+        canvas.Name ??= nameof(NullableCheckBox) + ".null";
 #endif
 
         canvas.AttachedToComposition += (s, e) =>

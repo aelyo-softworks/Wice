@@ -24,7 +24,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
             throw new InvalidOperationException();
 
 #if DEBUG
-        Selection.Name = nameof(Selection);
+        Selection.Name ??= nameof(Selection);
 #endif
         Children.Add(Selection);
         Selection.IsVisible = false;
@@ -35,7 +35,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
         if (Panel == null)
             throw new InvalidOperationException();
 #if DEBUG
-        Panel.Name = "headerChild";
+        Panel.Name ??= "headerChild";
 #endif
         Children.Add(Panel);
 
@@ -44,7 +44,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
             throw new InvalidOperationException();
 
 #if DEBUG
-        Icon.Name = nameof(Icon);
+        Icon.Name ??= nameof(Icon);
 #endif
         Panel.Children.Add(Icon);
 
@@ -53,7 +53,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
             throw new InvalidOperationException();
 
 #if DEBUG
-        SelectedButton.Name = nameof(SelectedButton);
+        SelectedButton.Name ??= nameof(SelectedButton);
 #endif
         Dock.SetDockType(SelectedButton, DockType.Right);
         Panel.Children.Add(SelectedButton);
@@ -86,7 +86,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
             throw new InvalidOperationException();
 
 #if DEBUG
-        Text.Name = nameof(Text);
+        Text.Name ??= nameof(Text);
 #endif
         Panel.Children.Add(Text);
         Text.TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER;
@@ -96,7 +96,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
         if (CloseButton != null)
         {
 #if DEBUG
-            CloseButton.Name = nameof(CloseButton);
+            CloseButton.Name ??= nameof(CloseButton);
 #endif
             Panel.Children.Add(CloseButton);
             CloseButton.DoWhenAttachedToComposition(() => CloseButton.RenderBrush = null);

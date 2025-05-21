@@ -35,7 +35,7 @@ public partial class CheckBox : StateButton
 
         border.Children.Add(path);
 #if DEBUG
-        border.Name = nameof(CheckBox) + ".true";
+        border.Name ??= nameof(CheckBox) + ".true";
 #endif
         return border;
     }
@@ -52,7 +52,7 @@ public partial class CheckBox : StateButton
             rect.StrokeBrush = rect.Compositor!.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor());
         };
 #if DEBUG
-        rect.Name = nameof(CheckBox) + ".false";
+        rect.Name ??= nameof(CheckBox) + ".false";
 #endif
 
         return rect;

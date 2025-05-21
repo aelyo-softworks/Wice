@@ -35,7 +35,7 @@ public class PropertyGrid : Grid
         Children.Add(Splitter);
         SetColumn(Splitter, 1);
 #if DEBUG
-        Splitter.Name = "splitter" + Environment.TickCount;
+        Splitter.Name ??= "splitter" + Environment.TickCount;
 #endif
     }
 
@@ -236,14 +236,14 @@ public class PropertyGrid : Grid
                 Text = CreatePropertyTextVisual(property)
             };
 #if DEBUG
-            visuals.Text.Name = "pgText#" + rowIndex + "[" + property.Name + "]";
+            visuals.Text.Name ??= "pgText#" + rowIndex + "[" + property.Name + "]";
 #endif
             SetRow(visuals.Text, rowIndex);
             Children.Add(visuals.Text);
 
             visuals.ValueVisual = CreatePropertyValueVisual(property);
 #if DEBUG
-            visuals.ValueVisual.Name = "pgValue#" + rowIndex + "[" + property.Name + "]";
+            visuals.ValueVisual.Name ??= "pgValue#" + rowIndex + "[" + property.Name + "]";
 #endif
             SetColumn(visuals.ValueVisual, 2);
             SetRow(visuals.ValueVisual, rowIndex);

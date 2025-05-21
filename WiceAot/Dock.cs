@@ -54,6 +54,7 @@ public partial class Dock : Visual
         var childrenWidth = 0f;
         var childrenHeight = 0f;
         var children = VisibleChildren.ToArray();
+
         foreach (var child in children)
         {
             var childConstraint = new D2D_SIZE_F(Math.Max(0, constraint.width - childrenWidth), Math.Max(0, constraint.height - childrenHeight));
@@ -162,16 +163,6 @@ public partial class Dock : Visual
                         throw new NotSupportedException();
                 }
             }
-
-            //if (child.HorizontalAlignment != Alignment.Stretch)
-            //{
-            //    rc.Width = childSize.width;
-            //}
-
-            //if (child.VerticalAlignment != Alignment.Stretch)
-            //{
-            //    rc.Height = childSize.height;
-            //}
 
             if (i < noFillCount)
             {

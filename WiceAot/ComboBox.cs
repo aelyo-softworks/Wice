@@ -25,7 +25,7 @@ public partial class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
             throw new InvalidOperationException();
 
 #if DEBUG
-        Text.Name = nameof(Text);
+        Text.Name ??= nameof(Text);
 #endif
 
         Children.Add(Text);
@@ -35,7 +35,7 @@ public partial class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
             throw new InvalidOperationException();
 
 #if DEBUG
-        Icon.Name = nameof(Icon);
+        Icon.Name ??= nameof(Icon);
 #endif
 
         Children.Add(Icon);
@@ -59,9 +59,9 @@ public partial class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
         _lb = List as ListBox;
 
 #if DEBUG
-        List.Name = nameof(List);
-        _popup.Name = nameof(ComboBox) + nameof(_popup);
-        _viewer.Name = nameof(ComboBox) + nameof(_viewer);
+        List.Name ??= nameof(List);
+        _popup.Name ??= nameof(ComboBox) + nameof(_popup);
+        _viewer.Name ??= nameof(ComboBox) + nameof(_viewer);
 #endif
         _popup.PlacementTarget = this;
         _popup.PlacementMode = PlacementMode.OuterBottomCenter;

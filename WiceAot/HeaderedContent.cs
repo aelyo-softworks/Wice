@@ -11,7 +11,7 @@ public partial class HeaderedContent : Stack, IOneChildParent
             throw new InvalidOperationException();
 
 #if DEBUG
-        Header.Name = nameof(Header);
+        Header.Name ??= nameof(Header);
 #endif
         Children.Add(Header);
         Header.IsSelectedChanged += (s, e) => OnHeaderIsSelectedChanged(e.Value);
@@ -20,9 +20,8 @@ public partial class HeaderedContent : Stack, IOneChildParent
         if (Viewer == null)
             throw new InvalidOperationException();
 
-        Viewer.Height = 0;
 #if DEBUG
-        Viewer.Name = nameof(Viewer);
+        Viewer.Name ??= nameof(Viewer);
 #endif
         Children.Add(Viewer);
     }
@@ -40,7 +39,7 @@ public partial class HeaderedContent : Stack, IOneChildParent
     public virtual float? OpenHeight { get; set; }
 
     protected virtual Header CreateHeader() => new();
-    protected virtual ScrollViewer CreateViewer() => new();
+    protected virtual ScrollViewer CreateViewer() => new ScrollViewer { Height = 0 };
     protected override BaseObjectCollection<Visual> CreateChildren() => new(2);
 
     protected virtual void OnHeaderIsSelectedChanged(bool value)

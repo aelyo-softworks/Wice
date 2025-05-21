@@ -28,7 +28,7 @@ public sealed partial class GalleryWindow : Window, IDisposable
 
         // the EnableBlurBehind call may be necessary when using the Windows' acrylic depending on Windows version
         // otherwise the window will be (almost) black
-        Native.EnableBlurBehind();
+        EnableBlurBehind();
         RenderBrush = AcrylicBrush.CreateAcrylicBrush(
             CompositionDevice,
             D3DCOLORVALUE.White,

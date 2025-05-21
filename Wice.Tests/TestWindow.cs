@@ -150,62 +150,98 @@ public class TestWindow : Window
         }, null, 0, 1000);
     }
 
+    private sealed class MyDialog : DialogBox
+    {
+        public MyDialog()
+        {
+            var tabs = new Tabs();
+            tabs.PagesHeader.Spacing = new D2D_SIZE_F(5, 5);
+            Content.Children.Add(tabs);
+
+            DoWhenAttachedToParent(() =>
+            {
+                // this fixes the dialog size and resizes it when the window is resized
+                resizeToWindow();
+                Window!.Resized += (s, e) => resizeToWindow();
+
+                void resizeToWindow()
+                {
+                    var rc = Window!.ClientRect;
+                    Application.Trace("resize:" + rc);
+                    tabs.PagesContent.Width = rc.Width * 3 / 4;
+                    tabs.PagesContent.Height = rc.Height * 3 / 4;
+                }
+            });
+
+            TabPage? plusPage = null;
+            addPage("https://www.bing.com", D3DCOLORVALUE.Red);
+            addPage("https://www.github.com", D3DCOLORVALUE.Green);
+
+            plusPage = new TabPage();
+            tabs.Pages.Add(plusPage);
+            plusPage.Header.AutoSelect = false;
+            plusPage.Header.Icon.Text = MDL2GlyphResource.Add;
+            plusPage.Header.Text.Text = string.Empty;
+            plusPage.Header.HorizontalAlignment = Alignment.Stretch;
+            plusPage.Header.DoWhenAttachedToComposition(() =>
+            {
+                plusPage.Header.HoverRenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
+            });
+            plusPage.Header.SelectedButtonClick += (s, e) => addPage("https://www.google.com", D3DCOLORVALUE.Blue);
+
+            TabPage addPage(string url, D3DCOLORVALUE color)
+            {
+                var page = new TabPage();
+
+                int index;
+                if (plusPage != null)
+                {
+                    index = plusPage.Index;
+                    tabs.Pages.Insert(index, page);
+                    page.Header.IsSelected = true;
+                }
+                else
+                {
+                    index = tabs.Pages.Count;
+                    tabs.Pages.Add(page);
+                }
+
+                page.Header.Text.Text = url;
+                page.Header.DoWhenAttachedToComposition(() =>
+                {
+                    page.Header.SelectedBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
+                    page.Header.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.DarkGray.ToColor());
+                    page.Header.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
+                });
+                page.Header.CloseButton!.IsVisible = true;
+                page.Header.CloseButtonClick += (s, e) =>
+                {
+                    tabs.Pages.Remove(page);
+                };
+
+                page.Content = new Border
+                {
+                    Margin = D2D_RECT_F.Thickness(10 * tabs.Pages.Count),
+                    Width = 300,
+                    Height = 300,
+                    BackgroundColor = color,
+                    BorderThickness = 1,
+                };
+                return page;
+            }
+        }
+    }
+
     public void ShowBrowser()
     {
-        var tabs = new Tabs();
-        tabs.PagesHeader.Spacing = new D2D_SIZE_F(5, 5);
-        Children.Add(tabs);
-
-        TabPage? plusPage = null;
-        addPage("https://www.bing.com", D3DCOLORVALUE.Red);
-        addPage("https://www.github.com", D3DCOLORVALUE.Pink);
-
-        plusPage = new TabPage();
-        tabs.Pages.Add(plusPage);
-        plusPage.Header.AutoSelect = false;
-        plusPage.Header.Icon.Text = MDL2GlyphResource.Add;
-        plusPage.Header.Text.Text = string.Empty;
-        plusPage.Header.HorizontalAlignment = Alignment.Stretch;
-        plusPage.Header.HoverRenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
-        plusPage.Header.SelectedButtonClick += (s, e) => addPage("https://www.google.com", D3DCOLORVALUE.Blue);
-
-        TabPage addPage(string url, D3DCOLORVALUE color)
+        var btn = new Button();
+        btn.Text.Text = "Open Dialog...";
+        btn.Click += (s, e) =>
         {
-            var page = new TabPage();
-
-            int index;
-            if (plusPage != null)
-            {
-                index = plusPage.Index;
-                tabs.Pages.Insert(index, page);
-                page.Header.IsSelected = true;
-            }
-            else
-            {
-                index = tabs.Pages.Count;
-                tabs.Pages.Add(page);
-            }
-
-            page.Header.Text.Text = url;
-            page.Header.SelectedBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
-            page.Header.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.DarkGray.ToColor());
-            page.Header.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
-            page.Header.CloseButton!.IsVisible = true;
-            page.Header.CloseButtonClick += (s, e) =>
-            {
-                tabs.Pages.Remove(page);
-            };
-
-            page.Content = new Border
-            {
-                Margin = D2D_RECT_F.Thickness(10 * tabs.Pages.Count),
-                Width = 300,
-                Height = 300,
-                BackgroundColor = color,
-                BorderThickness = 1,
-            };
-            return page;
-        }
+            var dlg = new MyDialog();
+            Children.Add(dlg);
+        };
+        Children.Add(btn);
     }
 
     public void ShowTabs()

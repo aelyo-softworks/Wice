@@ -93,7 +93,7 @@ public partial class FocusVisual : Border//, IModalVisual
 
 
 #if DEBUG
-        Child.Name = nameof(FocusVisual) + ".child";
+        Child.Name ??= nameof(FocusVisual) + ".child";
 #endif
 
         var ar = focused.AbsoluteRenderRect;

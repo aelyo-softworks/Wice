@@ -102,12 +102,6 @@ public partial class Grid : Visual
     {
         private readonly Grid _grid = grid;
 
-        //protected override void ProtectedClear()
-        //{
-        //    base.ProtectedClear();
-        //    Add(new GridColumn());
-        //}
-
         protected override void ProtectedRemoveAt(int index)
         {
             foreach (var child in _grid.Children)

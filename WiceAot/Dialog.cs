@@ -22,7 +22,7 @@ public partial class Dialog : Popup
             throw new InvalidOperationException();
 
 #if DEBUG
-        Content.Name = "dialogContent";
+        Content.Name ??= "dialogContent";
 #endif
 
         Content.ChildAdded += OnContentChildAdded;
