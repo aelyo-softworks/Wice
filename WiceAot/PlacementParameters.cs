@@ -4,7 +4,7 @@ public class PlacementParameters
 {
     public PlacementParameters(Visual visual)
     {
-        ExceptionExtensions.ThrowIfNull(visual, nameof(ExceptionExtensions));
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
         Visual = visual;
         UseRounding = true;
     }
@@ -20,7 +20,7 @@ public class PlacementParameters
 
     protected virtual void CopyTo(PlacementParameters parameters)
     {
-        ExceptionExtensions.ThrowIfNull(parameters, nameof(ExceptionExtensions));
+        ExceptionExtensions.ThrowIfNull(parameters, nameof(parameters));
         parameters.CustomFunc = CustomFunc;
         parameters.HorizontalOffset = HorizontalOffset;
         parameters.Mode = Mode;

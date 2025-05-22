@@ -20,7 +20,7 @@ public partial class RadioButton : StateButton, IFocusableParent
 
     public static Visual CreateDefaultTrueVisual(Compositor compositor)
     {
-        ExceptionExtensions.ThrowIfNull(compositor, nameof(ExceptionExtensions));
+        ExceptionExtensions.ThrowIfNull(compositor, nameof(compositor));
         var border = new Border();
         var canvas = new Canvas();
         border.Child = canvas;
@@ -48,7 +48,7 @@ public partial class RadioButton : StateButton, IFocusableParent
 
     public static Visual CreateDefaultFalseVisual(Compositor compositor)
     {
-        ExceptionExtensions.ThrowIfNull(compositor, nameof(ExceptionExtensions));
+        ExceptionExtensions.ThrowIfNull(compositor, nameof(compositor));
         var ellipse = new Ellipse
         {
             StrokeBrush = compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor()),

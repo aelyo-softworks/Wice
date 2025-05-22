@@ -219,30 +219,6 @@ public static class UIExtensions
         target.TrimmingGranularity = (DWRITE_TRIMMING_GRANULARITY)TextBox.TrimmingGranularityProperty.GetValue(source)!;
     }
 
-    public static void AddEvent<T>(ref EventHandler<T> handlerMember, EventHandler<T> value)
-    {
-        var handler = handlerMember;
-        while (true)
-        {
-            var comparand = handler;
-            handler = Interlocked.CompareExchange(ref handlerMember, comparand + value, comparand);
-            if (ReferenceEquals(handler, comparand))
-                return;
-        }
-    }
-
-    public static void RemoveEvent<T>(ref EventHandler<T> handlerMember, EventHandler<T> value)
-    {
-        var handler = handlerMember;
-        while (true)
-        {
-            var comparand = handler;
-            handler = Interlocked.CompareExchange(ref handlerMember!, comparand - value, comparand);
-            if (ReferenceEquals(handler, comparand))
-                return;
-        }
-    }
-
     // avoid AmbiguousMatchException
     public static PropertyInfo? GetUnambiguousProperty(
 #if !NETFRAMEWORK

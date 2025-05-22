@@ -11,25 +11,9 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
     private readonly Canvas _canvas = new();
     private readonly Path _path;
     private readonly Ellipse _button = new();
-    private EventHandler<ValueEventArgs>? _valueChanged;
 
-    event EventHandler<ValueEventArgs> IValueable.ValueChanged
-    {
-        add
-        {
-            if (_valueChanged == null)
-                return;
-
-            UIExtensions.AddEvent(ref _valueChanged, value);
-        }
-        remove
-        {
-            if (_valueChanged == null)
-                return;
-
-            UIExtensions.RemoveEvent(ref _valueChanged, value);
-        }
-    }
+    private event EventHandler<ValueEventArgs>? _valueChanged;
+    event EventHandler<ValueEventArgs> IValueable.ValueChanged { add { _valueChanged += value; } remove { _valueChanged -= value; } }
 
     public event EventHandler<ValueEventArgs<bool>>? ValueChanged;
     public event EventHandler<ValueEventArgs<bool>>? IsSelectedChanged;

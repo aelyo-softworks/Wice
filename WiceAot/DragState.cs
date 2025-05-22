@@ -13,9 +13,9 @@ public class DragState
 
     public int StartX { get; }
     public int StartY { get; }
-    public int DeltaX { get; internal set; }
-    public int DeltaY { get; internal set; }
     public MouseButton Button { get; }
+    public virtual int DeltaX { get; set; }
+    public virtual int DeltaY { get; set; }
 
     public override string ToString() => Button + " Start: " + StartX + " x " + StartY + " Delta: " + DeltaX + " x " + DeltaY;
 }

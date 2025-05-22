@@ -54,27 +54,11 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     private bool _selecting;
     private FontRanges[]? _finalRanges;
     private readonly UndoStack<UndoState> _undoStack = new();
-    private EventHandler<ValueEventArgs>? _valueChanged;
     private bool _textHasChanged;
     private bool _disposedValue;
 
-    event EventHandler<ValueEventArgs> IValueable.ValueChanged
-    {
-        add
-        {
-            if (_valueChanged == null)
-                return;
-
-            UIExtensions.AddEvent(ref _valueChanged, value);
-        }
-        remove
-        {
-            if (_valueChanged == null)
-                return;
-
-            UIExtensions.RemoveEvent(ref _valueChanged, value);
-        }
-    }
+    private event EventHandler<ValueEventArgs>? _valueChanged;
+    event EventHandler<ValueEventArgs> IValueable.ValueChanged { add { _valueChanged += value; } remove { _valueChanged -= value; } }
 
     public event EventHandler<ValueEventArgs<string>>? TextChanged;
 
@@ -337,13 +321,16 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         //base.SetCompositionBrush(brush);
     }
 
+    public virtual void CommitChanges() => _textHasChanged = false;
+
     protected virtual void DoOnTextChanged(object sender, ValueEventArgs<string> e)
     {
         _textHasChanged = true;
         if (!RaiseTextChanged)
             return;
 
-        if (TextChangedTrigger != EventTrigger.LostFocus)
+        if (TextChangedTrigger != EventTrigger.LostFocus &&
+            TextChangedTrigger != EventTrigger.LostFocusOrReturnPressed)
         {
             OnTextChanged(sender, e);
         }
@@ -376,6 +363,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 OnTextChanged(this, new ValueEventArgs<string>(Text));
                 _textHasChanged = false;
             }
+        }
+        else if (TextChangedTrigger == EventTrigger.LostFocus)
+        {
+            _textHasChanged = false;
         }
     }
 
@@ -484,7 +475,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             caret.Height = rc.Height;
 
             var ar = AbsoluteRenderRect;
-            //Application.Trace(this + " ar: " + ar);
             var x = ar.left + rc.left;
             var y = ar.top + rc.top;
             if (padding.left.IsSet() && padding.left > 0)
@@ -499,7 +489,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
             caret.Location = new D2D_POINT_2F(x, y);
             caret.IsVisible = true;
-            //Application.Trace(this + " origin: " + _origin + " caret.Location: " + caret.Location);
         }
     }
 
@@ -593,7 +582,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     internal IComObject<IDWriteTextFormat> GetFormat()
     {
         var format = Application.CurrentResourceManager.GetTextFormat(this)!;
-        //Application.Trace(this + " fontsize:" + format.Object.GetFontSize());
         return format;
     }
 
@@ -658,7 +646,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             }
         }
 
-        //Application.Trace(this + " CreateTextLayout max:" + maxWidth + "x" + maxHeight);
         ApplyRanges();
         _maxWidth = maxWidth;
         _maxHeight = maxHeight;
@@ -1230,7 +1217,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             key == VIRTUAL_KEY.VK_HOME || key == VIRTUAL_KEY.VK_END || key == VIRTUAL_KEY.VK_PRIOR || key == VIRTUAL_KEY.VK_NEXT ||
             key == VIRTUAL_KEY.VK_C || key == VIRTUAL_KEY.VK_X || key == VIRTUAL_KEY.VK_A ||
             key == VIRTUAL_KEY.VK_Y || key == VIRTUAL_KEY.VK_Z ||
-            (key == VIRTUAL_KEY.VK_TAB && AcceptsTab) || (key == VIRTUAL_KEY.VK_RETURN && AcceptsReturn) ||
+            (key == VIRTUAL_KEY.VK_TAB && AcceptsTab) || (key == VIRTUAL_KEY.VK_RETURN && (AcceptsReturn || TextChangedTrigger == EventTrigger.LostFocusOrReturnPressed)) ||
             key == VIRTUAL_KEY.VK_BACK || key == VIRTUAL_KEY.VK_DELETE || key == VIRTUAL_KEY.VK_INSERT)
         {
             OnKeyDown(e, shift, control);
@@ -1368,6 +1355,16 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             case VIRTUAL_KEY.VK_RETURN:
                 if (IsEditable)
                 {
+                    if (!AcceptsReturn)
+                    {
+                        if (_textHasChanged && TextChangedTrigger == EventTrigger.LostFocusOrReturnPressed)
+                        {
+                            OnTextChanged(this, new ValueEventArgs<string>(Text));
+                            _textHasChanged = false;
+                        }
+                        break;
+                    }
+
                     // Insert CR/LF pair
                     DeleteSelection();
                     InsertTextAt(absolutePosition, Environment.NewLine, _caretFormat);
@@ -2638,7 +2635,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         rc.right = rc.left + caretWidth;
         rc.top = caretY;
         rc.bottom = caretY + caretHeight;
-        //Application.Trace("caretWidth=" + caretWidth + " rc=" + rc + " rcf=" + rc.ToFloorCeiling());
         return rc;
     }
 

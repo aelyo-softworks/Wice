@@ -18,6 +18,7 @@ public partial class Window : Canvas, ITitleBarParent
 #endif
 
     private D2D_RECT_F _lastClientRect;
+    private readonly ConcurrentDictionary<MouseButton, Timer> _repeatTimes = [];
     private readonly ConcurrentList<Task> _tasks = [];
     private readonly List<WindowTimer> _timers = [];
     private readonly WNDPROC _windowProc;
@@ -1756,10 +1757,7 @@ public partial class Window : Canvas, ITitleBarParent
                 if (fv == null && !IsAnimating)
                 {
                     fv = CreateFocusVisual();
-                    if (fv == null)
-                        throw new InvalidOperationException();
-
-                    FocusVisual = fv;
+                    FocusVisual = fv ?? throw new InvalidOperationException();
                     Children.Add(fv);
                 }
 
@@ -1906,6 +1904,19 @@ public partial class Window : Canvas, ITitleBarParent
         }
 
         _tooltipTimer?.Dispose();
+
+        foreach (var tk in _repeatTimes)
+        {
+            try
+            {
+                tk.Value?.Dispose();
+            }
+            catch
+            {
+                // continue
+            }
+        }
+        _repeatTimes.Clear();
     }
 
     protected virtual void UpdateMonitor()
@@ -1918,7 +1929,6 @@ public partial class Window : Canvas, ITitleBarParent
         MainTitleBar?.Update();
         OnMonitorChanged(this, EventArgs.Empty);
         OnPropertyChanged(nameof(MonitorHandle));
-        //Application.Trace("OnMonitorChanged");
     }
 
     protected virtual ToolTip CreateToolTip() => new();
@@ -2272,7 +2282,7 @@ public partial class Window : Canvas, ITitleBarParent
         {
             foreach (var visual in _mousedEnteredVisuals)
             {
-                // always send mouse leave event with DisableMouseEvents=true
+                // always send mouse leave even with DisableMouseEvents=true
 
                 visual.OnMouseEvent(msg, e);
                 if (visual == CurrentToolTip?.PlacementTarget)
@@ -2897,6 +2907,83 @@ public partial class Window : Canvas, ITitleBarParent
         {
             Application.AddError(e);
             return LRESULT.Null;
+        }
+    }
+
+    internal void HandleMouseDownRepeats(Visual visual, uint msg, MouseButtonEventArgs e)
+    {
+        if (e.RepeatDelay > 0)
+        {
+            if (!_repeatTimes.TryGetValue(e.Button, out var timer))
+            {
+                timer = new Timer(state =>
+                {
+                    RunTaskOnMainThread(() =>
+                    {
+                        var pt = Native.GetClientCursorPosition();
+                        var keys = POINTER_MOD.POINTER_MOD_NONE;
+                        if (NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT))
+                        {
+                            keys |= POINTER_MOD.POINTER_MOD_SHIFT;
+                        }
+
+                        if (NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL))
+                        {
+                            keys |= POINTER_MOD.POINTER_MOD_CTRL;
+                        }
+
+                        var e2 = new MouseButtonEventArgs(pt.x, pt.x, keys, (MouseButton)state!)
+                        {
+                            RepeatDelay = e.RepeatDelay,
+                            RepeatInterval = e.RepeatInterval,
+                        };
+
+                        visual.OnMouseButtonEvent(msg, e2);
+
+                        if (e2.RepeatInterval > 0)
+                        {
+                            timer?.Change(e2.RepeatInterval, Timeout.Infinite);
+                        }
+                        else
+                        {
+                            RemoveMouseDownRepeatTimer(e2.Button);
+                        }
+                    });
+                }, e.Button, e.RepeatDelay, Timeout.Infinite);
+
+                timer = _repeatTimes.AddOrUpdate(e.Button, timer, (k, o) =>
+                {
+                    try
+                    {
+                        o.Dispose();
+                    }
+                    catch
+                    {
+                        // continue
+                    }
+                    return timer;
+                });
+            }
+        }
+        else
+        {
+            RemoveMouseDownRepeatTimer(e.Button);
+        }
+    }
+
+    internal void RemoveMouseDownRepeatTimer(MouseButton mouseUpButton)
+    {
+        _repeatTimes.TryRemove(mouseUpButton, out var timer);
+        if (timer != null)
+        {
+            try
+            {
+                timer?.Dispose();
+            }
+            catch
+            {
+                // continue
+            }
         }
     }
 

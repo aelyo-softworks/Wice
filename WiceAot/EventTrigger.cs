@@ -2,7 +2,8 @@
 
 public enum EventTrigger
 {
-    Default,
+    Default, // Default and ValueChanged are the same here
     ValueChanged,
-    LostFocus
+    LostFocus,
+    LostFocusOrReturnPressed,
 }

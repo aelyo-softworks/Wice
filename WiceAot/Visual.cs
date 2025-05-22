@@ -1785,6 +1785,7 @@ public partial class Visual : BaseObject
                 }
                 //Application.Trace("Down [" + this + "]: " + e.ToString());
                 OnMouseButtonDown(this, e);
+                Window?.HandleMouseDownRepeats(this, msg, e);
                 break;
 
             case MessageDecoder.WM_LBUTTONUP:
@@ -1793,6 +1794,7 @@ public partial class Visual : BaseObject
             case MessageDecoder.WM_XBUTTONUP:
                 //Application.Trace("Up [" + this + "]: " + e.ToString());
                 OnMouseButtonUp(this, e);
+                Window!.RemoveMouseDownRepeatTimer(e.Button);
                 if (DragState != null)
                 {
                     var button = Window.MessageToButton(msg, 0, out _); // support for dragmove with X buttons

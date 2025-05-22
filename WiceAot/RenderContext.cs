@@ -13,10 +13,26 @@ public class RenderContext
     public SurfaceCreationOptions? SurfaceCreationOptions { get; }
     public RECT? SurfaceRect { get; }
 
+    public virtual void WithTransform(D2D_MATRIX_3X2_F transform, Action action)
+    {
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
+
+        var existing = DeviceContext.GetTransform();
+        DeviceContext.SetTransform(existing * transform);
+        try
+        {
+            action();
+        }
+        finally
+        {
+            DeviceContext.SetTransform(existing);
+        }
+    }
+
     public static void WithRenderContext(IComObject<ID2D1DeviceContext> deviceContext, Action<RenderContext> action, SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
     {
-        ExceptionExtensions.ThrowIfNull(deviceContext, nameof(ExceptionExtensions));
-        ExceptionExtensions.ThrowIfNull(action, nameof(ExceptionExtensions));
+        ExceptionExtensions.ThrowIfNull(deviceContext, nameof(deviceContext));
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         var rc = new RenderContext(deviceContext, creationOptions, rect);
         try
         {
@@ -46,7 +62,7 @@ public class RenderContext
 
     public virtual IComObject<T> CreateBitmapBrush<T>(ID2D1Bitmap bitmap, D2D1_BITMAP_BRUSH_PROPERTIES? bitmapBrushProperties = null, D2D1_BRUSH_PROPERTIES? brushProperties = null) where T : ID2D1BitmapBrush
     {
-        ExceptionExtensions.ThrowIfNull(bitmap, nameof(ExceptionExtensions));
+        ExceptionExtensions.ThrowIfNull(bitmap, nameof(bitmap));
         if (DeviceContext == null)
             throw new InvalidOperationException();
 

@@ -1,4 +1,5 @@
 ﻿using WebView2;
+using Wice.Interop;
 
 namespace WiceAot.Tests;
 
@@ -18,6 +19,7 @@ internal partial class TestWindow : Window
             useWindowsAcrylic: false
             );
 
+        AddRepeatableMouseDown();
         //AddEditableTexts();
         //AddUniformGridShapes(20);
         //AddUniformColorGrid(20);
@@ -25,7 +27,7 @@ internal partial class TestWindow : Window
         //AddUniformGridSysColors();
 
         //ShowTabs();
-        ShowBrowser();
+        //ShowBrowser();
         //ShowWebView();
         //ShowPdfView();
         //ZoomableImageWithSV();
@@ -59,6 +61,35 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void AddRepeatableMouseDown()
+    {
+        var border = new Border
+        {
+            Height = 300,
+            Width = 300,
+            BorderThickness = 1,
+            BackgroundColor = D3DCOLORVALUE.Red,
+        };
+
+        border.MouseButtonUp += (s, e) =>
+        {
+            Application.Trace("MouseUp: " + e.Point.ToString());
+        };
+
+        border.MouseButtonDown += (s, e) =>
+        {
+            Application.Trace("MouseDown: " + e.Point.ToString());
+            unsafe
+            {
+                uint delay = 1;
+                WiceCommons.SystemParametersInfoW(SYSTEM_PARAMETERS_INFO_ACTION.SPI_GETKEYBOARDDELAY, 0, (nint)(&delay), 0);
+                e.RepeatDelay = 250 * (1 + delay);
+                e.RepeatInterval = 50;
+            }
+        };
+        Children.Add(border);
     }
 
     public void ShowBrowser()
@@ -842,42 +873,32 @@ internal partial class TestWindow : Window
     {
         var stack = new Dock
         {
-            //stack.Orientation = Orientation.Vertical;
-            //stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White);
-            //stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red);
             RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LemonChiffon.ToColor())
         };
-        //stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue);
-
-        //stack.LastChildFill = false;
-        //stack.HorizontalAlignment = Alignment.Center;
-        //stack.VerticalAlignment = Alignment.Center;
         Children.Add(stack);
 
-        for (var i = 0; i < 3; i++)
+        var triggers = Enum.GetValues<EventTrigger>();
+        for (var i = 0; i < triggers.Length; i++)
         {
             var text = new TextBox();
             Dock.SetDockType(text, DockType.Top);
             text.IsEditable = true;
 
-            //text.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red);
+            text.TextChangedTrigger = triggers[(i + 2) % triggers.Length];
             text.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.GreenYellow.ToColor());
             text.Name = "text#" + i;
             text.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Red);
             stack.Children.Add(text);
             text.Padding = D2D_RECT_F.Thickness(10);
             text.Margin = D2D_RECT_F.Thickness(10);
-            text.Text = "Change this text #" + i;
-            //text.HorizontalAlignment = Alignment.Stretch;
-            //text.VerticalAlignment = Alignment.Stretch;
-            //text.Width = 100;
-            //text.Height = 50;
-            //text.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
-            //text.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_JUSTIFIED;
-            //text.WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD;
+            text.Text = "Change this text #" + i + " trigger:" + text.TextChangedTrigger;
+            var j = i;
+            text.TextChanged += (s, e) =>
+            {
+                Application.Trace("Text #" + j + " changed: " + text.Text);
+            };
         }
     }
-
 
     public void AddWrap()
     {
