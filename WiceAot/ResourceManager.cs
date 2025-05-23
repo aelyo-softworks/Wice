@@ -271,8 +271,8 @@ public partial class ResourceManager
         return Get(null, Domain.TextFormat, key, () => CreateTextFormat(text));
     }
 
-    private float GetFontSize(ITextFormat text) => GetFontSize(text?.FontSize);
-    internal float GetFontSize(float? size)
+    public float GetFontSize(ITextFormat? text) => GetFontSize(text?.FontSize);
+    public virtual float GetFontSize(float? size)
     {
         if (!size.HasValue)
             return Theme.DefaultFontSize;
