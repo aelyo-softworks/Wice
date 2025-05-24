@@ -2,7 +2,7 @@
 
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CA1826 // Do not use Enumerable methods on indexable collections
-public class SystemInformation(Assembly? assembly = null, Window? window = null) : DiagnosticsInformation(assembly)
+public class SystemInformation(Assembly? assembly = null, Window? window = null, string? separator = null) : DiagnosticsInformation(assembly, separator: separator)
 {
     [Category("Graphics")]
     public string DefaultTextServicesGeneratorVersion { get; } = RichTextBox.DefaultTextServicesGeneratorVersion;

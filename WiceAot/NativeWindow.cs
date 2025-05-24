@@ -48,6 +48,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public uint DpiFromDpiAwareness => WiceCommons.GetDpiFromDpiAwarenessContext(DpiAwareness);
     public WINDOW_STYLE Style { get => (WINDOW_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_STYLE).ToInt64(); set => SetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_STYLE, new IntPtr((int)value)); }
     public WINDOW_EX_STYLE ExtendedStyle { get => (WINDOW_EX_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE).ToInt64(); set => SetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, new IntPtr((int)value)); }
+#if !NETFRAMEWORK
+    public WINDOWPLACEMENT Placement { get { return WINDOWPLACEMENT.GetPlacement(Handle); } set => value.SetPlacement(Handle); }
+#endif
     public bool IsEnabled { get => WiceCommons.IsWindowEnabled(Handle); set => WiceCommons.EnableWindow(Handle, value); }
     public uint ThreadId => WiceCommons.GetWindowThreadProcessId(Handle, 0);
     public int ManagedThreadId { get; internal set; }
@@ -256,6 +259,14 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOW) => WiceCommons.ShowWindow(Handle, command);
     public bool Move(int x, int y) => WiceCommons.SetWindowPos(Handle, HWND.Null, x, y, -1, -1, SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
     public bool Resize(int width, int height) => WiceCommons.SetWindowPos(Handle, HWND.Null, 0, 0, width, height, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+    public bool MoveAndResize(int x, int y, int width, int height) => WiceCommons.SetWindowPos(Handle, HWND.Null, x, y, width, height, SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+#if NETFRAMEWORK
+    public bool MoveAndResize(D2D_RECT_U rect) => MoveAndResize((int)rect.left, (int)rect.top, (int)(rect.right - rect.left), (int)(rect.bottom - rect.top));
+#else
+    public bool MoveAndResize(D2D_RECT_U rect) => MoveAndResize((int)rect.left, (int)rect.top, (int)rect.Width, (int)rect.Height);
+#endif
+    public bool MoveAndResize(D2D_RECT_F rect) => MoveAndResize((int)rect.left, (int)rect.top, (int)rect.Width, (int)rect.Height);
+    public bool MoveAndResize(RECT rect) => MoveAndResize(rect.left, rect.top, rect.Width, rect.Height);
     public bool FrameChanged() => WiceCommons.SetWindowPos(Handle, HWND.Null, 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
     public bool Center() => Center(HWND.Null);
     public bool SetForeground() => WiceCommons.SetForegroundWindow(Handle);

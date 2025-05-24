@@ -4,24 +4,26 @@ public partial class DockSplitter : Visual
 {
     public static VisualProperty SizeProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(Size), VisualPropertyInvalidateModes.Measure, 5f);
 
-    public DockSplitter()
-    {
-    }
+    public event EventHandler? Commit;
+    public event EventHandler? Cancel;
 
     private Dock? ParentDock => Parent as Dock;
 
     [Category(CategoryBehavior)]
-    public DockType DockType { get; private set; }
+    public virtual DockType DockType { get; protected set; }
 
     [Category(CategoryBehavior)]
-    public Orientation Orientation { get; private set; }
+    public virtual Orientation Orientation { get; protected set; }
 
     [Category(CategoryBehavior)]
-    public float HitTestTolerance { get; set; }
+    public virtual float HitTestTolerance { get; set; }
 
     [Category(CategoryBehavior)]
-    public float Size { get => (float)GetPropertyValue(SizeProperty)!; set => SetPropertyValue(SizeProperty, value); }
+    public virtual float Size { get => (float)GetPropertyValue(SizeProperty)!; set => SetPropertyValue(SizeProperty, value); }
 
+    protected override DragState CreateDragState(MouseButtonEventArgs e) => new SplitDragState(this, e);
+    protected virtual void OnCommit(object sender, EventArgs e) => Commit?.Invoke(sender, e);
+    protected virtual void OnCancel(object sender, EventArgs e) => Cancel?.Invoke(sender, e);
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         var parent = Parent;
@@ -56,100 +58,98 @@ public partial class DockSplitter : Visual
         return bounds;
     }
 
-    protected override DragState CreateDragState(MouseButtonEventArgs e) => new SplitDragState(this, e);
-
     protected override void OnMouseDrag(object? sender, DragEventArgs e)
     {
         OnMouseDrag(e);
         base.OnMouseDrag(sender, e);
     }
 
-    private void OnMouseDrag(DragEventArgs e)
+    protected virtual void OnMouseDrag(DragEventArgs e)
     {
         var state = (SplitDragState)e.State;
-        if (state._prev == null || state._next == null)
+        if (state.Prev == null || state.Next == null)
             return;
 
         var delta = Orientation == Orientation.Horizontal ? state.DeltaX : state.DeltaY;
         if (delta != 0)
         {
-            var oldSize = state._nextRenderSize + state._previousRenderSize;
-            var newPrevSize = Math.Min(Math.Max(0, state._previousRenderSize + delta), oldSize);
+            var oldSize = state.NextRenderSize + state.PreviousRenderSize;
+            var newPrevSize = Math.Min(Math.Max(0, state.PreviousRenderSize + delta), oldSize);
 
             if (Orientation == Orientation.Horizontal)
             {
-                if (state._prev.MaxWidth.IsSet() && state._prev.MaxWidth > 0)
+                if (state.Prev.MaxWidth.IsSet() && state.Prev.MaxWidth > 0)
                 {
-                    newPrevSize = Math.Min(newPrevSize, state._prev.MaxWidth);
+                    newPrevSize = Math.Min(newPrevSize, state.Prev.MaxWidth);
                 }
 
-                if (state._prev.MinWidth.IsSet() && state._prev.MinWidth > 0)
+                if (state.Prev.MinWidth.IsSet() && state.Prev.MinWidth > 0)
                 {
-                    newPrevSize = Math.Max(newPrevSize, state._prev.MinWidth);
+                    newPrevSize = Math.Max(newPrevSize, state.Prev.MinWidth);
                 }
 
                 var plannedNextSize = Math.Max(0, oldSize - newPrevSize);
                 var newNextSize = plannedNextSize;
-                if (state._next.MaxWidth.IsSet() && state._next.MaxWidth > 0)
+                if (state.Next.MaxWidth.IsSet() && state.Next.MaxWidth > 0)
                 {
-                    newNextSize = Math.Min(newNextSize, state._next.MaxWidth);
+                    newNextSize = Math.Min(newNextSize, state.Next.MaxWidth);
                     if (newNextSize != plannedNextSize) // incompatible constraints
                         return;
                 }
 
-                if (state._next.MinWidth.IsSet() && state._next.MinWidth > 0)
+                if (state.Next.MinWidth.IsSet() && state.Next.MinWidth > 0)
                 {
-                    newNextSize = Math.Max(newNextSize, state._next.MinWidth);
+                    newNextSize = Math.Max(newNextSize, state.Next.MinWidth);
                     if (newNextSize != plannedNextSize) // incompatible constraints
                         return;
                 }
 
-                if (!state._prevIsLastChild)
+                if (!state.PrevIsLastChild)
                 {
-                    state._prev.Width = newPrevSize;
+                    state.Prev.Width = newPrevSize;
                 }
 
-                if (!state._nextIsLastChild)
+                if (!state.NextIsLastChild)
                 {
-                    state._next.Width = newNextSize;
+                    state.Next.Width = newNextSize;
                 }
             }
             else
             {
-                if (state._prev.MaxHeight.IsSet() && state._prev.MaxHeight > 0)
+                if (state.Prev.MaxHeight.IsSet() && state.Prev.MaxHeight > 0)
                 {
-                    newPrevSize = Math.Min(newPrevSize, state._prev.MaxHeight);
+                    newPrevSize = Math.Min(newPrevSize, state.Prev.MaxHeight);
                 }
 
-                if (state._prev.MinHeight.IsSet() && state._prev.MinHeight > 0)
+                if (state.Prev.MinHeight.IsSet() && state.Prev.MinHeight > 0)
                 {
-                    newPrevSize = Math.Max(newPrevSize, state._prev.MinHeight);
+                    newPrevSize = Math.Max(newPrevSize, state.Prev.MinHeight);
                 }
 
                 var plannedNextSize = Math.Max(0, oldSize - newPrevSize);
                 var newNextSize = plannedNextSize;
-                if (state._next.MaxHeight.IsSet() && state._next.MaxHeight > 0)
+                if (state.Next.MaxHeight.IsSet() && state.Next.MaxHeight > 0)
                 {
-                    newNextSize = Math.Min(newNextSize, state._next.MaxHeight);
+                    newNextSize = Math.Min(newNextSize, state.Next.MaxHeight);
                     if (newNextSize != plannedNextSize) // incompatible constraints
                         return;
                 }
 
-                if (state._next.MinHeight.IsSet() && state._next.MinHeight > 0)
+                if (state.Next.MinHeight.IsSet() && state.Next.MinHeight > 0)
                 {
-                    newNextSize = Math.Max(newNextSize, state._next.MinHeight);
+                    newNextSize = Math.Max(newNextSize, state.Next.MinHeight);
                     if (newNextSize != plannedNextSize) // incompatible constraints
                         return;
                 }
 
-                if (!state._prevIsLastChild)
+                if (!state.PrevIsLastChild)
                 {
-                    state._prev.Height = newPrevSize;
+                    state.Prev.Height = newPrevSize;
                 }
 
-                if (!state._nextIsLastChild)
+                if (!state.NextIsLastChild)
                 {
-                    state._next.Height = newNextSize;
+                    state.Next.Height = newNextSize;
                 }
             }
         }
@@ -164,84 +164,99 @@ public partial class DockSplitter : Visual
         base.OnMouseButtonDown(sender, e);
     }
 
+    protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
+    {
+        if (e.Button == MouseButton.Left)
+        {
+            OnCommit(this, e);
+        }
+        base.OnMouseButtonUp(sender, e);
+    }
+
+    protected virtual void CancelDrag(EventArgs e)
+    {
+        if (CancelDragMove(e) is SplitDragState state)
+        {
+            if (state.Prev != null)
+            {
+                if (Orientation == Orientation.Horizontal)
+                {
+                    state.Prev.Width = state.PreviousRenderSize;
+                }
+                else
+                {
+                    state.Prev.Height = state.PreviousRenderSize;
+                }
+            }
+
+            if (state.Next != null)
+            {
+                if (Orientation == Orientation.Horizontal)
+                {
+                    state.Next.Width = state.NextRenderSize;
+                }
+                else
+                {
+                    state.Next.Height = state.NextRenderSize;
+                }
+            }
+            OnCancel(this, e);
+        }
+    }
+
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == VIRTUAL_KEY.VK_ESCAPE)
         {
-            if (CancelDragMove(e) is SplitDragState state)
-            {
-                if (state._prev != null)
-                {
-                    if (Orientation == Orientation.Horizontal)
-                    {
-                        state._prev.Width = state._previousRenderSize;
-                    }
-                    else
-                    {
-                        state._prev.Height = state._previousRenderSize;
-                    }
-                }
-
-                if (state._next != null)
-                {
-                    if (Orientation == Orientation.Horizontal)
-                    {
-                        state._next.Width = state._nextRenderSize;
-                    }
-                    else
-                    {
-                        state._next.Height = state._nextRenderSize;
-                    }
-                }
-            }
+            CancelDrag(e);
         }
         base.OnKeyDown(sender, e);
     }
 
-    private Visual? GetPrevVisual() => ParentDock?.GetAt(this, Orientation == Orientation.Horizontal ? DockType.Left : DockType.Top);
-    private Visual? GetNextVisual() => ParentDock?.GetAt(this, Orientation == Orientation.Horizontal ? DockType.Right : DockType.Bottom);
+    protected Visual? GetPrevVisual() => ParentDock?.GetAt(this, Orientation == Orientation.Horizontal ? DockType.Left : DockType.Top);
+    protected Visual? GetNextVisual() => ParentDock?.GetAt(this, Orientation == Orientation.Horizontal ? DockType.Right : DockType.Bottom);
 
-    private sealed class SplitDragState : DragState
+    public class SplitDragState : DragState
     {
-        public float _previousRenderSize;
-        public float _nextRenderSize;
-        public Visual? _prev;
-        public Visual? _next;
-        public bool _nextIsLastChild;
-        public bool _prevIsLastChild;
-
         public SplitDragState(DockSplitter visual, MouseButtonEventArgs e)
             : base(visual, e)
         {
             var lastChildFill = visual.ParentDock?.LastChildFill == true;
 
-            _prev = visual.GetPrevVisual();
-            if (_prev != null)
+            Prev = visual.GetPrevVisual();
+            if (Prev != null)
             {
-                _prevIsLastChild = lastChildFill && _prev == visual.ParentDock?._lastChild;
+                PrevIsLastChild = lastChildFill && Prev == visual.ParentDock?._lastChild;
                 if (visual.Orientation == Orientation.Horizontal)
                 {
-                    _previousRenderSize = _prev.ArrangedRect.Width;
+                    PreviousRenderSize = Prev.ArrangedRect.Width;
                 }
                 else
                 {
-                    _previousRenderSize = _prev.ArrangedRect.Height;
+                    PreviousRenderSize = Prev.ArrangedRect.Height;
                 }
             }
 
-            _next = visual.GetNextVisual();
-            if (_next != null)
+            Next = visual.GetNextVisual();
+            if (Next != null)
             {
-                _nextIsLastChild = lastChildFill && _next == visual.ParentDock?._lastChild;
+                NextIsLastChild = lastChildFill && Next == visual.ParentDock?._lastChild;
                 if (visual.Orientation == Orientation.Horizontal)
                 {
-                    _nextRenderSize = _next.ArrangedRect.Width;
+                    NextRenderSize = Next.ArrangedRect.Width;
                 }
                 else
                 {
-                    _nextRenderSize = _next.ArrangedRect.Height;
+                    NextRenderSize = Next.ArrangedRect.Height;
                 }
             }
         }
+
+        public virtual float PreviousRenderSize { get; protected set; }
+        public virtual float NextRenderSize { get; protected set; }
+        public virtual Visual? Prev { get; protected set; }
+        public virtual Visual? Next { get; protected set; }
+        public virtual bool NextIsLastChild { get; protected set; }
+        public virtual bool PrevIsLastChild { get; protected set; }
     }
 }

@@ -756,6 +756,10 @@ public partial class Window : Canvas, ITitleBarParent
     public Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => Native?.GetMonitor(flags);
     public void EnableBlurBehind() => Native.EnableBlurBehind();
     public bool Resize(int width, int height) => Native.Resize(width, height);
+    public bool MoveAndResize(int x, int y, int width, int height) => Native.MoveAndResize(x, y, width, height);
+    public bool MoveAndResize(D2D_RECT_U rect) => Native.MoveAndResize(rect);
+    public bool MoveAndResize(D2D_RECT_F rect) => Native.MoveAndResize(rect);
+    public bool MoveAndResize(RECT rect) => Native.MoveAndResize(rect);
     public POINT ScreenToClient(POINT pt) => Native.ScreenToClient(pt);
     public POINT ClientToScreen(POINT pt) => Native.ClientToScreen(pt);
 

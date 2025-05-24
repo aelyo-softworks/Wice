@@ -3,12 +3,15 @@
 public partial class GridSplitter : Visual
 {
     public new Grid? Parent => base.Parent as Grid;
-    public Orientation? Orientation { get; private set; }
-    public GridDimension? Dimension { get; private set; }
 
-    public GridSplitter()
-    {
-    }
+    [Category(CategoryBehavior)]
+    public virtual Orientation? Orientation { get; protected set; }
+
+    [Category(CategoryBehavior)]
+    public virtual GridDimension? Dimension { get; protected set; }
+
+    public event EventHandler? Commit;
+    public event EventHandler? Cancel;
 
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
@@ -16,7 +19,10 @@ public partial class GridSplitter : Visual
         UpdateProperties();
     }
 
-    private void UpdateProperties()
+    protected override DragState CreateDragState(MouseButtonEventArgs e) => new SplitDragState(this, e);
+    protected virtual void OnCommit(object sender, EventArgs e) => Commit?.Invoke(sender, e);
+    protected virtual void OnCancel(object sender, EventArgs e) => Cancel?.Invoke(sender, e);
+    protected virtual void UpdateProperties()
     {
         Dimension = null;
         if (Parent == null || !Orientation.HasValue)
@@ -76,15 +82,13 @@ public partial class GridSplitter : Visual
         return true;
     }
 
-    protected override DragState CreateDragState(MouseButtonEventArgs e) => new SplitDragState(this, e);
-
     protected override void OnMouseDrag(object? sender, DragEventArgs e)
     {
         OnMouseDrag(e);
         base.OnMouseDrag(sender, e);
     }
 
-    private void OnMouseDrag(DragEventArgs e)
+    protected virtual void OnMouseDrag(DragEventArgs e)
     {
         var prev = Dimension?.Previous;
         var next = Dimension?.Next;
@@ -100,8 +104,8 @@ public partial class GridSplitter : Visual
 
         if (delta != 0 && prev.DesiredSize.HasValue)
         {
-            var oldSize = state._nextRenderSize + state._previousRenderSize;
-            var newPrevSize = Math.Min(Math.Max(0, state._previousRenderSize + delta), oldSize);
+            var oldSize = state.NextRenderSize + state.PreviousRenderSize;
+            var newPrevSize = Math.Min(Math.Max(0, state.PreviousRenderSize + delta), oldSize);
 
             var prevMax = prev.MaxSize;
             if (prevMax.IsSet() && prevMax > 0)
@@ -171,59 +175,73 @@ public partial class GridSplitter : Visual
         base.OnMouseButtonDown(sender, e);
     }
 
+    protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
+    {
+        if (e.Button == MouseButton.Left)
+        {
+            OnCommit(this, e);
+        }
+        base.OnMouseButtonUp(sender, e);
+    }
+
+    protected virtual void CancelDrag(EventArgs e)
+    {
+        if (CancelDragMove(e) is SplitDragState state && Dimension != null)
+        {
+            var prev = Dimension.Previous;
+            if (prev != null)
+            {
+                prev.Size = state.PreviousSize;
+                prev.Stars = state.PreviousStars;
+            }
+
+            var next = Dimension.Next;
+            if (next != null)
+            {
+                next.Size = state.NextSize;
+                next.Stars = state.NextStars;
+            }
+
+            OnCancel(this, e);
+        }
+    }
+
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == VIRTUAL_KEY.VK_ESCAPE)
         {
-            var state = (SplitDragState?)CancelDragMove(e);
-            if (state != null && Dimension != null)
-            {
-                var prev = Dimension.Previous;
-                if (prev != null)
-                {
-                    prev.Size = state._previousSize;
-                    prev.Stars = state._previousStars;
-                }
-
-                var next = Dimension.Next;
-                if (next != null)
-                {
-                    next.Size = state._nextSize;
-                    next.Stars = state._nextStars;
-                }
-            }
+            CancelDrag(e);
         }
         base.OnKeyDown(sender, e);
     }
 
-    private sealed class SplitDragState : DragState
+    public class SplitDragState : DragState
     {
-        public float _previousSize;
-        public float _previousStars;
-        public float _previousRenderSize;
-
-        public float _nextSize;
-        public float _nextStars;
-        public float _nextRenderSize;
-
         public SplitDragState(GridSplitter visual, MouseButtonEventArgs e)
             : base(visual, e)
         {
             var prev = visual.Dimension?.Previous;
             if (prev != null)
             {
-                _previousSize = prev.Size;
-                _previousStars = prev.Stars;
-                _previousRenderSize = prev.DesiredSize.GetValueOrDefault();
+                PreviousSize = prev.Size;
+                PreviousStars = prev.Stars;
+                PreviousRenderSize = prev.DesiredSize.GetValueOrDefault();
             }
 
             var next = visual.Dimension?.Next;
             if (next != null)
             {
-                _nextSize = next.Size;
-                _nextStars = next.Stars;
-                _nextRenderSize = next.DesiredSize.GetValueOrDefault();
+                NextSize = next.Size;
+                NextStars = next.Stars;
+                NextRenderSize = next.DesiredSize.GetValueOrDefault();
             }
         }
+
+        public virtual float PreviousSize { get; protected set; }
+        public virtual float PreviousStars { get; protected set; }
+        public virtual float PreviousRenderSize { get; protected set; }
+        public virtual float NextSize { get; protected set; }
+        public virtual float NextStars { get; protected set; }
+        public virtual float NextRenderSize { get; protected set; }
     }
 }
