@@ -19,7 +19,7 @@ internal partial class TestWindow : Window
             useWindowsAcrylic: false
             );
 
-        RichTextBoxVariousCharsets();
+        RichTextBoxNoLangOptions();
         //RichTextBoxNoLangOptions();
         //AddRepeatableMouseDown();
         //AddEditableTexts();
@@ -129,17 +129,11 @@ internal partial class TestWindow : Window
 
     public void RichTextBoxNoLangOptions()
     {
-        Wrap wrap = new Wrap
-        {
-            Orientation = Orientation.Vertical
-        };
-        Button BtnOpen = new Button { Margin = D2D_RECT_F.Thickness(0, 10), VerticalAlignment = Alignment.Near, HorizontalAlignment = Alignment.Near };
+        var wrap = new Wrap { Orientation = Orientation.Vertical };
+        var BtnOpen = new Button { Margin = D2D_RECT_F.Thickness(0, 10), VerticalAlignment = Alignment.Near, HorizontalAlignment = Alignment.Near };
         BtnOpen.Text.Text = " Load TXT ";
         Dock.SetDockType(BtnOpen, DockType.Top);
-        var sv = new ScrollViewer
-        {
-            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10)
-        };
+        var sv = new ScrollViewer { Margin = D2D_RECT_F.Thickness(10, 10, 10, 10) };
         Dock.SetDockType(sv, DockType.Top);
         wrap.Children.Add(BtnOpen);
         wrap.Children.Add(sv);
@@ -152,8 +146,6 @@ internal partial class TestWindow : Window
             IsFocusable = true,
             FontSize = 12,
         };
-
-        tb.Host.FontCharset = FONT_CHARSET.DEFAULT_CHARSET;
 
         tb.SendMessage(DirectN.Extensions.Utilities.MessageDecoder.EM_SETLANGOPTIONS, new LPARAM { Value = 0 });
         tb.Text = text;
