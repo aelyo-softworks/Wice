@@ -219,7 +219,6 @@ public partial class Visual : BaseObject
 
             RelativeRenderRect = D2D_RECT_F.Invalid;
             AbsoluteRenderBounds = D2D_RECT_F.Invalid;
-            //SuspendedCompositionParts = CompositionUpdateParts.None;
 
             if (!step.HasValue)
             {
@@ -237,13 +236,11 @@ public partial class Visual : BaseObject
 
                 RelativeRenderRect = D2D_RECT_F.Invalid;
                 AbsoluteRenderBounds = D2D_RECT_F.Invalid;
-                //SuspendedCompositionParts = CompositionUpdateParts.None;
                 return;
 
             case InvalidateMode.Render:
                 RelativeRenderRect = D2D_RECT_F.Invalid;
                 AbsoluteRenderBounds = D2D_RECT_F.Invalid;
-                //SuspendedCompositionParts = CompositionUpdateParts.None;
                 return;
         }
     }

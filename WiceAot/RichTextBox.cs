@@ -5,6 +5,7 @@
 public partial class RichTextBox : RenderVisual, IDisposable
 {
     private bool _disposedValue;
+    private TXTNATURALSIZE _naturalSize = TXTNATURALSIZE.TXTNS_FITTOCONTENT;
 
     public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
     {
@@ -23,6 +24,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
 #else
         _host = CreateTextHost(generator, this);
 #endif
+        if (_host == null)
+            throw new InvalidOperationException("Text host could not be created. Ensure the chosen generator is supported.");
+
         BackgroundColor = D3DCOLORVALUE.Transparent;
     }
 
@@ -34,11 +38,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
     [Category(CategoryBehavior)]
     public string GeneratorVersion => Document.Generator;
-
 #else
-    private RichTextBoxTextHost? _host;
+    private RichTextBoxTextHost _host;
 
-    protected RichTextBoxTextHost? Host => _host;
+    public TextHost Host => _host;
     protected virtual RichTextBoxTextHost CreateTextHost(TextServicesGenerator generator, RichTextBox richTextBox) => new(generator, richTextBox);
 
     [System.Runtime.InteropServices.Marshalling.GeneratedComClass]
@@ -255,6 +258,21 @@ public partial class RichTextBox : RenderVisual, IDisposable
     }
 
     [Category(CategoryLayout)]
+    public virtual TXTNATURALSIZE NaturalSize
+    {
+        get => _naturalSize;
+        set
+        {
+            if (_naturalSize == value)
+                return;
+
+            OnPropertyChanging();
+            _naturalSize = value;
+            Invalidate(VisualPropertyInvalidateModes.Measure);
+        }
+    }
+
+    [Category(CategoryLayout)]
     public virtual ushort FontWeight
     {
 #if NETFRAMEWORK
@@ -294,6 +312,32 @@ public partial class RichTextBox : RenderVisual, IDisposable
             Invalidate();
         }
     }
+
+    public HRESULT SendMessage(uint msg, LPARAM lParam) => SendMessage(msg, 0, lParam);
+    public HRESULT SendMessage(uint msg, WPARAM wParam) => SendMessage(msg, wParam, 0);
+    public HRESULT SendMessage(uint msg, WPARAM wParam, LPARAM lParam) => SendMessage(msg, wParam, lParam, out _);
+    public HRESULT SendMessage(uint msg, WPARAM wParam, LPARAM lParam, out LRESULT result)
+    {
+        result = default;
+        if (_host == null)
+            return Constants.E_FAIL;
+
+        return _host.SendMessage(msg, wParam, lParam, out result);
+    }
+
+    public virtual string? GetText(tomConstants flags) => _host?.GetText(flags);
+    public virtual void SetText(tomConstants flags, string text)
+    {
+        if (_host == null)
+            throw new InvalidOperationException("Text host is not initialized.");
+
+        OnPropertyChanging();
+        _host.SetText(flags, text);
+        OnPropertyChanged(nameof(Text));
+        CheckRunningAsMainThread();
+        base.Invalidate(VisualPropertyInvalidateModes.Measure);
+    }
+
 #endif
 
     protected virtual void Invalidate(VisualPropertyInvalidateModes modes = VisualPropertyInvalidateModes.Measure, [CallerMemberName] string? propertyName = null)
@@ -334,7 +378,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
             constraint.height = Math.Max(0, constraint.height - padding.bottom);
         }
 
-        var size = host.GetNaturalSize(TXTNATURALSIZE.TXTNS_FITTOCONTENT, constraint).ToD2D_SIZE_F();
+        var size = host.GetNaturalSize(NaturalSize, constraint).ToD2D_SIZE_F();
         D2D_SIZE_U dpi;
         if (Window != null && Window.Handle != 0)
         {
@@ -548,7 +592,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
                 // dispose managed state (managed objects)
                 try
                 {
-                    Interlocked.Exchange(ref _host, null)?.Dispose();
+                    _host?.Dispose();
                 }
                 catch
                 {

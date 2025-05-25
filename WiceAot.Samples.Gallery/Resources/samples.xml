@@ -1315,26 +1315,6 @@ gma warning restore IDE0017 // Simplify object initialization
         if (e.Button == MouseButton.Left)
         {
             // create an IDataObject from the gallery.exe file
-NETFRAMEWORK
-            using (var dataObject = ShellUtilities.CreateDataObject(new[] { Process.GetCurrentProcess().MainModule.FileName }))
-            {
-                // optionally hook events to be notified of windows being dragged over
-                Window!.DragDropTarget += (s2, e2) =&gt;
-                {
-                    if (e2.Type == DragDropTargetEventType.Leave)
-                    {
-                        target.Text = string.Empty;
-                    }
-                    else
-                    {
-                        var window = NativeWindow.FromHandle(e2.Hwnd);
-                        target.Text = $"Target Window: {e2.Hwnd.Value.ToHexa()} '{window?.Text}' process: '{window?.Process?.ProcessName}'";
-                    }
-                };
-
-                btn.DoDragDrop(dataObject.Object, DROPEFFECT.DROPEFFECT_COPY);
-            }
-e
             using var dataObject = ShellUtilities.CreateDataObject([Environment.ProcessPath!]);
 
             // optionally hook events to be notified of windows being dragged over
@@ -1352,7 +1332,6 @@ e
             };
 
             btn.DoDragDrop(dataObject.NativeObject, DROPEFFECT.DROPEFFECT_COPY);
-if
         }
     };
 }</sample>
@@ -1387,20 +1366,12 @@ if
             default:
                 if (e.DataObject != null)
                 {
-NETFRAMEWORK
-                    var dataObject = new System.Windows.Forms.DataObject(e.DataObject);
-                    if (dataObject.ContainsFileDropList())
-                    {
-                        tb.Text = string.Join(Environment.NewLine, dataObject.GetFileDropList().Cast&lt;string&gt;());
-                    }
-e
                     var dataObject = new DataObject(new ComObject&lt;IDataObject&gt;(e.DataObject), false);
                     var files = dataObject.GetFilesPath();
                     if (files.Count &gt; 0)
                     {
                         tb.Text = string.Join(Environment.NewLine, files);
                     }
-if
                 }
                 break;
         }
@@ -1497,19 +1468,6 @@ if
 
     // Document is a COM IDispatch object. Cf https://docs.microsoft.com/en-us/windows/win32/api/tom/nf-tom-itextdocument-open
 
-NETFRAMEWORK
-    dynamic doc = rtb.Document;
-
-    // load text from this assembly's resources
-    using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Samples.Gallery.Resources.wice.rtf"))
-    {
-        // we must force wrap it as IUnknown because for some reason, if it's in an outside assembly (DirectN.dll here)
-        // ManagedIStream is wrapped as IDispatch and this causes failure in dynamic DLR code
-        // "COMException: Cannot marshal 'parameter #1': Invalid managed/unmanaged type combination"
-        var unk = new UnknownWrapper(new ManagedIStream(stream));
-        doc.Open(unk, 0, 1200); // Flags = 0, CodePage = 1200 (unicode)
-    }
-e
     // ITextDocument.Open supports a VARIANT of type IStream, we use ManagedIStream to handle this
     const int CP_UNICODE = 1200;
 
@@ -1519,7 +1477,6 @@ e
     var unk = ComObject.ComWrappers.GetOrCreateComInterfaceForObject(mis, CreateComInterfaceFlags.None);
     using var v = new Variant(unk);
     rtb.Document!.Object.Open(v.Detached, 0, CP_UNICODE);
-if
 }</sample>
   <sample namespace="Samples.Text.RichTextBox.RtfRichTextBoxSample">void Layout(Visual parent)
 {
@@ -1638,11 +1595,7 @@ if
 }</sample>
   <sample namespace="Samples.Text.TextBox.UnicodeTextBoxSample">void Layout(Visual parent)
 {
-    var sv = new ScrollViewer
-    {
-        Height = 200,
-        Width = 500
-    };
+    var sv = new ScrollViewer { Height = 200, Width = 500 };
     parent.Children.Add(sv);
     Dock.SetDockType(sv, DockType.Top);
 

@@ -7,11 +7,7 @@ public class UnicodeTextBoxSample : Sample
 
     public override void Layout(Visual parent)
     {
-        var sv = new ScrollViewer
-        {
-            Height = 200,
-            Width = 500
-        };
+        var sv = new ScrollViewer { Height = 200, Width = 500 };
         parent.Children.Add(sv);
         Dock.SetDockType(sv, DockType.Top);
 

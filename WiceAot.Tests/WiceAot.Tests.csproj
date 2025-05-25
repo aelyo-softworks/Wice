@@ -14,6 +14,20 @@
 
 	<ItemGroup>
 		<None Remove="Resources\100mb.txt" />
+		<None Remove="Resources\AliceInWonderlandNumbered.txt" />
+		<None Remove="Resources\ASCII-Complete.txt" />
+		<None Remove="Resources\Chinese-Simplified.txt" />
+		<None Remove="Resources\Chinese-Traditional.txt" />
+		<None Remove="Resources\CJK-Symbols.txt" />
+		<None Remove="Resources\Cyrillic-Complete.txt" />
+		<None Remove="Resources\Japanese-Complete.txt" />
+		<None Remove="Resources\Korean-Hangul.txt" />
+		<None Remove="Resources\Latin-Complete.txt" />
+		<None Remove="Resources\MobyDickNumbered.txt" />
+		<None Remove="Resources\rainier.jpg" />
+		<None Remove="Resources\sample.pdf" />
+		<None Remove="Resources\ShortText.txt" />
+		<None Remove="Resources\SpecialCharacters.txt" />
 		<None Remove="runtimes\win-arm64\native\WebView2Loader.dll" />
 		<None Remove="runtimes\win-x64\native\WebView2Loader.dll" />
 		<None Remove="runtimes\win-x86\native\WebView2Loader.dll" />
@@ -24,6 +38,48 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Content Include="Resources\AliceInWonderlandNumbered.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\ASCII-Complete.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Chinese-Simplified.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Chinese-Traditional.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\CJK-Symbols.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Cyrillic-Complete.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Japanese-Complete.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Korean-Hangul.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Latin-Complete.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\MobyDickNumbered.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\rainier.jpg">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\sample.pdf">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\ShortText.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\SpecialCharacters.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	  <EmbeddedResource Include="runtimes\win-arm64\native\WebView2Loader.dll" />
 	  <EmbeddedResource Include="runtimes\win-x64\native\WebView2Loader.dll" />
 	  <EmbeddedResource Include="runtimes\win-x86\native\WebView2Loader.dll" />
@@ -65,21 +121,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="Resources\rainier.jpg">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Resources\sample.pdf">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Resources\ShortText.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Resources\AliceInWonderlandNumbered.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Resources\MobyDickNumbered.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
+	  <None Update="Resources\font.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>
