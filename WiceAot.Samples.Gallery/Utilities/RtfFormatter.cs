@@ -56,21 +56,17 @@ public class RtfFormatter : CodeColorizerBase
 
     public D3DCOLORVALUE DefaultColor { get; }
 
-    private static Dictionary<string, D3DCOLORVALUE> GetDefaultColors(D3DCOLORVALUE defaultColor)
+    private static Dictionary<string, D3DCOLORVALUE> GetDefaultColors(D3DCOLORVALUE defaultColor) => new(StringComparer.OrdinalIgnoreCase)
     {
-        var dic = new Dictionary<string, D3DCOLORVALUE>(StringComparer.OrdinalIgnoreCase)
-        {
-            [ColorIndex.Default.ToString()] = defaultColor,
-            [ColorIndex.Keyword.ToString()] = D3DCOLORVALUE.Blue,
-            [ColorIndex.Comment.ToString()] = D3DCOLORVALUE.FromArgb(0, 128, 0),
-            [ColorIndex.String.ToString()] = D3DCOLORVALUE.FromArgb(128, 0, 0),
-            [ColorIndex.StringCSharpVerbatim.ToString()] = D3DCOLORVALUE.FromArgb(128, 0, 0),
-            [ColorIndex.Number.ToString()] = D3DCOLORVALUE.FromArgb(128, 0, 0),
-            [ColorIndex.ClassName.ToString()] = D3DCOLORVALUE.FromArgb(43, 145, 175),
-            [ColorIndex.BuiltinFunction.ToString()] = D3DCOLORVALUE.Olive
-        };
-        return dic;
-    }
+        [ColorIndex.Default.ToString()] = defaultColor,
+        [ColorIndex.Keyword.ToString()] = D3DCOLORVALUE.Blue,
+        [ColorIndex.Comment.ToString()] = D3DCOLORVALUE.FromArgb(0, 128, 0),
+        [ColorIndex.String.ToString()] = D3DCOLORVALUE.FromArgb(128, 0, 0),
+        [ColorIndex.StringCSharpVerbatim.ToString()] = D3DCOLORVALUE.FromArgb(128, 0, 0),
+        [ColorIndex.Number.ToString()] = D3DCOLORVALUE.FromArgb(128, 0, 0),
+        [ColorIndex.ClassName.ToString()] = D3DCOLORVALUE.FromArgb(43, 145, 175),
+        [ColorIndex.BuiltinFunction.ToString()] = D3DCOLORVALUE.Olive
+    };
 
     private static ColorIndex GetScopeColorIndex(string? scopeName)
     {
