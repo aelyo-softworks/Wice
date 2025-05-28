@@ -481,7 +481,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         WiceCommons.DwmExtendFrameIntoClientArea(hwnd, margin).ThrowOnError();
     }
 
-    internal static bool RegisterWindowClass(string className, nint windowProc)
+    internal static bool RegisterWindowClass(string className, WNDCLASS_STYLES styles, nint windowProc)
     {
         ExceptionExtensions.ThrowIfNull(className, nameof(className));
         if (windowProc == 0)
@@ -491,7 +491,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         {
             var cls = new WNDCLASSW
             {
-                style = WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW,
+                style = styles,
                 lpfnWndProc = windowProc,
                 hInstance = new HINSTANCE { Value = Application.ModuleHandle.Value },
                 lpszClassName = PWSTR.From(className),

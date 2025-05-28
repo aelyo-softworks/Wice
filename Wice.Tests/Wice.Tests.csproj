@@ -12,11 +12,50 @@
 	<ItemGroup>
 		<None Remove="Resources\100mb.txt" />
 		<None Remove="Resources\aelyo_flat.png" />
+		<None Remove="Resources\ASCII-Complete.txt" />
+		<None Remove="Resources\Chinese-Simplified.txt" />
+		<None Remove="Resources\Chinese-Traditional.txt" />
+		<None Remove="Resources\CJK-Symbols.txt" />
+		<None Remove="Resources\Cyrillic-Complete.txt" />
+		<None Remove="Resources\Japanese-Complete.txt" />
+		<None Remove="Resources\Korean-Hangul.txt" />
+		<None Remove="Resources\Latin-Complete.txt" />
+		<None Remove="Resources\SpecialCharacters.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<Compile Include="..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="SampleModel.cs" />
 		<Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Resources\ASCII-Complete.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Chinese-Simplified.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Chinese-Traditional.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\CJK-Symbols.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Cyrillic-Complete.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Japanese-Complete.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Korean-Hangul.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\Latin-Complete.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Resources\SpecialCharacters.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -48,6 +87,9 @@
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Resources\AliceInWonderlandNumbered.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Resources\font.txt">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 		<None Update="Resources\Frankenstein.txt">

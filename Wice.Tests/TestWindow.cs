@@ -29,7 +29,8 @@ public class TestWindow : Window
         //AddCounter(1);
         //AddDrawTextCounter(10);
 
-        ShowBrowser();
+        RichTextBoxNoLangOptions();
+        //ShowBrowser();
         //ShowTabs();
         //Pager();
         //AddScrollableReadOnlyText();
@@ -148,6 +149,38 @@ public class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void RichTextBoxNoLangOptions()
+    {
+        var wrap = new Wrap { Orientation = Orientation.Vertical };
+        var BtnOpen = new Button { Margin = D2D_RECT_F.Thickness(0, 10), VerticalAlignment = Alignment.Near, HorizontalAlignment = Alignment.Near };
+        BtnOpen.Text.Text = " Load TXT ";
+        var sv = new ScrollViewer { Margin = D2D_RECT_F.Thickness(10, 10, 10, 10) };
+        //sv.Height = 400;
+        wrap.Children.Add(BtnOpen);
+        wrap.Children.Add(sv);
+
+        var text = File.ReadAllText(@"Resources\Chinese-Traditional.txt");
+        var tb = new RichTextBox
+        {
+            FontName = "Microsoft YaHei",
+            DisposeOnDetachFromComposition = false,
+            IsFocusable = true,
+            FontSize = 12,
+        };
+
+        tb.Text = text;
+
+        tb.Options |= TextHostOptions.WordWrap;
+        sv.Viewer.Child = tb;
+
+        BtnOpen.Click += (s, e) =>
+        {
+            tb.Text = text;
+        };
+
+        Children.Add(wrap);
     }
 
     private sealed class MyDialog : DialogBox

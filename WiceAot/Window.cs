@@ -130,6 +130,7 @@ public partial class Window : Canvas, ITitleBarParent
     public ContainerVisual? FrameVisual { get; private set; }
 
     protected virtual string ClassName => GetType().FullName!;
+    protected virtual WNDCLASS_STYLES ClassStyles => WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW | WNDCLASS_STYLES.CS_DBLCLKS;
     protected virtual int MaxChildrenCount => int.MaxValue;
     protected virtual bool HasCaret => true;
     protected virtual D3D11_CREATE_DEVICE_FLAG CreateDeviceFlags
@@ -941,7 +942,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     private NativeWindow GetNative()
     {
-        NativeWindow.RegisterWindowClass(ClassName, Marshal.GetFunctionPointerForDelegate(_windowProc));
+        NativeWindow.RegisterWindowClass(ClassName, ClassStyles, Marshal.GetFunctionPointerForDelegate(_windowProc));
         var native = CreateNativeWindow();
         native.FrameChanged();
         native.DragDropGiveFeedback += OnNativeDragDropGiveFeedback;
@@ -1660,6 +1661,8 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    protected virtual bool ProcessInvalidationsCore(IReadOnlyList<KeyValuePair<Visual, InvalidateMode>> list) => true;
+
     private void ProcessInvalidations()
     {
 #if DEBUG
@@ -1681,6 +1684,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
 
         if (invalidations.Length == 0)
+            return;
+
+        if (!ProcessInvalidationsCore(invalidations))
             return;
 
         foreach (var kv in invalidations)
