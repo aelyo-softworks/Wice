@@ -27,7 +27,7 @@ public partial class Stack : Visual
 
         var sizeConstraint = constraint;
         var children = VisibleChildren.ToArray();
-        foreach (var child in children)
+        foreach (var child in children.Where(c => c.Parent != null))
         {
             child.Measure(sizeConstraint);
             var childSize = child.DesiredSize;
@@ -92,6 +92,9 @@ public partial class Stack : Visual
                 break;
 
             var child = children[i];
+            if (child.Parent == null)
+                continue;
+
             var rc = Canvas.GetRect(finalSize, child);
             D2D_RECT_F childRect;
             if (Orientation == Orientation.Horizontal)

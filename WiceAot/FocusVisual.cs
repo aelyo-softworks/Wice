@@ -9,7 +9,6 @@ public partial class FocusVisual : Border//, IModalVisual
         DisablePointerEvents = true;
     }
 
-    //public virtual bool IsModal => false;
     public new Window? Parent => (Window?)base.Parent;
 
     protected override void OnAttachedToParent(object? sender, EventArgs e)
@@ -91,14 +90,11 @@ public partial class FocusVisual : Border//, IModalVisual
         Child.DisableKeyEvents = true;
         Child.DisablePointerEvents = true;
 
-
 #if DEBUG
         Child.Name ??= nameof(FocusVisual) + ".child";
 #endif
 
         var ar = focused.AbsoluteRenderRect;
-
-        //Application.Trace("focused: " + focused + " ar: " + ar);
         var offset = parent?.FocusOffset ?? Application.CurrentTheme.FocusOffset;
 
         var l = Canvas.GetLeft(this);
@@ -110,9 +106,6 @@ public partial class FocusVisual : Border//, IModalVisual
         Canvas.SetTop(this, ar.top - 1 + offset);
         Width = Math.Max(0, ar.Width - offset * 2);
         Height = Math.Max(0, ar.Height - offset * 2);
-
-        //ZIndex = int.MaxValue;
-        //Application.Trace("this: " + this + " rc: " + Canvas.GetLeft(this) + " " + Canvas.GetTop(this) + " " + Width + " " + Height);
     }
 
     protected override void Render()
@@ -144,7 +137,5 @@ public partial class FocusVisual : Border//, IModalVisual
             singleShape.StrokeThickness = Application.CurrentTheme.FocusThickness;
             singleShape.StrokeDashArray = Application.CurrentTheme.FocusDashArray;
         }
-
-        //Application.Trace("ar: " + ar);
     }
 }

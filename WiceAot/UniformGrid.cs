@@ -43,7 +43,7 @@ public partial class UniformGrid : RenderVisual
         var maxChildDesiredHeight = 0f;
 
         var children = VisibleChildren.ToArray();
-        foreach (var child in children)
+        foreach (var child in children.Where(c => c.Parent != null))
         {
             child.Measure(childConstraint);
             var childDesiredSize = child.DesiredSize;
@@ -86,7 +86,7 @@ public partial class UniformGrid : RenderVisual
         var height = finalSize.height / rows;
 
         var children = VisibleChildren.ToArray();
-        foreach (var child in children)
+        foreach (var child in children.Where(c => c.Parent != null))
         {
             var bounds = D2D_RECT_F.Sized(left.Floor(), top.Floor(), width.Ceiling(), height.Ceiling());
             child.Arrange(bounds);

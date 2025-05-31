@@ -174,7 +174,7 @@ public partial class Canvas : Visual
     {
         D2D_RECT_F? rect = null;
         var children = visual.VisibleChildren.ToArray();
-        foreach (var child in children)
+        foreach (var child in children.Where(c => c.Parent != null))
         {
             var childConstraint = D2D_SIZE_F.PositiveInfinity;
             if (child.HorizontalAlignment == Alignment.Stretch && constraint.width.IsSet())
@@ -219,7 +219,7 @@ public partial class Canvas : Visual
     {
         var finalSize = finalRect.Size;
         var children = visual.VisibleChildren.ToArray();
-        foreach (var child in children)
+        foreach (var child in children.Where(c => c.Parent != null))
         {
             var childRect = GetRect(finalSize, child);
             child.Arrange(childRect);

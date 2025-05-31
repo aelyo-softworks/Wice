@@ -52,7 +52,9 @@ public static class WiceCommons
     public static uint GetDpiForWindow(HWND hwnd) => (uint)WindowsFunctions.GetDpiForWindow(hwnd);
     public static void PostQuitMessage(int nExitCode) => WindowsFunctions.PostQuitMessage(nExitCode);
     public static BOOL KillTimer(HWND hWnd, nuint uIDEvent) => WindowsFunctions.KillTimer(hWnd, (nint)uIDEvent);
+#pragma warning disable IDE0060 // Remove unused parameter
     public static void SetTimer(HWND hWnd, nuint nIDEvent, uint uElapse, object? lpTimerFunc) => WindowsFunctions.SetTimer(hWnd, (nint)nIDEvent, (int)uElapse, IntPtr.Zero);
+#pragma warning restore IDE0060 // Remove unused parameter
     public static BOOL DeleteObject(HGDIOBJ ho) => WindowsFunctions.DeleteObject(ho);
     public static BOOL IsChild(HWND hWndParent, HWND hWnd) => WindowsFunctions.IsChild(hWndParent, hWnd);
     public static uint GetMessagePos() => (uint)WindowsFunctions.GetMessagePos();

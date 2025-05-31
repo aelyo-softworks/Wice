@@ -29,7 +29,7 @@ public partial class Wrap : Visual
         var childConstraint = new D2D_SIZE_F(itemWidthSet ? itemWidth : constraint.width, itemHeightSet ? itemHeight : constraint.height);
 
         var children = VisibleChildren.ToArray();
-        foreach (var child in children)
+        foreach (var child in children.Where(c => c.Parent != null))
         {
             child.Measure(childConstraint);
             var childSize = child.DesiredSize;
@@ -78,6 +78,9 @@ public partial class Wrap : Visual
         for (int i = 0; i < children.Length; i++)
         {
             var child = children[i];
+            if (child.Parent == null)
+                continue; // skip detached children
+
             var childSize = child.DesiredSize;
             var sz = new UVSize(orientation, itemWidthSet ? itemWidth : childSize.width, itemHeightSet ? itemHeight : childSize.height);
 

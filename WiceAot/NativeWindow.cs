@@ -259,11 +259,16 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOW) => WiceCommons.ShowWindow(Handle, command);
     public bool Move(int x, int y) => WiceCommons.SetWindowPos(Handle, HWND.Null, x, y, -1, -1, SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
     public bool Resize(int width, int height) => WiceCommons.SetWindowPos(Handle, HWND.Null, 0, 0, width, height, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+    public bool MoveAndResize(D2D_RECT_F rect, HWND hWndInsertAfter, SET_WINDOW_POS_FLAGS flags) => WiceCommons.SetWindowPos(Handle, hWndInsertAfter, (int)rect.left, (int)rect.top, (int)rect.Width, (int)rect.Height, flags);
+    public bool MoveAndResize(int x, int y, int width, int height, HWND hWndInsertAfter, SET_WINDOW_POS_FLAGS flags) => WiceCommons.SetWindowPos(Handle, hWndInsertAfter, x, y, width, height, flags);
     public bool MoveAndResize(int x, int y, int width, int height) => WiceCommons.SetWindowPos(Handle, HWND.Null, x, y, width, height, SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
 #if NETFRAMEWORK
     public bool MoveAndResize(D2D_RECT_U rect) => MoveAndResize((int)rect.left, (int)rect.top, (int)(rect.right - rect.left), (int)(rect.bottom - rect.top));
+    public bool MoveAndResize(D2D_RECT_U rect, HWND hWndInsertAfter, SET_WINDOW_POS_FLAGS flags) => WiceCommons.SetWindowPos(Handle, hWndInsertAfter, (int)rect.left, (int)rect.top, (int)(rect.right - rect.left), (int)(rect.bottom - rect.top), flags);
 #else
     public bool MoveAndResize(D2D_RECT_U rect) => MoveAndResize((int)rect.left, (int)rect.top, (int)rect.Width, (int)rect.Height);
+    public bool MoveAndResize(D2D_RECT_U rect, HWND hWndInsertAfter, SET_WINDOW_POS_FLAGS flags) => WiceCommons.SetWindowPos(Handle, hWndInsertAfter, (int)rect.left, (int)rect.top, (int)rect.Width, (int)rect.Height, flags);
+    public bool BringWindowToTop() => Functions.BringWindowToTop(Handle);
 #endif
     public bool MoveAndResize(D2D_RECT_F rect) => MoveAndResize((int)rect.left, (int)rect.top, (int)rect.Width, (int)rect.Height);
     public bool MoveAndResize(RECT rect) => MoveAndResize(rect.left, rect.top, rect.Width, rect.Height);
@@ -278,7 +283,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public bool PostMessage(uint msg, WPARAM wParam) => WiceCommons.PostMessageW(Handle, msg, wParam, LPARAM.Null);
     public bool PostMessage(uint msg, WPARAM wParam, LPARAM lParam) => WiceCommons.PostMessageW(Handle, msg, wParam, lParam);
     public HMONITOR GetMonitorHandle(MONITOR_FROM_FLAGS flags) => WiceCommons.MonitorFromWindow(Handle, flags);
-    public void ExtendFrameIntoClientArea(int left, int right, int top, int bottom) => DwmExtendFrameIntoClientArea(Handle, left, right, top, bottom);
+    public HRESULT ExtendFrameIntoClientArea(int left, int right, int top, int bottom) => DwmExtendFrameIntoClientArea(Handle, left, right, top, bottom);
     public HWND CaptureMouse() => WiceCommons.SetCapture(Handle);
     public bool CreateCaret(int width, int height) => CreateCaret(HBITMAP.Null, width, height);
     public bool CreateCaret(HBITMAP bitmap, int width, int height) => WiceCommons.CreateCaret(Handle, bitmap, width, height);
@@ -465,11 +470,10 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         var win = WiceCommons.WindowFromPoint(pt);
         var child = WiceCommons.IsChild(handle, win);
         var result = !child && (win.Value != other.Value || other.Value == 0);
-        //Application.Trace("pt: " + pt + " win: " + new NativeWindow(win) + " child: " + child + " => " + result);
         return result;
     }
 
-    internal static void DwmExtendFrameIntoClientArea(HWND hwnd, int left, int right, int top, int bottom)
+    internal static HRESULT DwmExtendFrameIntoClientArea(HWND hwnd, int left, int right, int top, int bottom)
     {
         var margin = new MARGINS
         {
@@ -478,7 +482,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
             cyBottomHeight = bottom,
             cyTopHeight = top
         };
-        WiceCommons.DwmExtendFrameIntoClientArea(hwnd, margin).ThrowOnError();
+        return WiceCommons.DwmExtendFrameIntoClientArea(hwnd, margin);
     }
 
     internal static bool RegisterWindowClass(string className, WNDCLASS_STYLES styles, nint windowProc)

@@ -46,7 +46,7 @@ public partial class ToolTip : PopupWindow, IContentParent
         //base.ExtendFrame(handle);
     }
 
-    protected virtual CompositionShadow CreateShadow()
+    protected virtual CompositionShadow? CreateShadow()
     {
         if (Compositor == null)
             throw new InvalidOperationException();

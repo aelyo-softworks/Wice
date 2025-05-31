@@ -65,6 +65,7 @@ public partial class Window : Canvas, ITitleBarParent
     public event EventHandler? HandleCreated;
     public event EventHandler? MonitorChanged;
     public event EventHandler? Moved;
+    public event EventHandler<ValueEventArgs<RECT>>? Moving;
     public event EventHandler? Resized;
     public event EventHandler? Activated;
     public event EventHandler? Deactivated;
@@ -515,6 +516,8 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    public override string ToString() => Title ?? string.Empty;
+
     private sealed partial class WindowBaseObjectCollection : BaseObjectCollection<Visual>
     {
         private readonly Window _window;
@@ -741,6 +744,7 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual void OnResized(object? sender, EventArgs e) => Resized?.Invoke(sender, e);
     protected virtual void OnDestroyed(object? sender, EventArgs e) => Destroyed?.Invoke(sender, e);
     protected virtual void OnMoved(object? sender, EventArgs e) => Moved?.Invoke(sender, e);
+    protected virtual void OnMoving(object? sender, ValueEventArgs<RECT> e) => Moving?.Invoke(sender, e);
     protected virtual void OnMonitorChanged(object? sender, EventArgs e) => MonitorChanged?.Invoke(sender, e);
     protected virtual void OnHandleCreated(object? sender, EventArgs e) => HandleCreated?.Invoke(sender, e);
     protected virtual void OnDpiChangedAfterParent(object sender, EventArgs e) => DpiChangedAfterParent?.Invoke(sender, e);
@@ -757,12 +761,30 @@ public partial class Window : Canvas, ITitleBarParent
     public Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => Native?.GetMonitor(flags);
     public void EnableBlurBehind() => Native.EnableBlurBehind();
     public bool Resize(int width, int height) => Native.Resize(width, height);
+#if !NETFRAMEWORK
+    public bool BringWindowToTop() => Native.BringWindowToTop();
+#endif
     public bool MoveAndResize(int x, int y, int width, int height) => Native.MoveAndResize(x, y, width, height);
     public bool MoveAndResize(D2D_RECT_U rect) => Native.MoveAndResize(rect);
     public bool MoveAndResize(D2D_RECT_F rect) => Native.MoveAndResize(rect);
     public bool MoveAndResize(RECT rect) => Native.MoveAndResize(rect);
     public POINT ScreenToClient(POINT pt) => Native.ScreenToClient(pt);
     public POINT ClientToScreen(POINT pt) => Native.ClientToScreen(pt);
+    public D2D_RECT_F ClientToScreen(D2D_RECT_F pt) => new(Native.ClientToScreen(pt.LeftTop), Native.ClientToScreen(pt.RightBottom));
+    public D2D_RECT_F ScreenToClient(D2D_RECT_F pt) => new(Native.ScreenToClient(pt.LeftTop), Native.ScreenToClient(pt.RightBottom));
+    public RECT ScreenToClient(RECT pt)
+    {
+        var lt = Native.ScreenToClient(pt.LeftTop);
+        var rb = Native.ScreenToClient(pt.RightBottom);
+        return new(lt.x, lt.y, rb.x, rb.y);
+    }
+
+    public RECT ClientToScreen(RECT pt)
+    {
+        var lt = Native.ClientToScreen(pt.LeftTop);
+        var rb = Native.ClientToScreen(pt.RightBottom);
+        return new(lt.x, lt.y, rb.x, rb.y);
+    }
 
     public void RelativeMove(int x, int y)
     {
@@ -2630,8 +2652,6 @@ public partial class Window : Canvas, ITitleBarParent
 
     internal new void OnKeyPressEvent(KeyPressEventArgs e)
     {
-        //Application.Trace(e.ToString());
-
         OnKeyPressEvent(e, this);
         if (e.Handled)
             return;
@@ -3743,6 +3763,26 @@ public partial class Window : Canvas, ITitleBarParent
 
                 win.OnMoved(win, EventArgs.Empty);
                 win.OnPropertyChanged(nameof(WindowRect));
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
+
+            case MessageDecoder.WM_MOVING:
+                if (win == null)
+                    break;
+
+                unsafe
+                {
+                    var rect = *(RECT*)lParam.Value;
+                    var re = new ValueEventArgs<RECT>(rect, false, true);
+                    win.OnMoving(win, re);
+                    var p = (RECT*)lParam.Value;
+                    p->left = re.Value.left;
+                    p->top = re.Value.top;
+                    p->right = re.Value.right;
+                    p->bottom = re.Value.bottom;
+                    win.OnPropertyChanged(nameof(WindowRect));
+                    if (re.Cancel)
+                        return new LRESULT { Value = BOOL.TRUE };
+                }
                 return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_PAINT:

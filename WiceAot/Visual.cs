@@ -381,7 +381,6 @@ public partial class Visual : BaseObject
             {
                 child.Level = _level + 1;
             }
-            //OnPropertyChanged();
         }
     }
 
@@ -396,7 +395,6 @@ public partial class Visual : BaseObject
                 return;
 
             _desiredSize = value;
-            //OnPropertyChanged();
         }
     }
 
@@ -411,7 +409,6 @@ public partial class Visual : BaseObject
                 return;
 
             _arrangedRect = value;
-            //OnPropertyChanged();
         }
     }
 
@@ -439,7 +436,6 @@ public partial class Visual : BaseObject
                 return;
 
             _relativeRenderRect = value;
-            //OnPropertyChanged();
         }
     }
 
@@ -455,7 +451,6 @@ public partial class Visual : BaseObject
                 return;
 
             _absoluteRenderBounds = value;
-            //OnPropertyChanged();
         }
     }
 

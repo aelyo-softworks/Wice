@@ -55,7 +55,7 @@ public partial class Dock : Visual
         var childrenHeight = 0f;
         var children = VisibleChildren.ToArray();
 
-        foreach (var child in children)
+        foreach (var child in children.Where(c => c.Parent != null))
         {
             var childConstraint = new D2D_SIZE_F(Math.Max(0, constraint.width - childrenWidth), Math.Max(0, constraint.height - childrenHeight));
             child.Measure(childConstraint);
@@ -108,6 +108,9 @@ public partial class Dock : Visual
         for (var i = 0; i < children.Length; i++)
         {
             var child = children[i];
+            if (child.Parent == null)
+                continue; // skip detached children
+
             var dock = GetDockType(child);
             var childSize = child.DesiredSize;
             var rc = D2D_RECT_F.Sized(left, top, Math.Max(0, finalSize.width - (left + right)), Math.Max(0, finalSize.height - (top + bottom)));

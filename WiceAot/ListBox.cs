@@ -64,7 +64,7 @@
             var maxChildDesiredWidth = 0f;
             var height = 0f;
 
-            foreach (var child in children)
+            foreach (var child in children.Where(c => c.Parent != null))
             {
                 child.Measure(childConstraint);
                 var childDesiredSize = child.DesiredSize;
@@ -107,7 +107,7 @@
             var top = 0f;
             var width = finalSize.width;
 
-            foreach (var child in children)
+            foreach (var child in children.Where(c => c.Parent != null))
             {
                 var h = child.DesiredSize.height;
                 var bounds = D2D_RECT_F.Sized(0, top, width, h);

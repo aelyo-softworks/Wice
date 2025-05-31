@@ -250,7 +250,7 @@ public partial class Grid : Visual
 
         // measure children & build dic dim => children
         var children = VisibleChildren.ToArray();
-        foreach (var child in children)
+        foreach (var child in children.Where(c => c.Parent != null))
         {
             var gs = GridSet.Get(this, child);
 
@@ -434,7 +434,7 @@ public partial class Grid : Visual
     {
         _childrenByDimensions = [];
         var children = VisibleChildren.ToArray();
-        foreach (var child in children)
+        foreach (var child in children.Where(c => c.Parent != null))
         {
             var gs = GridSet.Get(this, child);
 
@@ -625,7 +625,7 @@ public partial class Grid : Visual
         }
 
         var children = VisibleChildren.ToArray();
-        foreach (var child in children)
+        foreach (var child in children.Where(c => c.Parent != null))
         {
             var gs = GridSet.Get(this, child);
 
