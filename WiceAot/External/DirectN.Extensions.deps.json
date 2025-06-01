@@ -11,7 +11,7 @@
           "DirectNAot": "1.3.1",
           "Microsoft.DotNet.ILCompiler": "9.0.5",
           "Microsoft.NET.ILLink.Tasks": "9.0.5",
-          "DirectN": "1.3.1.0"
+          "DirectN": "1.3.2.0"
         },
         "runtime": {
           "DirectN.Extensions.dll": {}
@@ -22,16 +22,16 @@
       "DirectNAot/1.3.1": {
         "runtime": {
           "DirectN.dll": {
-            "assemblyVersion": "1.3.1.0",
-            "fileVersion": "1.3.1.0"
+            "assemblyVersion": "1.3.2.0",
+            "fileVersion": "1.3.2.0"
           }
         }
       },
-      "DirectN/1.3.1.0": {
+      "DirectN/1.3.2.0": {
         "runtime": {
           "DirectN.dll": {
-            "assemblyVersion": "1.3.1.0",
-            "fileVersion": "1.3.1.0"
+            "assemblyVersion": "1.3.2.0",
+            "fileVersion": "1.3.2.0"
           }
         }
       }
@@ -62,7 +62,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "DirectN/1.3.1.0": {
+    "DirectN/1.3.2.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

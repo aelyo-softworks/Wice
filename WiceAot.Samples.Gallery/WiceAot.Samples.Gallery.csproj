@@ -45,7 +45,7 @@
 		<EmbeddedResource Include="Resources\lorem-cn.txt" />
 		<EmbeddedResource Include="Resources\rainier.jpg" />
 		<EmbeddedResource Include="Resources\sample.pdf">
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</EmbeddedResource>
 		<EmbeddedResource Include="Resources\samples.xml" />
 		<EmbeddedResource Include="Resources\tiger.svg" />
