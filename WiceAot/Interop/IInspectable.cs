@@ -16,5 +16,5 @@ public partial interface IInspectable
 
     [PreserveSig]
     [return: MarshalAs(UnmanagedType.Error)]
-    HRESULT GetTrustLevel(out DirectN.TrustLevel trustLevel);
+    HRESULT GetTrustLevel(out TrustLevel trustLevel);
 }

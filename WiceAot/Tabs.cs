@@ -162,6 +162,11 @@ public partial class Tabs : Dock
         ExceptionExtensions.ThrowIfNull(page, nameof(page));
         ExceptionExtensions.ThrowIfNull(content, nameof(content));
         PagesContent.Children.Remove(content);
+        page.RemovedFromTabs(this);
+        if (content is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
     }
 
     protected virtual void AddPageContent(TabPage page, int index, Visual content)
@@ -183,6 +188,7 @@ public partial class Tabs : Dock
 #if DEBUG
         content.Name ??= "tabPageContent#" + index;
 #endif
+        page.AddedToTabs(this);
     }
 
     protected internal void OnPageContentChanged(TabPage page, Visual? newContent, Visual? oldContent)
@@ -236,8 +242,7 @@ public partial class Tabs : Dock
                     }
                 }
             }
+            OnSelectionChanged(sender, e);
         }
-
-        OnSelectionChanged(sender, e);
     }
 }

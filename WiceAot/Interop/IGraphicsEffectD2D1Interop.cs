@@ -10,7 +10,7 @@ namespace ABI.Windows.Graphics.Effects
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static class IGraphicsEffectD2D1InteropMethods
     {
-        public static Guid IID { get; } = typeof(global::Windows.Graphics.Effects.IGraphicsEffectD2D1Interop).GUID;
+        public static Guid IID { get; } = typeof(IGraphicsEffectD2D1Interop).GUID;
         public static nint AbiToProjectionVftablePtr { get; } = global::Windows.Graphics.Effects.IGraphicsEffectD2D1Interop.Vftbl.InitVtbl();
     }
 }

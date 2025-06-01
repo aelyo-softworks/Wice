@@ -19,7 +19,7 @@ internal partial class TestWindow : Window
             useWindowsAcrylic: false
             );
 
-        RichTextBoxNoLangOptions();
+        //RichTextBoxNoLangOptions();
         //RichTextBoxNoLangOptions();
         //AddRepeatableMouseDown();
         //AddEditableTexts();
@@ -30,6 +30,7 @@ internal partial class TestWindow : Window
 
         //ShowTabs();
         //ShowBrowser();
+        Show64bppImageStream();
         //ShowWebView();
         //ShowPdfView();
         //ZoomableImageWithSV();
@@ -63,6 +64,14 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void Show64bppImageStream()
+    {
+        var img = new Image();
+        var stream = File.OpenRead(@"Resources\hdr-image.jxr");
+        img.Source = WicUtilities.LoadBitmapSource(stream);
+        Children.Add(img);
     }
 
     public void AddRepeatableMouseDown()

@@ -32,6 +32,73 @@ public class WicUtilities
 #endif
     }
 
+    // https://learn.microsoft.com/en-us/windows/win32/Direct2D/supported-pixel-formats-and-alpha-modes#supported-formats-for-wic-bitmap-render-target
+#if NETFRAMEWORK
+    public static D2D1_PIXEL_FORMAT GetDxgiFormat(Guid wicPixelFormat)
+    {
+        if (wicPixelFormat == WICConstants.GUID_WICPixelFormat32bppPBGRA)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_PREMULTIPLIED };
+
+        if (wicPixelFormat == WICConstants.GUID_WICPixelFormat32bppBGRA)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_STRAIGHT };
+
+        if (wicPixelFormat == WICConstants.GUID_WICPixelFormat32bppBGR)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_IGNORE };
+
+        if (wicPixelFormat == WICConstants.GUID_WICPixelFormat32bppPRGBA)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_PREMULTIPLIED };
+
+        if (wicPixelFormat == WICConstants.GUID_WICPixelFormat32bppRGBA)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_STRAIGHT };
+
+        if (wicPixelFormat == WICConstants.GUID_WICPixelFormat32bppRGB)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_IGNORE };
+
+        if (wicPixelFormat == WICConstants.GUID_WICPixelFormat64bppPRGBAHalf)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R16G16B16A16_FLOAT, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_PREMULTIPLIED };
+
+        if (wicPixelFormat == WICConstants.GUID_WICPixelFormat64bppRGBAHalf)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R16G16B16A16_FLOAT, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_STRAIGHT };
+
+        if (wicPixelFormat == WICConstants.GUID_WICPixelFormat64bppRGBHalf)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R16G16B16A16_FLOAT, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_IGNORE };
+
+        throw new NotSupportedException($"Unsupported WIC pixel format: {wicPixelFormat}.");
+    }
+#else
+    public static D2D1_PIXEL_FORMAT GetDxgiFormat(Guid wicPixelFormat)
+    {
+        if (wicPixelFormat == Constants.GUID_WICPixelFormat32bppPBGRA)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_PREMULTIPLIED };
+
+        if (wicPixelFormat == Constants.GUID_WICPixelFormat32bppBGRA)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_STRAIGHT };
+
+        if (wicPixelFormat == Constants.GUID_WICPixelFormat32bppBGR)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_B8G8R8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_IGNORE };
+
+        if (wicPixelFormat == Constants.GUID_WICPixelFormat32bppPRGBA)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_PREMULTIPLIED };
+
+        if (wicPixelFormat == Constants.GUID_WICPixelFormat32bppRGBA)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_STRAIGHT };
+
+        if (wicPixelFormat == Constants.GUID_WICPixelFormat32bppRGB)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_IGNORE };
+
+        if (wicPixelFormat == Constants.GUID_WICPixelFormat64bppPRGBAHalf)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R16G16B16A16_FLOAT, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_PREMULTIPLIED };
+
+        if (wicPixelFormat == Constants.GUID_WICPixelFormat64bppRGBAHalf)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R16G16B16A16_FLOAT, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_STRAIGHT };
+
+        if (wicPixelFormat == Constants.GUID_WICPixelFormat64bppRGBHalf)
+            return new D2D1_PIXEL_FORMAT { format = DXGI_FORMAT.DXGI_FORMAT_R16G16B16A16_FLOAT, alphaMode = D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_IGNORE };
+
+        throw new NotSupportedException($"Unsupported WIC pixel format: {wicPixelFormat}.");
+    }
+#endif
+
     public static IComObject<IWICBitmapSource> LoadBitmapSource(nint pointer, long byteLength)
     {
         if (pointer == 0)
