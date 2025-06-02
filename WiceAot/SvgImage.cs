@@ -6,6 +6,8 @@ public partial class SvgImage : RenderVisual, IDisposable
     public static VisualProperty StretchProperty { get; } = VisualProperty.Add(typeof(SvgImage), nameof(Stretch), VisualPropertyInvalidateModes.Measure, Stretch.Uniform);
     public static VisualProperty StretchDirectionProperty { get; } = VisualProperty.Add(typeof(SvgImage), nameof(StretchDirection), VisualPropertyInvalidateModes.Measure, StretchDirection.Both);
 
+    public event EventHandler<ValueEventArgs<IComObject<ID2D1SvgDocument>?>>? SvgDocumentCreated;
+
     private bool _disposedValue;
 #if NETFRAMEWORK
     private DirectN.UnmanagedMemoryStream _documentBuffer;
@@ -42,6 +44,8 @@ public partial class SvgImage : RenderVisual, IDisposable
 
     [Category(CategoryLayout)]
     public StretchDirection StretchDirection { get => (StretchDirection)GetPropertyValue(StretchDirectionProperty)!; set => SetPropertyValue(StretchDirectionProperty, value); }
+
+    protected virtual void OnSvgDocumentCreated(object sender, ValueEventArgs<IComObject<ID2D1SvgDocument>?> e) => SvgDocumentCreated?.Invoke(this, e);
 
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
@@ -116,6 +120,8 @@ public partial class SvgImage : RenderVisual, IDisposable
                 svg = dc.CreateSvgDocument(new ManagedIStream(stream), rc.Size);
             }
         }
+
+        OnSvgDocumentCreated(this, new ValueEventArgs<IComObject<ID2D1SvgDocument>?>(svg));
         if (svg == null)
             return;
 

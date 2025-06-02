@@ -74,6 +74,37 @@ public static class UIExtensions
         }
     }
 
+#if !NETFRAMEWORK
+    public static D2D1_SVG_VIEWBOX? GetViewBox(this IComObject<ID2D1SvgDocument>? document)
+    {
+        if (document == null)
+            return null;
+
+        document.Object.GetRoot(out var root);
+        if (root == null)
+            return null;
+
+        using var svgElement = new ComObject<ID2D1SvgElement>(root);
+        return GetViewBox(svgElement);
+    }
+
+    public static unsafe D2D1_SVG_VIEWBOX? GetViewBox(this IComObject<ID2D1SvgElement>? element)
+    {
+        if (element == null)
+            return null;
+
+        var vb = new D2D1_SVG_VIEWBOX();
+        if (element.Object.GetAttributeValue(
+            PWSTR.From("viewBox"),
+            D2D1_SVG_ATTRIBUTE_POD_TYPE.D2D1_SVG_ATTRIBUTE_POD_TYPE_VIEWBOX,
+            (nint)(&vb),
+            (uint)sizeof(D2D1_SVG_VIEWBOX)).IsSuccess)
+            return vb;
+
+        return null;
+    }
+#endif
+
     public static void SetBrush(this Windows.UI.Composition.Visual visual, CompositionBrush brush)
     {
         if (visual is SpriteVisual sprite)

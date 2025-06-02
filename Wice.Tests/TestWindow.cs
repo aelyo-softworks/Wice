@@ -29,7 +29,8 @@ public class TestWindow : Window
         //AddCounter(1);
         //AddDrawTextCounter(10);
 
-        RichTextBoxNoLangOptions();
+        ShowHeaders();
+        //RichTextBoxNoLangOptions();
         //ShowBrowser();
         //ShowTabs();
         //Pager();
@@ -149,6 +150,64 @@ public class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void ShowHeaders()
+    {
+        var stack = new Stack { Orientation = Orientation.Vertical };
+        Children.Add(stack);
+        var header = new MySymbolHeader
+        {
+            VerticalAlignment = Alignment.Near
+        };
+        header.Icon.Text = MDL2GlyphResource.Checkbox;
+        stack.Children.Add(header);
+
+        var header2 = new MySymbolHeader
+        {
+            VerticalAlignment = Alignment.Far
+        };
+        header2.Icon.Text = MDL2GlyphResource.Checkbox;
+        stack.Children.Add(header2);
+        header2.IsSelectedChanging += (s, e) =>
+        {
+            e.Cancel = true; // cancel selection change
+        };
+    }
+
+    private class MySymbolHeader : SymbolHeader
+    {
+        public event EventHandler<ValueEventArgs<bool>>? IsSelectedChanging;
+
+        public MySymbolHeader()
+        {
+            SelectedButton.IsVisible = false;
+            SelectedButtonClick += (s, e) =>
+            {
+                if (Icon.Text == MDL2GlyphResource.Checkbox)
+                {
+                    Icon.Text = MDL2GlyphResource.CheckboxComposite;
+                }
+                else
+                {
+                    Icon.Text = MDL2GlyphResource.Checkbox;
+                }
+            };
+        }
+
+        protected virtual void OnIsSelectingChanged(object sender, ValueEventArgs<bool> e) => IsSelectedChanging?.Invoke(sender, e);
+        protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
+        {
+            if (property == IsSelectedProperty)
+            {
+                var isSelected = (bool)value!;
+                var e = new ValueEventArgs<bool>(isSelected, false, true);
+                OnIsSelectingChanged(this, e);
+                if (e.Cancel)
+                    return false;
+            }
+            return base.SetPropertyValue(property, value, options);
+        }
     }
 
     public void RichTextBoxNoLangOptions()
