@@ -132,6 +132,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     protected virtual string ClassName => GetType().FullName!;
     protected virtual WNDCLASS_STYLES ClassStyles => WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW | WNDCLASS_STYLES.CS_DBLCLKS;
+    protected virtual HBRUSH BackgroundBrush { get; } // GET_STOCK_OBJECT_FLAGS.STOCK_BRUSH_WINDOW; // default is white, we use transparent
     protected virtual int MaxChildrenCount => int.MaxValue;
     protected virtual bool HasCaret => true;
     protected virtual D3D11_CREATE_DEVICE_FLAG CreateDeviceFlags
@@ -964,7 +965,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     private NativeWindow GetNative()
     {
-        NativeWindow.RegisterWindowClass(ClassName, ClassStyles, Marshal.GetFunctionPointerForDelegate(_windowProc));
+        NativeWindow.RegisterWindowClass(ClassName, ClassStyles, Marshal.GetFunctionPointerForDelegate(_windowProc), BackgroundBrush);
         var native = CreateNativeWindow();
         native.FrameChanged();
         native.DragDropGiveFeedback += OnNativeDragDropGiveFeedback;
@@ -2830,7 +2831,7 @@ public partial class Window : Canvas, ITitleBarParent
             RemoveFocusVisual();
         }
 
-        foreach (var child in visual.Children)
+        foreach (var child in visual.Children.ToArray())
         {
             RemoveVisual(child);
         }

@@ -200,6 +200,20 @@ public partial class Application : IDisposable
         AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
     }
 
+    public static Application? GetApplication(Window? window) => GetApplication(window?.ManagedThreadId ?? 0);
+    public static Application? GetApplication(int threadId)
+    {
+        if (threadId == 0)
+            return null;
+
+        var apps = _applications;
+        if (apps == null)
+            return null;
+
+        apps.TryGetValue(threadId, out var app);
+        return app;
+    }
+
     public static void AllExit()
     {
         var apps = Interlocked.Exchange(ref _applications, null);

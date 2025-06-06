@@ -5,6 +5,7 @@ internal class Program
     [STAThread] // for webview2
     static void Main(string[] args)
     {
+        WindowSynchronizationContext.Install(); // ensure we have a UI-thread bound synchronization context for async calls
         if (Debugger.IsAttached)
         {
             using var dw = new Application();

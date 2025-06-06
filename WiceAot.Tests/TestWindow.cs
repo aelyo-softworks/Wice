@@ -289,7 +289,7 @@ internal partial class TestWindow : Window
             {
                 e.GetDeferral(out var deferral).ThrowOnError();
                 e.put_Handled(true).ThrowOnError();
-                var wv2 = await wv.EnsureWebView2Loaded(false);
+                var wv2 = await wv.EnsureWebView2Loaded();
                 e.put_NewWindow(wv2!.Object).ThrowOnError();
                 deferral.Complete().ThrowOnError();
             }

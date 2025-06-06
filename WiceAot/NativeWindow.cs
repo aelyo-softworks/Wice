@@ -485,7 +485,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.DwmExtendFrameIntoClientArea(hwnd, margin);
     }
 
-    internal static bool RegisterWindowClass(string className, WNDCLASS_STYLES styles, nint windowProc)
+    internal static bool RegisterWindowClass(string className, WNDCLASS_STYLES styles, nint windowProc, HBRUSH background)
     {
         ExceptionExtensions.ThrowIfNull(className, nameof(className));
         if (windowProc == 0)
@@ -502,12 +502,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
             };
 
             //cls.hCursor = DirectN.Cursor.Arrow.Handle; // we set the cursor ourselves, otherwise the cursor will blink
-            //const int WHITE_BRUSH = 0;
-            //const int LTGRAY_BRUSH = 1;
-            //const int GRAY_BRUSH = 2;
-            //const int DKGRAY_BRUSH = 3;
-            //const int BLACK_BRUSH = 4;
-            //cls.hbrBackground = GetStockObject(WHITE_BRUSH);
+            cls.hbrBackground = background;
             if (WiceCommons.RegisterClassW(cls) == 0)
                 throw new Win32Exception(Marshal.GetLastWin32Error());
 

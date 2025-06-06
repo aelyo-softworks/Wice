@@ -6,8 +6,10 @@ namespace Wice;
 
 public partial class WebView : Border, IDisposable
 {
-    public static VisualProperty SourceUriProperty { get; } = VisualProperty.Add<string>(typeof(WebView), nameof(SourceUri), VisualPropertyInvalidateModes.Render, convert: ValidateNonNullString);
+    public static VisualProperty SourceUriProperty { get; } = VisualProperty.Add<string>(typeof(WebView), nameof(SourceUri), VisualPropertyInvalidateModes.Render, convert: ValidateNonNullString, changed: OnSourceChanged);
     public static VisualProperty SourceStringProperty { get; } = VisualProperty.Add<string>(typeof(WebView), nameof(SourceString), VisualPropertyInvalidateModes.Render, convert: ValidateNonNullString);
+
+    private static void OnSourceChanged(BaseObject obj, object? newValue, object? oldValue) => ((WebView)obj).OnSourceChanged();
 
     public static bool UseSharedEnvironmentDefault { get; set; } = true;
 
@@ -19,7 +21,7 @@ public partial class WebView : Border, IDisposable
     public event EventHandler<ValueEventArgs<string?>>? DocumentTitleChanged;
 
     private WebViewInfo? _webViewInfo;
-    private bool _loadingWebView2;
+    private Task<IComObject<ICoreWebView2>?>? _loadingWebView2;
     private ComObject<ICoreWebView2CompositionController>? _controller;
     private ComObject<ICoreWebView2>? _webView2;
     private WebView2.EventRegistrationToken _cursorChangedToken;
@@ -32,7 +34,6 @@ public partial class WebView : Border, IDisposable
     private string? _browserExecutableFolder;
     private string? _userDataFolder;
     private ICoreWebView2EnvironmentOptions? _options;
-    private bool _firstTimeNavigated;
     private MouseButton? _captureButton;
     private bool _useSharedEnvironment = UseSharedEnvironmentDefault;
 
@@ -101,6 +102,8 @@ public partial class WebView : Border, IDisposable
     public IComObject<ICoreWebView2Environment3>? Environment => _webViewInfo?.Environment;
     public IComObject<ICoreWebView2CompositionController>? Controller => _controller;
     public IComObject<ICoreWebView2>? WebView2 => _webView2;
+
+    protected virtual void OnSourceChanged() => _ = Navigate();
 
     protected override ContainerVisual? CreateCompositionVisual() => Compositor!.CreateContainerVisual();
 
@@ -439,20 +442,12 @@ public partial class WebView : Border, IDisposable
 
             ctrl.Object.put_Bounds(ar).ThrowOnError();
         }
-
-        if (!_firstTimeNavigated)
-        {
-            _ = FirstTimeNavigate();
-        }
-        else
-        {
-            Navigate();
-        }
     }
 
-    protected virtual void Navigate()
+    protected virtual async Task Navigate()
     {
         CheckDisposed();
+        await EnsureWebView2Loaded();
         var webView2 = _webView2;
         if (webView2 == null || webView2.IsDisposed)
             return;
@@ -474,14 +469,6 @@ public partial class WebView : Border, IDisposable
                 webView2.Object.Navigate(PWSTR.From("about:blank")).ThrowOnError();
             }
         }
-    }
-
-    protected virtual async Task FirstTimeNavigate()
-    {
-        CheckDisposed();
-        await EnsureWebView2Loaded(false);
-        Navigate();
-        _firstTimeNavigated = true;
     }
 
     public virtual IComObject<ICoreWebView2Environment3>? EnsureWebView2EnvironmentLoaded()
@@ -529,7 +516,22 @@ public partial class WebView : Border, IDisposable
         return _webViewInfo.Environment;
     }
 
-    public virtual Task<IComObject<ICoreWebView2>?> EnsureWebView2Loaded(bool firstTimeNavigate)
+    protected override void OnAttachedToParent(object? sender, EventArgs e)
+    {
+        base.OnAttachedToParent(sender, e);
+        if (!string.IsNullOrEmpty(SourceUri) || !string.IsNullOrEmpty(SourceString))
+        {
+            _ = NavigateFirstTime();
+        }
+    }
+
+    private async Task NavigateFirstTime()
+    {
+        await EnsureWebView2Loaded();
+        await Navigate();
+    }
+
+    public virtual Task<IComObject<ICoreWebView2>?> EnsureWebView2Loaded()
     {
         CheckDisposed();
         var webView2 = _webView2;
@@ -544,12 +546,12 @@ public partial class WebView : Border, IDisposable
         if (window == null)
             return Task.FromResult<IComObject<ICoreWebView2>?>(null);
 
-        if (_loadingWebView2)
-            return Task.FromResult<IComObject<ICoreWebView2>?>(null);
+        if (_loadingWebView2 != null)
+            return _loadingWebView2; // already loading, return the same task
 
         var tcs = new TaskCompletionSource<IComObject<ICoreWebView2>?>();
-        _loadingWebView2 = true;
-        environment.Object.CreateCoreWebView2CompositionController(window.Handle, new CoreWebView2CreateCoreWebView2CompositionControllerCompletedHandler((result, controller) =>
+        _loadingWebView2 = tcs.Task;
+        var hr = environment.Object.CreateCoreWebView2CompositionController(window.Handle, new CoreWebView2CreateCoreWebView2CompositionControllerCompletedHandler((result, controller) =>
         {
             _controller = new ComObject<ICoreWebView2CompositionController>(controller);
 
@@ -601,19 +603,15 @@ public partial class WebView : Border, IDisposable
 
             OnWebViewSetup(this, _webView2.Object);
             tcs.SetResult(_webView2);
-            _loadingWebView2 = false;
-
-            if (firstTimeNavigate)
-            {
-                _ = FirstTimeNavigate();
-            }
-            else
-            {
-                _firstTimeNavigated = true;
-            }
+            _loadingWebView2?.Dispose();
+            _loadingWebView2 = null;
         }));
 
-        return tcs.Task;
+        if (hr.IsError)
+        {
+            tcs.SetException(new WiceException("0033: WebView controller cannot be created.", Marshal.GetExceptionForHR(hr)!));
+        }
+        return _loadingWebView2;
     }
 
     protected virtual void OnWebViewControllerSetup(object? sender, ICoreWebView2CompositionController controller) => WebViewControllerSetup?.Invoke(sender, new ValueEventArgs<ICoreWebView2CompositionController>(controller));
@@ -664,7 +662,6 @@ public partial class WebView : Border, IDisposable
 
                 _webView2?.Dispose();
                 _webView2 = null;
-                _firstTimeNavigated = false;
                 _controller?.Dispose();
                 _controller = null;
 
@@ -699,6 +696,7 @@ public partial class WebView : Border, IDisposable
         public bool Initialized;
         public ComObject<ICoreWebView2Environment3>? Environment;
         public HRESULT? WebViewInitializationResult;
+        public HRESULT? WebViewEnvironmentInitializationResult;
         public string? WebViewVersion;
         public string? ErrorMessage;
 
@@ -721,7 +719,7 @@ public partial class WebView : Border, IDisposable
             }
 
             WebViewVersion = WebView2Utilities.GetAvailableCoreWebView2BrowserVersionString(browserExecutableFolder);
-            global::WebView2.Functions.CreateCoreWebView2EnvironmentWithOptions(PWSTR.From(browserExecutableFolder), PWSTR.From(userDataFolder), options!,
+            hr = global::WebView2.Functions.CreateCoreWebView2EnvironmentWithOptions(PWSTR.From(browserExecutableFolder), PWSTR.From(userDataFolder), options!,
                 new CoreWebView2CreateCoreWebView2EnvironmentCompletedHandler((result, env) =>
                 {
                     if (result.IsError)
@@ -742,6 +740,12 @@ public partial class WebView : Border, IDisposable
 
                     Environment = new ComObject<ICoreWebView2Environment3>(env3);
                 }));
+            WebViewEnvironmentInitializationResult = hr;
+            if (hr.IsError)
+            {
+                ErrorMessage = $"WebView2 environment could not be initialized (error: {WebViewEnvironmentInitializationResult}).";
+                return;
+            }
 
             Initialized = true;
             BrowserExecutableFolder = browserExecutableFolder;
