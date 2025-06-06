@@ -163,7 +163,7 @@ public partial class Tabs : Dock
         ExceptionExtensions.ThrowIfNull(content, nameof(content));
         PagesContent.Children.Remove(content);
         page.RemovedFromTabs(this);
-        if (content is IDisposable disposable)
+        if (content.DisposeOnDetachFromComposition != false && content is IDisposable disposable)
         {
             disposable.Dispose();
         }

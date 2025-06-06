@@ -106,6 +106,7 @@ public partial class WebView : Border, IDisposable
 
     protected virtual COREWEBVIEW2_MOUSE_EVENT_VIRTUAL_KEYS GetKeys(POINTER_MOD vk, MouseButton? button)
     {
+        CheckDisposed();
         var keys = COREWEBVIEW2_MOUSE_EVENT_VIRTUAL_KEYS.COREWEBVIEW2_MOUSE_EVENT_VIRTUAL_KEYS_NONE;
         if (vk.HasFlag(POINTER_MOD.POINTER_MOD_CTRL))
         {
@@ -147,6 +148,7 @@ public partial class WebView : Border, IDisposable
 
     protected override void OnMouseButtonDoubleClick(object? sender, MouseButtonEventArgs e)
     {
+        CheckDisposed();
         var controller = _controller;
         if (controller == null || controller.IsDisposed)
             return;
@@ -187,6 +189,7 @@ public partial class WebView : Border, IDisposable
 
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
+        CheckDisposed();
         var controller = _controller;
         if (controller == null || controller.IsDisposed)
             return;
@@ -229,6 +232,7 @@ public partial class WebView : Border, IDisposable
 
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
+        CheckDisposed();
         var controller = _controller;
         if (controller == null || controller.IsDisposed)
             return;
@@ -272,6 +276,7 @@ public partial class WebView : Border, IDisposable
     protected override void OnMouseEnter(object? sender, MouseEventArgs e) => OnMouseMove(sender, e);
     protected override void OnMouseMove(object? sender, MouseEventArgs e)
     {
+        CheckDisposed();
         var controller = _controller;
         if (controller == null || controller.IsDisposed)
             return;
@@ -297,6 +302,7 @@ public partial class WebView : Border, IDisposable
 
     protected override void OnMouseLeave(object? sender, MouseEventArgs e)
     {
+        CheckDisposed();
         var controller = _controller;
         if (controller == null || controller.IsDisposed)
             return;
@@ -306,6 +312,7 @@ public partial class WebView : Border, IDisposable
 
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {
+        CheckDisposed();
         var controller = _controller;
         if (controller == null || controller.IsDisposed)
             return;
@@ -317,6 +324,7 @@ public partial class WebView : Border, IDisposable
 
     protected virtual IComObject<ICoreWebView2PointerInfo>? CreateInfo(PointerEventArgs e)
     {
+        CheckDisposed();
         ArgumentNullException.ThrowIfNull(e);
         var environment = Environment;
         var ar = AbsoluteRenderRect;
@@ -401,7 +409,26 @@ public partial class WebView : Border, IDisposable
 
     protected override void Render()
     {
+        CheckDisposed();
         base.Render();
+
+        if (_controller != null)
+        {
+            // support the case where user has set DisposeOnDetachFromComposition to this component
+            // in this case, we don't dispose anything, but we need to ensure the root visual target is reset with the possibly newer CompositionVisual
+            _controller.Object.get_RootVisualTarget(out var visualUnk);
+            if (visualUnk != null)
+            {
+                // compare IUnknown pointer for equality is ok by COM rules
+                var unk = ComObject.GetOrCreateComInstance(CompositionVisual);
+                var vunk = ComObject.GetOrCreateComInstance(visualUnk);
+                if (unk != vunk)
+                {
+                    var cb = CompositionVisual.As<IUnknown>();
+                    _controller.Object.put_RootVisualTarget(cb).ThrowOnError();
+                }
+            }
+        }
 
         var ctrl = _controller.As<ICoreWebView2Controller>();
         if (ctrl != null)
@@ -417,11 +444,15 @@ public partial class WebView : Border, IDisposable
         {
             _ = FirstTimeNavigate();
         }
+        else
+        {
+            Navigate();
+        }
     }
 
-    protected virtual async Task FirstTimeNavigate()
+    protected virtual void Navigate()
     {
-        await EnsureWebView2Loaded(false);
+        CheckDisposed();
         var webView2 = _webView2;
         if (webView2 == null || webView2.IsDisposed)
             return;
@@ -443,11 +474,19 @@ public partial class WebView : Border, IDisposable
                 webView2.Object.Navigate(PWSTR.From("about:blank")).ThrowOnError();
             }
         }
+    }
+
+    protected virtual async Task FirstTimeNavigate()
+    {
+        CheckDisposed();
+        await EnsureWebView2Loaded(false);
+        Navigate();
         _firstTimeNavigated = true;
     }
 
     public virtual IComObject<ICoreWebView2Environment3>? EnsureWebView2EnvironmentLoaded()
     {
+        CheckDisposed();
         if (_webViewInfo != null && _webViewInfo.Initialized)
             return _webViewInfo.Environment;
 
@@ -492,6 +531,7 @@ public partial class WebView : Border, IDisposable
 
     public virtual Task<IComObject<ICoreWebView2>?> EnsureWebView2Loaded(bool firstTimeNavigate)
     {
+        CheckDisposed();
         var webView2 = _webView2;
         if (webView2 != null && !webView2.IsDisposed)
             return Task.FromResult<IComObject<ICoreWebView2>?>(webView2);
@@ -583,6 +623,8 @@ public partial class WebView : Border, IDisposable
     protected virtual void OnDocumentTitleChanged(object? sender, string? title) => DocumentTitleChanged?.Invoke(this, new ValueEventArgs<string?>(title));
     protected virtual void OnNewWindowRequested(object? sender, ICoreWebView2NewWindowRequestedEventArgs args) => NewWindowRequested?.Invoke(this, new ValueEventArgs<ICoreWebView2NewWindowRequestedEventArgs>(args));
 
+    protected void CheckDisposed() => ObjectDisposedException.ThrowIf(_disposedValue, "WebView has been disposed and cannot be used anymore.");
+
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
     protected virtual void Dispose(bool disposing)
     {
@@ -622,6 +664,7 @@ public partial class WebView : Border, IDisposable
 
                 _webView2?.Dispose();
                 _webView2 = null;
+                _firstTimeNavigated = false;
                 _controller?.Dispose();
                 _controller = null;
 

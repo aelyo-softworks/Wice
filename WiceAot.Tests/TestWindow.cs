@@ -1,5 +1,7 @@
 ﻿using WebView2;
 using Wice.Interop;
+using Windows.Storage.Pickers;
+using WinRT.Interop;
 
 namespace WiceAot.Tests;
 
@@ -29,8 +31,9 @@ internal partial class TestWindow : Window
         //AddUniformGridSysColors();
 
         //ShowTabs();
-        //ShowBrowser();
-        Show64bppImageStream();
+        ShowBrowser();
+        //LoadSvg();
+        //Show64bppImageStream();
         //ShowWebView();
         //ShowPdfView();
         //ZoomableImageWithSV();
@@ -64,6 +67,38 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void LoadSvg()
+    {
+        var stack = new Stack();
+        Children.Add(stack);
+        var btn = new Button();
+        btn.Text.Text = "Load SVG File...";
+        stack.Children.Add(btn);
+        var svg = new SvgImage
+        {
+        };
+        stack.Children.Add(svg);
+
+        btn.Click += async (s, e) =>
+        {
+
+            var picker = new FileOpenPicker();
+            picker.FileTypeFilter.Add(".svg");
+
+            InitializeWithWindow.Initialize(picker, Window!.Handle);
+            var file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                await Window!.RunTaskOnMainThread(() => svg.Document = new FileStreamer(file.Path));
+            }
+        };
+    }
+
+    private void Btn_Click(object? sender, EventArgs e)
+    {
+        throw new NotImplementedException();
     }
 
     public void Show64bppImageStream()
