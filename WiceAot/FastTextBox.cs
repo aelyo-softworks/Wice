@@ -22,6 +22,9 @@ public partial class FastTextBox : TextBox
     protected virtual bool HasFallback { get; set; } // true if we're using TextBox code
 
     [Category(CategoryLive)]
+    public int LineCount => _container.Lines?.Length ?? 0;
+
+    [Category(CategoryLive)]
     public virtual bool LoadingWasCancelled { get; protected set; }
 
     [Category(CategoryLive)]
@@ -99,6 +102,14 @@ public partial class FastTextBox : TextBox
 
     [Category(CategoryBehavior)]
     public virtual int DeferredParsingLineCountThreshold { get; set; } = 10000; // for more than 10000 lines, we continue parsing the text in a background thread
+
+    public virtual Line GetLine(int index)
+    {
+        if (_container.Lines == null || index < 0 || index >= _container.Lines.Length)
+            throw new ArgumentOutOfRangeException(nameof(index));
+
+        return _container.Lines[index];
+    }
 
     protected virtual void OnLoading(object sender, LoadEventArgs e) => Loading?.Invoke(this, e);
     protected virtual void OnLoaded(object sender, LoadEventArgs e) => Loaded?.Invoke(this, e);

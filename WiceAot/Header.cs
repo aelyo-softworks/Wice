@@ -211,8 +211,19 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
                 OnIsSelectedChanged(this, new ValueEventArgs<bool>(IsSelected));
             }
         }
+        else if (property == IsEnabledProperty)
+        {
+            IsFocusable = (bool)value!;
+            UpdateStyle();
+        }
 
         return true;
+    }
+
+    protected virtual void UpdateStyle()
+    {
+        Opacity = IsEnabled ? 1f : Application.CurrentTheme.DisabledOpacityRatio;
+        Cursor = IsEnabled ? Cursor.Hand : null;
     }
 
     protected override void RenderBrushes()
