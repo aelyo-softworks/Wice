@@ -1,12 +1,11 @@
 ﻿namespace Wice.Interop;
 
-public struct HMODULE : IEquatable<HMODULE>
+public struct HMODULE(nint value) : IEquatable<HMODULE>
 {
     public static readonly HMODULE Null = new();
 
-    public nint Value;
+    public nint Value = value;
 
-    public HMODULE(nint value) => this.Value = value;
     public override string ToString() => $"0x{Value:x}";
 
     public override readonly bool Equals(object? obj) => obj is HMODULE value && Equals(value);

@@ -293,6 +293,35 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public POINT GetClientCursorPosition() => ScreenToClient(GetCursorPosition());
     public Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => WiceCommons.GetMonitorFromWindow(Handle, flags);
     public bool IsChild(HWND parentHandle) => WiceCommons.IsChild(parentHandle, Handle);
+    public bool IsVisible() => WiceCommons.IsWindowVisible(Handle);
+    public bool UpdateWindow() => WiceCommons.UpdateWindow(Handle);
+    public unsafe bool InvalidateRect(RECT? rc = null, bool erase = false)
+    {
+        if (rc == null)
+            return WiceCommons.InvalidateRect(Handle, 0, erase);
+
+        var r = rc.Value;
+        return WiceCommons.InvalidateRect(Handle, (nint)(&r), erase);
+    }
+
+    public unsafe bool ValidateRect(RECT? rc = null)
+    {
+        if (rc == null)
+            return WiceCommons.ValidateRect(Handle, 0);
+
+        var r = rc.Value;
+        return WiceCommons.ValidateRect(Handle, (nint)(&r));
+    }
+
+    public unsafe bool RedrawWindow(RECT? updateRc = null, REDRAW_WINDOW_FLAGS flags = 0) => RedrawWindow(HRGN.Null, updateRc, flags);
+    public unsafe bool RedrawWindow(HRGN region, RECT? updateRc = null, REDRAW_WINDOW_FLAGS flags = 0)
+    {
+        if (updateRc == null)
+            return WiceCommons.RedrawWindow(Handle, 0, region, flags);
+
+        var r = updateRc.Value;
+        return WiceCommons.RedrawWindow(Handle, (nint)(&r), region, flags);
+    }
 
     public bool IsRunningAsMainThread => ManagedThreadId == Environment.CurrentManagedThreadId;
     public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0029: This method must be called on the UI thread."); }
@@ -499,10 +528,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
                 lpfnWndProc = windowProc,
                 hInstance = new HINSTANCE { Value = Application.ModuleHandle.Value },
                 lpszClassName = PWSTR.From(className),
+                //cls.hCursor = DirectN.Cursor.Arrow.Handle; // we set the cursor ourselves, otherwise the cursor will blink
+                hbrBackground = background
             };
-
-            //cls.hCursor = DirectN.Cursor.Arrow.Handle; // we set the cursor ourselves, otherwise the cursor will blink
-            cls.hbrBackground = background;
             if (WiceCommons.RegisterClassW(cls) == 0)
                 throw new Win32Exception(Marshal.GetLastWin32Error());
 

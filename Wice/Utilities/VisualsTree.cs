@@ -496,13 +496,8 @@ public partial class VisualsTree : Form
         public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance) => new VisualTypeDescriptor<T>(base.GetTypeDescriptor(objectType, instance));
     }
 
-    private sealed class VisualTypeDescriptor<T> : CustomTypeDescriptor
+    private sealed class VisualTypeDescriptor<T>(ICustomTypeDescriptor parent) : CustomTypeDescriptor(parent)
     {
-        public VisualTypeDescriptor(ICustomTypeDescriptor parent)
-            : base(parent)
-        {
-        }
-
         public override TypeConverter GetConverter()
         {
             if (typeof(NativeWindow).IsAssignableFrom(typeof(T)) ||
@@ -575,18 +570,12 @@ public partial class VisualsTree : Form
         }
     }
 
-    private sealed class ValueObject
+    private sealed class ValueObject(IPropertyOwner owner, int propertyId)
     {
-        internal readonly IPropertyOwner _owner;
-
-        public ValueObject(IPropertyOwner owner, int propertyId)
-        {
-            _owner = owner;
-            Property = BaseObjectProperty.GetById(propertyId);
-        }
+        internal readonly IPropertyOwner _owner = owner;
 
         [Category(BaseObject.CategoryBase)]
-        public BaseObjectProperty Property { get; }
+        public BaseObjectProperty Property { get; } = BaseObjectProperty.GetById(propertyId);
 
         [Category(BaseObject.CategoryBase)]
         public string Name => Property.Name;
@@ -848,22 +837,15 @@ public partial class VisualsTree : Form
         }
     }
 
-    private sealed class WinRTPropertyDescriptor : PropertyDescriptor
-    {
-        public WinRTPropertyDescriptor(Type componentType, string name, Type propertyType)
-            : base(name, new Attribute[]
+    private sealed class WinRTPropertyDescriptor(Type componentType, string name, Type propertyType) : PropertyDescriptor(name, new Attribute[]
             {
                 new TypeConverterAttribute(typeof(ExpandableObjectConverter)),
                 new CategoryAttribute(Visual.CategoryRender)
             })
-        {
-            PropertyType = propertyType;
-            ComponentType = componentType;
-        }
-
-        public override Type ComponentType { get; }
+    {
+        public override Type ComponentType { get; } = componentType;
         public override bool IsReadOnly => false;
-        public override Type PropertyType { get; }
+        public override Type PropertyType { get; } = propertyType;
 
         public override object GetEditor(Type editorBaseType) => null;
         public override bool CanResetValue(object component) => false;

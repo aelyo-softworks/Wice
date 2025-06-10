@@ -1,12 +1,11 @@
 ﻿namespace Wice.Interop;
 
-public struct HICON : IEquatable<HICON>
+public struct HICON(nint value) : IEquatable<HICON>
 {
     public static readonly HICON Null = new();
 
-    public nint Value;
+    public nint Value = value;
 
-    public HICON(nint value) => this.Value = value;
     public override string ToString() => $"0x{Value:x}";
 
     public override readonly bool Equals(object? obj) => obj is HICON value && Equals(value);

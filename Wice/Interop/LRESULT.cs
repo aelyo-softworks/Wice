@@ -1,12 +1,11 @@
 ﻿namespace Wice.Interop;
 
-public struct LRESULT : IEquatable<LRESULT>
+public struct LRESULT(nint value) : IEquatable<LRESULT>
 {
     public static readonly LRESULT Null = new();
 
-    public nint Value;
+    public nint Value = value;
 
-    public LRESULT(nint value) => this.Value = value;
     public override string ToString() => $"0x{Value:x}";
 
     public override readonly bool Equals(object? obj) => obj is LRESULT value && Equals(value);

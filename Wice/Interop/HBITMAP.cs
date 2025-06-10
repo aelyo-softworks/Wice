@@ -1,12 +1,11 @@
 ﻿namespace Wice.Interop;
 
-public struct HBITMAP : IEquatable<HBITMAP>
+public struct HBITMAP(nint value) : IEquatable<HBITMAP>
 {
     public static readonly HBITMAP Null = new();
 
-    public nint Value;
+    public nint Value = value;
 
-    public HBITMAP(nint value) => this.Value = value;
     public override string ToString() => $"0x{Value:x}";
 
     public override readonly bool Equals(object? obj) => obj is HBITMAP value && Equals(value);

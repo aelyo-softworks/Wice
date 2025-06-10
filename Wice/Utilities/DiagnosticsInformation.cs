@@ -1,17 +1,11 @@
 ﻿namespace Wice.Utilities;
 
-public class DiagnosticsInformation
+public class DiagnosticsInformation(Assembly assembly = null, Window window = null)
 {
-    private readonly Window _window;
-
-    public DiagnosticsInformation(Assembly assembly = null, Window window = null)
-    {
-        Assembly = assembly ?? Assembly.GetExecutingAssembly();
-        _window = window;
-    }
+    private readonly Window _window = window;
 
     [Browsable(false)]
-    public Assembly Assembly { get; }
+    public Assembly Assembly { get; } = assembly ?? Assembly.GetExecutingAssembly();
 
     [Category("Windows")]
     public string OSVersion => Environment.OSVersion.VersionString;

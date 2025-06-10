@@ -315,6 +315,7 @@ public partial class FastTextBox : TextBox
                     if (LoadingLines == null && lines.Count == Visual.DeferredParsingLineCountThreshold)
                     {
                         var start = i;
+                        e.LoadedLines = lines.Count;
                         Visual.OnLoading(Visual, e);
                         Visual.LoadingWasCancelled = e.Cancel;
                         if (!Visual.LoadingWasCancelled)

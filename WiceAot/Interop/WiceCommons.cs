@@ -137,6 +137,9 @@ public static class WiceCommons
     public static extern BOOL GetCursorPos(out POINT lpPoint);
 
     [DllImport("user32")]
+    public static extern BOOL IsWindowVisible(HWND hWnd);
+
+    [DllImport("user32")]
     public static extern BOOL AdjustWindowRectExForDpi(ref RECT lpRect, WINDOW_STYLE dwStyle, BOOL bMenu, WINDOW_EX_STYLE dwExStyle, uint dpi);
 
     [DllImport("user32")]
@@ -268,6 +271,18 @@ public static class WiceCommons
     [DllImport("user32")]
     public static extern BOOL EnableMouseInPointer(BOOL fEnable);
 
+    [DllImport("user32")]
+    public static extern BOOL UpdateWindow(HWND hWnd);
+
+    [DllImport("user32")]
+    public static extern BOOL ValidateRect(HWND hWnd, nint lpRect);
+
+    [DllImport("user32")]
+    public static extern BOOL InvalidateRect(HWND hWnd, nint lpRect, BOOL bErase);
+
+    [DllImport("user32")]
+    public static extern BOOL RedrawWindow(HWND hWnd, nint lprcUpdate, HRGN hrgnUpdate, REDRAW_WINDOW_FLAGS flags);
+
     [DllImport("windows.data.pdf.dll", ExactSpelling = true)]
     public static extern HRESULT PdfCreateRenderer(IDXGIDevice pDevice, out IPdfRendererNative ppRenderer);
 
@@ -389,6 +404,7 @@ public static class WiceCommons
     public static BOOL SetWindowTextW(HWND hWnd, PWSTR lpString) => Functions.SetWindowTextW(hWnd, lpString);
     public static uint GetWindowThreadProcessId(HWND hWnd, nint lpdwProcessId) => Functions.GetWindowThreadProcessId(hWnd, lpdwProcessId);
     public static BOOL IsWindowEnabled(HWND hWnd) => Functions.IsWindowEnabled(hWnd);
+    public static BOOL IsWindowVisible(HWND hWnd) => Functions.IsWindowVisible(hWnd);
     public static BOOL EnableWindow(HWND hWnd, BOOL bEnable) => Functions.EnableWindow(hWnd, bEnable);
     public static uint GetDpiFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT value) => Functions.GetDpiFromDpiAwarenessContext(value);
     public static HWND GetWindow(HWND hWnd, GET_WINDOW_CMD uCmd) => Functions.GetWindow(hWnd, uCmd);
@@ -409,6 +425,10 @@ public static class WiceCommons
     public static BOOL GetPointerTouchInfo(uint pointerId, out POINTER_TOUCH_INFO touchInfo) => Functions.GetPointerTouchInfo(pointerId, out touchInfo);
     public static BOOL IsMouseInPointerEnabled() => Functions.IsMouseInPointerEnabled();
     public static BOOL EnableMouseInPointer(BOOL fEnable) => Functions.EnableMouseInPointer(fEnable);
+    public static BOOL InvalidateRect(HWND hWnd, nint lpRect, BOOL bErase) => Functions.InvalidateRect(hWnd, lpRect, bErase);
+    public static BOOL ValidateRect(HWND hWnd, nint lpRect) => Functions.ValidateRect(hWnd, lpRect);
+    public static BOOL RedrawWindow(HWND hWnd, nint lprcUpdate, HRGN hrgnUpdate, REDRAW_WINDOW_FLAGS flags) => Functions.RedrawWindow(hWnd, lprcUpdate, hrgnUpdate, flags);
+    public static BOOL UpdateWindow(HWND hWnd) => Functions.UpdateWindow(hWnd);
     public static HRESULT PdfCreateRenderer(IDXGIDevice pDevice, out IPdfRendererNative ppRenderer) => Functions.PdfCreateRenderer(pDevice, out ppRenderer);
 
 #endif

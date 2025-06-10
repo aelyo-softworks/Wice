@@ -1,12 +1,11 @@
 ﻿namespace Wice.Interop;
 
-public struct HINSTANCE : IEquatable<HINSTANCE>
+public struct HINSTANCE(nint value) : IEquatable<HINSTANCE>
 {
     public static readonly HINSTANCE Null = new();
 
-    public nint Value;
+    public nint Value = value;
 
-    public HINSTANCE(nint value) => this.Value = value;
     public override string ToString() => $"0x{Value:x}";
 
     public override readonly bool Equals(object? obj) => obj is HINSTANCE value && Equals(value);

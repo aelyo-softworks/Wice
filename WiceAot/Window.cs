@@ -797,18 +797,16 @@ public partial class Window : Canvas, ITitleBarParent
     {
         var wr = WindowRect;
         var cr = ClientRect;
-
         Native.Resize(width - (wr.Width - cr.Width), height - (wr.Height - cr.Height));
     }
 
     public bool Destroy()
     {
-        if (Native.Destroy())
-        {
-            _icon?.Dispose();
-            return true;
-        }
-        return false;
+        _icon?.Dispose();
+        if (!_native.IsValueCreated)
+            return false;
+
+        return _native.Value.Destroy();
     }
 
     public virtual Task RunTaskOnMainThread(Action action, bool startNew = false)
@@ -2553,13 +2551,26 @@ public partial class Window : Canvas, ITitleBarParent
             Resize((int)(float)value!, rc.Height);
             return true;
         }
-        else if (property == HeightProperty)
+
+        if (property == HeightProperty)
         {
             var rc = WindowRect;
             Resize(rc.Width, (int)(float)value!);
             return true;
         }
 
+        if (property == IsVisibleProperty)
+        {
+            if ((bool)value!)
+            {
+                Show();
+            }
+            else
+            {
+                Hide();
+            }
+            // continue
+        }
         return base.SetPropertyValue(property, value, options);
     }
 
