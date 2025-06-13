@@ -432,7 +432,6 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
 
     HRESULT IDropSource.GiveFeedback(DROPEFFECT effect)
     {
-        //Application.Trace("GiveFeedback: " + effect);
         var e = new DragDropGiveFeedback(effect);
         DragDropGiveFeedback?.Invoke(this, e);
         return e.Result;
@@ -626,11 +625,15 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     {
 #if NETFRAMEWORK
         var sb = new StringBuilder(256);
-        WindowsFunctions.GetWindowText(hwnd, sb, sb.Capacity - 1);
+        if (WindowsFunctions.GetWindowText(hwnd, sb, sb.Capacity - 1) == 0)
+            return string.Empty;
+
         return sb.ToString();
 #else
         using var p = new AllocPwstr(1024);
-        Functions.GetWindowTextW(hwnd, p, (int)p.SizeInChars);
+        if (Functions.GetWindowTextW(hwnd, p, (int)p.SizeInChars) == 0)
+            return string.Empty;
+
         return p.ToString() ?? string.Empty;
 #endif
     }
@@ -639,11 +642,15 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     {
 #if NETFRAMEWORK
         var sb = new StringBuilder(256);
-        WindowsFunctions.GetClassName(hwnd, sb, sb.Capacity - 1);
+        if (WindowsFunctions.GetClassName(hwnd, sb, sb.Capacity - 1) == 0)
+            return null;
+
         return sb.ToString();
 #else
         using var p = new AllocPwstr(1024);
-        Functions.GetClassNameW(hwnd, p, (int)p.SizeInChars);
+        if (Functions.GetClassNameW(hwnd, p, (int)p.SizeInChars) == 0)
+            return null;
+
         return p.ToString();
 #endif
     }

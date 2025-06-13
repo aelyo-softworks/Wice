@@ -12,7 +12,6 @@ public partial class WindowTimer : IDisposable
         ExceptionExtensions.ThrowIfNull(window, nameof(window));
         Window = window;
         _action = action;
-        Window.AddTimer(this);
         _timer = new Timer(state => DoTick());
         Change(dueTime, period);
     }
@@ -31,23 +30,12 @@ public partial class WindowTimer : IDisposable
 
     protected virtual void OnTick(object? sender, EventArgs e) => Tick?.Invoke(sender, e);
 
+    public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
     protected virtual void Dispose(bool disposing)
     {
-        var timer = Interlocked.Exchange(ref _timer, null);
-        if (timer != null)
+        if (disposing)
         {
-            if (disposing)
-            {
-                // dispose managed state (managed objects)
-            }
-
-            // free unmanaged resources (unmanaged objects) and override finalizer
-            // set large fields to null
-            Window.RemoveTimer(this);
-            timer.Dispose();
+            Interlocked.Exchange(ref _timer, null)?.SafeDispose();
         }
     }
-
-    ~WindowTimer() { Dispose(disposing: false); }
-    public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 }

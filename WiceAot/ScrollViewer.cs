@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent
+public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDisposable
 {
     // values from https://github.com/wine-mirror/wine/blob/master/dlls/user32/scroll.c
     // don't know where to get that from Windows api?
@@ -20,6 +20,7 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent
     private Timer? _timer;
     private float _verticalOffsetStart;
     private float _horizontalOffsetStart;
+    private bool _disposedValue;
 
     public ScrollViewer()
     {
@@ -495,7 +496,7 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent
         if (e.Button == MouseButton.Left)
         {
             Window.ReleaseMouseCapture();
-            Interlocked.Exchange(ref _timer, null)?.Dispose();
+            Interlocked.Exchange(ref _timer, null)?.SafeDispose();
         }
         base.OnMouseButtonUp(sender, e);
     }
@@ -553,4 +554,18 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent
     public virtual void PageUp() => VerticalOffset -= VerticalScrollBar.Thumb.ArrangedRect.Height;
     public virtual void PageLeft() => HorizontalOffset -= HorizontalScrollBar.Thumb.ArrangedRect.Width;
     public virtual void PageRight() => HorizontalOffset += HorizontalScrollBar.Thumb.ArrangedRect.Width;
+
+    public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                Interlocked.Exchange(ref _timer, null)?.SafeDispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
 }

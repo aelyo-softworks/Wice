@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public partial class HeaderedContent : Stack, IOneChildParent
+public partial class HeaderedContent : Stack, IOneChildParent, IDisposable
 {
     private TimerStoryboard? _sb;
 
@@ -39,7 +39,7 @@ public partial class HeaderedContent : Stack, IOneChildParent
     public virtual float? OpenHeight { get; set; }
 
     protected virtual Header CreateHeader() => new();
-    protected virtual ScrollViewer CreateViewer() => new ScrollViewer { Height = 0 };
+    protected virtual ScrollViewer CreateViewer() => new() { Height = 0 };
     protected override BaseObjectCollection<Visual> CreateChildren() => new(2);
 
     protected virtual void OnHeaderIsSelectedChanged(bool value)
@@ -97,6 +97,15 @@ public partial class HeaderedContent : Stack, IOneChildParent
         {
             _sb.Children.Add(animation);
             _sb.Start();
+        }
+    }
+
+    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _sb?.Dispose();
         }
     }
 }

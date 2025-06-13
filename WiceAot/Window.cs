@@ -20,7 +20,6 @@ public partial class Window : Canvas, ITitleBarParent
     private D2D_RECT_F _lastClientRect;
     private readonly ConcurrentDictionary<MouseButton, Timer> _repeatTimes = [];
     private readonly ConcurrentList<Task> _tasks = [];
-    private readonly List<WindowTimer> _timers = [];
     private readonly WNDPROC _windowProc;
     private int _animating;
     private readonly Lazy<NativeWindow> _native;
@@ -189,7 +188,7 @@ public partial class Window : Canvas, ITitleBarParent
     public ToolTip? CurrentToolTip { get; private set; }
 
     [Browsable(false)]
-    public Caret Caret => _caret.Value; // null if HasCaret is false
+    public Caret? Caret => _caret.IsValueCreated ? _caret.Value : null;
 
     [Category(CategoryLive)]
     public bool IsZoomed => Native?.IsZoomed() == true;
@@ -574,7 +573,6 @@ public partial class Window : Canvas, ITitleBarParent
     {
         if (FocusVisual != null)
         {
-            //Application.Trace("FocusedVisual:" + FocusedVisual);
             Children.Remove(FocusVisual);
             FocusVisual = null;
         }
@@ -590,7 +588,6 @@ public partial class Window : Canvas, ITitleBarParent
 
         _hasFocus = value;
         OnPropertyChanged(nameof(HasFocus));
-        //Application.Trace(this + " HasFocus: " + _hasFocus);
 
         var visual = FocusedVisual;
         if (_hasFocus)
@@ -1664,13 +1661,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     private void ProcessTasks()
     {
-        Task[] tasks;
-        lock (_lock)
-        {
-            tasks = _tasks.ToArray(false);
-            _tasks.Clear();
-        }
-
+        var tasks = _tasks.ToArray(true);
         if (tasks.Length == 0)
             return;
 
@@ -1905,7 +1896,7 @@ public partial class Window : Canvas, ITitleBarParent
             children.RemoveInternal(child);
         }
 
-        Application.RemoveWindow(this);
+        Application.RemoveWindow(this, true);
         _compositionTarget?.Dispose();
 
         if (FrameVisual != null)
@@ -1934,19 +1925,9 @@ public partial class Window : Canvas, ITitleBarParent
             _d3D11Device.Value.Dispose();
         }
 
-        _tooltipTimer?.Dispose();
+        _tooltipTimer?.SafeDispose();
 
-        foreach (var tk in _repeatTimes)
-        {
-            try
-            {
-                tk.Value?.Dispose();
-            }
-            catch
-            {
-                // continue
-            }
-        }
+        _repeatTimes.Dispose(false);
         _repeatTimes.Clear();
     }
 
@@ -2540,6 +2521,9 @@ public partial class Window : Canvas, ITitleBarParent
         if (property == WidthProperty || property == HeightProperty)
             return float.NaN;
 
+        if (property == IsEnabledProperty)
+            return !_native.IsValueCreated || _native.Value.IsEnabled;
+
         return base.GetPropertyValue(property);
     }
 
@@ -2557,6 +2541,15 @@ public partial class Window : Canvas, ITitleBarParent
             var rc = WindowRect;
             Resize(rc.Width, (int)(float)value!);
             return true;
+        }
+
+        if (property == IsEnabledProperty)
+        {
+            if (_native.IsValueCreated)
+            {
+                _native.Value.IsEnabled = (bool)value!;
+                return true;
+            }
         }
 
         if (property == IsVisibleProperty)
@@ -2790,9 +2783,6 @@ public partial class Window : Canvas, ITitleBarParent
         }
         return true;
     }
-
-    internal void AddTimer(WindowTimer timer) => _timers.Add(timer);
-    internal void RemoveTimer(WindowTimer timer) => _timers.Remove(timer);
 
 #if DEBUG
 #pragma warning disable CA1822 // Mark members as static
@@ -3029,7 +3019,7 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
-    private static Window? GetWindow(HWND hwnd)
+    public static Window? GetWindow(HWND hwnd)
     {
         var ptr = NativeWindow.GetUserData(hwnd);
         if (ptr == 0)
@@ -3536,7 +3526,6 @@ public partial class Window : Canvas, ITitleBarParent
 
                     tme.dwHoverTime = time;
                     WiceCommons.TrackMouseEvent(ref tme);
-                    //Application.Trace("Tracking");
 
                     // https://stackoverflow.com/a/51037982/403671
                     WiceCommons.SetTimer(hwnd, MOUSE_TRACK_TIMER_ID, 250, null);
@@ -3565,11 +3554,9 @@ public partial class Window : Canvas, ITitleBarParent
                 {
                     win.OnMouseEvent(ppe.IsInContact ? WiceCommons.WM_MOUSEMOVE : WiceCommons.WM_MOUSEHOVER, new MouseEventArgs(ppe.X, ppe.Y, 0) { SourcePointerEvent = ppe });
                 }
-                //Application.Trace("WM_POINTERUPDATE pt: " + ppe);
                 break;
 
             case MessageDecoder.WM_TIMER:
-                //Application.Trace("WM_TIMER wParam: " + wParam);
                 // https://stackoverflow.com/a/51037982/403671
                 if (wParam.Value == MOUSE_TRACK_TIMER_ID)
                 {
@@ -3821,7 +3808,7 @@ public partial class Window : Canvas, ITitleBarParent
         return LRESULT.Null;
     }
 
-    private const uint MOUSE_TRACK_TIMER_ID = 1;
+    private const uint MOUSE_TRACK_TIMER_ID = 0xA1CEA1CE;
     private const uint WM_PROCESS_INVALIDATIONS = Application.WM_HOSTQUIT - 1;
     private const uint WM_SETCARETPOS = MessageDecoder.WM_APP - 2;
     private const uint WM_PROCESS_TASKS = Application.WM_HOSTQUIT - 3;

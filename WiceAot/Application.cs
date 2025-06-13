@@ -35,12 +35,12 @@ public partial class Application : IDisposable
     public WindowsDispatcherQueueController DispatcherQueueController { get; }
 #endif
     public bool ExitOnLastWindowRemoved { get; set; } = true;
-    public bool Exiting { get; private set; }
     public int MainThreadId { get; }
     public uint ThreadId { get; }
     public bool IsRunningAsMainThread => MainThreadId == Environment.CurrentManagedThreadId;
     public bool IsDisposed => _disposedValue;
     public ResourceManager ResourceManager { get; }
+    public virtual bool HandleErrors => MainThreadId == 1; // we handle errors only on the first UI thread
 
     public IReadOnlyList<Window> Windows
     {
@@ -78,34 +78,62 @@ public partial class Application : IDisposable
     public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0008: This method must be called on the render thread."); }
     public override string ToString() => MainThreadId + " (" + ThreadId + ")";
 
+    protected virtual bool GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax) => WiceCommons.GetMessageW(out msg, hWnd, wMsgFilterMin, wMsgFilterMax);
+    protected virtual bool HandleMessage(MSG msg)
+    {
+        if (MainThreadId != 1)
+        {
+            Trace($"GetMessage [{MessageDecoder.Decode(msg)}]");
+        }
+        if (_applications?.Count > 1 && msg.hwnd != IntPtr.Zero)
+        {
+            var window = _windows.FirstOrDefault(w => w.ManagedThreadId == MainThreadId && w.Handle.Equals(msg.hwnd));
+            if (window == null)
+            {
+                // that may be normal if we have multiple applications running since we don't filter messages in GetMessageW
+#if DEBUG
+                Trace($"Message [{MessageDecoder.Decode(msg)}] was received for unhandled window ({msg.hwnd}).");
+#endif
+                return true; // not our window, skip it
+            }
+        }
+
+        if (msg.message == WM_HOSTQUIT)
+        {
+#if DEBUG
+            Trace("WM_HOSTQUIT was received.");
+#endif
+            return false;
+        }
+
+        // call this just at init time
+        if (msg.hwnd == IntPtr.Zero)
+        {
+            if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
+            {
+                foreach (var window in _windows)
+                {
+                    window.RegisterForDragDrop();
+                }
+            }
+        }
+
+        //Trace("msg: " + msg.Decode());
+        WiceCommons.TranslateMessage(msg);
+        WiceCommons.DispatchMessageW(msg);
+        return true;
+    }
+
     public virtual void Run()
     {
-        if (_errors.Count == 0)
+        if (_errors.Count == 0 || !HandleErrors)
         {
-            MSG msg = new();
-            while (WiceCommons.GetMessageW(out msg, HWND.Null, 0, 0))
+            var msg = new MSG();
+            Trace("MainThreadId: " + MainThreadId + " ThreadId:" + ThreadId);
+            while (GetMessage(out msg, HWND.Null, 0, 0))
             {
-                if (msg.message == WM_HOSTQUIT)
-                {
-                    Trace("WM_HOSTQUIT was received.");
+                if (!HandleMessage(msg))
                     break;
-                }
-
-                // call this just at init time
-                if (msg.hwnd == IntPtr.Zero)
-                {
-                    if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
-                    {
-                        foreach (var window in _windows)
-                        {
-                            window.RegisterForDragDrop();
-                        }
-                    }
-                }
-
-                //Trace("msg: " + msg.Decode());
-                WiceCommons.TranslateMessage(msg);
-                WiceCommons.DispatchMessageW(msg);
             }
 #if DEBUG
             if (msg.message == MessageDecoder.WM_QUIT)
@@ -114,7 +142,11 @@ public partial class Application : IDisposable
             }
 #endif
         }
-        ShowFatalError(HWND.Null);
+
+        if (HandleErrors)
+        {
+            ShowFatalError(HWND.Null);
+        }
     }
 
     public virtual void Exit()
@@ -139,6 +171,12 @@ public partial class Application : IDisposable
         if (!_disposedValue)
         {
             // note: we don't check thread id here
+            var windows = Windows;
+            foreach (var window in windows)
+            {
+                RemoveWindow(window, false);
+            }
+
             _applications?.TryRemove(Environment.CurrentManagedThreadId, out _);
             OnApplicationExit(this, EventArgs.Empty);
             _disposedValue = true;
@@ -151,7 +189,7 @@ public partial class Application : IDisposable
     private static bool _useDebugLayer;
 #endif
 
-    internal const uint WM_HOSTQUIT = MessageDecoder.WM_APP + 0x3FFF; // last possible app message
+    public const uint WM_HOSTQUIT = MessageDecoder.WM_APP + 0x3FFF; // last possible app message
 
     private static readonly Lock _windowsLock = new();
     private static readonly Lock _errorsLock = new();
@@ -188,12 +226,11 @@ public partial class Application : IDisposable
     }
 
     public static ResourceManager CurrentResourceManager => Current?.ResourceManager ?? throw new WiceException("0031: Resource Manager is not available at this time.");
-    public static Theme CurrentTheme => CurrentResourceManager.Theme ?? throw new WiceException("0031: Theme is not available at this time.");
+    public static Theme CurrentTheme => CurrentResourceManager.Theme ?? throw new WiceException("0035: Theme is not available at this time.");
     public static bool UseDebugLayer { get => _useDebugLayer && DXGIFunctions.IsDebugLayerAvailable; set => _useDebugLayer = true; }
     public static HMODULE ModuleHandle => WiceCommons.GetModuleHandleW(PWSTR.Null);
     public static bool IsFatalErrorShowing { get; private set; }
     public static bool ExitAllOnLastWindowRemoved { get; set; } = true;
-    public static bool AllExiting { get; private set; }
 
     static Application()
     {
@@ -373,7 +410,7 @@ public partial class Application : IDisposable
         }
     }
 
-    internal static void RemoveWindow(Window window)
+    internal static void RemoveWindow(Window window, bool allowExit)
     {
         lock (_windowsLock)
         {
@@ -387,27 +424,33 @@ public partial class Application : IDisposable
                 {
                     WindowRemoved?.Invoke(app, new ValueEventArgs<Window>(window));
                     app.ResourceManager.RemoveWindow(window);
-                    if (app.ExitOnLastWindowRemoved && !app.Exiting && app.NonBackgroundWindows.Count == 0)
+                    if (app.ExitOnLastWindowRemoved && app.NonBackgroundWindows.Count == 0)
                     {
-                        app.Exiting = true;
                         foreach (var bw in app.BackgroundWindows)
                         {
                             bw.Destroy();
                         }
-                        app.Exit();
+
+                        if (allowExit)
+                        {
+                            app.Exit();
+                        }
                     }
                 }
             }
 
-            if (ExitAllOnLastWindowRemoved && !AllExiting && !_windows.Any(w => !w.IsBackground))
+            if (ExitAllOnLastWindowRemoved && !_windows.Any(w => !w.IsBackground))
             {
-                AllExiting = true;
                 var backgroundWindows = _windows.Where(w => w.IsBackground).ToArray();
                 foreach (var bw in backgroundWindows)
                 {
                     bw.Destroy();
                 }
-                AllExit();
+
+                if (allowExit)
+                {
+                    AllExit();
+                }
             }
         }
     }

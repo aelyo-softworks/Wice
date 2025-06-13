@@ -30,6 +30,21 @@ public static class Extensions
     public static POINTER_MESSAGE_FLAGS GetPointerFlags(this WPARAM wParam) => (POINTER_MESSAGE_FLAGS)wParam.Value.HIWORD();
     public static int GetWheelDelta(this WPARAM wParam) => (int)wParam.Value.HIWORD();
 
+    public static void SafeDispose(this IDisposable? disposable)
+    {
+        if (disposable == null)
+            return;
+
+        try
+        {
+            disposable.Dispose();
+        }
+        catch
+        {
+            // continue;
+        }
+    }
+
     public static bool TryParseD2D_RECT_F(object input, out D2D_RECT_F value) => TryParseD2D_RECT_F(input, null, out value);
     public static bool TryParseD2D_RECT_F(object input, IFormatProvider provider, out D2D_RECT_F value)
     {

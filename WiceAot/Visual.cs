@@ -1510,7 +1510,10 @@ public partial class Visual : BaseObject
             RemoveCompositionVisual(CompositionVisual);
         }
 
-        if ((CompositionVisual != null && oldWin == null) || (CompositionVisual == null && oldWin != null))
+        if (CompositionVisual != null && oldWin == null)
+            throw new InvalidOperationException();
+
+        if (CompositionVisual == null && oldWin != null && oldWin.IsEnabled)
             throw new InvalidOperationException();
 
         CompositionVisual = null;

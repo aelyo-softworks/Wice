@@ -38,15 +38,9 @@ public partial class TimerStoryboard(Window window) : Storyboard(window), IDispo
         base.Stop();
     }
 
-    private void DisposeTimer() => Interlocked.Exchange(ref _timer, null)?.Dispose();
+    private void DisposeTimer() => Interlocked.Exchange(ref _timer, null)?.SafeDispose();
 
-    ~TimerStoryboard() { Dispose(false); }
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
+    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
     protected virtual void Dispose(bool disposing)
     {
         if (disposing)

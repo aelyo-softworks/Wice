@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public partial class Caret : Border
+public partial class Caret : Border, IDisposable
 {
 #if DEBUG
     public static VisualProperty BlinkProperty { get; } = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);
@@ -141,14 +141,23 @@ public partial class Caret : Border
         if (Parent is not Wice.Window)
             throw new InvalidOperationException();
 
-        Interlocked.Exchange(ref _blinkTimer, null)?.Dispose();
+        Interlocked.Exchange(ref _blinkTimer, null)?.SafeDispose();
         _blinkTimer = new WindowTimer(Window!, OnCaretBlink); // not started
         base.OnAttachedToParent(sender, e);
     }
 
     protected override void OnDetachingFromParent(object? sender, EventArgs e)
     {
-        Interlocked.Exchange(ref _blinkTimer, null)?.Dispose();
+        Interlocked.Exchange(ref _blinkTimer, null)?.SafeDispose();
         base.OnDetachingFromParent(sender, e);
+    }
+
+    public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Interlocked.Exchange(ref _blinkTimer, null)?.SafeDispose();
+        }
     }
 }
