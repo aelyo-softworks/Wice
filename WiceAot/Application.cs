@@ -48,7 +48,7 @@ public partial class Application : IDisposable
         {
             lock (_windowsLock)
             {
-                return [.. _windows.Where(w => w.ManagedThreadId == MainThreadId)];
+                return [.. _allWindows.Where(w => w.ManagedThreadId == MainThreadId)];
             }
         }
     }
@@ -59,7 +59,7 @@ public partial class Application : IDisposable
         {
             lock (_windowsLock)
             {
-                return [.. _windows.Where(w => w.ManagedThreadId == MainThreadId && w.IsBackground)];
+                return [.. _allWindows.Where(w => w.ManagedThreadId == MainThreadId && w.IsBackground)];
             }
         }
     }
@@ -70,7 +70,7 @@ public partial class Application : IDisposable
         {
             lock (_windowsLock)
             {
-                return [.. _windows.Where(w => w.ManagedThreadId == MainThreadId && !w.IsBackground)];
+                return [.. _allWindows.Where(w => w.ManagedThreadId == MainThreadId && !w.IsBackground)];
             }
         }
     }
@@ -78,16 +78,12 @@ public partial class Application : IDisposable
     public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0008: This method must be called on the render thread."); }
     public override string ToString() => MainThreadId + " (" + ThreadId + ")";
 
-    protected virtual bool GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax) => WiceCommons.GetMessageW(out msg, hWnd, wMsgFilterMin, wMsgFilterMax);
+    protected virtual BOOL GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax) => WiceCommons.GetMessageW(out msg, hWnd, wMsgFilterMin, wMsgFilterMax);
     protected virtual bool HandleMessage(MSG msg)
     {
-        if (MainThreadId != 1)
-        {
-            Trace($"GetMessage [{MessageDecoder.Decode(msg)}]");
-        }
         if (_applications?.Count > 1 && msg.hwnd != IntPtr.Zero)
         {
-            var window = _windows.FirstOrDefault(w => w.ManagedThreadId == MainThreadId && w.Handle.Equals(msg.hwnd));
+            var window = Windows.FirstOrDefault(w => w.ManagedThreadId == MainThreadId && w.Handle.Equals(msg.hwnd));
             if (window == null)
             {
                 // that may be normal if we have multiple applications running since we don't filter messages in GetMessageW
@@ -111,14 +107,13 @@ public partial class Application : IDisposable
         {
             if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
             {
-                foreach (var window in _windows)
+                foreach (var window in Windows)
                 {
                     window.RegisterForDragDrop();
                 }
             }
         }
 
-        //Trace("msg: " + msg.Decode());
         WiceCommons.TranslateMessage(msg);
         WiceCommons.DispatchMessageW(msg);
         return true;
@@ -128,19 +123,16 @@ public partial class Application : IDisposable
     {
         if (_errors.Count == 0 || !HandleErrors)
         {
-            var msg = new MSG();
-            Trace("MainThreadId: " + MainThreadId + " ThreadId:" + ThreadId);
-            while (GetMessage(out msg, HWND.Null, 0, 0))
+            do
             {
+                var ret = GetMessage(out var msg, HWND.Null, 0, 0);
+                if (ret.Value <= 0) // WM_QUIT or error
+                    break;
+
                 if (!HandleMessage(msg))
                     break;
             }
-#if DEBUG
-            if (msg.message == MessageDecoder.WM_QUIT)
-            {
-                Trace("WM_QUIT was received.");
-            }
-#endif
+            while (true);
         }
 
         if (HandleErrors)
@@ -193,7 +185,7 @@ public partial class Application : IDisposable
 
     private static readonly Lock _windowsLock = new();
     private static readonly Lock _errorsLock = new();
-    private readonly static List<Window> _windows = [];
+    private readonly static List<Window> _allWindows = [];
     private readonly static List<Exception> _errors = [];
     private static ConcurrentDictionary<int, Application>? _applications = [];
 
@@ -220,7 +212,7 @@ public partial class Application : IDisposable
         {
             lock (_windowsLock)
             {
-                return [.. _windows];
+                return [.. _allWindows];
             }
         }
     }
@@ -379,8 +371,18 @@ public partial class Application : IDisposable
         if (e.ExceptionObject is Exception error)
         {
             AddError(error);
-            var win = _windows.FirstOrDefault()?.Native?.Handle;
-            ShowFatalError(win.GetValueOrDefault());
+            var allWindows = AllWindows;
+            if (allWindows.Count > 0)
+            {
+                // show error in the first window
+                var win = allWindows[0].NativeIfCreated?.Handle;
+                ShowFatalError(win.GetValueOrDefault());
+            }
+            else
+            {
+                // no windows, show error in the current thread
+                ShowFatalError(HWND.Null);
+            }
         }
     }
 
@@ -388,7 +390,7 @@ public partial class Application : IDisposable
     {
         lock (_windowsLock)
         {
-            _windows.Add(window);
+            _allWindows.Add(window);
 
             var apps = _applications;
             if (apps != null)
@@ -414,7 +416,7 @@ public partial class Application : IDisposable
     {
         lock (_windowsLock)
         {
-            _windows.Remove(window);
+            _allWindows.Remove(window);
 
             var apps = _applications;
             if (apps != null)
@@ -439,9 +441,9 @@ public partial class Application : IDisposable
                 }
             }
 
-            if (ExitAllOnLastWindowRemoved && !_windows.Any(w => !w.IsBackground))
+            if (ExitAllOnLastWindowRemoved && !_allWindows.Any(w => !w.IsBackground))
             {
-                var backgroundWindows = _windows.Where(w => w.IsBackground).ToArray();
+                var backgroundWindows = _allWindows.Where(w => w.IsBackground).ToArray();
                 foreach (var bw in backgroundWindows)
                 {
                     bw.Destroy();

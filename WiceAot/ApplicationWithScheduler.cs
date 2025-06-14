@@ -12,7 +12,7 @@ public partial class ApplicationWithScheduler : Application
     protected virtual ApplicationScheduler CreateApplicationScheduler() => new();
     public ApplicationScheduler Scheduler { get; }
 
-    protected override bool GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax) => Scheduler.GetMessage(out msg, hWnd, wMsgFilterMin, wMsgFilterMax);
+    protected override BOOL GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax) => Scheduler.GetMessage(out msg, hWnd, wMsgFilterMin, wMsgFilterMax);
     public virtual Task RunTaskOnMainThread(Action action, bool startNew = false)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));

@@ -38,7 +38,7 @@ public partial class ApplicationScheduler : TaskScheduler, IDisposable
         TriggerDequeue();
     }
 
-    protected unsafe internal bool GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax)
+    protected unsafe internal BOOL GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax)
     {
         if (_disposedValue || _stop.SafeWaitHandle.IsInvalid || _dequeue.SafeWaitHandle.IsInvalid)
         {
@@ -63,7 +63,7 @@ public partial class ApplicationScheduler : TaskScheduler, IDisposable
                     throw new WiceException("0034: GetMessage wait failed.");
 #else
                     msg = new MSG { message = Application.WM_HOSTQUIT };
-                    return false;
+                    return -1;
 #endif
                 }
 
@@ -71,6 +71,9 @@ public partial class ApplicationScheduler : TaskScheduler, IDisposable
                 if (ie == count) // new input available
                 {
                     var ret = Functions.PeekMessageW(out msg, hWnd, wMsgFilterMin, wMsgFilterMax, PEEK_MESSAGE_REMOVE_TYPE.PM_REMOVE);
+                    if (msg.message == MessageDecoder.WM_QUIT) // WM_QUIT is a special message that indicates the application should stop processing messages
+                        return false;
+
                     if (ret)
                         return ret;
 

@@ -8,10 +8,10 @@ public class SystemInformation(Assembly? assembly = null, Window? window = null,
     public string DefaultTextServicesGeneratorVersion { get; } = RichTextBox.DefaultTextServicesGeneratorVersion;
 
     [Category("Graphics")]
-    public new string? WindowDpiAwareness => (window ?? Application.AllWindows.FirstOrDefault())?.Native.DpiAwarenessDescription;
+    public new string? WindowDpiAwareness => (window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiAwarenessDescription;
 
     [Category("Graphics")]
-    public new uint WindowDpiFromDpiAwareness => (window ?? Application.AllWindows.FirstOrDefault())?.Native.DpiFromDpiAwareness ?? 96;
+    public new uint WindowDpiFromDpiAwareness => (window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiFromDpiAwareness ?? 96;
 
     [Category("Graphics")]
     public new string? WindowMonitor

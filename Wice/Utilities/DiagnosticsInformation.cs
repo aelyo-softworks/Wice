@@ -78,10 +78,10 @@ public class DiagnosticsInformation(Assembly assembly = null, Window window = nu
     public string DefaultTextServicesGeneratorVersion { get; } = RichTextBox.GetDefaultTextServicesGeneratorVersion();
 
     [Category("Graphics")]
-    public string WindowDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.Native.DpiAwarenessDescription;
+    public string WindowDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiAwarenessDescription;
 
     [Category("Graphics")]
-    public uint WindowDpiFromDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.Native.DpiFromDpiAwareness ?? 96;
+    public uint WindowDpiFromDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiFromDpiAwareness ?? 96;
 
     [Category("Graphics")]
     public string WindowMonitor

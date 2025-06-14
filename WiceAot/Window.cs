@@ -158,7 +158,7 @@ public partial class Window : Canvas, ITitleBarParent
     public int BorderHeight { get; }
 
     [Category(CategoryLayout)]
-    public uint Dpi => Native?.Dpi ?? 96;
+    public uint Dpi => NativeIfCreated?.Dpi ?? 96;
 
     [Category(CategoryBehavior)]
     public bool IsBackground { get; set; } // true => doesn't prevent to quit
@@ -173,25 +173,28 @@ public partial class Window : Canvas, ITitleBarParent
     public NativeWindow Native => _native.Value;
 
     [Browsable(false)]
+    public NativeWindow? NativeIfCreated => _native.IsValueCreated ? _native.Value : null;
+
+    [Browsable(false)]
     public HMONITOR MonitorHandle { get; private set; }
 
     [Browsable(false)]
     public Monitor? Monitor => MonitorHandle != 0 ? new Monitor(MonitorHandle) : null;
 
     [Category(CategoryLayout)]
-    public RECT WindowRect => Native.WindowRect;
+    public RECT WindowRect => NativeIfCreated?.WindowRect ?? new();
 
     [Category(CategoryLayout)]
-    public RECT ClientRect => Native.ClientRect;
+    public RECT ClientRect => NativeIfCreated?.ClientRect ?? new();
 
     [Browsable(false)]
     public ToolTip? CurrentToolTip { get; private set; }
 
     [Browsable(false)]
-    public Caret? Caret => _caret.IsValueCreated ? _caret.Value : null;
+    public Caret? Caret => _caret.Value;
 
     [Category(CategoryLive)]
-    public bool IsZoomed => Native?.IsZoomed() == true;
+    public bool IsZoomed => NativeIfCreated?.IsZoomed() == true;
 
     [Browsable(false)]
     public HWND Handle => _native?.IsValueCreated == true ? _native.Value.Handle : HWND.Null;
@@ -2920,7 +2923,7 @@ public partial class Window : Canvas, ITitleBarParent
             ExceptionExtensions.ThrowIfNull(task, nameof(task));
 
             Window._tasks.Add(task);
-            Window.Native.PostMessage(WM_PROCESS_TASKS);
+            Window.NativeIfCreated?.PostMessage(WM_PROCESS_TASKS);
         }
 
         public new bool TryExecuteTask(Task task) => base.TryExecuteTask(task);
