@@ -1,7 +1,7 @@
 ﻿namespace Wice;
 
 // only (re)created if window loses focus
-public partial class FocusVisual : Border//, IModalVisual
+public partial class FocusVisual : Border
 {
     public FocusVisual()
     {

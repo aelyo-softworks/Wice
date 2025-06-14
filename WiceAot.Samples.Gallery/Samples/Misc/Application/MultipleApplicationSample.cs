@@ -29,6 +29,10 @@ public class MultipleApplicationSample : Sample
                 win.Center();
                 win.Show();
                 dw.Run();
+
+                // put this here to ensure .NET will not stay blocked on the thread...
+                // if you put it before creating the app, the app will be killed if the main thread exits
+                Thread.CurrentThread.IsBackground = true;
             });
         };
         parent.Children.Add(btn);

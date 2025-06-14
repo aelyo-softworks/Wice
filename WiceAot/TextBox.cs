@@ -3019,6 +3019,5 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    ~TextBox() { Dispose(disposing: false); }
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 }

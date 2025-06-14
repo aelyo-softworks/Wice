@@ -227,13 +227,11 @@ public partial class Window : Canvas, ITitleBarParent
 
             if (_focusedVisual == null)
             {
-                //Application.Trace("focused none");
                 RemoveFocusVisual();
                 OnPropertyChanged();
                 return;
             }
 
-            //Application.Trace("focused " + _focusedVisual);
             _focusedVisual.IsFocusedChanged(true);
             UpdateFocus(_focusedVisual, old);
             OnPropertyChanged();
@@ -1899,7 +1897,7 @@ public partial class Window : Canvas, ITitleBarParent
             children.RemoveInternal(child);
         }
 
-        Application.RemoveWindow(this, true);
+        Application.RemoveWindow(this, false);
         _compositionTarget?.Dispose();
 
         if (FrameVisual != null)

@@ -606,7 +606,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
-    ~RichTextBox() { Dispose(disposing: false); }
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 
     // allow command line change

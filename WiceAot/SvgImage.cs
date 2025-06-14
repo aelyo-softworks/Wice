@@ -148,6 +148,5 @@ public partial class SvgImage : RenderVisual, IDisposable
         }
     }
 
-    ~SvgImage() { Dispose(disposing: false); }
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 }

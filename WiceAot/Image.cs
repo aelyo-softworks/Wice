@@ -203,6 +203,5 @@ public partial class Image : RenderVisual, IDisposable
         }
     }
 
-    ~Image() { Dispose(disposing: false); }
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 }

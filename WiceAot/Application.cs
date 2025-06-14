@@ -15,7 +15,7 @@ public partial class Application : IDisposable
         // no, we can't use Windows.System.DispatcherQueueController.CreateOnDedicatedThread();
         // or compositor will raise an access denied error
 #if NETFRAMEWORK
-        DispatcherQueueController.Create();
+        DispatcherQueueController = DirectN.DispatcherQueueController.Create();
 #else
         DispatcherQueueController = new WindowsDispatcherQueueController();
         DispatcherQueueController.EnsureOnCurrentThread();
@@ -31,7 +31,9 @@ public partial class Application : IDisposable
         ResourceManager = CreateResourceManager();
     }
 
-#if !NETFRAMEWORK
+#if NETFRAMEWORK
+    public IDispatcherQueueController DispatcherQueueController { get; }
+#else
     public WindowsDispatcherQueueController DispatcherQueueController { get; }
 #endif
     public bool ExitOnLastWindowRemoved { get; set; } = true;
@@ -78,9 +80,22 @@ public partial class Application : IDisposable
     public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0008: This method must be called on the render thread."); }
     public override string ToString() => MainThreadId + " (" + ThreadId + ")";
 
-    protected virtual BOOL GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax) => WiceCommons.GetMessageW(out msg, hWnd, wMsgFilterMin, wMsgFilterMax);
+    protected virtual BOOL GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax)
+    {
+        if (IsDisposed)
+        {
+            msg = new MSG { message = (int)WM_HOSTQUIT };
+            return -1;
+        }
+
+        return WiceCommons.GetMessageW(out msg, hWnd, wMsgFilterMin, wMsgFilterMax);
+    }
+
     protected virtual bool HandleMessage(MSG msg)
     {
+        if (IsDisposed)
+            return false;
+
         if (_applications?.Count > 1 && msg.hwnd != IntPtr.Zero)
         {
             var window = Windows.FirstOrDefault(w => w.ManagedThreadId == MainThreadId && w.Handle.Equals(msg.hwnd));
@@ -143,21 +158,25 @@ public partial class Application : IDisposable
 
     public virtual void Exit()
     {
+        if (IsDisposed)
+            return;
+
         CheckRunningAsMainThread();
         OnApplicationExit(this, EventArgs.Empty);
         WiceCommons.PostQuitMessage(0);
     }
 
-    ~Application() { Dispose(disposing: false); }
-    public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
-
     protected virtual void OnApplicationExit(object sender, EventArgs e) => ApplicationExit?.Invoke(sender, e);
     protected virtual ResourceManager CreateResourceManager()
     {
+        if (IsDisposed)
+            throw new ObjectDisposedException(nameof(Application));
+
         CheckRunningAsMainThread();
         return new ResourceManager(this);
     }
 
+    public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
@@ -166,9 +185,14 @@ public partial class Application : IDisposable
             var windows = Windows;
             foreach (var window in windows)
             {
-                RemoveWindow(window, false);
+                RemoveWindow(window, true);
             }
 
+#if NETFRAMEWORK
+            Marshal.ReleaseComObject(DispatcherQueueController);
+#else
+            DispatcherQueueController.Dispose();
+#endif
             _applications?.TryRemove(Environment.CurrentManagedThreadId, out _);
             OnApplicationExit(this, EventArgs.Empty);
             _disposedValue = true;
@@ -412,11 +436,15 @@ public partial class Application : IDisposable
         }
     }
 
-    internal static void RemoveWindow(Window window, bool allowExit)
+    internal static void RemoveWindow(Window window, bool appDisposing)
     {
         lock (_windowsLock)
         {
             _allWindows.Remove(window);
+            if (appDisposing)
+            {
+                window.Destroy();
+            }
 
             var apps = _applications;
             if (apps != null)
@@ -433,10 +461,7 @@ public partial class Application : IDisposable
                             bw.Destroy();
                         }
 
-                        if (allowExit)
-                        {
-                            app.Exit();
-                        }
+                        app.Exit();
                     }
                 }
             }
@@ -449,7 +474,7 @@ public partial class Application : IDisposable
                     bw.Destroy();
                 }
 
-                if (allowExit)
+                if (appDisposing)
                 {
                     AllExit();
                 }
