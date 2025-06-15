@@ -553,62 +553,76 @@ public partial class WebView : Border, IDisposable
         _loadingWebView2 = tcs.Task;
         var hr = environment.Object.CreateCoreWebView2CompositionController(window.Handle, new CoreWebView2CreateCoreWebView2CompositionControllerCompletedHandler((result, controller) =>
         {
-            _controller = new ComObject<ICoreWebView2CompositionController>(controller);
-
-            _controller.Object.add_CursorChanged(new CoreWebView2CursorChangedEventHandler((sender, args) =>
+            if (result.IsError)
             {
-                var cursor = new HCURSOR();
-                if (sender.get_Cursor(ref cursor).IsSuccess)
-                {
-                    Cursor = new Cursor(cursor.Value);
-                }
-
-            }), ref _cursorChangedToken);
-            var cb = CompositionVisual.As<IUnknown>();
-            _controller.Object.put_RootVisualTarget(cb).ThrowOnError();
-            OnWebViewControllerSetup(this, _controller.Object);
-
-            var ctrl = (ICoreWebView2Controller)_controller.Object;
-            ctrl.get_CoreWebView2(out var webView2).ThrowOnError();
-
-            var ar = AbsoluteRenderRect;
-            if (ar.IsValid)
-            {
-                ctrl.put_Bounds(ar).ThrowOnError();
+                Application.Trace($"WebView controller cannot be initialized: {result}.");
+                tcs.SetException(new WiceException("0036: WebView controller cannot be initialized.", Marshal.GetExceptionForHR(result)!));
+                return;
             }
 
-            _webView2 = new ComObject<ICoreWebView2>(webView2);
-            _webView2.Object.add_FrameNavigationCompleted(new CoreWebView2NavigationCompletedEventHandler((sender, args) =>
+            try
             {
-                OnFrameNavigationCompleted(this, args);
-            }), ref _frameNavigationCompleted);
+                _controller = new ComObject<ICoreWebView2CompositionController>(controller);
 
-            _webView2.Object.add_NavigationCompleted(new CoreWebView2NavigationCompletedEventHandler((sender, args) =>
+                _controller.Object.add_CursorChanged(new CoreWebView2CursorChangedEventHandler((sender, args) =>
+                {
+                    var cursor = new HCURSOR();
+                    if (sender.get_Cursor(ref cursor).IsSuccess)
+                    {
+                        Cursor = new Cursor(cursor.Value);
+                    }
+
+                }), ref _cursorChangedToken);
+                var cb = CompositionVisual.As<IUnknown>();
+                _controller.Object.put_RootVisualTarget(cb).ThrowOnError();
+                OnWebViewControllerSetup(this, _controller.Object);
+
+                var ctrl = (ICoreWebView2Controller)_controller.Object;
+                ctrl.get_CoreWebView2(out var webView2).ThrowOnError();
+
+                var ar = AbsoluteRenderRect;
+                if (ar.IsValid)
+                {
+                    ctrl.put_Bounds(ar).ThrowOnError();
+                }
+
+                _webView2 = new ComObject<ICoreWebView2>(webView2);
+                _webView2.Object.add_FrameNavigationCompleted(new CoreWebView2NavigationCompletedEventHandler((sender, args) =>
+                {
+                    OnFrameNavigationCompleted(this, args);
+                }), ref _frameNavigationCompleted);
+
+                _webView2.Object.add_NavigationCompleted(new CoreWebView2NavigationCompletedEventHandler((sender, args) =>
+                {
+                    OnNavigationCompleted(this, args);
+                }), ref _navigationCompleted);
+
+                _webView2.Object.add_DocumentTitleChanged(new CoreWebView2DocumentTitleChangedEventHandler((sender, args) =>
+                {
+                    var title = PWSTR.Null;
+                    sender.get_DocumentTitle(ref title);
+                    OnDocumentTitleChanged(this, title.ToString());
+                }), ref _documentTitleChanged);
+
+                _webView2.Object.add_NewWindowRequested(new CoreWebView2NewWindowRequestedEventHandler((sender, args) =>
+                {
+                    OnNewWindowRequested(this, args);
+                }), ref _newWindowRequested);
+
+
+                OnWebViewSetup(this, _webView2.Object);
+                tcs.SetResult(_webView2);
+                _loadingWebView2 = null;
+            }
+            catch (Exception ex)
             {
-                OnNavigationCompleted(this, args);
-            }), ref _navigationCompleted);
-
-            _webView2.Object.add_DocumentTitleChanged(new CoreWebView2DocumentTitleChangedEventHandler((sender, args) =>
-            {
-                var title = PWSTR.Null;
-                sender.get_DocumentTitle(ref title);
-                OnDocumentTitleChanged(this, title.ToString());
-            }), ref _documentTitleChanged);
-
-            _webView2.Object.add_NewWindowRequested(new CoreWebView2NewWindowRequestedEventHandler((sender, args) =>
-            {
-                OnNewWindowRequested(this, args);
-            }), ref _newWindowRequested);
-
-
-            OnWebViewSetup(this, _webView2.Object);
-            tcs.SetResult(_webView2);
-            _loadingWebView2?.Dispose();
-            _loadingWebView2 = null;
+                tcs.SetException(ex);
+            }
         }));
 
         if (hr.IsError)
         {
+            Application.Trace($"WebView controller cannot be created: {hr}.");
             tcs.SetException(new WiceException("0033: WebView controller cannot be created.", Marshal.GetExceptionForHR(hr)!));
         }
         return _loadingWebView2;

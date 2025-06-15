@@ -98,12 +98,12 @@ public partial class Application : IDisposable
 
         if (_applications?.Count > 1 && msg.hwnd != IntPtr.Zero)
         {
-            var window = Windows.FirstOrDefault(w => w.ManagedThreadId == MainThreadId && w.Handle.Equals(msg.hwnd));
-            if (window == null)
+            var window = Windows.FirstOrDefault(w => w.Handle.Equals(msg.hwnd));
+            if (window != null && window.ManagedThreadId != MainThreadId)
             {
                 // that may be normal if we have multiple applications running since we don't filter messages in GetMessageW
 #if DEBUG
-                Trace($"Message [{MessageDecoder.Decode(msg)}] was received for unhandled window ({msg.hwnd}).");
+                Trace($"Message [{MessageDecoder.Decode(msg)}] was received for unhandled window '{window}' ({msg.hwnd}).");
 #endif
                 return true; // not our window, skip it
             }
