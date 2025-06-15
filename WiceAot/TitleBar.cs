@@ -225,7 +225,7 @@
                 MaxButton.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
             }
 
-            foreach (var child in OtherVisuals.OfType<ButtonBase>())
+            foreach (var child in OtherVisuals.OfType<ButtonBase>().Where(b => b.UpdateFromTitleBar))
             {
                 child.Height = buttonSize.height;
                 child.Width = buttonSize.width;

@@ -23,6 +23,9 @@ public partial class ButtonBase : Border, IAccessKeyParent, IClickable
     [Category(CategoryBehavior)]
     public virtual IList<AccessKey> AccessKeys => _accessKeys;
 
+    [Browsable(false)]
+    public bool UpdateFromTitleBar { get; set; } = true;
+
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))

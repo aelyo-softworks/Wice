@@ -43,9 +43,12 @@ public partial class Button : ButtonBase
     [Browsable(false)]
     public bool UpdateStyleFromTheme { get; set; } = true;
 
+    [Browsable(false)]
+    public bool UpdateMarginsOnPropertyChanged { get; set; } = true;
+
     private void OnIconPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == TextBox.TextProperty.Name)
+        if (e.PropertyName == TextBox.TextProperty.Name && UpdateMarginsOnPropertyChanged)
         {
             UpdateMargins();
         }
@@ -53,7 +56,7 @@ public partial class Button : ButtonBase
 
     private void OnTextPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == TextBox.TextProperty.Name)
+        if (e.PropertyName == TextBox.TextProperty.Name && UpdateMarginsOnPropertyChanged)
         {
             UpdateMargins();
         }

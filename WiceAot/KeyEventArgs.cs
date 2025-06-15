@@ -1,34 +1,18 @@
 ﻿namespace Wice;
 
-public class KeyEventArgs : HandledEventArgs
+public class KeyEventArgs(VIRTUAL_KEY vk, uint states) : HandledEventArgs
 {
-    internal KeyEventArgs(VIRTUAL_KEY vk, uint states)
-    {
-        Key = vk;
-        WithShift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
-        WithControl = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
-        WithMenu = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_MENU);
-
-        // https://docs.microsoft.com/en-us/windows/win32/inputdev/wm-keydown
-        ScanCode = (int)((states >> 16) & 0xF);
-        RepeatCount = (int)(states & 0xFF);
-        IsUp = (states & 0x80000000) != 0; // bit 31
-        IsExtendedKey = (states & 0x1000) != 0;
-        WasDown = (states & 0x40000000) != 0;
-        Character = NativeWindow.VirtualKeyToCharacter(vk);
-    }
-
-    public VIRTUAL_KEY Key { get; }
-    public char Character { get; }
-    public int ScanCode { get; }
-    public int RepeatCount { get; }
-    public bool IsUp { get; }
+    public VIRTUAL_KEY Key { get; } = vk;
+    public char Character { get; } = NativeWindow.VirtualKeyToCharacter(vk);
+    public int ScanCode { get; } = (int)((states >> 16) & 0xF);
+    public int RepeatCount { get; } = (int)(states & 0xFF);
+    public bool IsUp { get; } = (states & 0x80000000) != 0; // bit 31
     public bool IsDown => !IsUp;
-    public bool IsExtendedKey { get; }
-    public bool WasDown { get; }
-    public bool WithShift { get; }
-    public bool WithControl { get; }
-    public bool WithMenu { get; }
+    public bool IsExtendedKey { get; } = (states & 0x1000) != 0;
+    public bool WasDown { get; } = (states & 0x40000000) != 0;
+    public virtual bool WithShift { get; set; } = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
+    public virtual bool WithControl { get; set; } = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
+    public virtual bool WithMenu { get; set; } = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_MENU);
 
     public override string ToString()
     {

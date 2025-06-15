@@ -76,6 +76,9 @@ public partial class Window : Canvas, ITitleBarParent
     public event EventHandler<DragDropQueryContinueEventArgs>? DragDropQueryContinue;
     public event EventHandler<DragDropGiveFeedback>? DragDropGiveFeedback;
     public event EventHandler<DragDropTargetEventArgs>? DragDropTarget;
+    public event EventHandler<KeyEventArgs>? PreviewKeyDown;
+    public event EventHandler<KeyEventArgs>? PreviewKeyUp;
+    public event EventHandler<KeyPressEventArgs>? PreviewKeyPress;
 
     public Window()
     {
@@ -975,6 +978,21 @@ public partial class Window : Canvas, ITitleBarParent
     private void OnNativeDragDropTarget(object? sender, DragDropTargetEventArgs e) => DragDropTarget?.Invoke(this, e);
     private void OnNativeDragDropQueryContinue(object? sender, DragDropQueryContinueEventArgs e) => DragDropQueryContinue?.Invoke(this, e);
     private void OnNativeDragDropGiveFeedback(object? sender, DragDropGiveFeedback e) => DragDropGiveFeedback?.Invoke(this, e);
+    protected virtual void OnPreviewKeyDown(object? sender, KeyEventArgs e) => PreviewKeyDown?.Invoke(sender, e);
+    protected virtual void OnPreviewKeyUp(object? sender, KeyEventArgs e) => PreviewKeyUp?.Invoke(sender, e);
+    protected virtual void OnPreviewKeyPress(object? sender, KeyPressEventArgs e) => PreviewKeyPress?.Invoke(sender, e);
+
+    public virtual void SendKeyEvent(KeyEventArgs e)
+    {
+        ExceptionExtensions.ThrowIfNull(e, nameof(e));
+        OnKeyEvent(e);
+    }
+
+    public virtual void SendKeyPressEvent(KeyPressEventArgs e)
+    {
+        ExceptionExtensions.ThrowIfNull(e, nameof(e));
+        OnKeyPressEvent(e);
+    }
 
     public virtual DROPEFFECT DoDragDrop(Visual visual, IDataObject dataObject, DROPEFFECT allowedEffects)
     {
@@ -3712,6 +3730,10 @@ public partial class Window : Canvas, ITitleBarParent
                     break;
 
                 var e = new KeyPressEventArgs(wParam.Value.ToUInt32());
+                win.OnPreviewKeyPress(win, e);
+                if (e.Handled)
+                    break;
+
                 win.OnKeyPressEvent(e);
                 if (e.Handled)
                     break;
@@ -3726,6 +3748,17 @@ public partial class Window : Canvas, ITitleBarParent
                     break;
 
                 var e2 = new KeyEventArgs((VIRTUAL_KEY)wParam.Value.ToUInt32(), (uint)lParam.Value.ToInt64());
+                if (e2.IsUp)
+                {
+                    win.OnPreviewKeyUp(win, e2);
+                }
+                else
+                {
+                    win.OnPreviewKeyDown(win, e2);
+                }
+                if (e2.Handled)
+                    break;
+
                 win.OnKeyEvent(e2);
                 if (e2.Handled)
                     break;
