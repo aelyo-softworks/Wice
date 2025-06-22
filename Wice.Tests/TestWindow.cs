@@ -29,7 +29,8 @@ public class TestWindow : Window
         //AddCounter(1);
         //AddDrawTextCounter(10);
 
-        ShowHeaders();
+        AddDialog();
+        //ShowHeaders();
         //RichTextBoxNoLangOptions();
         //ShowBrowser();
         //ShowTabs();
@@ -649,6 +650,10 @@ public class TestWindow : Window
 
                 dlg.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightPink.ToColor());
                 Children.Add(dlg);
+                dlg.Closed += (s, e) =>
+                {
+                    dlg = null;
+                };
             }
 
             void resize()
