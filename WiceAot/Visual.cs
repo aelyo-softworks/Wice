@@ -300,6 +300,9 @@ public partial class Visual : BaseObject
     protected internal virtual bool HandlePointerEvents { get; set; }
 
     [Browsable(false)]
+    public virtual bool ReceivesInputEvenWithModalShown { get; set; }
+
+    [Browsable(false)]
     public virtual bool? DisposeOnDetachFromComposition { get; set; } = true; // for IDisposable Visuals only
 
     [Browsable(false)]
@@ -1097,13 +1100,10 @@ public partial class Visual : BaseObject
     public void DoWhenDetachedFromComposition(Action action, VisualDoOptions options = VisualDoOptions.None)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
-        if (!options.HasFlag(VisualDoOptions.DeferredOnly))
+        if (!options.HasFlag(VisualDoOptions.DeferredOnly) && Window == null)
         {
-            if (Window == null)
-            {
-                action();
-                return;
-            }
+            action();
+            return;
         }
 
         if (!options.HasFlag(VisualDoOptions.ImmediateOnly))

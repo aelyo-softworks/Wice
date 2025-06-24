@@ -136,7 +136,7 @@ public class TestWindow : Window
         //};
     }
 
-    private Timer _timer;
+    private Timer? _timer;
     private void DisplayTime()
     {
         var label = new TextBox();
@@ -228,9 +228,8 @@ public class TestWindow : Window
             DisposeOnDetachFromComposition = false,
             IsFocusable = true,
             FontSize = 12,
+            Text = text
         };
-
-        tb.Text = text;
 
         tb.Options |= TextHostOptions.WordWrap;
         sv.Viewer.Child = tb;
@@ -345,7 +344,7 @@ public class TestWindow : Window
         tabs.VerticalAlignment = Alignment.Near;
         Children.Add(tabs);
 
-        TabPage plusPage = null;
+        TabPage? plusPage = null;
         addPage();
         addPage();
         addPage();
@@ -356,7 +355,7 @@ public class TestWindow : Window
         plusPage.Header.Icon.Text = MDL2GlyphResource.Add;
         plusPage.Header.Text.Text = string.Empty;
         plusPage.Header.HorizontalAlignment = Alignment.Stretch;
-        plusPage.Header.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
+        plusPage.Header.HoverRenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
         plusPage.Header.SelectedButtonClick += (s, e) => addPage();
 
         TabPage addPage()
@@ -378,16 +377,16 @@ public class TestWindow : Window
 
             page.Header.Name = "tp" + index;
             page.Header.Text.Text = "Page " + index;
-            page.Header.SelectedBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
+            page.Header.SelectedBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGray.ToColor());
             page.Header.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.DarkGray.ToColor());
             page.Header.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
-            page.Header.CloseButton.IsVisible = true;
+            page.Header.CloseButton!.IsVisible = true;
             page.Header.CloseButtonClick += (s, e) =>
             {
                 tabs.Pages.Remove(page);
             };
 
-            page.Content.Children.Add(new Border
+            page.Content!.Children.Add(new Border
             {
                 Width = 300,
                 Height = 300,
@@ -415,7 +414,7 @@ public class TestWindow : Window
                 if (seconds == 0)
                 {
                     label.Text = string.Empty;
-                    _timer.Dispose();
+                    _timer?.Dispose();
                     Cursor = null;
                 }
                 else
@@ -618,12 +617,20 @@ public class TestWindow : Window
             ScaleMode = D2D1_POINTSPECULAR_SCALE_MODE.D2D1_POINTSPECULAR_SCALE_MODE_HIGH_QUALITY_CUBIC
         };
 
-        var lightFactory = Compositor.CreateEffectFactory(light.GetIGraphicsEffect());
+        var lightFactory = Compositor!.CreateEffectFactory(light.GetIGraphicsEffect());
     }
 
     public void AddDialog()
     {
-        Dialog dlg = null;
+        var btn = new Button();
+        btn.HorizontalAlignment = Alignment.Near;
+        btn.VerticalAlignment = Alignment.Near;
+        btn.ReceivesInputEvenWithModalShown = true;
+        btn.Text.Text = "Open Dialog...";
+        btn.Click += (s, e) => MessageBox.Show(this, "Hello World!", "Under Modal");
+        Children.Add(btn);
+
+        Dialog? dlg = null;
         KeyDown += (s, e) =>
         {
             if (e.Key == VIRTUAL_KEY.VK_ESCAPE)
@@ -648,7 +655,7 @@ public class TestWindow : Window
                 resize();
                 Resized += (s2, e2) => resize();
 
-                dlg.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightPink.ToColor());
+                dlg.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightPink.ToColor());
                 Children.Add(dlg);
                 dlg.Closed += (s, e) =>
                 {
@@ -674,7 +681,7 @@ public class TestWindow : Window
         //b.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.YellowGreen);
         Children.Add(b);
 
-        var shadow = Compositor.CreateDropShadow();
+        var shadow = Compositor!.CreateDropShadow();
         shadow.BlurRadius = 20;
         b.RenderShadow = shadow;
 
@@ -695,7 +702,7 @@ public class TestWindow : Window
         MinHeight = 400;
 
         var tb = new TitleBar();
-        tb.Title.IsVisible = false;
+        tb.Title!.IsVisible = false;
         Dock.SetDockType(tb, DockType.Top);
         tb.IsMain = true;
         Children.Add(tb);
@@ -703,7 +710,7 @@ public class TestWindow : Window
         var menuBack = new Border();
         menuBack.Name = nameof(menuBack);
         menuBack.Width = 300;
-        menuBack.RenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0xFFE6E6E6).ToColor());
+        menuBack.RenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0xFFE6E6E6).ToColor());
         menuBack.Opacity = 0.5f;
         SetLeft(menuBack, 0);
         Children.Add(menuBack);
@@ -770,7 +777,7 @@ public class TestWindow : Window
         var typo = Typography.WithLigatures;
         header.Header.Text.SetTypography(typo.DWriteTypography.Object);
 
-        header.Header.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
+        header.Header.HoverRenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
         header.HorizontalAlignment = Alignment.Center;
         header.VerticalAlignment = Alignment.Center;
         header.Viewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
@@ -796,7 +803,7 @@ public class TestWindow : Window
         {
             Height = 100,
             Width = 200,
-            RenderBrush = popup.Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor())
+            RenderBrush = popup.Compositor!.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor())
         };
         popup.Children.Add(border);
     }
@@ -807,7 +814,7 @@ public class TestWindow : Window
         Children.Add(border);
         border.Height = 100;
         border.Width = 100;
-        border.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+        border.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
         border.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello red world");
 
         var border2 = new Border();
@@ -818,7 +825,7 @@ public class TestWindow : Window
         border2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
         border2.ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello blue world");
 
-        PopupWindow popup = null;
+        PopupWindow? popup = null;
         KeyDown += (s, e) =>
         {
             if (e.Key == VIRTUAL_KEY.VK_M)
@@ -862,7 +869,7 @@ public class TestWindow : Window
                     };
                     pborder.DoWhenAttachedToComposition(() =>
                     {
-                        pborder.RenderBrush = popup.Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+                        pborder.RenderBrush = popup.Compositor!.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
                     });
                     popup.Children.Add(pborder);
                 }
@@ -881,7 +888,7 @@ public class TestWindow : Window
 
         KeyDown += (s, e) =>
         {
-            Window.Title = "Windows Interface Composition Engine";
+            Window!.Title = "Windows Interface Composition Engine";
         };
     }
 
@@ -894,7 +901,7 @@ public class TestWindow : Window
         cb.Value = "tutu";
         cb.Width = 100;
         cb.Height = 100;
-        cb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor());
+        cb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor());
         cb.Click += (s, e) =>
         {
             //MessageBox.Show("click!");
@@ -948,7 +955,7 @@ public class TestWindow : Window
     {
         var canvas = new Canvas
         {
-            RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor())
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor())
         };
         var btn = new Button();
         //btn.Width = 100;
@@ -982,7 +989,7 @@ public class TestWindow : Window
         var dock = new Dock
         {
             LastChildFill = false,
-            RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor())
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor())
         };
         var btn = new Button();
         //btn.Width = 100;
@@ -1060,7 +1067,7 @@ public class TestWindow : Window
             Replace(Environment.NewLine, string.Empty).
             Replace(".", string.Empty).
             Replace(",", string.Empty)
-            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(24).Select(s => i++ + " : " + s);
+            .Split([' '], StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(24).Select(s => i++ + " : " + s);
         cb.DataSource = words;
     }
 
@@ -1081,14 +1088,14 @@ public class TestWindow : Window
         //lb.HorizontalAlignment = Alignment.Stretch;
 
         //lb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink);
-        lb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+        lb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
         var i = 0;
         var words = File.ReadAllText("lorem.txt").
             ToLowerInvariant().
             Replace(Environment.NewLine, string.Empty).
             Replace(".", string.Empty).
             Replace(",", string.Empty)
-            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(40).Select(s => i++ + " : " + s);
+            .Split([' '], StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(40).Select(s => i++ + " : " + s);
         lb.DataSource = words;
 
         lb.ScrollIntoView("27 : dolor");
@@ -1117,7 +1124,7 @@ public class TestWindow : Window
             Value = UriHostNameType.Basic,
             //var lb = new ListBox();
             //lb.DataSource = new object[] { "titi", 123, DateTime.Now, "hello world" };
-            RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
         };
         Children.Add(lb);
 
@@ -1151,7 +1158,7 @@ public class TestWindow : Window
             //lb.Value = MyFlagsEnum.Value0 | MyFlagsEnum.Value2 | MyFlagsEnum.Value4_x;
             //lb.Value = MyFlagsEnum.Value0;
             Value = Samples.Gallery.Samples.Collections.PropertyGrid.SampleDaysOfWeek.WeekDays,
-            RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
         };
         Children.Add(lb);
 
@@ -1171,7 +1178,7 @@ public class TestWindow : Window
     {
         var lb = new CheckBoxList
         {
-            RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
         };
         Children.Add(lb);
         //lb.DataSource = new List<string> { "hello", "world" };
@@ -1181,7 +1188,7 @@ public class TestWindow : Window
             Replace(Environment.NewLine, string.Empty).
             Replace(".", string.Empty).
             Replace(",", string.Empty)
-            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(4).Select(s => i++ + " : " + s);
+            .Split([' '], StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(4).Select(s => i++ + " : " + s);
         lb.DataSource = words;
     }
 
@@ -1189,7 +1196,7 @@ public class TestWindow : Window
     {
         var b = new Border
         {
-            RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor()),
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor()),
             HorizontalAlignment = Alignment.Center,
             VerticalAlignment = Alignment.Center
         };
@@ -1203,7 +1210,7 @@ public class TestWindow : Window
             Replace(Environment.NewLine, string.Empty).
             Replace(".", string.Empty).
             Replace(",", string.Empty)
-            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(10).Select(s => i++ + " : " + s).ToList();
+            .Split([' '], StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(10).Select(s => i++ + " : " + s).ToList();
 
         var lb = new ListBox
         {
@@ -1222,7 +1229,7 @@ public class TestWindow : Window
                 },
                 DataItemVisualBinder = (ctx) =>
                 {
-                    ((TextBox)ctx.DataVisual).Text = (string)ctx.Data;
+                    ((TextBox)ctx.DataVisual!).Text = (string)ctx.Data!;
                 }
             }
         };
@@ -1264,7 +1271,7 @@ public class TestWindow : Window
             }
         };
 
-        lb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
+        lb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
         Children.Add(lb);
         //lb.DataSource = new List<string> { "hello", "world" };
         var i = 0;
@@ -1273,15 +1280,15 @@ public class TestWindow : Window
             Replace(Environment.NewLine, string.Empty).
             Replace(".", string.Empty).
             Replace(",", string.Empty)
-            .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(4).Select(s => i++ + " : " + s);
+            .Split([' '], StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(4).Select(s => i++ + " : " + s);
         lb.DataSource = words;
     }
 
     private sealed class TestPg
     {
-        public string Text1 { get; internal set; }
-        public string Text2 { get; internal set; }
-        public string Text3 { get; internal set; }
+        public string? Text1 { get; internal set; }
+        public string? Text2 { get; internal set; }
+        public string? Text3 { get; internal set; }
     }
 
     public void AddSimplePropertyGrid4()
@@ -1309,8 +1316,8 @@ public class TestWindow : Window
         Children.Add(dlg);
 
         var tlb = new TitleBar();
-        tlb.MaxButton.IsVisible = false;
-        tlb.MinButton.IsVisible = false;
+        tlb.MaxButton!.IsVisible = false;
+        tlb.MinButton!.IsVisible = false;
         dlg.Content.Children.Add(tlb);
 
         var pg = new PropertyGrid.PropertyGrid
@@ -1387,7 +1394,7 @@ public class TestWindow : Window
         var b = new Border
         {
             //b.VerticalAlignment = Alignment.Near;
-            RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightSalmon.ToColor()),
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightSalmon.ToColor()),
             ToolTipContentCreator = (tt) => CreateDefaultToolTipContent(tt, "hello world!")
         };
         Children.Add(b);
@@ -1428,7 +1435,7 @@ public class TestWindow : Window
         canvas.Name = nameof(canvas);
         canvas.Width = 300;
         canvas.Height = 300;
-        canvas.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
+        canvas.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
         Children.Add(canvas);
 
         var tb = new TextBox();
@@ -1480,7 +1487,7 @@ public class TestWindow : Window
     {
         var stack = new Stack();
         Children.Add(stack);
-        stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+        stack.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
         stack.Width = 300;
         stack.Height = 300;
 
@@ -1518,7 +1525,7 @@ public class TestWindow : Window
         b1.Padding = 10;
         b1.Width = 150;
         b1.Height = 150;
-        b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+        b1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
         Children.Add(b1);
 
         //var image = new Image();
@@ -1557,7 +1564,7 @@ public class TestWindow : Window
     {
         var b1 = new Border();
         b1.Name = nameof(b1);
-        b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
+        b1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
         Children.Add(b1);
 
         var b2 = new Border();
@@ -1629,7 +1636,7 @@ public class TestWindow : Window
             //stack.Orientation = Orientation.Vertical;
             //stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.White);
             //stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red);
-            RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LemonChiffon.ToColor())
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LemonChiffon.ToColor())
         };
         //stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue);
 
@@ -1709,7 +1716,7 @@ public class TestWindow : Window
                         break;
 
                     var rw = 1;
-                    var pt = new Rectangle() { Width = rw * 2, Height = rw * 2, FillBrush = canvas.Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()) };
+                    var pt = new Rectangle() { Width = rw * 2, Height = rw * 2, FillBrush = canvas.Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()) };
                     SetLeft(pt, desc.point.x - rw);
                     SetTop(pt, desc.point.y - rw);
                     canvas.Children.Add(pt);
@@ -1720,7 +1727,7 @@ public class TestWindow : Window
 
         canvas.AttachedToComposition += (s, e) =>
         {
-            canvas.RenderBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
+            canvas.RenderBrush = canvas.Compositor!.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
             path.StrokeBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor.ToColor());
         };
 
@@ -1970,7 +1977,7 @@ public class TestWindow : Window
 
             var border = new Border();
             grid.Children.Add(border);
-            border.RenderBrush = Compositor.CreateColorBrush(color.Item2.ToColor());
+            border.RenderBrush = Compositor!.CreateColorBrush(color.Item2.ToColor());
         }
     }
 
@@ -2007,7 +2014,7 @@ public class TestWindow : Window
 
             var border = new Border();
             grid.Children.Add(border);
-            border.RenderBrush = Compositor.CreateColorBrush(color.Value.Color.ToColor());
+            border.RenderBrush = Compositor!.CreateColorBrush(color.Value.Color.ToColor());
             i++;
             if (i == max)
                 break;
@@ -2074,7 +2081,7 @@ public class TestWindow : Window
         var dlgPanel = new Stack
         {
             Name = "panel",
-            RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor()),
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor()),
             LastChildFill = false,
             Orientation = Orientation.Horizontal
         };
@@ -2187,8 +2194,8 @@ public class TestWindow : Window
             var shape = new Ellipse();
             visual.Children.Add(shape);
             var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
-            shape.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
-            shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
+            shape.RenderBrush = Compositor!.CreateColorBrush(color.ToColor());
+            shape.Shape!.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
             shape.Shape.StrokeThickness = 0.5f;
         }
 
@@ -2197,12 +2204,12 @@ public class TestWindow : Window
             var shape = new Line();
             visual.Children.Add(shape);
             var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
-            shape.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
-            shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
+            shape.RenderBrush = Compositor!.CreateColorBrush(color.ToColor());
+            shape.Shape!.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
             shape.Shape.StrokeThickness = 0.5f;
             shape.Arranged += (s, e) =>
             {
-                shape.Geometry.End = shape.ArrangedRect.Size.ToVector2();
+                shape.Geometry!.End = shape.ArrangedRect.Size.ToVector2();
             };
         }
 
@@ -2211,9 +2218,9 @@ public class TestWindow : Window
             var shape = new RoundedRectangle();
             visual.Children.Add(shape);
             var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
-            shape.Geometry.CornerRadius = new Vector2(10);
-            shape.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
-            shape.Shape.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
+            shape.Geometry!.CornerRadius = new Vector2(10);
+            shape.RenderBrush = Compositor!.CreateColorBrush(color.ToColor());
+            shape.Shape!.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
             shape.Shape.StrokeThickness = 0.5f;
         }
     }
@@ -2236,7 +2243,7 @@ public class TestWindow : Window
         cell0.Name = nameof(cell0);
         grid.Children.Add(cell0);
         cell0.Margin = 10;
-        cell0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Purple.ToColor());
+        cell0.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Purple.ToColor());
 
         var cell1 = new Border();
         cell0.Name = nameof(cell1);
@@ -2279,7 +2286,7 @@ public class TestWindow : Window
         cell0.Height = 20;
         grid.Children.Add(cell0);
         cell0.Margin = 10;
-        cell0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Purple.ToColor());
+        cell0.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Purple.ToColor());
 
         var cell1 = new Border();
         cell1.Name = nameof(cell1);
@@ -2365,7 +2372,7 @@ public class TestWindow : Window
             };
             visual.Children.Add(cell);
             var color = new D3DCOLORVALUE(0, i / (float)visual.Rows, j / (float)visual.Columns);
-            cell.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
+            cell.RenderBrush = Compositor!.CreateColorBrush(color.ToColor());
         }
     }
 
@@ -2377,7 +2384,7 @@ public class TestWindow : Window
         };
         doc.Name = nameof(doc);
         doc.LastChildFill = false;
-        doc.RenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0xFFF0F0F0).ToColor());
+        doc.RenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0xFFF0F0F0).ToColor());
         Children.Add(doc);
 
         var okButton = new Button
@@ -2413,7 +2420,7 @@ public class TestWindow : Window
         };
         doc.Name = nameof(doc);
         doc.LastChildFill = false;
-        doc.RenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(0xFFF0F0F0).ToColor());
+        doc.RenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0xFFF0F0F0).ToColor());
         Children.Add(doc);
 
         var okButton = new Button();
@@ -2452,7 +2459,7 @@ public class TestWindow : Window
                 Name = "border" + i
             };
             wrap.Children.Add(b);
-            b.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+            b.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
             var color = new D3DCOLORVALUE(0, 1 - (i / (float)max), 1 - (i / (float)max));
             b.RenderBrush = Compositor.CreateColorBrush(color.ToColor());
             b.Width = r.Next(10, 60);
@@ -2479,7 +2486,7 @@ public class TestWindow : Window
     {
         var stack = new Stack();
         Children.Add(stack);
-        stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+        stack.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
         //stack.Width = 200;
 
         var b0 = new Border();
@@ -2543,7 +2550,7 @@ public class TestWindow : Window
     {
         var stack = new Stack();
         Children.Add(stack);
-        stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+        stack.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
         stack.HorizontalAlignment = Alignment.Center;
         stack.VerticalAlignment = Alignment.Center;
 
@@ -2567,7 +2574,7 @@ public class TestWindow : Window
         var stack = new Stack();
         Children.Add(stack);
         stack.Name = nameof(stack);
-        stack.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
+        stack.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
         stack.Width = 300;
         stack.Height = 300;
 
@@ -2603,7 +2610,7 @@ public class TestWindow : Window
         var doc = new Dock
         {
             LastChildFill = false,
-            RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor())
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor())
         };
         Children.Add(doc);
 
@@ -2637,7 +2644,7 @@ public class TestWindow : Window
                 ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
                 FontSize = 30,
                 Text = i.ToString(),
-                RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Black.ChangeAlpha(i / 10f).ToColor()),
+                RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Black.ChangeAlpha(i / 10f).ToColor()),
                 ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White.ChangeAlpha((10 - i) / 10f))
             };
             border.Children.Add(tb);
@@ -2662,7 +2669,7 @@ public class TestWindow : Window
         var doc = new Dock
         {
             LastChildFill = false,
-            RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor())
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor())
         };
         Children.Add(doc);
 
@@ -2692,7 +2699,7 @@ public class TestWindow : Window
         Children.Add(dock);
         dock.Name = "D#" + nameof(dock);
         dock.Margin = 50;
-        dock.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Black.ToColor());
+        dock.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Black.ToColor());
 
         var b1 = new Border();
         dock.Children.Add(b1);

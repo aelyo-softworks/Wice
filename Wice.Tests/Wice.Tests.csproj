@@ -25,6 +25,7 @@
 
 	<ItemGroup>
 		<Compile Include="..\Wice.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="SampleModel.cs" />
+		<Compile Include="..\WiceAot.Tests\GlobalSuppressions.cs" Link="GlobalSuppressions.cs" />
 		<Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
 	</ItemGroup>
 

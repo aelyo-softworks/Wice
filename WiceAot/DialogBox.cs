@@ -2,17 +2,13 @@
 
 public partial class DialogBox : Dialog
 {
-    private readonly RoundedRectangle _rr;
-
     public DialogBox()
     {
-        _rr = new RoundedRectangle
+        Border = CreateBorder();
+        if (Border != null)
         {
-            CornerRadius = new Vector2(Application.CurrentTheme.RoundedButtonCornerRadius)
-        };
-
-        _rr.DoWhenAttachedToComposition(() => _rr.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor()));
-        Content.Children.Add(_rr);
+            Content.Children.Add(Border);
+        }
 
         BackPanel = CreateBackPanel();
         if (BackPanel == null)
@@ -24,13 +20,17 @@ public partial class DialogBox : Dialog
         Content.Children.Add(BackPanel);
 
         TitleBar = CreateTitleBar();
-        if (TitleBar == null)
-            throw new InvalidOperationException();
 #if DEBUG
-        TitleBar.Name ??= "titleBar";
+        if (TitleBar != null)
+        {
+            TitleBar.Name ??= "titleBar";
+        }
 #endif
 
-        BackPanel.Children.Add(TitleBar);
+        if (TitleBar != null)
+        {
+            BackPanel.Children.Add(TitleBar);
+        }
 
         DialogContent = CreateDialogContent();
         if (DialogContent == null)
@@ -41,21 +41,25 @@ public partial class DialogBox : Dialog
         BackPanel.Children.Add(DialogContent);
 
         ButtonsPanel = CreateButtonsPanel();
-        if (ButtonsPanel == null)
-            throw new InvalidOperationException();
 #if DEBUG
-        ButtonsPanel.Name ??= "buttonsPanel";
+        if (ButtonsPanel != null)
+        {
+            ButtonsPanel.Name ??= "buttonsPanel";
+        }
 #endif
-        BackPanel.Children.Add(ButtonsPanel);
+        if (ButtonsPanel != null)
+        {
+            BackPanel.Children.Add(ButtonsPanel);
+        }
     }
 
     [Category(CategoryBehavior)]
     public string Title
     {
-        get => TitleBar.Title?.Text ?? string.Empty;
+        get => TitleBar?.Title?.Text ?? string.Empty;
         set
         {
-            var title = TitleBar.Title;
+            var title = TitleBar?.Title;
             if (title != null)
             {
                 title.Text = value;
@@ -67,7 +71,7 @@ public partial class DialogBox : Dialog
     public IEnumerable<Button> Buttons => ButtonsPanel?.Children.OfType<Button>() ?? [];
 
     [Browsable(false)]
-    public TitleBar TitleBar { get; }
+    public TitleBar? TitleBar { get; }
 
     [Browsable(false)]
     public Visual BackPanel { get; }
@@ -76,7 +80,17 @@ public partial class DialogBox : Dialog
     public Visual DialogContent { get; }
 
     [Browsable(false)]
-    public Visual ButtonsPanel { get; }
+    public Visual? ButtonsPanel { get; }
+
+    [Browsable(false)]
+    public Visual? Border { get; }
+
+    protected virtual Visual? CreateBorder()
+    {
+        var border = new RoundedRectangle { CornerRadius = new Vector2(Application.CurrentTheme.RoundedButtonCornerRadius) };
+        border.DoWhenAttachedToComposition(() => border.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor()));
+        return border;
+    }
 
     protected virtual Visual CreateDialogContent()
     {
@@ -88,7 +102,7 @@ public partial class DialogBox : Dialog
         return dock;
     }
 
-    protected virtual TitleBar CreateTitleBar()
+    protected virtual TitleBar? CreateTitleBar()
     {
         var bar = new TitleBar();
         if (bar.Title != null)
@@ -137,13 +151,16 @@ public partial class DialogBox : Dialog
         return panel;
     }
 
-    protected virtual Visual CreateButtonsPanel() => new Dock() { LastChildFill = false, Margin = Application.CurrentTheme.ButtonMargin };
+    protected virtual Visual? CreateButtonsPanel() => new Dock() { LastChildFill = false, Margin = Application.CurrentTheme.ButtonMargin };
     protected virtual Button CreateButton() => new();
 
     public Button? GetCommandButton(MESSAGEBOX_RESULT command) => Buttons.FirstOrDefault(b => command.Equals(b.Command));
 
     public virtual Button AddButton()
     {
+        if (ButtonsPanel == null)
+            throw new InvalidOperationException();
+
         var button = CreateButton();
         var margin = Application.CurrentTheme.ButtonMargin;
         button.Margin = D2D_RECT_F.Thickness(margin, 0, 0, 0);

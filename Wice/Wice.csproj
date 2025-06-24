@@ -302,6 +302,7 @@
 	  <Compile Include="..\WiceAot\VerticalScrollBar.cs" Link="VerticalScrollBar.cs" />
 	  <Compile Include="..\WiceAot\Viewer.cs" Link="Viewer.cs" />
 	  <Compile Include="..\WiceAot\Visual.cs" Link="Visual.cs" />
+	  <Compile Include="..\WiceAot\VisualDepthComparer.cs" Link="VisualDepthComparer.cs" />
 	  <Compile Include="..\WiceAot\VisualDoOptions.cs" Link="VisualDoOptions.cs" />
 	  <Compile Include="..\WiceAot\VisualProperty.cs" Link="VisualProperty.cs" />
 	  <Compile Include="..\WiceAot\VisualPropertyInvalidateModes.cs" Link="VisualPropertyInvalidateModes.cs" />

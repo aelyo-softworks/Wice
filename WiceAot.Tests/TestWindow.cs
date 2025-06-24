@@ -705,7 +705,7 @@ internal partial class TestWindow : Window
 
         // show progress bar like (modal)
         var dlg = new DialogBox();
-        dlg.TitleBar.IsVisible = false;
+        dlg.TitleBar!.IsVisible = false;
         var cancel = dlg.AddCancelButton();
         cancel.Click += (s, e) => cancelled = true;
 

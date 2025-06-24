@@ -658,30 +658,16 @@ public partial class Window : Canvas, ITitleBarParent
             throw new WiceException("0014: Native window has already been created.");
     }
 
-    public IReadOnlyList<Visual> GetIntersectingVisuals(D2D_POINT_2F point) => GetIntersectingVisuals(D2D_RECT_F.Sized(point.x, point.y, 1, 1));
-    public IReadOnlyList<Visual> GetIntersectingVisuals(D2D_RECT_F bounds)
+    public IReadOnlyList<Visual> GetIntersectingVisuals(D2D_POINT_2F point, IComparer<Visual>? comparer = null) => GetIntersectingVisuals(D2D_RECT_F.Sized(point.x, point.y, 1, 1), comparer);
+    public virtual IReadOnlyList<Visual> GetIntersectingVisuals(D2D_RECT_F bounds, IComparer<Visual>? comparer = null)
     {
         var qt = _visualsTree;
         if (qt == null)
             return [];
 
         var list = qt.GetIntersectingNodes(bounds).ToList();
-        list.Sort(new VisualDepthComparer());
+        list.Sort(comparer ?? new VisualDepthComparer());
         return list.AsReadOnly();
-    }
-
-    private sealed class VisualDepthComparer : IComparer<Visual>
-    {
-        public int Compare(Visual? x, Visual? y)
-        {
-            ExceptionExtensions.ThrowIfNull(x, nameof(x));
-            ExceptionExtensions.ThrowIfNull(y, nameof(y));
-            var cmp = -x!.ViewOrder.CompareTo(y!.ViewOrder);
-#if DEBUG
-            //Application.Trace("x ► " + x.FullName + " y ► " + y.FullName + " => " + cmp);
-#endif
-            return cmp;
-        }
     }
 
     protected virtual void EnableDebugTracking()
@@ -2859,6 +2845,9 @@ public partial class Window : Canvas, ITitleBarParent
 
     private bool CanReceiveInput(Visual visual)
     {
+        if (visual.ReceivesInputEvenWithModalShown)
+            return true;
+
         var topModal = ModalVisuals.OrderBy(m => m.ZIndexOrDefault).LastOrDefault();
         if (topModal == null)
             return true;

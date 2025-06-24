@@ -91,6 +91,7 @@
 
 	<ItemGroup>
 		<Using Include="System.Diagnostics" />
+		<Using Include="System.Diagnostics.CodeAnalysis" />
 		<Using Include="System.Numerics" />
 		<Using Include="System.Reflection" />
 		<Using Include="System.Runtime.Versioning" />

@@ -357,14 +357,12 @@ public static class UIExtensions
 
 #if NETFRAMEWORK
         var interop = surface.ComCast<ICompositionDrawingSurfaceInterop>();
-        using (var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop))
+        using var surfaceInterop = new ComObject<ICompositionDrawingSurfaceInterop>(interop);
+        using (var dc = surfaceInterop.BeginDraw(rect))
         {
-            using (var dc = surfaceInterop.BeginDraw(rect))
-            {
-                drawAction(dc);
-            }
-            surfaceInterop.EndDraw();
+            drawAction(dc);
         }
+        surfaceInterop.EndDraw();
 #else
         using var interop = surface.AsComObject<ICompositionDrawingSurfaceInterop>();
         using (var dc = interop.BeginDraw<ID2D1DeviceContext>(rect))
