@@ -1666,7 +1666,14 @@ public partial class Visual : BaseObject
         if (parent == null)
             return Name;
 
-        return parent.FullName + "\\" + Name;
+        if (string.IsNullOrEmpty(Name))
+            return parent.FullName;
+
+        var pf = parent.FullName;
+        if (string.IsNullOrEmpty(pf))
+            return Name;
+
+        return pf + "\\" + Name;
     }
 
     internal void OnKeyPressEvent(KeyPressEventArgs e)
@@ -2171,7 +2178,9 @@ public partial class Visual : BaseObject
     public void Arrange(D2D_RECT_F finalRect) // includes margin
     {
         if (DesiredSize.IsInvalid)
-            throw new WiceException("0019: Visual '" + Name + "' of type '" + GetType().FullName + "' cannot be arranged as it was not measured.");
+#if DEBUG
+            Application.Trace("Visual '" + Name + "' of type '" + GetType().FullName + "' cannot be arranged as it was not measured.");
+#endif
 
         _lastArrangeRect = finalRect;
         if (finalRect.IsNotSet)

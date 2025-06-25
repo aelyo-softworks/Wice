@@ -137,6 +137,7 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual HBRUSH BackgroundBrush { get; } // GET_STOCK_OBJECT_FLAGS.STOCK_BRUSH_WINDOW; // default is white, we use transparent
     protected virtual int MaxChildrenCount => int.MaxValue;
     protected virtual bool HasCaret => true;
+    protected virtual bool ModalsIntersectWithAllBounds => false;
     protected virtual D3D11_CREATE_DEVICE_FLAG CreateDeviceFlags
     {
         get
@@ -206,7 +207,7 @@ public partial class Window : Canvas, ITitleBarParent
     public FocusVisual? FocusVisual { get; private set; }
 
     [Browsable(false)]
-    public IEnumerable<Visual> ModalVisuals => Children.Where(v => v.IsModal());
+    public virtual IEnumerable<Visual> ModalVisuals => Children.Where(v => v.IsModal());
 
     [Category(CategoryLive)]
     public bool HasFocus { get => _hasFocus; private set => SetFocus(value); }
@@ -661,13 +662,34 @@ public partial class Window : Canvas, ITitleBarParent
     public IReadOnlyList<Visual> GetIntersectingVisuals(D2D_POINT_2F point, IComparer<Visual>? comparer = null) => GetIntersectingVisuals(D2D_RECT_F.Sized(point.x, point.y, 1, 1), comparer);
     public virtual IReadOnlyList<Visual> GetIntersectingVisuals(D2D_RECT_F bounds, IComparer<Visual>? comparer = null)
     {
-        var qt = _visualsTree;
-        if (qt == null)
-            return [];
-
-        var list = qt.GetIntersectingNodes(bounds).ToList();
+        var list = GetIntersectingVisualsPrivate(bounds).ToList();
         list.Sort(comparer ?? new VisualDepthComparer());
         return list.AsReadOnly();
+    }
+
+    private IEnumerable<Visual> GetIntersectingVisualsPrivate(D2D_RECT_F bounds)
+    {
+        var modals = new HashSet<Visual>();
+        if (ModalsIntersectWithAllBounds)
+        {
+            foreach (var visual in ModalVisuals)
+            {
+                modals.Add(visual);
+                yield return visual;
+            }
+        }
+
+        var qt = _visualsTree;
+        if (qt == null)
+            yield break;
+
+        foreach (var visual in qt.GetIntersectingNodes(bounds))
+        {
+            if (modals.Contains(visual))
+                continue;
+
+            yield return visual;
+        }
     }
 
     protected virtual void EnableDebugTracking()
@@ -2843,8 +2865,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
-    private bool CanReceiveInput(Visual visual)
+    public virtual bool CanReceiveInput(Visual visual)
     {
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
         if (visual.ReceivesInputEvenWithModalShown)
             return true;
 
