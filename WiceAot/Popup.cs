@@ -8,6 +8,7 @@ public partial class Popup : Canvas, IModalVisual
     public static VisualProperty HorizontalOffsetProperty { get; } = VisualProperty.Add(typeof(Popup), nameof(HorizontalOffset), VisualPropertyInvalidateModes.Arrange, 0f);
     public static VisualProperty VerticalOffsetProperty { get; } = VisualProperty.Add(typeof(Popup), nameof(VerticalOffset), VisualPropertyInvalidateModes.Arrange, 0f);
     public static VisualProperty CustomPlacementFuncProperty { get; } = VisualProperty.Add<Func<PlacementParameters, D2D_POINT_2F>>(typeof(Popup), nameof(CustomPlacementFunc), VisualPropertyInvalidateModes.Arrange);
+    public static VisualProperty UseRoundingProperty { get; } = VisualProperty.Add(typeof(Popup), nameof(UseRounding), VisualPropertyInvalidateModes.Measure, true);
 
     [Category(CategoryBehavior)]
     public bool IsModal { get => (bool)GetPropertyValue(IsModalProperty)!; set => SetPropertyValue(IsModalProperty, value); }
@@ -24,6 +25,9 @@ public partial class Popup : Canvas, IModalVisual
     [Category(CategoryLayout)]
     public float VerticalOffset { get => (float)GetPropertyValue(VerticalOffsetProperty)!; set => SetPropertyValue(VerticalOffsetProperty, value); }
 
+    [Category(CategoryLayout)]
+    public bool UseRounding { get => (bool)GetPropertyValue(UseRoundingProperty)!; set => SetPropertyValue(UseRoundingProperty, value); }
+
     [Browsable(false)]
     public Func<PlacementParameters, D2D_POINT_2F> CustomPlacementFunc { get => (Func<PlacementParameters, D2D_POINT_2F>)GetPropertyValue(CustomPlacementFuncProperty)!; set => SetPropertyValue(CustomPlacementFuncProperty, value); }
 
@@ -37,8 +41,9 @@ public partial class Popup : Canvas, IModalVisual
         parameters.VerticalOffset = VerticalOffset;
         parameters.Mode = PlacementMode;
         parameters.Target = PlacementTarget;
-        var pt = PopupWindow.Place(parameters);
+        parameters.UseRounding = UseRounding;
 
+        var pt = PopupWindow.Place(parameters);
         SetLeft(this, pt.x);
         SetTop(this, pt.y);
     }

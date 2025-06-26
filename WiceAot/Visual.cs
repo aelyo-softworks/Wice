@@ -442,7 +442,8 @@ public partial class Visual : BaseObject
         }
     }
 
-    // relative to parent, non clipped, no margin
+    // relative to parent, non clipped, no margin (initially equal to AbsoluteRenderRect)
+    // but possibly changed after render transforms
     // RenderCore overrides should not use left+top as this is handled by rendering engine
     [Category(CategoryRender)]
     public D2D_RECT_F AbsoluteRenderBounds
@@ -2182,7 +2183,7 @@ public partial class Visual : BaseObject
             Application.Trace("Visual '" + Name + "' of type '" + GetType().FullName + "' cannot be arranged as it was not measured.");
 #endif
 
-        _lastArrangeRect = finalRect;
+            _lastArrangeRect = finalRect;
         if (finalRect.IsNotSet)
             throw new ArgumentException(null, nameof(finalRect));
 

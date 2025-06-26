@@ -9,13 +9,34 @@ public partial class PopupWindow : Window
     public static VisualProperty CustomPlacementFuncProperty { get; } = VisualProperty.Add<Func<PlacementParameters, D2D_POINT_2F>>(typeof(PopupWindow), nameof(CustomPlacementFunc), VisualPropertyInvalidateModes.Arrange);
     public static VisualProperty FollowPlacementTargetProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(FollowPlacementTarget), VisualPropertyInvalidateModes.Measure, false);
     public static VisualProperty ClickThroughProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(ClickThrough), VisualPropertyInvalidateModes.None, false);
+    public static VisualProperty UseRoundingProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(UseRounding), VisualPropertyInvalidateModes.Measure, true);
+    public static VisualProperty UseScreenCoordinatesProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(UseScreenCoordinates), VisualPropertyInvalidateModes.Measure, true);
 
+    [Category(CategoryBehavior)]
     public bool FollowPlacementTarget { get => (bool)GetPropertyValue(FollowPlacementTargetProperty)!; set => SetPropertyValue(FollowPlacementTargetProperty, value); }
+
+    [Category(CategoryBehavior)]
     public bool ClickThrough { get => (bool)GetPropertyValue(ClickThroughProperty)!; set => SetPropertyValue(ClickThroughProperty, value); }
+
+    [Category(CategoryBehavior)]
+    public bool UseRounding { get => (bool)GetPropertyValue(UseRoundingProperty)!; set => SetPropertyValue(UseRoundingProperty, value); }
+
+    [Category(CategoryBehavior)]
+    public bool UseScreenCoordinates { get => (bool)GetPropertyValue(UseScreenCoordinatesProperty)!; set => SetPropertyValue(UseScreenCoordinatesProperty, value); }
+
+    [Category(CategoryLayout)]
     public Visual? PlacementTarget { get => (Visual?)GetPropertyValue(PlacementTargetProperty); set => SetPropertyValue(PlacementTargetProperty, value); }
+
+    [Category(CategoryLayout)]
     public PlacementMode PlacementMode { get => (PlacementMode)GetPropertyValue(PlacementModeProperty)!; set => SetPropertyValue(PlacementModeProperty, value); }
+
+    [Category(CategoryLayout)]
     public float HorizontalOffset { get => (float)GetPropertyValue(HorizontalOffsetProperty)!; set => SetPropertyValue(HorizontalOffsetProperty, value); }
+
+    [Category(CategoryLayout)]
     public float VerticalOffset { get => (float)GetPropertyValue(VerticalOffsetProperty)!; set => SetPropertyValue(VerticalOffsetProperty, value); }
+
+    [Browsable(false)]
     public Func<PlacementParameters, D2D_POINT_2F>? CustomPlacementFunc { get => (Func<PlacementParameters, D2D_POINT_2F>?)GetPropertyValue(CustomPlacementFuncProperty); set => SetPropertyValue(CustomPlacementFuncProperty, value); }
 
     public PopupWindow()
@@ -120,12 +141,13 @@ public partial class PopupWindow : Window
     {
         var parameters = new PlacementParameters(this)
         {
-            UseScreenCoordinates = true,
+            UseScreenCoordinates = UseScreenCoordinates,
             CustomFunc = CustomPlacementFunc,
             HorizontalOffset = HorizontalOffset,
             VerticalOffset = VerticalOffset,
             Mode = PlacementMode,
-            Target = PlacementTarget
+            Target = PlacementTarget,
+            UseRounding = UseRounding
         };
         return parameters;
     }
@@ -189,11 +211,6 @@ public partial class PopupWindow : Window
 
             switch (parameters.Mode)
             {
-                case PlacementMode.Absolute:
-                    left = parameters.HorizontalOffset;
-                    top = parameters.VerticalOffset;
-                    break;
-
                 case PlacementMode.Center:
                     left = leftTop.x + (tr.Width - visualBounds.Width) / 2;
                     top = leftTop.y + (tr.Height - visualBounds.Height) / 2;
@@ -315,7 +332,6 @@ public partial class PopupWindow : Window
                     break;
 
                 case PlacementMode.Relative:
-                    // case PlacementMode.Relative:
                     left = leftTop.x;
                     top = leftTop.y;
                     break;
@@ -323,13 +339,6 @@ public partial class PopupWindow : Window
                 default:
                     throw new NotSupportedException();
             }
-        }
-
-        if (parameters.Mode != PlacementMode.Absolute)
-        {
-            // TODO: this is not good, it must be rewritten according to directions
-            left += parameters.HorizontalOffset;
-            top += parameters.VerticalOffset;
         }
 
         if (parameters.UseRounding)

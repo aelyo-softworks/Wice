@@ -21,13 +21,13 @@ public class PlacementParameters
     protected virtual void CopyTo(PlacementParameters parameters)
     {
         ExceptionExtensions.ThrowIfNull(parameters, nameof(parameters));
-        parameters.CustomFunc = CustomFunc;
-        parameters.HorizontalOffset = HorizontalOffset;
-        parameters.Mode = Mode;
-        parameters.Target = Target;
         parameters.UseRounding = UseRounding;
         parameters.UseScreenCoordinates = UseScreenCoordinates;
+        parameters.Target = Target;
+        parameters.Mode = Mode;
+        parameters.HorizontalOffset = HorizontalOffset;
         parameters.VerticalOffset = VerticalOffset;
+        parameters.CustomFunc = CustomFunc;
     }
 
     public virtual PlacementParameters Clone()

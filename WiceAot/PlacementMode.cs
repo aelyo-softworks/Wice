@@ -3,7 +3,6 @@
 public enum PlacementMode
 {
     Relative, // = InnerTopLeft
-    Absolute,
     Center,
     Mouse,
     Custom,

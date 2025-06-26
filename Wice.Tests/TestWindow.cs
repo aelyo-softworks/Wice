@@ -622,10 +622,12 @@ public class TestWindow : Window
 
     public void AddDialog()
     {
-        var btn = new Button();
-        btn.HorizontalAlignment = Alignment.Near;
-        btn.VerticalAlignment = Alignment.Near;
-        btn.ReceivesInputEvenWithModalShown = true;
+        var btn = new Button
+        {
+            HorizontalAlignment = Alignment.Near,
+            VerticalAlignment = Alignment.Near,
+            ReceivesInputEvenWithModalShown = true
+        };
         btn.Text.Text = "Open Dialog...";
         btn.Click += (s, e) => MessageBox.Show(this, "Hello World!", "Under Modal");
         Children.Add(btn);
