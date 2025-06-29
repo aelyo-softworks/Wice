@@ -10,7 +10,7 @@ public partial class VisualsTree : Form
 {
     private Icon _icon;
     private BoundsVisual _bounds;
-    private readonly HashSet<Visual> _expanded = new HashSet<Visual>();
+    private readonly HashSet<Visual> _expanded = [];
 
     static VisualsTree()
     {
@@ -629,7 +629,7 @@ public partial class VisualsTree : Form
 
     private sealed class ReflectionTypeDescriptor : ICustomTypeDescriptor
     {
-        private readonly List<PropertyDescriptor> _properties = new List<PropertyDescriptor>();
+        private readonly List<PropertyDescriptor> _properties = [];
         private readonly string _toString;
         private readonly object _instance;
 
@@ -668,15 +668,15 @@ public partial class VisualsTree : Form
             }
         }
 
-        public AttributeCollection GetAttributes() => new AttributeCollection();
+        public AttributeCollection GetAttributes() => new();
         public string GetClassName() => nameof(Object);
         public string GetComponentName() => nameof(Object);
         public TypeConverter GetConverter() => new ExpandableObjectConverter();
         public EventDescriptor GetDefaultEvent() => null;
         public PropertyDescriptor GetDefaultProperty() => null;
-        public EventDescriptorCollection GetEvents() => new EventDescriptorCollection(null);
-        public EventDescriptorCollection GetEvents(Attribute[] attributes) => new EventDescriptorCollection(null);
-        public PropertyDescriptorCollection GetProperties() => new PropertyDescriptorCollection(_properties.ToArray());
+        public EventDescriptorCollection GetEvents() => new(null);
+        public EventDescriptorCollection GetEvents(Attribute[] attributes) => new(null);
+        public PropertyDescriptorCollection GetProperties() => new(_properties.ToArray());
         public PropertyDescriptorCollection GetProperties(Attribute[] attributes) => GetProperties();
         public object GetPropertyOwner(PropertyDescriptor pd) => _instance;
         public object GetEditor(Type editorBaseType) => null;

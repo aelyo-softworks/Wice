@@ -8,7 +8,7 @@ public class PropertyGrid : Grid
     public static VisualProperty SelectedObjectProperty { get; } = VisualProperty.Add<object>(typeof(PropertyGrid), nameof(SelectedObject), VisualPropertyInvalidateModes.Measure, null);
     public static VisualProperty CellMarginProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(CellMargin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
 
-    private readonly ConcurrentDictionary<string, PropertyVisuals> _propertyVisuals = new ConcurrentDictionary<string, PropertyVisuals>();
+    private readonly ConcurrentDictionary<string, PropertyVisuals> _propertyVisuals = new();
 
     public PropertyGrid()
     {
@@ -136,8 +136,8 @@ public class PropertyGrid : Grid
         return prop;
     }
 
-    protected virtual PropertyGridSource CreateSource() => new PropertyGridSource(this, SelectedObject);
-    protected virtual PropertyGridCategorySource CreateCategorySource() => new PropertyGridCategorySource(this);
+    protected virtual PropertyGridSource CreateSource() => new(this, SelectedObject);
+    protected virtual PropertyGridCategorySource CreateCategorySource() => new(this);
     protected virtual void BindSelectedObject()
     {
         Source = CreateSource();

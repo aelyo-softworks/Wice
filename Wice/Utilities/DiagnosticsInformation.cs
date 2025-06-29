@@ -418,7 +418,7 @@ public class DiagnosticsInformation(Assembly assembly = null, Window window = nu
             var catName = cat?.Category ?? "General";
             if (!dic.TryGetValue(catName, out List<PropertyInfo> props))
             {
-                props = new List<PropertyInfo>();
+                props = [];
                 dic.Add(catName, props);
             }
             props.Add(prop);

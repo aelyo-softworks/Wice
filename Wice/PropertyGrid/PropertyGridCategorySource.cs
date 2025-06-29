@@ -12,7 +12,7 @@ public class PropertyGridCategorySource : BaseObject
     }
 
     public PropertyGrid Grid { get; }
-    public virtual ObservableCollection<PropertyGridCategory> Categories { get; } = new ObservableCollection<PropertyGridCategory>();
+    public virtual ObservableCollection<PropertyGridCategory> Categories { get; } = [];
 
     public virtual void AddCategories()
     {
@@ -29,7 +29,7 @@ public class PropertyGridCategorySource : BaseObject
                 var name = (prop.Category.Nullify() ?? Grid.UnspecifiedCategoryName) ?? PropertyGridCategory.MiscCategoryName;
                 if (!dic.TryGetValue(name, out var props))
                 {
-                    props = new List<PropertyGridProperty>();
+                    props = [];
                     dic.Add(name, props);
                 }
 
@@ -71,5 +71,5 @@ public class PropertyGridCategorySource : BaseObject
         }
     }
 
-    protected virtual PropertyGridCategory CreateCategory() => new PropertyGridCategory(this);
+    protected virtual PropertyGridCategory CreateCategory() => new(this);
 }

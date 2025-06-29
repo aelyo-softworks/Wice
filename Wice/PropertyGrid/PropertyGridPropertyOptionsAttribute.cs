@@ -5,7 +5,7 @@ namespace Wice.PropertyGrid;
 [AttributeUsage(AttributeTargets.Property)]
 public sealed class PropertyGridPropertyOptionsAttribute : Attribute
 {
-    private static readonly Lazy<ModuleBuilder> _moduleBuilder = new Lazy<ModuleBuilder>(GetBuilder, true);
+    private static readonly Lazy<ModuleBuilder> _moduleBuilder = new(GetBuilder, true);
 
     public int SortOrder { get; set; }
     public bool IsEnum { get; set; }

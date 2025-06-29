@@ -8,7 +8,7 @@ public static class CommandLine
     static CommandLine()
     {
         _namedArguments = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        _positionArguments = new Dictionary<int, string>();
+        _positionArguments = [];
 
         var args = Environment.GetCommandLineArgs();
 

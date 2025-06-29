@@ -12,15 +12,13 @@ public class PropertyGridCategory : BaseObject, IComparable, IComparable<Propert
 
     public PropertyGridCategory(PropertyGridCategorySource source)
     {
-        if (source == null)
-            throw new ArgumentNullException(nameof(source));
-
+        ExceptionExtensions.ThrowIfNull(source, nameof(source));
         Source = source;
         IsExpanded = true;
     }
 
     public PropertyGridCategorySource Source { get; }
-    public virtual ObservableCollection<PropertyGridProperty> Properties { get; } = new ObservableCollection<PropertyGridProperty>();
+    public virtual ObservableCollection<PropertyGridProperty> Properties { get; } = [];
     public string DisplayName { get => (string)GetPropertyValue(DisplayNameProperty); set => SetPropertyValue(DisplayNameProperty, value); }
     public int SortOrder { get => (int)GetPropertyValue(SortOrderProperty); set => SetPropertyValue(SortOrderProperty, value); }
     public bool IsExpanded { get => (bool)GetPropertyValue(IsExpandedProperty); set => SetPropertyValue(IsExpandedProperty, value); }

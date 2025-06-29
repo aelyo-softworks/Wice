@@ -521,7 +521,7 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
-    public override string ToString() => Title ?? string.Empty;
+    public override string ToString() => Name ?? Title ?? base.ToString();
 
     private sealed partial class WindowBaseObjectCollection : BaseObjectCollection<Visual>
     {

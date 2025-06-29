@@ -1,6 +1,5 @@
 ﻿namespace Wice;
 
-[DebuggerDisplay("{FullName}")]
 public partial class Visual : BaseObject
 {
     public const string CategoryLayout = "Layout"; // measure & arrange phases

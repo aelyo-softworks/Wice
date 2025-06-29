@@ -4,7 +4,7 @@ namespace Wice.Utilities;
 
 public static class WinRTUtilities
 {
-    private static readonly ConcurrentDictionary<ushort, bool> _apiContractAvailable = new ConcurrentDictionary<ushort, bool>();
+    private static readonly ConcurrentDictionary<ushort, bool> _apiContractAvailable = new();
 
     [DllImport("combase")]
 #pragma warning disable CA2101 // Specify marshaling for P/Invoke string arguments

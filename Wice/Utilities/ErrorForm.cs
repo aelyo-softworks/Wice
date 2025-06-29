@@ -7,10 +7,10 @@ namespace Wice.Utilities;
 
 internal class ErrorForm : Form
 {
-    private readonly TableLayoutPanel _table = new TableLayoutPanel();
-    private readonly TableLayoutPanel _titlePanel = new TableLayoutPanel();
-    private readonly System.Windows.Forms.Button _quit = new System.Windows.Forms.Button();
-    private readonly System.Windows.Forms.Button _details = new System.Windows.Forms.Button();
+    private readonly TableLayoutPanel _table = new();
+    private readonly TableLayoutPanel _titlePanel = new();
+    private readonly System.Windows.Forms.Button _quit = new();
+    private readonly System.Windows.Forms.Button _details = new();
 
     public ErrorForm(IList<Exception> errors)
     {

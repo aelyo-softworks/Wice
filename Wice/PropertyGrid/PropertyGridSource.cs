@@ -15,7 +15,7 @@ public class PropertyGridSource : BaseObject
 
     public PropertyGrid Grid { get; }
     public object Value { get; }
-    public virtual ObservableCollection<PropertyGridProperty> Properties { get; } = new ObservableCollection<PropertyGridProperty>();
+    public virtual ObservableCollection<PropertyGridProperty> Properties { get; } = [];
     public bool IsValid => !Properties.Cast<PropertyGridProperty>().Any(p => !p.IsValid);
     public bool IsInvalid => !IsValid;
     public bool IsAnyPropertyReadWrite => Properties.Any(p => p.IsReadWrite);
@@ -139,5 +139,5 @@ public class PropertyGridSource : BaseObject
         //OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsValidAndHasChanged)));
     }
 
-    protected virtual PropertyGridProperty CreateProperty(PropertyDescriptor descriptor) => new PropertyGridProperty(this, descriptor);
+    protected virtual PropertyGridProperty CreateProperty(PropertyDescriptor descriptor) => new(this, descriptor);
 }

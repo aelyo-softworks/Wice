@@ -2,7 +2,7 @@
 
 public static class WindowsUtilities
 {
-    private static readonly ConcurrentDictionary<string, string> _loadedStrings = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    private static readonly ConcurrentDictionary<string, string> _loadedStrings = new(StringComparer.OrdinalIgnoreCase);
 
 #pragma warning disable CA1401 // P/Invokes should not be visible
     [DllImport("kernel32", CharSet = CharSet.Auto)]
