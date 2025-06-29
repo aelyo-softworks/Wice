@@ -809,6 +809,14 @@ public partial class Window : Canvas, ITitleBarParent
         Native.Resize(width - (wr.Width - cr.Width), height - (wr.Height - cr.Height));
     }
 
+    public bool Close()
+    {
+        if (!_native.IsValueCreated)
+            return false;
+
+        return _native.Value.PostMessage(MessageDecoder.WM_CLOSE);
+    }
+
     public bool Destroy()
     {
         _icon?.Dispose();

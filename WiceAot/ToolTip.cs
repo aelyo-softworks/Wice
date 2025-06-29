@@ -49,7 +49,7 @@ public partial class ToolTip : PopupWindow, IContentParent
     protected virtual CompositionShadow? CreateShadow()
     {
         if (Compositor == null)
-            throw new InvalidOperationException();
+            return null;
 
         var shadow = Compositor.CreateDropShadow();
         shadow.BlurRadius = Application.CurrentTheme.ToolTipShadowBlurRadius;

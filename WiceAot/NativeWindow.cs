@@ -279,6 +279,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public nint SetWindowLong(WINDOW_LONG_PTR_INDEX index, nint data) => SetWindowLong(Handle, index, data);
     public nint GetUserData() => GetUserData(Handle);
     public nint SetUserData(nint data) => SetUserData(Handle, data);
+    public LRESULT SendMessage(uint msg) => WiceCommons.SendMessageW(Handle, msg, WPARAM.Null, LPARAM.Null);
+    public LRESULT SendMessage(uint msg, WPARAM wParam) => WiceCommons.SendMessageW(Handle, msg, wParam, LPARAM.Null);
+    public LRESULT SendMessage(uint msg, WPARAM wParam, LPARAM lParam) => WiceCommons.SendMessageW(Handle, msg, wParam, lParam);
     public bool PostMessage(uint msg) => WiceCommons.PostMessageW(Handle, msg, WPARAM.Null, LPARAM.Null);
     public bool PostMessage(uint msg, WPARAM wParam) => WiceCommons.PostMessageW(Handle, msg, wParam, LPARAM.Null);
     public bool PostMessage(uint msg, WPARAM wParam, LPARAM lParam) => WiceCommons.PostMessageW(Handle, msg, wParam, lParam);
