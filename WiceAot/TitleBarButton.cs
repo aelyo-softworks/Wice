@@ -99,18 +99,13 @@ public partial class TitleBarButton : ButtonBase
 
     private static int AdjustForMonitorDpi(Window window, int value, bool reduce = false)
     {
-        var dpi = window.Monitor?.EffectiveDpi.width;
-        if (!dpi.HasValue)
-        {
-            dpi = window.Dpi;
-        }
-
+        var dpi = window.Dpi;
         if (dpi == 96)
             return value;
 
         if (reduce)
-            return (int)(value * 96 / dpi.Value);
+            return (int)(value * 96 / dpi);
 
-        return (int)(value * dpi.Value / 96);
+        return (int)(value * dpi / 96);
     }
 }

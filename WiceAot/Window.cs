@@ -162,7 +162,7 @@ public partial class Window : Canvas, ITitleBarParent
     public int BorderHeight { get; }
 
     [Category(CategoryLayout)]
-    public uint Dpi => NativeIfCreated?.Dpi ?? 96;
+    public uint Dpi => NativeIfCreated?.Dpi ?? Monitor?.EffectiveDpi.width ?? 96;
 
     [Category(CategoryBehavior)]
     public bool IsBackground { get; set; } // true => doesn't prevent to quit
@@ -174,7 +174,19 @@ public partial class Window : Canvas, ITitleBarParent
     public TaskScheduler TaskScheduler => _scheduler;
 
     [Category(CategoryLive)]
-    public NativeWindow Native => _native.Value;
+    public NativeWindow Native
+    {
+        get
+        {
+            var created = !_native.IsValueCreated;
+            var value = _native.Value;
+            if (created)
+            {
+                OnHandleCreated(this, EventArgs.Empty);
+            }
+            return value;
+        }
+    }
 
     [Browsable(false)]
     public NativeWindow? NativeIfCreated => _native.IsValueCreated ? _native.Value : null;
@@ -986,7 +998,6 @@ public partial class Window : Canvas, ITitleBarParent
         native.DragDropGiveFeedback += OnNativeDragDropGiveFeedback;
         native.DragDropQueryContinue += OnNativeDragDropQueryContinue;
         native.DragDropTarget += OnNativeDragDropTarget;
-        OnHandleCreated(this, EventArgs.Empty);
         MonitorHandle = native.GetMonitorHandle(MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL);
         return native;
     }
@@ -3690,10 +3701,10 @@ public partial class Window : Canvas, ITitleBarParent
                     if (dpic.Handled)
                         break;
 
+                    WiceCommons.SetWindowPos(win.Handle, HWND.Null, rc.left, rc.top, rc.Width, rc.Height, SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
                     win.Invalidate(VisualPropertyInvalidateModes.Measure, new DpiChangedInvalidateReason(newDpi));
                 }
-
-                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
+                return 0;
 
             case MessageDecoder.WM_DPICHANGED_AFTERPARENT:
                 win?.OnDpiChangedAfterParent(win, EventArgs.Empty);

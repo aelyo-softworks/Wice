@@ -511,8 +511,8 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
 
         var ratio = GetMonitorDpiRatioToPrimary(Window.Monitor);
-        rc.Width = rc.Width * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor;
-        rc.Height = rc.Height * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor;
+        rc.Width = (int)((long)rc.Width * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor);
+        rc.Height = (int)((long)rc.Height * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor);
 
         context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_PIXELS);
         var rr = RelativeRenderRect;
