@@ -2,11 +2,7 @@
 
 public partial class Caret : Border, IDisposable
 {
-#if DEBUG
     public static VisualProperty BlinkProperty { get; } = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);
-#else
-    public static VisualProperty BlinkProperty {get; } = VisualProperty.Add(typeof(Caret), nameof(Blink), VisualPropertyInvalidateModes.Render, true);
-#endif
     public static VisualProperty IsShownProperty { get; } = VisualProperty.Add(typeof(Caret), nameof(IsShown), VisualPropertyInvalidateModes.Render, false);
 
     private WindowTimer? _blinkTimer;

@@ -11,6 +11,7 @@ public partial class Image : RenderVisual, IDisposable
 
     public event EventHandler<EventArgs>? BitmapCreated;
     public event EventHandler<EventArgs>? BitmapDisposed;
+    public event EventHandler<EventArgs>? BitmapError;
 
     private bool _disposedValue;
     private IComObject<ID2D1Bitmap>? _bitmap;
@@ -21,6 +22,7 @@ public partial class Image : RenderVisual, IDisposable
     }
 
     public IComObject<ID2D1Bitmap>? Bitmap => _bitmap;
+    public virtual HRESULT LastBitmapError { get; protected set; }
 
     [Category(CategoryBehavior)]
     public IComObject<IWICBitmapSource>? Source { get => (IComObject<IWICBitmapSource>?)GetPropertyValue(SourceProperty); set => SetPropertyValue(SourceProperty, value); }
@@ -159,10 +161,17 @@ public partial class Image : RenderVisual, IDisposable
             var bmp = _bitmap;
             if (bmp == null && Source != null)
             {
-                context.DeviceContext.Object.CreateBitmapFromWicBitmap(Source.Object, IntPtr.Zero, out ID2D1Bitmap bitmap).ThrowOnError();
-                bmp = new ComObject<ID2D1Bitmap>(bitmap);
-                _bitmap = bmp;
-                OnBitmapCreated(this, EventArgs.Empty);
+                LastBitmapError = context.DeviceContext.Object.CreateBitmapFromWicBitmap(Source.Object, IntPtr.Zero, out ID2D1Bitmap bitmap);
+                if (LastBitmapError.IsError)
+                {
+                    OnBitmapError(this, EventArgs.Empty);
+                }
+                else
+                {
+                    bmp = new ComObject<ID2D1Bitmap>(bitmap);
+                    _bitmap = bmp;
+                    OnBitmapCreated(this, EventArgs.Empty);
+                }
             }
 
             if (bmp != null && !bmp.IsDisposed)
@@ -186,6 +195,7 @@ public partial class Image : RenderVisual, IDisposable
 
     protected virtual void OnBitmapDisposed(object sender, EventArgs args) => BitmapDisposed?.Invoke(sender, args);
     protected virtual void OnBitmapCreated(object sender, EventArgs args) => BitmapCreated?.Invoke(sender, args);
+    protected virtual void OnBitmapError(object sender, EventArgs args) => BitmapError?.Invoke(sender, args);
 
     protected virtual void Dispose(bool disposing)
     {

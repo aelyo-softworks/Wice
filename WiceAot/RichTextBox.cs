@@ -31,7 +31,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
     }
 
 #if NETFRAMEWORK
-    private TextHost _host;
+    private readonly TextHost _host;
 
     [Category(CategoryLive)]
     public dynamic Document => _host?.Document;

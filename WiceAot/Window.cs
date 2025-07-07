@@ -2420,12 +2420,11 @@ public partial class Window : Canvas, ITitleBarParent
                 var ttVisual = getFirstTooltipCreatorVisual();
                 if (ttVisual != null)
                 {
-                    //Application.Trace("ttVisual:" + ttVisual);
                     var ttc = ttVisual.ToolTipContentCreator;
                     var visibleTime = Application.CurrentTheme.ToolTipVisibleTime;
                     if (visibleTime > 0) // disable tooltips
                     {
-                        if (ttVisual != CurrentToolTip?.PlacementTarget)
+                        if (ttc != null && ttVisual != CurrentToolTip?.PlacementTarget)
                         {
                             RemoveToolTip(e);
                             AddToolTip(ttVisual, ttc, e);

@@ -681,7 +681,7 @@ public partial class Visual : BaseObject
     public bool IsMouseOver { get => (bool)GetPropertyValue(IsMouseOverProperty)!; set => SetPropertyValue(IsMouseOverProperty, value); }
 
     [Browsable(false)]
-    public Action<ToolTip> ToolTipContentCreator { get => (Action<ToolTip>)GetPropertyValue(ToolTipContentCreatorProperty)!; set => SetPropertyValue(ToolTipContentCreatorProperty, value); }
+    public Action<ToolTip>? ToolTipContentCreator { get => (Action<ToolTip>?)GetPropertyValue(ToolTipContentCreatorProperty); set => SetPropertyValue(ToolTipContentCreatorProperty, value); }
 
     // composition/render specific properties
     [Category(CategoryRender)]
@@ -2177,12 +2177,14 @@ public partial class Visual : BaseObject
 
     public void Arrange(D2D_RECT_F finalRect) // includes margin
     {
-        if (DesiredSize.IsInvalid)
 #if DEBUG
+        if (DesiredSize.IsInvalid)
+        {
             Application.Trace("Visual '" + Name + "' of type '" + GetType().FullName + "' cannot be arranged as it was not measured.");
+        }
 #endif
 
-            _lastArrangeRect = finalRect;
+        _lastArrangeRect = finalRect;
         if (finalRect.IsNotSet)
             throw new ArgumentException(null, nameof(finalRect));
 
