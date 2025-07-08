@@ -29,7 +29,8 @@ public class TestWindow : Window
         //AddCounter(1);
         //AddDrawTextCounter(10);
 
-        AddDialog();
+        AddPopupWindow();
+        //AddDialog();
         //ShowHeaders();
         //RichTextBoxNoLangOptions();
         //ShowBrowser();
@@ -618,6 +619,36 @@ public class TestWindow : Window
         };
 
         var lightFactory = Compositor!.CreateEffectFactory(light.GetIGraphicsEffect());
+    }
+
+    public void AddPopupWindow()
+    {
+        var btn = new Button
+        {
+            HorizontalAlignment = Alignment.Far,
+            VerticalAlignment = Alignment.Near,
+        };
+        btn.Text.Text = "Open Popup...";
+        btn.Click += (s, e) =>
+        {
+            var popup = new PopupWindow();
+            popup.MaxHeight = 300;
+            popup.Title = "popup";
+
+            var canvas = new Canvas
+            {
+                MeasureToContent = DimensionOptions.WidthAndHeight,
+                HorizontalAlignment = Alignment.Center,
+                VerticalAlignment = Alignment.Center,
+            };
+            popup.Children.Add(canvas);
+
+            popup.MeasureToContent = DimensionOptions.WidthAndHeight;
+            var tb = new TextBox { Text = "hello popup", VerticalAlignment = Alignment.Center, HorizontalAlignment = Alignment.Near, BackgroundColor = D3DCOLORVALUE.Red };
+            canvas.Children.Add(tb);
+            popup.Show();
+        };
+        Children.Add(btn);
     }
 
     public void AddDialog()

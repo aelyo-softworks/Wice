@@ -1594,28 +1594,27 @@ public partial class Window : Canvas, ITitleBarParent
 
             if (w < MinWidth)
             {
-                MinWidth = w;
+                w = (int)MinWidth;
             }
 
             if (w > MaxWidth)
             {
-                MaxWidth = w;
+                w = (int)MaxWidth;
             }
 
             if (h < MinHeight)
             {
-                MinHeight = h;
+                h = (int)MinHeight;
             }
 
             if (h > MaxHeight)
             {
-                MaxHeight = h;
+                h = (int)MaxHeight;
             }
 
             ResizeClient(w, h);
         }
 
-        //FrameVisual.Size = ArrangedRect.Size;
         _visualsTree = new ConcurrentQuadTree<Visual>(ArrangedRect);
         RenderVisualAndChildren(this);
         UpdateFocus(FocusedVisual, null);
