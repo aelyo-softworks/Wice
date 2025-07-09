@@ -2296,7 +2296,6 @@ public partial class Visual : BaseObject
 
         DesiredSize = size + Margin;
         OnMeasured(this, EventArgs.Empty);
-        //Application.Trace(this + " constraint:" + constraint + " ds:" + DesiredSize);
     }
 
     private void ConstrainWidth(ref D2D_RECT_F rc, float width)

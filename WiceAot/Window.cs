@@ -138,6 +138,9 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual int MaxChildrenCount => int.MaxValue;
     protected virtual bool HasCaret => true;
     protected virtual bool ModalsIntersectWithAllBounds => false;
+#if DEBUG
+    protected virtual bool EnableDiagnosticKeys => false;
+#endif
     protected virtual D3D11_CREATE_DEVICE_FLAG CreateDeviceFlags
     {
         get
@@ -2151,7 +2154,6 @@ public partial class Window : Canvas, ITitleBarParent
 
     public static void ReleaseMouseCapture()
     {
-        //Application.Trace("visual: " + _mouseCaptorVisual);
         Interlocked.Exchange(ref _mouseCaptorVisual, null);
         NativeWindow.ReleaseMouse();
     }
@@ -2712,94 +2714,97 @@ public partial class Window : Canvas, ITitleBarParent
     {
         //Application.Trace(e.ToString());
 #if DEBUG
-        if (e.Key == VIRTUAL_KEY.VK_F5)
+        if (EnableDiagnosticKeys)
         {
-            if (e.IsDown)
+            if (e.Key == VIRTUAL_KEY.VK_F5)
             {
-                MeasureWindow(true);
-                e.Handled = true;
-            }
-            return;
-        }
-
-        if (e.Key == VIRTUAL_KEY.VK_F6)
-        {
-            var shift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
-            if (e.IsDown && (HasFocus || shift))
-            {
-                TraceInformation();
-                e.Handled = true;
-            }
-            return;
-        }
-
-        if (e.Key == VIRTUAL_KEY.VK_F7)
-        {
-            if (e.IsDown)
-            {
-                var settings = CompositionDebugSettings.TryGetSettings(Compositor);
-                if (settings != null)
+                if (e.IsDown)
                 {
-                    if (_showOverdraw)
+                    MeasureWindow(true);
+                    e.Handled = true;
+                }
+                return;
+            }
+
+            if (e.Key == VIRTUAL_KEY.VK_F6)
+            {
+                var shift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
+                if (e.IsDown && (HasFocus || shift))
+                {
+                    TraceInformation();
+                    e.Handled = true;
+                }
+                return;
+            }
+
+            if (e.Key == VIRTUAL_KEY.VK_F7)
+            {
+                if (e.IsDown)
+                {
+                    var settings = CompositionDebugSettings.TryGetSettings(Compositor);
+                    if (settings != null)
                     {
-                        settings.HeatMaps.Hide(FrameVisual);
-                    }
-                    else
-                    {
-                        var shift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
-                        if (shift)
+                        if (_showOverdraw)
                         {
-                            var control = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
-                            if (control)
-                            {
-                                settings.HeatMaps.ShowRedraw(FrameVisual);
-                            }
-                            else
-                            {
-                                settings.HeatMaps.ShowMemoryUsage(FrameVisual);
-                            }
+                            settings.HeatMaps.Hide(FrameVisual);
                         }
                         else
                         {
-                            settings.HeatMaps.ShowOverdraw(FrameVisual, CompositionDebugOverdrawContentKinds.All);
+                            var shift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
+                            if (shift)
+                            {
+                                var control = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
+                                if (control)
+                                {
+                                    settings.HeatMaps.ShowRedraw(FrameVisual);
+                                }
+                                else
+                                {
+                                    settings.HeatMaps.ShowMemoryUsage(FrameVisual);
+                                }
+                            }
+                            else
+                            {
+                                settings.HeatMaps.ShowOverdraw(FrameVisual, CompositionDebugOverdrawContentKinds.All);
+                            }
                         }
+                        _showOverdraw = !_showOverdraw;
+                        e.Handled = true;
                     }
-                    _showOverdraw = !_showOverdraw;
-                    e.Handled = true;
+                }
+                return;
+            }
+
+            if (e.Key == VIRTUAL_KEY.VK_F8)
+            {
+                if (e.IsDown)
+                {
+                    DXGIFunctions.DXGIReportLiveObjects();
                 }
             }
-            return;
-        }
-
-        if (e.Key == VIRTUAL_KEY.VK_F8)
-        {
-            if (e.IsDown)
-            {
-                DXGIFunctions.DXGIReportLiveObjects();
-            }
-        }
 
 #if NETFRAMEWORK
-        if (e.Key == VIRTUAL_KEY.VK_F9)
-        {
-            if (e.IsDown)
+            if (e.Key == VIRTUAL_KEY.VK_F9)
             {
-                var vt = new VisualsTree();
-                vt.SetCurrentWindow(this);
-                vt.Show(NativeWindow.FromHandle(Handle));
+                if (e.IsDown)
+                {
+                    var vt = new VisualsTree();
+                    vt.SetCurrentWindow(this);
+                    vt.Show(NativeWindow.FromHandle(Handle));
+                }
             }
-        }
 #endif
 
-        if (e.Key == VIRTUAL_KEY.VK_F11)
-        {
-            if (e.IsDown)
+            if (e.Key == VIRTUAL_KEY.VK_F11)
             {
-                Application.Trace("GC.Collect");
-                GC.Collect();
-                e.Handled = true;
+                if (e.IsDown)
+                {
+                    Application.Trace("GC.Collect");
+                    GC.Collect();
+                    e.Handled = true;
+                }
+                return;
             }
-            return;
         }
 #endif
 
