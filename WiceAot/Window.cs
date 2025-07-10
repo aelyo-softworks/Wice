@@ -66,12 +66,16 @@ public partial class Window : Canvas, ITitleBarParent
     public event EventHandler? Moved;
     public event EventHandler<ValueEventArgs<RECT>>? Moving;
     public event EventHandler? Resized;
+    public event EventHandler<ValueEventArgs<int>>? AppActivated;
     public event EventHandler? Activated;
+    public event EventHandler<ValueEventArgs<int>>? AppDeactivated;
     public event EventHandler? Deactivated;
     public event EventHandler? Destroyed;
     public event EventHandler<DpiChangedEventArgs>? DpiChanged;
     public event EventHandler? DpiChangedBeforeParent;
     public event EventHandler? DpiChangedAfterParent;
+    public event EventHandler<ValueEventArgs<WINDOWPOS>>? PositionChanging;
+    public event EventHandler<ValueEventArgs<WINDOWPOS>>? PositionChanged;
     public event EventHandler<ClosingEventArgs>? Closing;
     public event EventHandler<DragDropQueryContinueEventArgs>? DragDropQueryContinue;
     public event EventHandler<DragDropGiveFeedback>? DragDropGiveFeedback;
@@ -766,6 +770,10 @@ public partial class Window : Canvas, ITitleBarParent
 
     protected virtual void OnActivated(object? sender, EventArgs e) => Activated?.Invoke(sender, e);
     protected virtual void OnDeactivated(object? sender, EventArgs e) => Deactivated?.Invoke(sender, e);
+    protected virtual void OnAppActivated(object? sender, ValueEventArgs<int> e) => AppActivated?.Invoke(sender, e);
+    protected virtual void OnAppDeactivated(object? sender, ValueEventArgs<int> e) => AppDeactivated?.Invoke(sender, e);
+    protected virtual void OnPositionChanging(object? sender, ValueEventArgs<WINDOWPOS> e) => PositionChanging?.Invoke(sender, e);
+    protected virtual void OnPositionChanged(object? sender, ValueEventArgs<WINDOWPOS> e) => PositionChanged?.Invoke(sender, e);
     protected virtual void OnResized(object? sender, EventArgs e) => Resized?.Invoke(sender, e);
     protected virtual void OnDestroyed(object? sender, EventArgs e) => Destroyed?.Invoke(sender, e);
     protected virtual void OnMoved(object? sender, EventArgs e) => Moved?.Invoke(sender, e);
@@ -2075,7 +2083,6 @@ public partial class Window : Canvas, ITitleBarParent
     private void OnWmNcPaint() => MainTitleBar?.Update();
     private void OnWmActivate(HWND hwnd, bool activated)
     {
-        //Application.Trace(this + " activated:" + activated);
         if (activated)
         {
             ExtendFrame(hwnd);
@@ -2084,6 +2091,18 @@ public partial class Window : Canvas, ITitleBarParent
         else
         {
             OnDeactivated(this, EventArgs.Empty);
+        }
+    }
+
+    private void OnWmActivateApp(bool activated, int threadId)
+    {
+        if (activated)
+        {
+            OnAppActivated(this, new ValueEventArgs<int>(threadId));
+        }
+        else
+        {
+            OnAppDeactivated(this, new ValueEventArgs<int>(threadId));
         }
     }
 
@@ -3511,6 +3530,38 @@ public partial class Window : Canvas, ITitleBarParent
                     return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
                 return new LRESULT { Value = (int)ma };
+
+            case MessageDecoder.WM_ACTIVATEAPP:
+                win?.OnWmActivateApp(wParam.Value != 0, (int)lParam.Value.ToInt64());
+                break;
+
+            case MessageDecoder.WM_WINDOWPOSCHANGING:
+                if (win == null)
+                    break;
+
+                unsafe
+                {
+                    var pos = *(WINDOWPOS*)lParam.Value;
+                    var pose = new ValueEventArgs<WINDOWPOS>(pos, false, isCancellable: true);
+                    win?.OnPositionChanging(win, pose);
+                    if (pose.Cancel)
+                        break;
+
+                    *(WINDOWPOS*)lParam.Value = pose.Value;
+                }
+                return new LRESULT { Value = 0 };
+
+            case MessageDecoder.WM_WINDOWPOSCHANGED:
+                if (win == null)
+                    break;
+
+                unsafe
+                {
+                    var pos = *(WINDOWPOS*)lParam.Value;
+                    var pose = new ValueEventArgs<WINDOWPOS>(pos);
+                    win?.OnPositionChanged(win, pose);
+                }
+                break;
 
             case MessageDecoder.WM_POINTERACTIVATE:
                 if (win == null)

@@ -13,7 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DirectN" Version="1.17.2" />
+		<PackageReference Include="DirectN" Version="1.17.3" />
 	</ItemGroup>
 
 	<ItemGroup>

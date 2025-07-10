@@ -573,6 +573,7 @@ public partial class WebView : Border, IDisposable
                     }
 
                 }), ref _cursorChangedToken);
+
                 var cb = CompositionVisual.As<IUnknown>();
                 _controller.Object.put_RootVisualTarget(cb).ThrowOnError();
                 OnWebViewControllerSetup(this, _controller.Object);
