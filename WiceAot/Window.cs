@@ -3536,32 +3536,35 @@ public partial class Window : Canvas, ITitleBarParent
                 break;
 
             case MessageDecoder.WM_WINDOWPOSCHANGING:
-                if (win == null)
-                    break;
-
-                unsafe
+                if (win != null)
                 {
-                    var pos = *(WINDOWPOS*)lParam.Value;
-                    var pose = new ValueEventArgs<WINDOWPOS>(pos, false, isCancellable: true);
-                    win?.OnPositionChanging(win, pose);
-                    if (pose.Cancel)
-                        break;
-
-                    *(WINDOWPOS*)lParam.Value = pose.Value;
+                    unsafe
+                    {
+                        var pos = *(WINDOWPOS*)lParam.Value;
+                        var pose = new ValueEventArgs<WINDOWPOS>(pos, false, isCancellable: true);
+                        win?.OnPositionChanging(win, pose);
+                        if (pose.Cancel) // cancel here means "handled"
+                        {
+                            *(WINDOWPOS*)lParam.Value = pose.Value;
+                            return new LRESULT { Value = 0 };
+                        }
+                    }
                 }
-                return new LRESULT { Value = 0 };
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_WINDOWPOSCHANGED:
-                if (win == null)
-                    break;
-
-                unsafe
+                if (win != null)
                 {
-                    var pos = *(WINDOWPOS*)lParam.Value;
-                    var pose = new ValueEventArgs<WINDOWPOS>(pos);
-                    win?.OnPositionChanged(win, pose);
+                    unsafe
+                    {
+                        var pos = *(WINDOWPOS*)lParam.Value;
+                        var pose = new ValueEventArgs<WINDOWPOS>(pos, isCancellable: true);
+                        win?.OnPositionChanged(win, pose);
+                        if (pose.Cancel) // cancel here means "handled"
+                            return new LRESULT { Value = 0 };
+                    }
                 }
-                break;
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_POINTERACTIVATE:
                 if (win == null)

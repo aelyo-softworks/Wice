@@ -69,6 +69,17 @@ internal partial class TestWindow : Window
         }, null, 0, 1000);
     }
 
+    protected override void OnPositionChanging(object? sender, ValueEventArgs<WINDOWPOS> e)
+    {
+        base.OnPositionChanging(sender, e);
+        var pos = e.Value;
+        e.Cancel = true;
+        //pos.x = 0;
+        e.Value = pos;
+
+        Title = "Wice AOT Position: " + pos.x + ", " + pos.y + " - Size: " + pos.cx + ", " + pos.cy;
+    }
+
     public void LoadSvg()
     {
         var stack = new Stack();
