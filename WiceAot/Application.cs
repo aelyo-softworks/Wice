@@ -156,6 +156,44 @@ public partial class Application : IDisposable
         }
     }
 
+    public virtual ExitLoopReason RunMessageLoop(Func<MSG, bool> exitLoopFunc)
+    {
+        ExceptionExtensions.ThrowIfNull(exitLoopFunc, nameof(exitLoopFunc));
+        CheckRunningAsMainThread();
+        do
+        {
+            if (WiceCommons.PeekMessageW(out var msg, HWND.Null, 0, 0, PEEK_MESSAGE_REMOVE_TYPE.PM_REMOVE))
+            {
+                if (exitLoopFunc(msg))
+                    return ExitLoopReason.Func;
+
+                if (IsDisposed)
+                {
+                    // repost
+                    WiceCommons.PostMessageW(HWND.Null, WM_HOSTQUIT, WPARAM.Null, LPARAM.Null);
+                    return ExitLoopReason.Disposed;
+                }
+
+                if (msg.message == MessageDecoder.WM_QUIT)
+                {
+                    // repost
+                    WiceCommons.PostQuitMessage(0);
+                    return ExitLoopReason.Quit;
+                }
+
+                if (msg.message == WM_HOSTQUIT)
+                {
+                    // repost
+                    WiceCommons.PostMessageW(HWND.Null, WM_HOSTQUIT, WPARAM.Null, LPARAM.Null);
+                    return ExitLoopReason.AppQuit;
+                }
+
+                if (!HandleMessage(msg))
+                    return ExitLoopReason.UnhandledMessage;
+            }
+        } while (true);
+    }
+
     public virtual void Exit()
     {
         if (IsDisposed)

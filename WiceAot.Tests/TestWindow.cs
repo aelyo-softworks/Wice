@@ -31,7 +31,8 @@ internal partial class TestWindow : Window
         //AddUniformGridSysColors();
 
         //ShowTabs();
-        ShowBrowser();
+        ChoosePdfView();
+        //ShowBrowser();
         //LoadSvg();
         //Show64bppImageStream();
         //ShowWebView();
@@ -94,7 +95,6 @@ internal partial class TestWindow : Window
 
         btn.Click += async (s, e) =>
         {
-
             var picker = new FileOpenPicker();
             picker.FileTypeFilter.Add(".svg");
 
@@ -366,14 +366,30 @@ internal partial class TestWindow : Window
         }
     }
 
-    public void ShowPdfView()
+    public void ChoosePdfView()
     {
-        var pdfView = new PdfView
+        var stack = new Stack();
+        Children.Add(stack);
+        var btn = new Button();
+        btn.Text.Text = "Load PDF File...";
+        stack.Children.Add(btn);
+        var pdf = new PdfView
         {
-            SourceFilePath = @"resources\sample.pdf",
-            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10)
         };
-        Children.Add(pdfView);
+        stack.Children.Add(pdf);
+
+        btn.Click += async (s, e) =>
+        {
+            var picker = new FileOpenPicker();
+            picker.FileTypeFilter.Add(".pdf");
+
+            InitializeWithWindow.Initialize(picker, Window!.Handle);
+            var file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                pdf.SourceStream = File.OpenRead(file.Path);
+            }
+        };
     }
 
     public void ShowWebView()

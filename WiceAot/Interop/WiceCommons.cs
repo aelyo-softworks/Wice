@@ -134,6 +134,9 @@ public static class WiceCommons
     }
 
     [DllImport("user32")]
+    public static extern BOOL PeekMessageW(out MSG lpMsg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax, PEEK_MESSAGE_REMOVE_TYPE wRemoveMsg);
+
+    [DllImport("user32")]
     public static extern BOOL GetCursorPos(out POINT lpPoint);
 
     [DllImport("user32")]
@@ -339,6 +342,7 @@ public static class WiceCommons
     public static uint GetCurrentThreadId() => Functions.GetCurrentThreadId();
     public static BOOL PostThreadMessageW(uint idThread, uint Msg, WPARAM wParam, LPARAM lParam) => Functions.PostThreadMessageW(idThread, Msg, wParam, lParam);
     public static BOOL PostMessageW(HWND hWnd, uint Msg, WPARAM wParam, LPARAM lParam) => Functions.PostMessageW(hWnd, Msg, wParam, lParam);
+    public static BOOL PeekMessageW(out MSG lpMsg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax, PEEK_MESSAGE_REMOVE_TYPE wRemoveMsg) => Functions.PeekMessageW(out lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
     public static LRESULT SendMessageW(HWND hWnd, uint Msg, WPARAM wParam, LPARAM lParam) => Functions.SendMessageW(hWnd, Msg, wParam, lParam);
     public static HMODULE GetModuleHandleW(PWSTR lpModuleName) => Functions.GetModuleHandleW(lpModuleName);
     public static BOOL TranslateMessage(in MSG lpMsg) => Functions.TranslateMessage(in lpMsg);
