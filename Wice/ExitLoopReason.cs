@@ -1,4 +1,4 @@
-﻿namespace Wice.Interop;
+﻿namespace Wice;
 
 public enum ExitLoopReason
 {

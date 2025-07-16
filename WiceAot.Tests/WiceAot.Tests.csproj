@@ -90,15 +90,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Using Include="DirectN" />
+		<Using Include="DirectN.Extensions" />
+		<Using Include="DirectN.Extensions.Com" />
 		<Using Include="System.Diagnostics" />
 		<Using Include="System.Diagnostics.CodeAnalysis" />
 		<Using Include="System.Numerics" />
 		<Using Include="System.Reflection" />
 		<Using Include="System.Runtime.Versioning" />
 		<Using Include="System.Runtime.InteropServices" />
-		<Using Include="DirectN" />
-		<Using Include="DirectN.Extensions" />
-		<Using Include="DirectN.Extensions.Com" />
 		<Using Include="Wice" />
 		<Using Include="Wice.Animation" />
 		<Using Include="Wice.Effects" />

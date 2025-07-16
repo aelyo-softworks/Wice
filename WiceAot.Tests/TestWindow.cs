@@ -70,7 +70,7 @@ internal partial class TestWindow : Window
         }, null, 0, 1000);
     }
 
-    protected override void OnPositionChanging(object? sender, ValueEventArgs<WINDOWPOS> e)
+    protected override void OnPositionChanging(object? sender, DirectN.Extensions.Utilities.ValueEventArgs<WINDOWPOS> e)
     {
         base.OnPositionChanging(sender, e);
         var pos = e.Value;
