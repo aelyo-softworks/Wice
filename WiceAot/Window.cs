@@ -880,7 +880,7 @@ public partial class Window : Canvas, ITitleBarParent
             var buttonsHeight = Math.Max(Math.Max(Math.Max(Math.Max(0, titleBarInfo.rgrectCloseButton.Height), titleBarInfo.rgrectHelpButton.Height), titleBarInfo.rgrectMaximizeButton.Height), titleBarInfo.rgrectMinimizeButton.Height);
             if (buttonsWidth > 0 && buttonsHeight > 0)
             {
-                buttonsHeight++; // TODO: is this always 1?
+                buttonsHeight++; // REVIEW: is this always 1?
 
                 var rc = WindowRect.ToD2D_RECT_F();
                 var path = Application.CurrentResourceManager.D2DFactory.CreatePathGeometry();
@@ -1313,7 +1313,6 @@ public partial class Window : Canvas, ITitleBarParent
 
     protected virtual void OnCompositorControllerCommitNeeded(CompositorController sender, object args)
     {
-        //Application.Trace("auto:" + CompositorControllerAutoCommit);
         if (CompositorControllerAutoCommit)
         {
             sender.Commit();
@@ -1376,7 +1375,6 @@ public partial class Window : Canvas, ITitleBarParent
         bool enableInvalidationStackDiagnostics,
         ConcurrentDictionary<Visual, InvalidateMode> invalidations)
     {
-        //Application.Trace("V:" + visual + " R:" + reason + " M:" + modes);
 #if DEBUG
         if (enableInvalidationStackDiagnostics && visual is Window)
         {
@@ -1487,7 +1485,6 @@ public partial class Window : Canvas, ITitleBarParent
             }
         }
 
-        //Application.Trace("mode: " + mode + " visual: " + visual + " reason: " + reason);
         invalidations.AddOrUpdate(visual, mode, (k, o) =>
         {
             // only add if higher action
@@ -1564,13 +1561,9 @@ public partial class Window : Canvas, ITitleBarParent
         var cr = ClientRect;
         var rc = cr.ToD2D_RECT_F();
         if (_lastClientRect == rc && !force && stc == DimensionOptions.Manual)
-        {
-            //Application.Trace("quit");
             return;
-        }
 
         _lastClientRect = rc;
-        //Application.Trace(this + " force:" + force + " rc:" + rc + " w:" + Width + " h:" + Height);
 
         var size = rc.Size;
         if (stc.HasFlag(DimensionOptions.Width))
@@ -1583,6 +1576,13 @@ public partial class Window : Canvas, ITitleBarParent
             size.height = float.PositiveInfinity;
         }
 
+        // reset focus visual W&H (set by OnUpdateFocus) otherwise it's "old" size will be used for measuring the window itself
+        var fv = FocusVisual;
+        if (fv != null)
+        {
+            fv.Width = float.NaN;
+            fv.Height = float.NaN;
+        }
         Measure(size);
 
         var desiredSize = rc.Size;
@@ -1721,7 +1721,6 @@ public partial class Window : Canvas, ITitleBarParent
         if (tasks.Length == 0)
             return;
 
-        //Application.Trace("length: " + tasks.Length + " ticks:" + GetTicksDelta());
         foreach (var task in tasks)
         {
             if (!_scheduler.TryExecuteTask(task))
@@ -1761,7 +1760,6 @@ public partial class Window : Canvas, ITitleBarParent
         {
             var visual = kv.Key;
             var mode = kv.Value;
-            //Application.Trace("V:" + visual + " M: " + mode);
 
             // needed upgrades
             if (mode == InvalidateMode.Render && visual.ArrangedRect.IsInvalid)
@@ -1797,10 +1795,7 @@ public partial class Window : Canvas, ITitleBarParent
                     }
 
                     if (!visual._lastMeasureSize.HasValue)
-                    {
-                        //Application.Trace("Visual " + visual + " has never been measured since parented.");
                         break;
-                    }
 
                     visual.Measure(visual._lastMeasureSize.Value);
                     if (visual._lastArrangeRect.HasValue)
@@ -1937,7 +1932,6 @@ public partial class Window : Canvas, ITitleBarParent
 
     protected virtual void DestroyCore()
     {
-        //Application.Trace("'" + this + "'");
         if (_native.IsValueCreated && _native.Value.IsDropTarget)
         {
             _native.Value.DragDrop -= OnNativeDragDrop;
@@ -2185,7 +2179,6 @@ public partial class Window : Canvas, ITitleBarParent
             throw new ArgumentException(null, nameof(visual));
 
         Interlocked.Exchange(ref _mouseCaptorVisual, visual);
-        //Application.Trace("visual: " + visual);
     }
 
     private new void OnPointerWheelEvent(PointerWheelEventArgs e)
@@ -2272,7 +2265,6 @@ public partial class Window : Canvas, ITitleBarParent
             if (visual == this)
                 continue;
 
-            //Application.Trace("msg:" + msg + " visual: " + visual.FullName);
             visual.OnMouseButtonEvent(msg, e);
             if (e.Handled)
                 break;
@@ -2355,7 +2347,6 @@ public partial class Window : Canvas, ITitleBarParent
 
     private new void OnMouseEvent(uint msg, MouseEventArgs e)
     {
-        //Application.Trace("msg:" + msg + " e: " + e);
         if (msg == MessageDecoder.WM_MOUSELEAVE)
         {
             foreach (var visual in _mousedEnteredVisuals)
@@ -2561,7 +2552,6 @@ public partial class Window : Canvas, ITitleBarParent
             throw new InvalidOperationException();
 
         tt.PlacementTarget = placementTarget;
-        //Application.Trace(this + " placementTarget: " + placementTarget);
         contentCreator(tt);
         CurrentToolTip = tt;
         tt.Show();
@@ -2574,7 +2564,6 @@ public partial class Window : Canvas, ITitleBarParent
             return;
 
         CurrentToolTip = null;
-        //Application.Trace(this + " ctt: " + ctt);
         ctt.Children.Clear();
         ctt.PlacementTarget = null;
         ctt.Destroy();
@@ -2731,7 +2720,6 @@ public partial class Window : Canvas, ITitleBarParent
 
     internal new void OnKeyEvent(KeyEventArgs e)
     {
-        //Application.Trace(e.ToString());
 #if DEBUG
         if (EnableDiagnosticKeys)
         {
@@ -2975,8 +2963,6 @@ public partial class Window : Canvas, ITitleBarParent
         var rc = (D2D_RECT_F)h.Target!;
         h.Free();
 
-        //Application.Trace("rc: " + rc.ToRECT());
-
         Native.CreateCaret((int)Math.Round(rc.Width), (int)Math.Round(rc.Height));
         NativeWindow.SetCaretPosition((int)Math.Round(rc.left), (int)Math.Round(rc.top));
     }
@@ -3217,7 +3203,6 @@ public partial class Window : Canvas, ITitleBarParent
 
                     case WindowsFrameMode.None:
                         var htn = HitTestWithoutWindowsFrame();
-                        //Application.Trace("HT: " + htn);
                         if (htn.HasValue)
                         {
                             ret = new LRESULT { Value = new IntPtr((int)htn.Value) };
@@ -3234,8 +3219,6 @@ public partial class Window : Canvas, ITitleBarParent
                             var ncy = lParam.Value.SignedHIWORD();
                             var clix = ncx - rc.left;
                             var cliy = ncy - rc.top;
-                            //Application.Trace("rc: " + rc + " ncx: " + ncx + " ncy: " + ncy + " x: " + clix + " y: " + cliy);
-
                             if (clix >= 0 && clix < rc.Width && cliy >= 0 && cliy <= rc.Height)
                             {
                                 if (clix < win.BorderWidth)
@@ -3483,8 +3466,6 @@ public partial class Window : Canvas, ITitleBarParent
 
                     var me = new MouseButtonEventArgs(pt.x, pt.y, (POINTER_MOD)info.dwKeyStates, mb.Value) { SourcePointerEvent = pce };
                     win.OnMouseButtonEvent(buttonMsg, me);
-
-                    //Application.Trace("msg: " + MessageDecoder.MsgToString(msg) + " btnmsg:" + MessageDecoder.MsgToString(buttonMsg) + " me:" + me);
                 }
                 break;
 
@@ -3602,7 +3583,6 @@ public partial class Window : Canvas, ITitleBarParent
                 if (win == null)
                     break;
 
-                //Application.Trace("WM_MOUSExxx msg: " + msg + " tracking: " + win._mouseTracking);
                 if (!win._mouseTracking && msg == MessageDecoder.WM_MOUSEMOVE)
                 {
                     var tme = new TRACKMOUSEEVENT();
@@ -3787,7 +3767,6 @@ public partial class Window : Canvas, ITitleBarParent
 
             case MessageDecoder.WM_SIZE:
                 var sized = wParam.Value.ToUInt32();
-                //Application.Trace("WM_SIZE sized: " + sized);
                 if (sized == WiceCommons.SIZE_MINIMIZED)
                     break;
 
