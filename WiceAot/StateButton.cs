@@ -22,8 +22,8 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
 
     public StateButton()
     {
-        Width = Application.CurrentTheme.BoxSize;
-        Height = Application.CurrentTheme.BoxSize;
+        Width = GetWindowTheme().BoxSize;
+        Height = GetWindowTheme().BoxSize;
     }
 
     bool ISelectable.RaiseIsSelectedChanged { get; set; }

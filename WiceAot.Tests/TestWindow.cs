@@ -31,7 +31,8 @@ internal partial class TestWindow : Window
         //AddUniformGridSysColors();
 
         //ShowTabs();
-        ChoosePdfView();
+        AddScrollableRtbRtfFile();
+        //ChoosePdfView();
         //ShowBrowser();
         //LoadSvg();
         //Show64bppImageStream();
@@ -1038,6 +1039,26 @@ internal partial class TestWindow : Window
                 Application.Trace("Text #" + j + " changed: " + text.Text);
             };
         }
+    }
+
+    public void AddScrollableRtbRtfFile()
+    {
+        //var sv = new ScrollViewer
+        //{
+        //    HorizontalScrollBarVisibility = ScrollBarVisibility.Auto
+        //};
+        //Children.Add(sv);
+
+        var rtf = new RichTextBox
+        {
+            VerticalAlignment = Alignment.Near,
+            HorizontalAlignment = Alignment.Near,
+            //Width = 500
+        };
+        rtf.Options |= DirectN.Extensions.Utilities.TextHostOptions.WordWrap;
+        rtf.RtfText = File.ReadAllText(@"resources\wice.rtf");
+        Children.Add(rtf);
+        //sv.Viewer.Child = rtf;
     }
 
     public void AddWrap()

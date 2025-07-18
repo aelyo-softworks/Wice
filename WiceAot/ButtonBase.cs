@@ -84,7 +84,7 @@ public partial class ButtonBase : Border, IAccessKeyParent, IClickable
 
     protected virtual void UpdateStyle()
     {
-        Opacity = IsEnabled ? 1f : Application.CurrentTheme.DisabledOpacityRatio;
+        Opacity = IsEnabled ? 1f : GetWindowTheme().DisabledOpacityRatio;
         Cursor = IsEnabled ? Cursor.Hand : null;
     }
 

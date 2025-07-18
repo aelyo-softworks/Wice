@@ -40,7 +40,7 @@ public partial class GridSplitter : Visual
             Cursor = Cursor.SizeNS;
             if (Height.IsNotSet())
             {
-                Height = Application.CurrentTheme.DefaultSplitterSize;
+                Height = GetWindowTheme().DefaultSplitterSize;
             }
         }
         else
@@ -54,7 +54,7 @@ public partial class GridSplitter : Visual
             Cursor = Cursor.SizeWE;
             if (Width.IsNotSet())
             {
-                Width = Application.CurrentTheme.DefaultSplitterSize;
+                Width = GetWindowTheme().DefaultSplitterSize;
             }
         }
 

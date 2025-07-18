@@ -24,7 +24,7 @@ public partial class SampleButton : ButtonBase
                 Margin = D2D_RECT_F.Thickness(5),
                 Text = sample.IconText,
                 FontSize = 20,
-                FontFamilyName = Application.CurrentTheme.SymbolFontName,
+                FontFamilyName = GetWindowTheme().SymbolFontName,
                 VerticalAlignment = Alignment.Near
             };
             Dock.SetDockType(icon, DockType.Left);

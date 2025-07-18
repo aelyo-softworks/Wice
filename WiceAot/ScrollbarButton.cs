@@ -18,7 +18,7 @@ public partial class ScrollBarButton : ButtonBase
         Child.Name = Name + nameof(Path);
 #endif
         Dock.SetDockType(this, type);
-        Child.Margin = Application.CurrentTheme.ScrollBarArrowMargin; // TODO: vary per scrollbar width/height?
+        Child.Margin = GetWindowTheme().ScrollBarArrowMargin; // TODO: vary per scrollbar width/height?
     }
 
     [Browsable(false)]
@@ -53,8 +53,8 @@ public partial class ScrollBarButton : ButtonBase
         if (Child?.Shape == null)
             return;
 
-        Child.Shape.StrokeThickness = Application.CurrentTheme.ScrollBarButtonStrokeThickness;
-        Child.StrokeBrush = Compositor!.CreateColorBrush(Application.CurrentTheme.ScrollBarButtonStrokeColor.ToColor());
+        Child.Shape.StrokeThickness = GetWindowTheme().ScrollBarButtonStrokeThickness;
+        Child.StrokeBrush = Compositor!.CreateColorBrush(GetWindowTheme().ScrollBarButtonStrokeColor.ToColor());
         Child.RenderBrush = Child.StrokeBrush;
     }
 }

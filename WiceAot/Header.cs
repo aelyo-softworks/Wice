@@ -28,7 +28,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
 #endif
         Children.Add(Selection);
         Selection.IsVisible = false;
-        Selection.DoWhenAttachedToComposition(() => Selection.RenderBrush = Compositor!.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor()));
+        Selection.DoWhenAttachedToComposition(() => Selection.RenderBrush = Compositor!.CreateColorBrush(Selection.GetWindowTheme().SelectedColor.ToColor()));
 
         Panel = CreatePanel();
         Panel.Margin = 10;
@@ -63,7 +63,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
 #if DEBUG
             Name = "selectedButtonText",
 #endif
-            FontFamilyName = Application.CurrentTheme.SymbolFontName,
+            FontFamilyName = GetWindowTheme().SymbolFontName,
             Text = MDL2GlyphResource.ChevronDown,
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER
         };
@@ -185,7 +185,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
                         compositor?.RunScopedBatch(() =>
                             {
                                 var animation = compositor.CreateScalarKeyFrameAnimation();
-                                animation.Duration = Application.CurrentTheme.SelectedAnimationDuration;
+                                animation.Duration = GetWindowTheme().SelectedAnimationDuration;
                                 animation.InsertKeyFrame(0, 0);
                                 animation.InsertKeyFrame(1, IsSelected ? 180 : -180, compositor.CreateLinearEasingFunction());
                                 target.CompositionVisual.StartAnimation(nameof(ContainerVisual.RotationAngleInDegrees), animation);
@@ -203,7 +203,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
             else
             {
                 Selection.IsVisible = IsSelected;
-                Selection.Width = Application.CurrentTheme.HeaderSelectionWidth;
+                Selection.Width = GetWindowTheme().HeaderSelectionWidth;
             }
 
             if (RaiseIsSelectedChanged)
@@ -222,7 +222,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
 
     protected virtual void UpdateStyle()
     {
-        Opacity = IsEnabled ? 1f : Application.CurrentTheme.DisabledOpacityRatio;
+        Opacity = IsEnabled ? 1f : GetWindowTheme().DisabledOpacityRatio;
         Cursor = IsEnabled ? Cursor.Hand : null;
     }
 

@@ -7,7 +7,7 @@ public partial class HorizontalScrollBar : ScrollBar
         Canvas.SetLeft(this, 0);
         Canvas.SetBottom(this, 0);
         SetDockType(this, DockType.Bottom);
-        Height = Application.CurrentTheme.GetHorizontalScrollBarHeight(96);
+        Height = GetWindowTheme().GetHorizontalScrollBarHeight(WiceCommons.USER_DEFAULT_SCREEN_DPI);
 
         SmallDecrease.Width = Height; // square
         SetDockType(LargeDecrease, DockType.Left);
@@ -33,7 +33,7 @@ public partial class HorizontalScrollBar : ScrollBar
             }
             else
             {
-                Thumb.Height = Application.CurrentTheme.GetScrollBarOverlaySize(96);
+                Thumb.Height = GetWindowTheme().GetScrollBarOverlaySize(WiceCommons.USER_DEFAULT_SCREEN_DPI);
             }
         }
         else

@@ -15,7 +15,7 @@ public partial class VerticalScrollBar : ScrollBar
 
         Canvas.SetRight(this, 0);
         Canvas.SetTop(this, 0);
-        Width = Application.CurrentTheme.GetVerticalScrollBarWidth(96);
+        Width = GetWindowTheme().GetVerticalScrollBarWidth(WiceCommons.USER_DEFAULT_SCREEN_DPI);
         SetDockType(this, DockType.Right);
 
         SmallDecrease.Height = Width; // square
@@ -71,7 +71,7 @@ public partial class VerticalScrollBar : ScrollBar
             }
             else
             {
-                Thumb.Width = Application.CurrentTheme.GetHorizontalScrollBarHeight(96);
+                Thumb.Width = GetWindowTheme().GetHorizontalScrollBarHeight(WiceCommons.USER_DEFAULT_SCREEN_DPI);
             }
         }
         else

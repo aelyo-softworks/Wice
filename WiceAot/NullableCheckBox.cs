@@ -16,24 +16,25 @@ public partial class NullableCheckBox : StateButton
     protected virtual Visual CreateChild(StateButton box, EventArgs e, StateButtonState state)
     {
         if (true.Equals(state.Value))
-            return CheckBox.CreateDefaultTrueVisual();
+            return CheckBox.CreateDefaultTrueVisual(GetWindowTheme());
 
         if (false.Equals(state.Value))
-            return CheckBox.CreateDefaultFalseVisual();
+            return CheckBox.CreateDefaultFalseVisual(GetWindowTheme());
 
-        return CreateDefaultNullVisual();
+        return CreateDefaultNullVisual(GetWindowTheme());
     }
 
-    public static Visual CreateDefaultNullVisual()
+    public static Visual CreateDefaultNullVisual(Theme theme)
     {
+        ExceptionExtensions.ThrowIfNull(theme, nameof(theme));
         var canvas = new Canvas();
 
-        var rect = (Rectangle)CheckBox.CreateDefaultFalseVisual();
+        var rect = (Rectangle)CheckBox.CreateDefaultFalseVisual(theme);
         canvas.Children.Add(rect);
 
         var b = new Border
         {
-            Margin = D2D_RECT_F.Thickness(Application.CurrentTheme.BorderSize)
+            Margin = D2D_RECT_F.Thickness(theme.BorderSize)
         };
         canvas.Children.Add(b);
 #if DEBUG
@@ -42,8 +43,8 @@ public partial class NullableCheckBox : StateButton
 
         canvas.AttachedToComposition += (s, e) =>
         {
-            rect.StrokeBrush = canvas.Compositor!.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
-            b.RenderBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor());
+            rect.StrokeBrush = canvas.Compositor!.CreateColorBrush(canvas.GetWindowTheme().SelectedColor.ToColor());
+            b.RenderBrush = canvas.Compositor.CreateColorBrush(canvas.GetWindowTheme().BorderColor.ToColor());
         };
         return canvas;
     }

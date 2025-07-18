@@ -81,7 +81,7 @@ public class DiagnosticsInformation(Assembly assembly = null, Window window = nu
     public string WindowDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiAwarenessDescription;
 
     [Category("Graphics")]
-    public uint WindowDpiFromDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiFromDpiAwareness ?? 96;
+    public uint WindowDpiFromDpiAwareness => (_window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiFromDpiAwareness ?? WiceCommons.USER_DEFAULT_SCREEN_DPI;
 
     [Category("Graphics")]
     public string WindowMonitor

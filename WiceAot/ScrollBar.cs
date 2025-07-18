@@ -118,15 +118,15 @@ public abstract class ScrollBar : Dock
         if (IsOverlay)
         {
             RenderBrush = compositor.CreateColorBrush(D3DCOLORVALUE.Transparent.ToColor());
-            Thumb.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarOverlayThumbColor.ToColor());
-            Thumb.CornerRadius = new Vector2(Application.CurrentTheme.ScrollBarOverlayCornerRadius);
+            Thumb.RenderBrush = compositor.CreateColorBrush(GetWindowTheme().ScrollBarOverlayThumbColor.ToColor());
+            Thumb.CornerRadius = new Vector2(GetWindowTheme().ScrollBarOverlayCornerRadius);
             SmallDecrease.IsVisible = false;
             SmallIncrease.IsVisible = false;
         }
         else
         {
-            RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarBackgroundColor.ToColor());
-            Thumb.RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ScrollBarThumbColor.ToColor());
+            RenderBrush = compositor.CreateColorBrush(GetWindowTheme().ScrollBarBackgroundColor.ToColor());
+            Thumb.RenderBrush = compositor.CreateColorBrush(GetWindowTheme().ScrollBarThumbColor.ToColor());
             Thumb.CornerRadius = new Vector2(0);
             SmallDecrease.IsVisible = true;
             SmallIncrease.IsVisible = true;

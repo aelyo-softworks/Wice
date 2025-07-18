@@ -70,7 +70,7 @@ public partial class Button : ButtonBase
             var compositor = Compositor;
             if (compositor != null)
             {
-                RenderBrush = compositor.CreateColorBrush(Application.CurrentTheme.ButtonColor.ToColor());
+                RenderBrush = compositor.CreateColorBrush(GetWindowTheme().ButtonColor.ToColor());
             }
         }
     }
@@ -79,12 +79,12 @@ public partial class Button : ButtonBase
     {
         if (!string.IsNullOrEmpty(Icon.Text) && !string.IsNullOrEmpty(Text.Text))
         {
-            Text.Margin = D2D_RECT_F.Thickness(0, Application.CurrentTheme.ButtonMargin, Application.CurrentTheme.ButtonMargin, Application.CurrentTheme.ButtonMargin);
-            Icon.Margin = D2D_RECT_F.Thickness(Application.CurrentTheme.ButtonMargin, Application.CurrentTheme.ButtonMargin - 2, Application.CurrentTheme.ButtonMargin, Application.CurrentTheme.ButtonMargin);
+            Text.Margin = D2D_RECT_F.Thickness(0, GetWindowTheme().ButtonMargin, GetWindowTheme().ButtonMargin, GetWindowTheme().ButtonMargin);
+            Icon.Margin = D2D_RECT_F.Thickness(GetWindowTheme().ButtonMargin, GetWindowTheme().ButtonMargin - 2, GetWindowTheme().ButtonMargin, GetWindowTheme().ButtonMargin);
         }
         else if (!string.IsNullOrEmpty(Text.Text))
         {
-            Text.Margin = D2D_RECT_F.Thickness(Application.CurrentTheme.ButtonMargin, Application.CurrentTheme.ButtonMargin, Application.CurrentTheme.ButtonMargin, Application.CurrentTheme.ButtonMargin);
+            Text.Margin = D2D_RECT_F.Thickness(GetWindowTheme().ButtonMargin, GetWindowTheme().ButtonMargin, GetWindowTheme().ButtonMargin, GetWindowTheme().ButtonMargin);
             Icon.Margin = new D2D_RECT_F();
         }
         else
@@ -99,7 +99,7 @@ public partial class Button : ButtonBase
     {
         var tb = new TextBox
         {
-            FontFamilyName = Application.CurrentTheme.SymbolFontName,
+            FontFamilyName = GetWindowTheme().SymbolFontName,
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
             DrawOptions = D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT,
             IsEnabled = false

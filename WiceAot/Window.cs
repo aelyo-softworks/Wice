@@ -133,6 +133,9 @@ public partial class Window : Canvas, ITitleBarParent
     [Browsable(false)]
     public IComObject<ID2D1Device1> D2D1Device => _d2D1Device.Value;
 
+    [Browsable(false)]
+    public virtual Theme Theme { get; protected set; } = new Theme();
+
     [Category(CategoryRender)]
     public ContainerVisual? FrameVisual { get; private set; }
 
@@ -143,7 +146,7 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual bool HasCaret => true;
     protected virtual bool ModalsIntersectWithAllBounds => false;
 #if DEBUG
-    protected virtual bool EnableDiagnosticKeys => false;
+    public virtual bool EnableDiagnosticKeys { get; set; }
 #endif
     protected virtual D3D11_CREATE_DEVICE_FLAG CreateDeviceFlags
     {
@@ -171,8 +174,14 @@ public partial class Window : Canvas, ITitleBarParent
     [Category(CategoryLayout)]
     public uint Dpi => NativeIfCreated?.Dpi ?? Monitor?.EffectiveDpi.width ?? 96;
 
+    [Category(CategoryLayout)]
+    public DPI_AWARENESS_CONTEXT DpiAwareness => NativeIfCreated?.DpiAwareness ?? DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE;
+
     [Category(CategoryBehavior)]
     public bool IsBackground { get; set; } // true => doesn't prevent to quit
+
+    [Category(CategoryLayout)]
+    public virtual bool AdaptToDpi => !WiceCommons.AreDpiAwarenessContextsEqual(DpiAwareness, DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE);
 
     [Browsable(false)]
     public TitleBar? MainTitleBar { get; internal set; }
@@ -749,8 +758,8 @@ public partial class Window : Canvas, ITitleBarParent
 
         var rr = new RoundedRectangle
         {
-            CornerRadius = new Vector2(Application.CurrentTheme.ToolTipCornerRadius),
-            RenderBrush = parent.Compositor.CreateColorBrush(Application.CurrentTheme.ToolTipColor.ToColor())
+            CornerRadius = new Vector2(parent.GetWindowTheme().ToolTipCornerRadius),
+            RenderBrush = parent.Compositor.CreateColorBrush(parent.GetWindowTheme().ToolTipColor.ToColor())
         };
         parent.Content.Children.Add(rr);
 
@@ -758,7 +767,7 @@ public partial class Window : Canvas, ITitleBarParent
         {
             Margin = 4,
             Text = text,
-            FontSize = Application.CurrentTheme.ToolTipBaseSize + 4,
+            FontSize = parent.GetWindowTheme().ToolTipBaseSize + 4,
             FontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_ULTRA_CONDENSED,
             DrawOptions = D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT,
             WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WRAP
@@ -1983,7 +1992,11 @@ public partial class Window : Canvas, ITitleBarParent
 
     protected virtual void UpdateMonitor()
     {
-        var monitor = Native.GetMonitorHandle(MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL);
+        var native = NativeIfCreated;
+        if (native == null)
+            return;
+
+        var monitor = native.GetMonitorHandle(MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL);
         if (monitor.Value == MonitorHandle.Value)
             return;
 
@@ -2432,7 +2445,7 @@ public partial class Window : Canvas, ITitleBarParent
                 if (ttVisual != null)
                 {
                     var ttc = ttVisual.ToolTipContentCreator;
-                    var visibleTime = Application.CurrentTheme.ToolTipVisibleTime;
+                    var visibleTime = ttVisual.GetWindowTheme().ToolTipVisibleTime;
                     if (visibleTime > 0) // disable tooltips
                     {
                         if (ttc != null && ttVisual != CurrentToolTip?.PlacementTarget)
@@ -3519,6 +3532,7 @@ public partial class Window : Canvas, ITitleBarParent
             case MessageDecoder.WM_WINDOWPOSCHANGING:
                 if (win != null)
                 {
+                    win.UpdateMonitor();
                     unsafe
                     {
                         var pos = *(WINDOWPOS*)lParam.Value;
@@ -3596,7 +3610,7 @@ public partial class Window : Canvas, ITitleBarParent
                     uint time;
                     if (win.CurrentToolTip != null)
                     {
-                        time = Application.CurrentTheme.ToolTipReshowTime;
+                        time = win.Theme.ToolTipReshowTime;
                         if (time <= 0)
                         {
                             time = WiceCommons.GetDoubleClickTime() / 5;
@@ -3604,7 +3618,7 @@ public partial class Window : Canvas, ITitleBarParent
                     }
                     else
                     {
-                        time = Application.CurrentTheme.ToolTipInitialTime;
+                        time = win.Theme.ToolTipInitialTime;
                         if (time <= 0)
                         {
                             time = WiceCommons.GetDoubleClickTime();
@@ -3738,6 +3752,7 @@ public partial class Window : Canvas, ITitleBarParent
                     if (dpic.Handled)
                         break;
 
+                    Application.Trace($"WM_DPICHANGED: {newDpi} pos:{rc.Position} size:{rc.Size}");
                     WiceCommons.SetWindowPos(win.Handle, HWND.Null, rc.left, rc.top, rc.Width, rc.Height, SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
                     win.Invalidate(VisualPropertyInvalidateModes.Measure, new DpiChangedInvalidateReason(newDpi));
                 }
@@ -3836,7 +3851,7 @@ public partial class Window : Canvas, ITitleBarParent
                 if (win == null)
                     break;
 
-                win.UpdateMonitor(); // should we call that when moving?
+                win.UpdateMonitor();
                 break;
 
             case MessageDecoder.WM_DESTROY:

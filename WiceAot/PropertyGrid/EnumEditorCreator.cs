@@ -15,7 +15,7 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
                 //editor.Header.Text.FontSize = parentFontSize;
                 editor.Header.Text.CopyFrom(value.Parent);
 
-                var fontSize = parentFontSize ?? Application.CurrentTheme.DefaultFontSize;
+                var fontSize = parentFontSize ?? value.GetWindowTheme().DefaultFontSize;
                 editor.Header.Height = fontSize + 4;
             });
 

@@ -12,13 +12,14 @@ public partial class CheckBox : StateButton
     [Category(CategoryBehavior)]
     public new bool Value { get => (bool)base.Value!; set => base.Value = value; }
 
-    public static Visual CreateDefaultTrueVisual()
+    public static Visual CreateDefaultTrueVisual(Theme theme)
     {
+        ExceptionExtensions.ThrowIfNull(theme, nameof(theme));
         var border = new Border();
 
         var path = new Path
         {
-            StrokeThickness = Application.CurrentTheme.BorderSize / 2,
+            StrokeThickness = theme.BorderSize / 2,
         };
 
         border.Arranged += (s, e) =>
@@ -29,8 +30,8 @@ public partial class CheckBox : StateButton
 
         border.AttachedToComposition += (s, e) =>
         {
-            border.RenderBrush = border.Compositor!.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
-            path.StrokeBrush = border.Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor.ToColor());
+            border.RenderBrush = border.Compositor!.CreateColorBrush(theme.SelectedColor.ToColor());
+            path.StrokeBrush = border.Compositor.CreateColorBrush(theme.UnselectedColor.ToColor());
         };
 
         border.Children.Add(path);
@@ -40,16 +41,17 @@ public partial class CheckBox : StateButton
         return border;
     }
 
-    public static Visual CreateDefaultFalseVisual()
+    public static Visual CreateDefaultFalseVisual(Theme theme)
     {
+        ExceptionExtensions.ThrowIfNull(theme, nameof(theme));
         var rect = new Rectangle
         {
-            StrokeThickness = Application.CurrentTheme.BorderSize,
+            StrokeThickness = theme.BorderSize,
         };
 
         rect.AttachedToComposition += (s, e) =>
         {
-            rect.StrokeBrush = rect.Compositor!.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor());
+            rect.StrokeBrush = rect.Compositor!.CreateColorBrush(theme.BorderColor.ToColor());
         };
 #if DEBUG
         rect.Name ??= nameof(CheckBox) + ".false";
@@ -58,5 +60,5 @@ public partial class CheckBox : StateButton
         return rect;
     }
 
-    protected virtual Visual CreateChild(StateButton box, EventArgs e, StateButtonState state) => true.Equals(state.Value) ? CreateDefaultTrueVisual() : CreateDefaultFalseVisual();
+    protected virtual Visual CreateChild(StateButton box, EventArgs e, StateButtonState state) => true.Equals(state.Value) ? CreateDefaultTrueVisual(GetWindowTheme()) : CreateDefaultFalseVisual(GetWindowTheme());
 }

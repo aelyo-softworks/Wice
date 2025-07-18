@@ -26,6 +26,8 @@ public static class WiceCommons
 
     public static readonly Guid DXGI_DEBUG_ALL = new("e48ae283-da80-490b-87e6-43e9a9cfda08");
 
+    public const uint USER_DEFAULT_SCREEN_DPI = DpiUtilities.USER_DEFAULT_SCREEN_DPI;
+
     public const uint WM_MOUSEMOVE = MessageDecoder.WM_MOUSEMOVE;
     public const uint WM_MOUSEHOVER = MessageDecoder.WM_MOUSEHOVER;
     public const uint WM_XBUTTONUP = MessageDecoder.WM_XBUTTONUP;
@@ -144,6 +146,9 @@ public static class WiceCommons
 
     [DllImport("user32")]
     public static extern BOOL AdjustWindowRectExForDpi(ref RECT lpRect, WINDOW_STYLE dwStyle, BOOL bMenu, WINDOW_EX_STYLE dwExStyle, uint dpi);
+
+    [DllImport("user32")]
+    public static extern BOOL AreDpiAwarenessContextsEqual(DPI_AWARENESS_CONTEXT dpiContextA, DPI_AWARENESS_CONTEXT dpiContextB);
 
     [DllImport("user32")]
     public static extern BOOL ScreenToClient(HWND hWnd, ref POINT lpPoint);
@@ -306,6 +311,8 @@ public static class WiceCommons
 
     public static readonly Guid DXGI_DEBUG_ALL = Constants.DXGI_DEBUG_ALL;
 
+    public const uint USER_DEFAULT_SCREEN_DPI = Constants.USER_DEFAULT_SCREEN_DPI;
+
     public const uint WM_MOUSEMOVE = MessageDecoder.WM_MOUSEMOVE;
     public const uint WM_MOUSEHOVER = MessageDecoder.WM_MOUSEHOVER;
     public const uint WM_XBUTTONUP = MessageDecoder.WM_XBUTTONUP;
@@ -411,6 +418,7 @@ public static class WiceCommons
     public static BOOL IsWindowVisible(HWND hWnd) => Functions.IsWindowVisible(hWnd);
     public static BOOL EnableWindow(HWND hWnd, BOOL bEnable) => Functions.EnableWindow(hWnd, bEnable);
     public static uint GetDpiFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT value) => Functions.GetDpiFromDpiAwarenessContext(value);
+    public static BOOL AreDpiAwarenessContextsEqual(DPI_AWARENESS_CONTEXT dpiContextA, DPI_AWARENESS_CONTEXT dpiContextB) => Functions.AreDpiAwarenessContextsEqual(dpiContextA, dpiContextB);
     public static HWND GetWindow(HWND hWnd, GET_WINDOW_CMD uCmd) => Functions.GetWindow(hWnd, uCmd);
     public static HWND GetParent(HWND hWnd) => Functions.GetParent(hWnd);
     public static HWND SetParent(HWND hWndChild, HWND hWndNewParent) => Functions.SetParent(hWndChild, hWndNewParent);

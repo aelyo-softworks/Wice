@@ -14,7 +14,7 @@ public partial class RoundedButton : Button
         child.HorizontalAlignment = Alignment.Center;
         child.VerticalAlignment = Alignment.Center;
 
-        _roundedRectangle.CornerRadius = new Vector2(Application.CurrentTheme.RoundedButtonCornerRadius);
+        _roundedRectangle.CornerRadius = new Vector2(GetWindowTheme().RoundedButtonCornerRadius);
         child.Remove(false);
         ClipFromParent = false; // for shadow
 

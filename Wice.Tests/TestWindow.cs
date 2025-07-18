@@ -8,6 +8,9 @@ public class TestWindow : Window
 {
     public TestWindow()
     {
+#if DEBUG
+        EnableDiagnosticKeys = true;
+#endif
         //WindowsFrameMode = WindowsFrameMode.Merged;
         Style |= WS.WS_THICKFRAME | WS.WS_CAPTION | WS.WS_SYSMENU | WS.WS_MAXIMIZEBOX | WS.WS_MINIMIZEBOX;
         //SizeToContent = DimensionOptions.WidthAndHeight;
@@ -29,7 +32,7 @@ public class TestWindow : Window
         //AddCounter(1);
         //AddDrawTextCounter(10);
 
-        AddPopupWindow();
+        //AddPopupWindow();
         //AddDialog();
         //ShowHeaders();
         //RichTextBoxNoLangOptions();
@@ -55,7 +58,7 @@ public class TestWindow : Window
         //AddRtbVertical();
         //AddRtbRtfFile();
         //AddRtbHtml();
-        //AddScrollableRtbRtfFile();
+        AddScrollableRtbRtfFile();
 
         //AddSvg();
         //DrawCurve();
@@ -1703,13 +1706,13 @@ public class TestWindow : Window
     }
 
     private static bool _first = true;
-    public static Visual CreateCurveVisual()
+    public Visual CreateCurveVisual()
     {
         var canvas = new Canvas();
 
         var path = new Path
         {
-            StrokeThickness = Application.CurrentTheme.BorderSize / 2,
+            StrokeThickness = GetWindowTheme().BorderSize / 2,
         };
 
         canvas.Arranged += (s, e) =>
@@ -1760,8 +1763,8 @@ public class TestWindow : Window
 
         canvas.AttachedToComposition += (s, e) =>
         {
-            canvas.RenderBrush = canvas.Compositor!.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
-            path.StrokeBrush = canvas.Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor.ToColor());
+            canvas.RenderBrush = canvas.Compositor!.CreateColorBrush(canvas.GetWindowTheme().SelectedColor.ToColor());
+            path.StrokeBrush = canvas.Compositor.CreateColorBrush(canvas.GetWindowTheme().UnselectedColor.ToColor());
         };
 
         canvas.Children.Add(path);
@@ -1847,7 +1850,9 @@ public class TestWindow : Window
 
         var rtf = new RichTextBox
         {
-            Width = 500
+            VerticalAlignment = Alignment.Near,
+            HorizontalAlignment = Alignment.Near,
+            //Width = 500
         };
         rtf.Options |= TextHostOptions.WordWrap;
         rtf.RtfText = File.ReadAllText(@"resources\wice.rtf");

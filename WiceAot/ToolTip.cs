@@ -17,10 +17,10 @@ public partial class ToolTip : PopupWindow, IContentParent
         Children.Add(Content);
 
         // we need a margin for the drop shadow so we need to force 1 child only
-        Content.Margin = Application.CurrentTheme.ToolTipBaseSize;
+        Content.Margin = GetWindowTheme().ToolTipBaseSize;
         Content.RenderShadow = CreateShadow(); // may be null if overriden
 
-        VerticalOffset = Application.CurrentTheme.ToolTipVerticalOffset * NativeWindow.GetAccessibilityCursorSize();
+        VerticalOffset = GetWindowTheme().ToolTipVerticalOffset * NativeWindow.GetAccessibilityCursorSize();
     }
 
     [Browsable(false)]
@@ -52,7 +52,7 @@ public partial class ToolTip : PopupWindow, IContentParent
             return null;
 
         var shadow = Compositor.CreateDropShadow();
-        shadow.BlurRadius = Application.CurrentTheme.ToolTipShadowBlurRadius;
+        shadow.BlurRadius = GetWindowTheme().ToolTipShadowBlurRadius;
         return shadow;
     }
 

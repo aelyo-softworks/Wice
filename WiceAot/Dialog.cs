@@ -29,7 +29,7 @@ public partial class Dialog : Popup
         Content.ChildRemoved += OnContentChildRemoved;
 
         // we need a margin for the drop shadow so we need to force 1 child only
-        //Content.Margin = Application.CurrentTheme.DialogShadowBlurRadius;
+        //Content.Margin = GetWindowTheme().DialogShadowBlurRadius;
         Children.Add(Content);
 
         DoWhenAttachedToComposition(() => RenderShadow = CreateShadow());
@@ -148,7 +148,7 @@ public partial class Dialog : Popup
 
         var func = Compositor.EaseInCubic();
         var opacityAnimation = Compositor.CreateScalarKeyFrameAnimation();
-        opacityAnimation.Duration = Application.CurrentTheme.DialogCloseAnimationDuration;
+        opacityAnimation.Duration = GetWindowTheme().DialogCloseAnimationDuration;
         opacityAnimation.InsertKeyFrame(1f, 0.5f, func);
         CompositionVisual.StartAnimation(nameof(Windows.UI.Composition.Visual.Opacity), opacityAnimation);
     }
@@ -160,8 +160,8 @@ public partial class Dialog : Popup
             return null;
 
         var shadow = compositor.CreateDropShadow();
-        shadow.BlurRadius = Application.CurrentTheme.DialogShadowBlurRadius;
-        shadow.Color = Application.CurrentTheme.DialogShadowColor.ToColor();
+        shadow.BlurRadius = GetWindowTheme().DialogShadowBlurRadius;
+        shadow.Color = GetWindowTheme().DialogShadowColor.ToColor();
         return shadow;
     }
 
@@ -171,7 +171,7 @@ public partial class Dialog : Popup
 
         if (ShowWindowOverlay && Compositor != null && Parent != null)
         {
-            var opacity = WindowOverlayOpacity ?? Application.CurrentTheme.DialogWindowOverlayOpacity;
+            var opacity = WindowOverlayOpacity ?? GetWindowTheme().DialogWindowOverlayOpacity;
             if (opacity > 0)
             {
                 var overlay = new Border
@@ -189,7 +189,7 @@ public partial class Dialog : Popup
                 }
                 else
                 {
-                    color = Application.CurrentTheme.DialogWindowOverlayColor.ToColor();
+                    color = GetWindowTheme().DialogWindowOverlayColor.ToColor();
                 }
 
                 overlay.RenderBrush = Compositor.CreateColorBrush(color);
@@ -233,7 +233,7 @@ public partial class Dialog : Popup
             var func = Compositor.EaseInCubic();
 
             var opacityAnimation = Compositor.CreateScalarKeyFrameAnimation();
-            opacityAnimation.Duration = Application.CurrentTheme.DialogOpenAnimationDuration;
+            opacityAnimation.Duration = GetWindowTheme().DialogOpenAnimationDuration;
             opacityAnimation.InsertKeyFrame(0f, 0f, func);
             opacityAnimation.InsertKeyFrame(1f, 1f, func);
 

@@ -41,8 +41,8 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
 
     public ToggleSwitch()
     {
-        Width = Application.CurrentTheme.BoxSize * 2;
-        Height = Application.CurrentTheme.BoxSize;
+        Width = GetWindowTheme().BoxSize * 2;
+        Height = GetWindowTheme().BoxSize;
 
         _path = new Path();
 
@@ -57,7 +57,7 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
             _button.Radius = new Vector2(radius, radius);
 
             var thickness = 0f;
-            var ratio = Application.CurrentTheme.ToggleBorderRatio;
+            var ratio = GetWindowTheme().ToggleBorderRatio;
             if (ratio <= 0)
             {
                 thickness = 0;
@@ -119,8 +119,8 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         if (Value)
         {
             _path.StrokeBrush = null;
-            _path.FillBrush = OnPathBrush ?? Compositor.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
-            _button.FillBrush = OnButtonBrush ?? Compositor.CreateColorBrush(Application.CurrentTheme.UnselectedColor.ToColor());
+            _path.FillBrush = OnPathBrush ?? Compositor.CreateColorBrush(GetWindowTheme().SelectedColor.ToColor());
+            _button.FillBrush = OnButtonBrush ?? Compositor.CreateColorBrush(GetWindowTheme().UnselectedColor.ToColor());
         }
         else
         {
@@ -128,16 +128,10 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
             var button = OffButtonBrush;
             if (path == null)
             {
-                if (button == null)
-                {
-                    button = Compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor());
-                }
+                button ??= Compositor.CreateColorBrush(GetWindowTheme().BorderColor.ToColor());
                 path = button;
             }
-            else if (button == null)
-            {
-                button = path;
-            }
+            else button ??= path;
 
             _path.StrokeBrush = path;
             _path.FillBrush = null;

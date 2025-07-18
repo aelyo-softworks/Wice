@@ -95,7 +95,7 @@ public partial class FocusVisual : Border
 #endif
 
         var ar = focused.AbsoluteRenderRect;
-        var offset = parent?.FocusOffset ?? Application.CurrentTheme.FocusOffset;
+        var offset = parent?.FocusOffset ?? GetWindowTheme().FocusOffset;
 
         var l = Canvas.GetLeft(this);
         var t = Canvas.GetTop(this);
@@ -133,9 +133,9 @@ public partial class FocusVisual : Border
 
         if (Child is SingleShape singleShape)
         {
-            singleShape.StrokeBrush = Compositor.CreateColorBrush(Application.CurrentTheme.FocusColor.ToColor());
-            singleShape.StrokeThickness = Application.CurrentTheme.FocusThickness;
-            singleShape.StrokeDashArray = Application.CurrentTheme.FocusDashArray;
+            singleShape.StrokeBrush = Compositor.CreateColorBrush(GetWindowTheme().FocusColor.ToColor());
+            singleShape.StrokeThickness = GetWindowTheme().FocusThickness;
+            singleShape.StrokeDashArray = GetWindowTheme().FocusDashArray;
         }
     }
 }

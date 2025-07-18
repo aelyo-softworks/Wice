@@ -2,7 +2,7 @@
 
 public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IValueable, IPasswordCapable, IDisposable
 {
-    public static VisualProperty ForegroundBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(ForegroundBrush), VisualPropertyInvalidateModes.Render, Application.CurrentTheme.TextBoxForegroundColor);
+    public static VisualProperty ForegroundBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(ForegroundBrush), VisualPropertyInvalidateModes.Render, Theme.Default.TextBoxForegroundColor);
     public static VisualProperty HoverForegroundBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(HoverForegroundBrush), VisualPropertyInvalidateModes.Render);
     public static VisualProperty SelectionBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(SelectionBrush), VisualPropertyInvalidateModes.Render);
     public static VisualProperty FontFamilyNameProperty { get; } = VisualProperty.Add<string>(typeof(TextBox), nameof(FontFamilyName), VisualPropertyInvalidateModes.Measure);
@@ -581,7 +581,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     internal IComObject<IDWriteTextFormat> GetFormat()
     {
-        var format = Application.CurrentResourceManager.GetTextFormat(this)!;
+        var format = Application.CurrentResourceManager.GetTextFormat(Window?.Theme, this)!;
         return format;
     }
 
@@ -943,11 +943,11 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
             return selection;
 
         if (brush == null || brush.Object is not ID2D1SolidColorBrush colorBrush)
-            return context.CreateSolidColorBrush(Application.CurrentTheme.TextBoxSelectionColor);
+            return context.CreateSolidColorBrush(GetWindowTheme().TextBoxSelectionColor);
 
         var bg = AscendantsBackgroundColor;
         if (!bg.HasValue)
-            return context.CreateSolidColorBrush(Application.CurrentTheme.TextBoxSelectionColor);
+            return context.CreateSolidColorBrush(GetWindowTheme().TextBoxSelectionColor);
 
 #if NETFRAMEWORK
         colorBrush.GetColor(out var color);
@@ -1488,7 +1488,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         _origin.y = Math.Min(0, y);
     }
 
-    private float GetFontSize() => Application.CurrentResourceManager.GetFontSize(FontSize);
+    private float GetFontSize() => Application.CurrentResourceManager.GetFontSize(Window?.Theme, FontSize);
 
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {

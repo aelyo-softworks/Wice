@@ -87,7 +87,7 @@ public partial class DialogBox : Dialog
 
     protected virtual Visual? CreateBorder()
     {
-        var border = new RoundedRectangle { CornerRadius = new Vector2(Application.CurrentTheme.RoundedButtonCornerRadius) };
+        var border = new RoundedRectangle { CornerRadius = new Vector2(GetWindowTheme().RoundedButtonCornerRadius) };
         border.DoWhenAttachedToComposition(() => border.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor()));
         return border;
     }
@@ -96,7 +96,7 @@ public partial class DialogBox : Dialog
     {
         var dock = new Dock
         {
-            Margin = Application.CurrentTheme.ButtonMargin,
+            Margin = GetWindowTheme().ButtonMargin,
             VerticalAlignment = Alignment.Center
         };
         return dock;
@@ -107,8 +107,8 @@ public partial class DialogBox : Dialog
         var bar = new TitleBar();
         if (bar.Title != null)
         {
-            var margin = Application.CurrentTheme.ButtonMargin;
-            bar.Title.FontSize = Application.CurrentTheme.DefaultFontSize;
+            var margin = GetWindowTheme().ButtonMargin;
+            bar.Title.FontSize = GetWindowTheme().DefaultFontSize;
             bar.Title.Margin = D2D_RECT_F.Thickness(margin, 0, margin, 0);
         }
 
@@ -151,7 +151,7 @@ public partial class DialogBox : Dialog
         return panel;
     }
 
-    protected virtual Visual? CreateButtonsPanel() => new Dock() { LastChildFill = false, Margin = Application.CurrentTheme.ButtonMargin };
+    protected virtual Visual? CreateButtonsPanel() => new Dock() { LastChildFill = false, Margin = GetWindowTheme().ButtonMargin };
     protected virtual Button CreateButton() => new();
 
     public Button? GetCommandButton(MESSAGEBOX_RESULT command) => Buttons.FirstOrDefault(b => command.Equals(b.Command));
@@ -162,11 +162,11 @@ public partial class DialogBox : Dialog
             throw new InvalidOperationException();
 
         var button = CreateButton();
-        var margin = Application.CurrentTheme.ButtonMargin;
+        var margin = GetWindowTheme().ButtonMargin;
         button.Margin = D2D_RECT_F.Thickness(margin, 0, 0, 0);
 
         button.Text.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER;
-        button.Text.FontSize = Application.CurrentTheme.DialogBoxButtonFontSize;
+        button.Text.FontSize = GetWindowTheme().DialogBoxButtonFontSize;
         Dock.SetDockType(button, DockType.Right); // note buttons must be inserted in reverse order
         ButtonsPanel.Children.Add(button);
         return button;

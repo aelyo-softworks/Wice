@@ -91,7 +91,7 @@ public partial class HeaderedContent : Stack, IOneChildParent, IDisposable
             }
         }
 
-        var animation = new SinglePropertyAnimation(new PropertyAnimationArguments(Viewer, HeightProperty, Application.CurrentTheme.SelectedAnimationDuration), from, to);
+        var animation = new SinglePropertyAnimation(new PropertyAnimationArguments(Viewer, HeightProperty, GetWindowTheme().SelectedAnimationDuration), from, to);
 
         if (_sb != null)
         {

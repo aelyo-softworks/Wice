@@ -2,6 +2,23 @@
 
 public class Theme
 {
+    public const float DefaultDefaultFontSize = 14f;
+    public const float DefaultDefaultSplitterSize = 5f;
+    public const string DefaultSymbolFontName = "Segoe MDL2 Assets";
+    public const string DefaultLegacySymbolFontName = "Segoe UI Symbol";
+    public const string DefaultDefaultFontFamilyName = "Segoe UI";
+
+    private static Theme _default = new();
+    public static Theme Default
+    {
+        get => _default;
+        set
+        {
+            ExceptionExtensions.ThrowIfNull(value, nameof(value));
+            _default = value;
+        }
+    }
+
     private string? _symbolFontName;
     private string? _legacySymbolFontName;
     private string? _defaultFontFamilyName;
@@ -75,11 +92,11 @@ public class Theme
         DisabledOpacityRatio = 0.5f;
     }
 
-    public virtual string? LegacySymbolFontName { get => _legacySymbolFontName.Nullify() ?? "Segoe UI Symbol"; set => _legacySymbolFontName = value; }
-    public virtual string? SymbolFontName { get => _symbolFontName.Nullify() ?? "Segoe MDL2 Assets"; set => _symbolFontName = value; }
-    public virtual string? DefaultFontFamilyName { get => _defaultFontFamilyName.Nullify() ?? "Segoe UI"; set => _defaultFontFamilyName = value; }
-    public virtual float DefaultFontSize { get => _defaultFontSize <= 0 ? 14f : _defaultFontSize; set => _defaultFontSize = value; }
-    public virtual float DefaultSplitterSize { get => _defaultSplitterSize <= 0 ? 5f : _defaultSplitterSize; set => _defaultSplitterSize = value; }
+    public virtual string? LegacySymbolFontName { get => _legacySymbolFontName.Nullify() ?? DefaultLegacySymbolFontName; set => _legacySymbolFontName = value; }
+    public virtual string? SymbolFontName { get => _symbolFontName.Nullify() ?? DefaultSymbolFontName; set => _symbolFontName = value; }
+    public virtual string? DefaultFontFamilyName { get => _defaultFontFamilyName.Nullify() ?? DefaultDefaultFontFamilyName; set => _defaultFontFamilyName = value; }
+    public virtual float DefaultFontSize { get => _defaultFontSize <= 0 ? DefaultDefaultFontSize : _defaultFontSize; set => _defaultFontSize = value; }
+    public virtual float DefaultSplitterSize { get => _defaultSplitterSize <= 0 ? DefaultDefaultSplitterSize : _defaultSplitterSize; set => _defaultSplitterSize = value; }
 
     public virtual D3DCOLORVALUE LinkColor { get; set; }
     public virtual D3DCOLORVALUE HoverLinkColor { get; set; }

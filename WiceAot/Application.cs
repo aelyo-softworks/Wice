@@ -207,8 +207,12 @@ public partial class Application : IDisposable
     protected virtual void OnApplicationExit(object sender, EventArgs e) => ApplicationExit?.Invoke(sender, e);
     protected virtual ResourceManager CreateResourceManager()
     {
+#if NETFRAMEWORK
         if (IsDisposed)
             throw new ObjectDisposedException(nameof(Application));
+#else
+        ObjectDisposedException.ThrowIf(IsDisposed, nameof(Application));
+#endif
 
         CheckRunningAsMainThread();
         return new ResourceManager(this);
@@ -280,7 +284,7 @@ public partial class Application : IDisposable
     }
 
     public static ResourceManager CurrentResourceManager => Current?.ResourceManager ?? throw new WiceException("0031: Resource Manager is not available at this time.");
-    public static Theme CurrentTheme => CurrentResourceManager.Theme ?? throw new WiceException("0035: Theme is not available at this time.");
+    //public static Theme CurrentTheme => CurrentResourceManager.Theme ?? throw new WiceException("0035: Theme is not available at this time.");
     public static bool UseDebugLayer { get => _useDebugLayer && DXGIFunctions.IsDebugLayerAvailable; set => _useDebugLayer = true; }
     public static HMODULE ModuleHandle => WiceCommons.GetModuleHandleW(PWSTR.Null);
     public static bool IsFatalErrorShowing { get; private set; }

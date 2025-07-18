@@ -24,7 +24,7 @@ public partial class Caret : Border, IDisposable
         //Opacity = 0.5f;
         //Width = 5;
 
-        DoWhenAttachedToComposition(() => RenderBrush = Compositor!.CreateColorBrush(Application.CurrentTheme.CaretColor.ToColor()));
+        DoWhenAttachedToComposition(() => RenderBrush = Compositor!.CreateColorBrush(GetWindowTheme().CaretColor.ToColor()));
     }
 
     // no key/mouse at all for caret

@@ -270,12 +270,12 @@
             {
                 visual.DoWhenAttachedToComposition(() =>
                 {
-                    visual.RenderBrush = Compositor?.CreateColorBrush(Application.CurrentTheme.SelectedColor.ToColor());
+                    visual.RenderBrush = Compositor?.CreateColorBrush(GetWindowTheme().SelectedColor.ToColor());
                 });
             }
             else
             {
-                visual.RenderBrush = Compositor?.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor.ToColor());
+                visual.RenderBrush = Compositor?.CreateColorBrush(GetWindowTheme().ListBoxItemColor.ToColor());
             }
 
             return selected != visual.IsSelected;
@@ -523,12 +523,12 @@
 #endif
 
             item.DataBinder = DataBinder;
-            item.ColorAnimationDuration = Application.CurrentTheme.SelectionBrushAnimationDuration;
-            item.RenderBrush = Compositor?.CreateColorBrush(Application.CurrentTheme.ListBoxItemColor.ToColor());
+            item.ColorAnimationDuration = GetWindowTheme().SelectionBrushAnimationDuration;
+            item.RenderBrush = Compositor?.CreateColorBrush(GetWindowTheme().ListBoxItemColor.ToColor());
 
             void updateHover()
             {
-                item.HoverRenderBrush = item.IsSelected || !IsEnabled ? null : Compositor?.CreateColorBrush(Application.CurrentTheme.ListBoxHoverColor.ToColor());
+                item.HoverRenderBrush = item.IsSelected || !IsEnabled ? null : Compositor?.CreateColorBrush(GetWindowTheme().ListBoxHoverColor.ToColor());
             }
 
             //item.SelectionChanged += (s, e) => updateHover();

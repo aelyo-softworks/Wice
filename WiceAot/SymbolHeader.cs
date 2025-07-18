@@ -8,7 +8,7 @@ public partial class SymbolHeader : Header
     {
         var tb = new TextBox
         {
-            FontFamilyName = Application.CurrentTheme.SymbolFontName,
+            FontFamilyName = GetWindowTheme().SymbolFontName,
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER
         };
         return tb;

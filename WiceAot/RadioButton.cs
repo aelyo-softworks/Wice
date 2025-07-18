@@ -18,25 +18,26 @@ public partial class RadioButton : StateButton, IFocusableParent
     Type IFocusableParent.FocusVisualShapeType => typeof(Ellipse);
     float? IFocusableParent.FocusOffset => null;
 
-    public static Visual CreateDefaultTrueVisual(Compositor compositor)
+    public static Visual CreateDefaultTrueVisual(Compositor compositor, Theme theme)
     {
         ExceptionExtensions.ThrowIfNull(compositor, nameof(compositor));
+        ExceptionExtensions.ThrowIfNull(theme, nameof(theme));
         var border = new Border();
         var canvas = new Canvas();
         border.Child = canvas;
 
         var ellipse = new Ellipse
         {
-            StrokeBrush = compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor()),
-            StrokeThickness = Application.CurrentTheme.BorderSize / 2,
+            StrokeBrush = compositor.CreateColorBrush(theme.BorderColor.ToColor()),
+            StrokeThickness = theme.BorderSize / 2,
         };
 
         canvas.Children.Add(ellipse);
 
         var disk = new Ellipse
         {
-            FillBrush = compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor()),
-            RadiusOffset = new Vector2(-Application.CurrentTheme.BorderSize * 1.2f, -Application.CurrentTheme.BorderSize * 1.2f),
+            FillBrush = compositor.CreateColorBrush(theme.BorderColor.ToColor()),
+            RadiusOffset = new Vector2(-theme.BorderSize * 1.2f, -theme.BorderSize * 1.2f),
         };
 
         canvas.Children.Add(disk);
@@ -46,13 +47,14 @@ public partial class RadioButton : StateButton, IFocusableParent
         return border;
     }
 
-    public static Visual CreateDefaultFalseVisual(Compositor compositor)
+    public static Visual CreateDefaultFalseVisual(Compositor compositor, Theme theme)
     {
         ExceptionExtensions.ThrowIfNull(compositor, nameof(compositor));
+        ExceptionExtensions.ThrowIfNull(theme, nameof(theme));
         var ellipse = new Ellipse
         {
-            StrokeBrush = compositor.CreateColorBrush(Application.CurrentTheme.BorderColor.ToColor()),
-            StrokeThickness = Application.CurrentTheme.BorderSize / 2,
+            StrokeBrush = compositor.CreateColorBrush(theme.BorderColor.ToColor()),
+            StrokeThickness = theme.BorderSize / 2,
         };
 
 #if DEBUG
@@ -66,6 +68,6 @@ public partial class RadioButton : StateButton, IFocusableParent
         if (Compositor == null)
             throw new InvalidOperationException();
 
-        return true.Equals(state.Value) ? CreateDefaultTrueVisual(Compositor) : CreateDefaultFalseVisual(Compositor);
+        return true.Equals(state.Value) ? CreateDefaultTrueVisual(Compositor, GetWindowTheme()) : CreateDefaultFalseVisual(Compositor, GetWindowTheme());
     }
 }

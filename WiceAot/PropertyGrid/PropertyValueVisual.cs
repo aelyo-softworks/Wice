@@ -99,7 +99,7 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
 
             if (Property.IsReadOnly)
             {
-                visual.Opacity *= Application.CurrentTheme.DisabledOpacityRatio;
+                visual.Opacity *= GetWindowTheme().DisabledOpacityRatio;
             }
         }
 

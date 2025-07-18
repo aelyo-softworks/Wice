@@ -122,7 +122,7 @@ public class PropertyGrid : Grid
     protected override void OnAttachedToComposition(object sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
-        Splitter.RenderBrush = Compositor.CreateColorBrush(Application.CurrentTheme.SplitterColor.ToColor());
+        Splitter.RenderBrush = Compositor.CreateColorBrush(GetWindowTheme().SplitterColor.ToColor());
     }
 
     protected virtual void OnSelectedObjectPropertyChanged(object sender, PropertyChangedEventArgs e) => GetVisuals(e.PropertyName)?.ValueVisual?.UpdateEditor();

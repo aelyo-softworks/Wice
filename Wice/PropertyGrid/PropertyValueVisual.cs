@@ -4,9 +4,7 @@ public class PropertyValueVisual : Border
 {
     public PropertyValueVisual(PropertyGridProperty property)
     {
-        if (property == null)
-            throw new ArgumentNullException(nameof(property));
-
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
         Property = property;
 
 #if DEBUG
@@ -100,7 +98,7 @@ public class PropertyValueVisual : Border
 
             if (Property.IsReadOnly)
             {
-                visual.Opacity *= Application.CurrentTheme.DisabledOpacityRatio;
+                visual.Opacity *= GetWindowTheme().DisabledOpacityRatio;
             }
         }
 

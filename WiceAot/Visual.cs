@@ -335,6 +335,15 @@ public partial class Visual : BaseObject
         }
     }
 
+    public virtual Theme GetWindowTheme()
+    {
+        var window = Window;
+        if (window == null)
+            return Theme.Default;
+
+        return window.Theme;
+    }
+
     private void ResetViewOrders()
     {
         var w = Window;
@@ -1648,7 +1657,7 @@ public partial class Visual : BaseObject
             return;
 
         var animation = compositor.CreateColorKeyFrameAnimation();
-        animation.Duration = ColorAnimationDuration ?? Application.CurrentTheme.BrushAnimationDuration;
+        animation.Duration = ColorAnimationDuration ?? GetWindowTheme().BrushAnimationDuration;
         animation.InsertKeyFrame(1f, to.ToColor(), ColorAnimationEasingFunction ?? compositor.CreateLinearEasingFunction());
         foreach (var brush in brushes)
         {

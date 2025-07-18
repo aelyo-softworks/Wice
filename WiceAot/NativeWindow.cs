@@ -42,7 +42,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public RECT WindowRect { get { WiceCommons.GetWindowRect(Handle, out var rc); return rc; } set => WiceCommons.SetWindowPos(Handle, HWND.Null, value.left, value.top, value.Width, value.Height, SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOREDRAW | SET_WINDOW_POS_FLAGS.SWP_NOZORDER); }
     public RECT ClientRect { get { WiceCommons.GetClientRect(Handle, out var rc); return rc; } }
     public HICON IconHandle { get => new() { Value = WiceCommons.SendMessageW(Handle, MessageDecoder.WM_GETICON, new WPARAM { Value = WiceCommons.ICON_BIG }, LPARAM.Null).Value }; set { var ptr = WiceCommons.SendMessageW(Handle, MessageDecoder.WM_SETICON, new WPARAM { Value = WiceCommons.ICON_BIG }, new LPARAM { Value = value.Value }); if (ptr.Value != 0) { WiceCommons.DestroyIcon(new HICON { Value = ptr.Value }); } } }
-    public uint Dpi { get { var dpi = WiceCommons.GetDpiForWindow(Handle); if (dpi <= 0) return 96; return dpi; } }
+    public uint Dpi { get { var dpi = WiceCommons.GetDpiForWindow(Handle); if (dpi <= 0) return WiceCommons.USER_DEFAULT_SCREEN_DPI; return dpi; } }
     public DPI_AWARENESS_CONTEXT DpiAwareness => DpiUtilities.GetWindowDpiAwarenessContext(Handle);
     public string DpiAwarenessDescription => DpiUtilities.GetDpiAwarenessDescription(DpiAwareness);
     public uint DpiFromDpiAwareness => WiceCommons.GetDpiFromDpiAwarenessContext(DpiAwareness);

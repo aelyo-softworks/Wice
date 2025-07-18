@@ -85,7 +85,12 @@ public partial class TitleBarButton : ButtonBase
         var size = (uint)sizeof(RECT);
         WiceCommons.DwmGetWindowAttribute(window.Handle, (uint)DWMWINDOWATTRIBUTE.DWMWA_CAPTION_BUTTON_BOUNDS, (nint)(&bounds), size);
         var height = bounds.Height;
-        height = AdjustForMonitorDpi(window, height, true);
+
+        if (!window.AdaptToDpi)
+        {
+            height = AdjustForMonitorDpi(window, height, true);
+        }
+
         if (_strokeThickness % 2 == 1 && height % 2 == 1)
         {
             height++;
@@ -93,19 +98,23 @@ public partial class TitleBarButton : ButtonBase
 
         // we have 3 buttons. not sure this is always ok...
         var width = (bounds.Width - 1) / 3;
-        width = AdjustForMonitorDpi(window, width, true);
+
+        if (!window.AdaptToDpi)
+        {
+            width = AdjustForMonitorDpi(window, width, true);
+        }
         return new SIZE(width, height);
     }
 
     private static int AdjustForMonitorDpi(Window window, int value, bool reduce = false)
     {
         var dpi = window.Dpi;
-        if (dpi == 96)
+        if (dpi == WiceCommons.USER_DEFAULT_SCREEN_DPI)
             return value;
 
         if (reduce)
-            return (int)(value * 96 / dpi);
+            return (int)(value * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi);
 
-        return (int)(value * dpi / 96);
+        return (int)(value * dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI);
     }
 }

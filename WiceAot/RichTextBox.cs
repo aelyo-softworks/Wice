@@ -5,6 +5,7 @@
 public partial class RichTextBox : RenderVisual, IDisposable
 {
     private bool _disposedValue;
+    private D2D_SIZE_F _maxConstraintSize = new(ushort.MaxValue, ushort.MaxValue);
     private TXTNATURALSIZE _naturalSize = TXTNATURALSIZE.TXTNS_FITTOCONTENT;
 
     public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
@@ -273,6 +274,21 @@ public partial class RichTextBox : RenderVisual, IDisposable
     }
 
     [Category(CategoryLayout)]
+    public virtual D2D_SIZE_F MaxConstraintSize
+    {
+        get => _maxConstraintSize;
+        set
+        {
+            if (_maxConstraintSize == value)
+                return;
+
+            OnPropertyChanging();
+            _maxConstraintSize = value;
+            Invalidate(VisualPropertyInvalidateModes.Measure);
+        }
+    }
+
+    [Category(CategoryLayout)]
     public virtual ushort FontWeight
     {
 #if NETFRAMEWORK
@@ -378,6 +394,18 @@ public partial class RichTextBox : RenderVisual, IDisposable
             constraint.height = Math.Max(0, constraint.height - padding.bottom);
         }
 
+        // not sure why but if we don't set these to ushort.MaxValue, the text host will not work properly
+        var max = MaxConstraintSize;
+        if (constraint.width >= max.width)
+        {
+            constraint.width = max.width;
+        }
+
+        if (constraint.height >= max.height)
+        {
+            constraint.height = max.height;
+        }
+
         var size = host.GetNaturalSize(NaturalSize, constraint).ToD2D_SIZE_F();
         D2D_SIZE_U dpi;
         if (Window != null && Window.Handle != 0)
@@ -389,14 +417,14 @@ public partial class RichTextBox : RenderVisual, IDisposable
             dpi = DpiUtilities.GetDpiForDesktop();
         }
 
-        if (dpi.width != 96)
+        if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
         {
-            size.width = size.width * 96 / dpi.width;
+            size.width = size.width * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi.width;
         }
 
-        if (dpi.height != 96)
+        if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
         {
-            size.height = size.height * 96 / dpi.height;
+            size.height = size.height * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi.height;
         }
 
         var ratio = GetMonitorDpiRatioToPrimary(Window?.Monitor);
@@ -490,24 +518,24 @@ public partial class RichTextBox : RenderVisual, IDisposable
             dpi = DpiUtilities.GetDpiForDesktop();
         }
 
-        if (dpi.width != 96)
+        if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
         {
-            rc.Width = (int)(rc.Width * dpi.width / 96);
+            rc.Width = (int)(rc.Width * dpi.width / WiceCommons.USER_DEFAULT_SCREEN_DPI);
         }
 
-        if (dpi.height != 96)
+        if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
         {
-            rc.Height = (int)(rc.Height * dpi.height / 96);
+            rc.Height = (int)(rc.Height * dpi.height / WiceCommons.USER_DEFAULT_SCREEN_DPI);
         }
 
-        if (dpi.width != 96)
+        if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
         {
-            rc.Width = (int)(rc.Width * dpi.width * dpi.width / 96 / 96);
+            rc.Width = (int)(rc.Width * dpi.width * dpi.width / WiceCommons.USER_DEFAULT_SCREEN_DPI / WiceCommons.USER_DEFAULT_SCREEN_DPI);
         }
 
-        if (dpi.height != 96)
+        if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
         {
-            rc.Height = (int)(rc.Height * dpi.height * dpi.height / 96 / 96);
+            rc.Height = (int)(rc.Height * dpi.height * dpi.height / WiceCommons.USER_DEFAULT_SCREEN_DPI / WiceCommons.USER_DEFAULT_SCREEN_DPI);
         }
 
         var ratio = GetMonitorDpiRatioToPrimary(Window.Monitor);

@@ -127,7 +127,7 @@ public partial class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
         tb.Click += OnIconClick;
         tb.IsFocusable = false; // the combo is focusable as a whole
         tb.Icon.Text = MDL2GlyphResource.ChevronDown;
-        //tb.Width = Application.CurrentTheme.VerticalScrollBarWidth;
+        //tb.Width = GetWindowTheme().VerticalScrollBarWidth;
         //tb.Icon.Margin = D2D_RECT_F.Thickness(2, 0, 0, 0);
         return tb;
     }
@@ -157,7 +157,7 @@ public partial class ComboBox : Dock, IDataSourceVisual, ISelectorVisual
         var tb = new TextBox
         {
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
-            Margin = Application.CurrentTheme.ButtonMargin
+            Margin = GetWindowTheme().ButtonMargin
         };
         return tb;
     }
