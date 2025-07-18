@@ -36,6 +36,8 @@ public partial class RoundedButton : Button
         if (Compositor == null)
             return;
 
+        var theme = (GalleryTheme)GetWindowTheme();
+        _roundedRectangle.CornerRadius = new Vector2(theme.RoundedButtonCornerRadius);
         _roundedRectangle.RenderBrush = Compositor.CreateColorBrush(GalleryWindow.ButtonColor.ToColor());
         RenderBrush = null;
         Text.ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White);
@@ -44,9 +46,9 @@ public partial class RoundedButton : Button
         if (IsEnabled)
         {
             var shadow = Compositor.CreateDropShadow();
-            shadow.BlurRadius = 8;
+            shadow.BlurRadius = theme.RoundedButtonShadowBlurRadius;
             shadow.Color = GalleryWindow.ButtonShadowColor.ToColor();
-            shadow.Offset = new Vector3(0, 3, 0);
+            shadow.Offset = theme.RoundedButtonShadowOffset;
             _canvas.RenderShadow = shadow;
         }
     }

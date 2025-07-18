@@ -11,7 +11,11 @@ public class SystemInformation(Assembly? assembly = null, Window? window = null,
     public new string? WindowDpiAwareness => (window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiAwarenessDescription;
 
     [Category("Graphics")]
-    public new uint WindowDpiFromDpiAwareness => (window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiFromDpiAwareness ?? 96;
+    [Browsable(false)]
+    public new uint WindowDpiFromDpiAwareness => (window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiFromDpiAwareness ?? WiceCommons.USER_DEFAULT_SCREEN_DPI;
+
+    [Category("Graphics")]
+    public uint WindowDpi => (window ?? Application.AllWindows.FirstOrDefault())?.Dpi ?? WiceCommons.USER_DEFAULT_SCREEN_DPI;
 
     [Category("Graphics")]
     public new string? WindowMonitor

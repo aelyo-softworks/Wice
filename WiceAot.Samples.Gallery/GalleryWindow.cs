@@ -5,14 +5,19 @@ public sealed partial class GalleryWindow : Window, IDisposable
     public static D3DCOLORVALUE ButtonColor { get; } = new D3DCOLORVALUE(0xFF0078D7);
     public static D3DCOLORVALUE ButtonShadowColor { get; } = ButtonColor.ChangeAlpha(0x7F);
 
-    private const int _headersMargin = 10;
     private Border? _pageHolder;
+    private Border? _menuBack;
+    private Grid? _grid;
     private readonly List<SymbolHeader> _headers = [];
     private readonly List<Page> _pages = [];
 
     // define Window settings
     public GalleryWindow()
     {
+#if DEBUG
+        EnableDiagnosticKeys = true;
+#endif
+
         // we draw our own titlebar using Wice itself
         WindowsFrameMode = WindowsFrameMode.None;
 
@@ -54,6 +59,33 @@ public sealed partial class GalleryWindow : Window, IDisposable
         }
     }
 
+    public new GalleryTheme Theme => (GalleryTheme)base.Theme;
+    protected override Theme CreateTheme() => new GalleryTheme(this);
+
+    protected override void OnThemeDpiChanged(object? sender, ThemeDpiChangedEventArgs e)
+    {
+        base.OnThemeDpiChanged(sender, e);
+
+        if (_menuBack != null)
+        {
+            _menuBack.Width = Theme.MenuBackWidth;
+            _grid!.Columns[0].Size = _menuBack.Width;
+            _grid.Rows[0].Size = MainTitleBar!.Height;
+        }
+
+        if (_pageHolder != null)
+        {
+            _pageHolder.Margin = Theme.DocumentMargin;
+        }
+
+        foreach (var header in _headers)
+        {
+            header.Margin = Theme.PageHeadersMargin;
+            header.Height = Theme.PageHeaderHeight;
+            header.Text.Margin = Theme.PageHeadersTextMargin;
+        }
+    }
+
     public void ShowPage(Visual page)
     {
         if (_pageHolder == null)
@@ -70,43 +102,42 @@ public sealed partial class GalleryWindow : Window, IDisposable
 
         Children.Add(titleBar);
 
-        var menuBack = new Border
+        _menuBack = new Border
         {
-            Width = 250,
+            Width = Theme.MenuBackWidth,
             RenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0xFFE6E6E6).ToColor()),
             Opacity = 0.5f
         };
-        SetLeft(menuBack, 0);
-        Children.Add(menuBack);
+        SetLeft(_menuBack, 0);
+        Children.Add(_menuBack);
 
-        var gridPadding = 0;
-        var grid = new Grid();
-        grid.Columns[0].Size = menuBack.Width - gridPadding * 2;
-        grid.Rows[0].Size = titleBar.Height;
-        grid.Columns.Add(new GridColumn());
-        grid.Rows.Add(new GridRow());
-        Children.Add(grid);
+        _grid = new Grid();
+        _grid.Columns[0].Size = _menuBack.Width;
+        _grid.Rows[0].Size = titleBar.Height;
+        _grid.Columns.Add(new GridColumn());
+        _grid.Rows.Add(new GridRow());
+        Children.Add(_grid);
 
         // this code is used to handle DPI changes
         titleBar.Updated += (s, e) =>
         {
-            grid.Rows[0].Size = titleBar.Height;
+            _grid.Rows[0].Size = titleBar.Height;
         };
 
         // the document holds pages
         var document = new Border();
         _pageHolder = document;
-        document.Margin = D2D_RECT_F.Thickness(20, 0, 0, 0);
+        document.Margin = Theme.DocumentMargin;
         Grid.SetColumn(document, 1);
         Grid.SetRow(document, 1);
-        grid.Children.Add(document);
+        _grid.Children.Add(document);
 
         var menu = new Dock
         {
             LastChildFill = false
         };
         Grid.SetRow(menu, 1);
-        grid.Children.Add(menu);
+        _grid.Children.Add(menu);
 
         AddHeaderAndPages(menu);
     }
@@ -133,8 +164,8 @@ public sealed partial class GalleryWindow : Window, IDisposable
     {
         var header = new SymbolHeader { Data = page };
         _headers.Add(header);
-        header.Margin = D2D_RECT_F.Thickness(_headersMargin, 0);
-        header.Height = 40;
+        header.Margin = Theme.PageHeadersMargin;
+        header.Height = Theme.PageHeaderHeight;
         header.Icon.Text = page.IconText;
         header.Text.Text = page.HeaderText;
         header.Text.IsEnabled = false;
@@ -153,9 +184,9 @@ public sealed partial class GalleryWindow : Window, IDisposable
         return header;
     }
 
-    private static void ConfigureHeaderText(TextBox text)
+    private void ConfigureHeaderText(TextBox text)
     {
-        text.Margin = D2D_RECT_F.Thickness(_headersMargin, 0, _headersMargin, 0);
+        text.Margin = Theme.PageHeadersTextMargin;
         text.FontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_ULTRA_CONDENSED;
         text.DrawOptions = D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT;
 

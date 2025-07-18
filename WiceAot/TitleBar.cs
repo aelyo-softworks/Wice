@@ -45,8 +45,8 @@
             Title = CreateTitle();
             if (Title != null)
             {
-                Title.Margin = D2D_RECT_F.Thickness(10, 0, 0, 0);
-                Title.FontSize = 12;
+                Title.Margin = GetWindowTheme().TitleBarMargin;
+                Title.FontSize = GetWindowTheme().TitleBarFontSize;
                 Title.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
 #if DEBUG
                 Title.Name = nameof(Title);
@@ -212,6 +212,9 @@
                     Title.Text = window.Title;
                     zoomed = window.IsZoomed;
                 }
+
+                Title.Margin = GetWindowTheme().TitleBarMargin;
+                Title.FontSize = GetWindowTheme().TitleBarFontSize;
             }
 
             if (MaxButton != null)

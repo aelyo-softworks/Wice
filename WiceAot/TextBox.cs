@@ -581,7 +581,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     internal IComObject<IDWriteTextFormat> GetFormat()
     {
-        var format = Application.CurrentResourceManager.GetTextFormat(Window?.Theme, this)!;
+        var format = Application.CurrentResourceManager.GetTextFormat(GetWindowTheme(), this)!;
         return format;
     }
 
@@ -1488,7 +1488,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         _origin.y = Math.Min(0, y);
     }
 
-    private float GetFontSize() => Application.CurrentResourceManager.GetFontSize(Window?.Theme, FontSize);
+    private float GetFontSize() => Application.CurrentResourceManager.GetFontSize(GetWindowTheme(), FontSize);
 
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {

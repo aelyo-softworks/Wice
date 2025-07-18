@@ -40,7 +40,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
     [Category(CategoryBehavior)]
     public string GeneratorVersion => Document.Generator;
 #else
-    private RichTextBoxTextHost _host;
+    private readonly RichTextBoxTextHost _host;
 
     public TextHost Host => _host;
     protected virtual RichTextBoxTextHost CreateTextHost(TextServicesGenerator generator, RichTextBox richTextBox) => new(generator, richTextBox);

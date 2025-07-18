@@ -2,6 +2,15 @@
 
 public partial class AboutPage : Page
 {
+#if NETFRAMEWORK
+    private readonly PropertyGrid.PropertyGrid _pg = new();
+#else
+    private readonly PropertyGrid.PropertyGrid<SystemInformation> _pg = new();
+#endif
+    private readonly TextBox _mouseInPointerText = new();
+    private readonly RoundedButton _systemInfoButton = new();
+    private readonly CheckBox _mouseInPointerCheck = new();
+
     public AboutPage()
     {
         var stack = new Stack { Orientation = Orientation.Horizontal };
@@ -48,29 +57,27 @@ public partial class AboutPage : Page
         Children.Add(settings);
 
         var mipEnabled = WiceCommons.IsMouseInPointerEnabled();
-        var cb = new CheckBox { IsEnabled = !mipEnabled, Value = mipEnabled, VerticalAlignment = Alignment.Near };
-        cb.Click += (s, e) =>
+        _mouseInPointerCheck.IsEnabled = !mipEnabled;
+        _mouseInPointerCheck.Value = mipEnabled;
+        _mouseInPointerCheck.VerticalAlignment = Alignment.Center;
+        _mouseInPointerCheck.Click += (s, e) =>
         {
             WiceCommons.EnableMouseInPointer(new BOOL(true));
-            cb.IsEnabled = false;
+            _mouseInPointerCheck.IsEnabled = false;
         };
-        settings.Children.Add(cb);
+        settings.Children.Add(_mouseInPointerCheck);
 
-        var txt = new TextBox
-        {
-            Padding = D2D_RECT_F.Thickness(10, 0),
-            Text = "Is Mouse In Pointer Enabled",
-            ToolTipContentCreator = (tt) => Window.CreateDefaultToolTipContent(tt,
+        _mouseInPointerText.Text = "Is Mouse In Pointer Enabled";
+        _mouseInPointerText.ToolTipContentCreator = (tt) => Window.CreateDefaultToolTipContent(tt,
                 "Enables the mouse to act as a pointer input device and send WM_POINTER messages." + Environment.NewLine +
-                "Can only be set once in the context of a process lifetime.")
-        };
-        settings.Children.Add(txt);
+                "Can only be set once in the context of a process lifetime.");
+        settings.Children.Add(_mouseInPointerText);
 
-        var btn = new RoundedButton { Margin = D2D_RECT_F.Thickness(0, 10), VerticalAlignment = Alignment.Near, HorizontalAlignment = Alignment.Near };
-        btn.Text.Text = "System Info ...";
-        btn.Height = 30;
+        _systemInfoButton.VerticalAlignment = Alignment.Near;
+        _systemInfoButton.HorizontalAlignment = Alignment.Near;
+        _systemInfoButton.Text.Text = "System Info ...";
         var open = false;
-        btn.Click += (s, e) =>
+        _systemInfoButton.Click += (s, e) =>
         {
             if (open)
                 return;
@@ -85,25 +92,18 @@ public partial class AboutPage : Page
             tlb.MinButton!.IsVisible = false;
             dlg.Content.Children.Add(tlb);
 
+            _pg.CellMargin = ((GalleryTheme)GetWindowTheme()).AboutPagePropertyGridCellMargin;
+            _pg.Margin = ((GalleryTheme)GetWindowTheme()).AboutPagePropertyGridMargin;
+
 #if NETFRAMEWORK
-            var pg = new PropertyGrid.PropertyGrid
-            {
-                CellMargin = D2D_RECT_F.Thickness(5, 0),
-                Margin = D2D_RECT_F.Thickness(10),
-                SelectedObject = new DiagnosticsInformation(null, Window)
-            };
+            _pg.SelectedObject = new DiagnosticsInformation(null, Window);
 #else
-            var pg = new PropertyGrid.PropertyGrid<SystemInformation>
-            {
-                CellMargin = D2D_RECT_F.Thickness(5, 0),
-                Margin = D2D_RECT_F.Thickness(10),
-                SelectedObject = new SystemInformation(null)
-            };
+            _pg.SelectedObject = new SystemInformation(null, Window);
 #endif
-            dlg.Content.Children.Add(pg);
+            dlg.Content.Children.Add(_pg);
         };
-        SetDockType(btn, DockType.Top);
-        Children.Add(btn);
+        SetDockType(_systemInfoButton, DockType.Top);
+        Children.Add(_systemInfoButton);
     }
 
     public override string HeaderText => base.HeaderText + " Wice";
@@ -111,4 +111,32 @@ public partial class AboutPage : Page
     public override string IconText => MDL2GlyphResource.Info;
     public override int SortOrder => int.MaxValue;
     public override DockType DockType => DockType.Bottom;
+
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
+    {
+        base.OnAttachedToComposition(sender, e);
+        var theme = (GalleryTheme)GetWindowTheme();
+
+        update();
+        void update()
+        {
+            _systemInfoButton.Height = theme.AboutPageSystemInfoButtonHeight;
+            _mouseInPointerText.Padding = theme.AboutPageMouseInPointerTextBoxPadding;
+            _systemInfoButton.Margin = theme.AboutPageSystemInfoButtonMargin;
+
+            _pg.CellMargin = theme.AboutPagePropertyGridCellMargin;
+            _pg.Margin = theme.AboutPagePropertyGridMargin;
+
+            if (_pg.SelectedObject != null)
+            {
+#if NETFRAMEWORK
+                _pg.SelectedObject = new DiagnosticsInformation(null, Window);
+#else
+                _pg.SelectedObject = new SystemInformation(null, Window);
+#endif
+            }
+        }
+
+        Window!.ThemeDpiChanged += (s, e) => update();
+    }
 }

@@ -13,7 +13,6 @@ public abstract class Titled : Dock
             throw new InvalidOperationException();
 
         SetDockType(Title, DockType.Top);
-        Title.Margin = D2D_RECT_F.Thickness(0, 0, 0, 20);
         Children.Add(Title);
     }
 
@@ -24,10 +23,23 @@ public abstract class Titled : Dock
     {
         var tb = new TextBox
         {
-            FontSize = 26,
             FontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_SEMI_LIGHT,
             TextRenderingParameters = new TextRenderingParameters { Mode = DWRITE_RENDERING_MODE1.DWRITE_RENDERING_MODE1_NATURAL_SYMMETRIC }
         };
         return tb;
+    }
+
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
+    {
+        base.OnAttachedToComposition(sender, e);
+        var theme = (GalleryTheme)GetWindowTheme();
+
+        Title.Padding = theme.TitledMargin;
+        Title.FontSize = theme.TitledFontSize;
+        Window!.ThemeDpiChanged += (s, e) =>
+        {
+            Title.Padding = theme.TitledMargin;
+            Title.FontSize = theme.TitledFontSize;
+        };
     }
 }

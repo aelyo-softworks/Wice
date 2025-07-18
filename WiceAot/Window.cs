@@ -72,6 +72,7 @@ public partial class Window : Canvas, ITitleBarParent
     public event EventHandler? Deactivated;
     public event EventHandler? Destroyed;
     public event EventHandler<DpiChangedEventArgs>? DpiChanged;
+    public event EventHandler<ThemeDpiChangedEventArgs>? ThemeDpiChanged;
     public event EventHandler? DpiChangedBeforeParent;
     public event EventHandler? DpiChangedAfterParent;
     public event EventHandler<ValueEventArgs<WINDOWPOS>>? PositionChanging;
@@ -97,6 +98,7 @@ public partial class Window : Canvas, ITitleBarParent
         _compositorControllerAutoCommit = true;
         _windowProc = SafeWindowProc;
         _native = new Lazy<NativeWindow>(GetNative);
+        Theme = CreateTheme();
         _d3D11Device = new Lazy<IComObject<ID3D11Device>>(CreateD3D11Device);
         if (Application.UseDebugLayer)
         {
@@ -134,7 +136,7 @@ public partial class Window : Canvas, ITitleBarParent
     public IComObject<ID2D1Device1> D2D1Device => _d2D1Device.Value;
 
     [Browsable(false)]
-    public virtual Theme Theme { get; protected set; } = new Theme();
+    public virtual Theme Theme { get; protected set; }
 
     [Category(CategoryRender)]
     public ContainerVisual? FrameVisual { get; private set; }
@@ -172,7 +174,7 @@ public partial class Window : Canvas, ITitleBarParent
     public int BorderHeight { get; }
 
     [Category(CategoryLayout)]
-    public uint Dpi => NativeIfCreated?.Dpi ?? Monitor?.EffectiveDpi.width ?? 96;
+    public uint Dpi => NativeIfCreated?.Dpi ?? Monitor?.EffectiveDpi.width ?? WiceCommons.USER_DEFAULT_SCREEN_DPI;
 
     [Category(CategoryLayout)]
     public DPI_AWARENESS_CONTEXT DpiAwareness => NativeIfCreated?.DpiAwareness ?? DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE;
@@ -180,8 +182,7 @@ public partial class Window : Canvas, ITitleBarParent
     [Category(CategoryBehavior)]
     public bool IsBackground { get; set; } // true => doesn't prevent to quit
 
-    [Category(CategoryLayout)]
-    public virtual bool AdaptToDpi => !WiceCommons.AreDpiAwarenessContextsEqual(DpiAwareness, DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE);
+    internal bool AdaptToDpi => !WiceCommons.AreDpiAwarenessContextsEqual(DpiAwareness, DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE);
 
     [Browsable(false)]
     public TitleBar? MainTitleBar { get; internal set; }
@@ -793,6 +794,7 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual void OnDpiChangedBeforeParent(object sender, EventArgs e) => DpiChangedBeforeParent?.Invoke(sender, e);
     protected virtual void OnClosing(object? sender, ClosingEventArgs e) => Closing?.Invoke(sender, e);
     protected virtual void OnDpiChanged(object sender, DpiChangedEventArgs e) => DpiChanged?.Invoke(sender, e);
+    protected virtual internal void OnThemeDpiChanged(object? sender, ThemeDpiChangedEventArgs e) => ThemeDpiChanged?.Invoke(sender, e);
 
     public virtual bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOW) => Native.Show(command);
     public bool Hide() => Native.Show(SHOW_WINDOW_CMD.SW_HIDE);
@@ -1019,6 +1021,10 @@ public partial class Window : Canvas, ITitleBarParent
         native.DragDropQueryContinue += OnNativeDragDropQueryContinue;
         native.DragDropTarget += OnNativeDragDropTarget;
         MonitorHandle = native.GetMonitorHandle(MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL);
+        if (Theme.Initialize(native))
+        {
+            RunTaskOnMainThread(() => Invalidate(VisualPropertyInvalidateModes.Measure));
+        }
         return native;
     }
 
@@ -2009,6 +2015,7 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual ToolTip CreateToolTip() => new();
     protected virtual FocusVisual CreateFocusVisual() => new();
     protected virtual Caret CreateCaret() => new();
+    protected virtual Theme CreateTheme() => new(this);
 
     protected virtual NativeWindow CreateNativeWindow()
     {
@@ -2081,6 +2088,7 @@ public partial class Window : Canvas, ITitleBarParent
         {
             native.Text = _title;
         }
+
         return native;
     }
 
@@ -3752,9 +3760,11 @@ public partial class Window : Canvas, ITitleBarParent
                     if (dpic.Handled)
                         break;
 
-                    Application.Trace($"WM_DPICHANGED: {newDpi} pos:{rc.Position} size:{rc.Size}");
                     WiceCommons.SetWindowPos(win.Handle, HWND.Null, rc.left, rc.top, rc.Width, rc.Height, SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
-                    win.Invalidate(VisualPropertyInvalidateModes.Measure, new DpiChangedInvalidateReason(newDpi));
+                    if (win.Theme.Update())
+                    {
+                        win.Invalidate(VisualPropertyInvalidateModes.Measure, new DpiChangedInvalidateReason(newDpi));
+                    }
                 }
                 return 0;
 

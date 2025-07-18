@@ -46,6 +46,16 @@ public partial class Button : ButtonBase
     [Browsable(false)]
     public bool UpdateMarginsOnPropertyChanged { get; set; } = true;
 
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
+    {
+        base.OnAttachedToComposition(sender, e);
+        Window!.ThemeDpiChanged += (s, e) =>
+        {
+            UpdateStyle();
+            UpdateMargins();
+        };
+    }
+
     private void OnIconPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == TextBox.TextProperty.Name && UpdateMarginsOnPropertyChanged)

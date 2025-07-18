@@ -12,6 +12,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Include="..\WiceAot.Samples.Gallery\GalleryTheme.cs" Link="GalleryTheme.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\GalleryWindow.cs" Link="GalleryWindow.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\AboutPage.cs" Link="Pages\AboutPage.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Pages\CollectionsPage.cs" Link="Pages\CollectionsPage.cs" />

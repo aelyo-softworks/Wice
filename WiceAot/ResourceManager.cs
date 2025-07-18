@@ -18,28 +18,11 @@ public partial class ResourceManager
 #else
         DWriteFactory = DWriteFunctions.DWriteCreateFactory();
 #endif
-        //_theme = CreateTheme();
-        //if (_theme == null)
-        //    throw new InvalidOperationException();
     }
 
     public Application Application { get; }
     public IComObject<ID2D1Factory1> D2DFactory { get; }
     public IComObject<IDWriteFactory> DWriteFactory { get; }
-    //public Theme Theme
-    //{
-    //    get => _theme;
-    //    set
-    //    {
-    //        ExceptionExtensions.ThrowIfNull(value, nameof(value));
-    //        if (_theme == value)
-    //            return;
-
-    //        _theme = value;
-    //    }
-    //}
-
-    protected virtual Theme CreateTheme() => new();
 
 #if DEBUG
     internal void TraceInformation()
@@ -242,8 +225,8 @@ public partial class ResourceManager
         return Get(null, Domain.WICBitmapSource, uniqueKey, () => WicUtilities.LoadBitmapSourceFromMemory(width, height, pixelFormat, stride, bufferSize, pointer));
     }
 
-    public virtual IComObject<IDWriteTextFormat>? GetSymbolFormat(Theme? theme, float fontSize = 0) => GetTextFormat(theme, theme?.SymbolFontName, fontSize);
-    public virtual IComObject<IDWriteTextFormat>? GetTextFormat(Theme? theme,
+    public virtual IComObject<IDWriteTextFormat>? GetSymbolFormat(Theme theme, float fontSize = 0) => GetTextFormat(theme, theme.SymbolFontName, fontSize);
+    public virtual IComObject<IDWriteTextFormat>? GetTextFormat(Theme theme,
         string? fontFamilyName = null,
         float fontSize = 0,
         DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
@@ -262,31 +245,31 @@ public partial class ResourceManager
         return GetTextFormat(theme, text);
     }
 
-    public virtual IComObject<IDWriteTextFormat>? GetTextFormat(Theme? theme, ITextFormat text)
+    public virtual IComObject<IDWriteTextFormat>? GetTextFormat(Theme theme, ITextFormat text)
     {
         ExceptionExtensions.ThrowIfNull(text, nameof(text));
-        var family = text.FontFamilyName.Nullify() ?? theme?.DefaultFontFamilyName;
+        var family = text.FontFamilyName.Nullify() ?? theme.DefaultFontFamilyName;
         var size = GetFontSize(theme, text);
         var key = TextFormat.GetCacheKey(text, family, size);
         return Get(null, Domain.TextFormat, key, () => CreateTextFormat(theme, text));
     }
 
-    public float GetFontSize(Theme? theme, ITextFormat? text) => GetFontSize(theme, text?.FontSize);
-    public virtual float GetFontSize(Theme? theme, float? size)
+    public float GetFontSize(Theme theme, ITextFormat? text) => GetFontSize(theme, text?.FontSize);
+    public virtual float GetFontSize(Theme theme, float? size)
     {
         if (!size.HasValue)
-            return theme?.DefaultFontSize ?? Theme.DefaultDefaultFontSize;
+            return theme.DefaultFontSize;
 
         if (size.Value <= 0)
-            return theme?.DefaultFontSize ?? Theme.DefaultDefaultFontSize;
+            return theme.DefaultFontSize;
 
         return size.Value;
     }
 
-    public virtual IComObject<IDWriteTextFormat> CreateTextFormat(Theme? theme, ITextFormat text)
+    public virtual IComObject<IDWriteTextFormat> CreateTextFormat(Theme theme, ITextFormat text)
     {
         ExceptionExtensions.ThrowIfNull(text, nameof(text));
-        var family = text.FontFamilyName.Nullify() ?? theme?.DefaultFontFamilyName;
+        var family = text.FontFamilyName.Nullify() ?? theme.DefaultFontFamilyName;
         IComObject<IDWriteTextFormat> format;
         IComObject<IDWriteInlineObject>? io = null;
         var size = GetFontSize(theme, text);
@@ -317,7 +300,7 @@ public partial class ResourceManager
         }
     }
 
-    public virtual IComObject<IDWriteTextFormat>? GetTextFormat(Theme? theme,
+    public virtual IComObject<IDWriteTextFormat>? GetTextFormat(Theme theme,
         string? fontFamilyName = null,
         float? fontSize = null,
         IDWriteFontCollection? fonts = null,
@@ -325,13 +308,13 @@ public partial class ResourceManager
         DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE.DWRITE_FONT_STYLE_NORMAL,
         DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_NORMAL)
     {
-        var family = fontFamilyName.Nullify() ?? theme?.DefaultFontFamilyName;
+        var family = fontFamilyName.Nullify() ?? theme.DefaultFontFamilyName;
         var size = GetFontSize(theme, fontSize);
         var key = family + "\0" + size + "\0" + TextFormat.GetCacheKey(fonts) + "\0" + ((int)fontWeight) + "\0" + ((int)fontStyle) + "\0" + ((int)fontStretch);
         return Get(null, Domain.TextFormat, key, () => CreateTextFormat(theme, fontFamilyName, fontSize, fonts, fontWeight, fontStyle, fontStretch));
     }
 
-    public virtual IComObject<IDWriteTextFormat> CreateTextFormat(Theme? theme,
+    public virtual IComObject<IDWriteTextFormat> CreateTextFormat(Theme theme,
         string? fontFamilyName = null,
         float? fontSize = null,
         IDWriteFontCollection? fonts = null,
@@ -339,7 +322,7 @@ public partial class ResourceManager
         DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE.DWRITE_FONT_STYLE_NORMAL,
         DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_NORMAL)
     {
-        var family = fontFamilyName.Nullify() ?? theme?.DefaultFontFamilyName;
+        var family = fontFamilyName.Nullify() ?? theme.DefaultFontFamilyName;
         var size = GetFontSize(theme, fontSize);
         var key = family + "\0" + size + "\0" + TextFormat.GetCacheKey(fonts);
 #if NETFRAMEWORK

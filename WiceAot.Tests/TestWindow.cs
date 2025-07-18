@@ -247,7 +247,7 @@ internal partial class TestWindow : Window
         plusPage.Header.HoverRenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(0x80C0C0C0).ToColor());
         plusPage.Header.SelectedButtonClick += (s, e) => _ = addPage(null);
 
-        async ValueTask<TabPage> addPage(ICoreWebView2NewWindowRequestedEventArgs? e)
+        async Task<TabPage> addPage(ICoreWebView2NewWindowRequestedEventArgs? e)
         {
             var url = pages[pagesIndex++];
             if (pagesIndex >= pages.Length)

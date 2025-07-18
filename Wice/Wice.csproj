@@ -273,6 +273,7 @@
 	  <Compile Include="..\WiceAot\TextFormat.cs" Link="TextFormat.cs" />
 	  <Compile Include="..\WiceAot\TextRenderingParameters.cs" Link="TextRenderingParameters.cs" />
 	  <Compile Include="..\WiceAot\Theme.cs" Link="Theme.cs" />
+	  <Compile Include="..\WiceAot\ThemeDpiChangedEventArgs.cs" Link="ThemeDpiChangedEventArgs.cs" />
 	  <Compile Include="..\WiceAot\Thumb.cs" Link="Thumb.cs" />
 	  <Compile Include="..\WiceAot\TitleBar.cs" Link="TitleBar.cs" />
 	  <Compile Include="..\WiceAot\TitleBarButton.cs" Link="TitleBarButton.cs" />

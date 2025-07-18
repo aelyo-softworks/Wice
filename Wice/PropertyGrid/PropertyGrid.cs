@@ -66,8 +66,6 @@ public class PropertyGrid : Grid
     [Category(CategoryLive)]
     public object SelectedObject { get => GetPropertyValue(SelectedObjectProperty); set => SetPropertyValue(SelectedObjectProperty, value); }
 
-    //public float RowSize { get => (float)GetPropertyValue(RowSizeProperty); set => SetPropertyValue(RowSizeProperty, value); }
-
     protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions options = null)
     {
         object oldValue = null;

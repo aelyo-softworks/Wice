@@ -629,4 +629,34 @@ public static class UIExtensions
 
         return window.ModalVisuals.OrderBy(m => m.ZIndexOrDefault).LastOrDefault() == visual;
     }
+
+    public static int PixelsToDips(int pixels, uint dpi) => (int)(pixels * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi);
+    public static int DipsToPixels(int dips, uint dpi) => (int)(dips * dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI);
+    public static uint PixelsToDips(uint pixels, uint dpi) => pixels * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi;
+    public static uint DipsToPixels(uint dips, uint dpi) => dips * dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI;
+
+    public static uint DpiScale(uint value, uint oldDpi, uint newDpi) => (uint)DpiScale((float)value, oldDpi, newDpi);
+    public static int DpiScale(int value, uint oldDpi, uint newDpi) => (int)DpiScale((float)value, oldDpi, newDpi);
+    public static float DpiScale(float value, uint oldDpi, uint newDpi) => value * newDpi / oldDpi;
+    public static Vector2 DpiScale(Vector2 value, uint oldDpi, uint newDpi) => new(DpiScale(value.X, oldDpi, newDpi), DpiScale(value.Y, oldDpi, newDpi));
+    public static Vector3 DpiScale(Vector3 value, uint oldDpi, uint newDpi) => new(DpiScale(value.X, oldDpi, newDpi), DpiScale(value.Y, oldDpi, newDpi), DpiScale(value.Z, oldDpi, newDpi));
+    public static D2D_SIZE_F DpiScale(D2D_SIZE_F value, uint oldDpi, uint newDpi) => new(DpiScale(value.width, oldDpi, newDpi), DpiScale(value.height, oldDpi, newDpi));
+
+    public static D2D_RECT_F DpiScale(D2D_RECT_F value, uint oldDpi, uint newDpi) => new D2D_RECT_F(
+        DpiScale(value.left, oldDpi, newDpi),
+        DpiScale(value.top, oldDpi, newDpi),
+        DpiScale(value.right, oldDpi, newDpi),
+        DpiScale(value.bottom, oldDpi, newDpi));
+
+    public static D2D_RECT_F DpiScaleThickness(D2D_RECT_F value, uint oldDpi, uint newDpi) => D2D_RECT_F.Thickness(
+        DpiScale(value.left, oldDpi, newDpi),
+        DpiScale(value.top, oldDpi, newDpi),
+        DpiScale(value.right, oldDpi, newDpi),
+        DpiScale(value.bottom, oldDpi, newDpi));
+
+    public static D2D_RECT_F DpiScaleSized(D2D_RECT_F value, uint oldDpi, uint newDpi) => D2D_RECT_F.Sized(
+        DpiScale(value.left, oldDpi, newDpi),
+        DpiScale(value.top, oldDpi, newDpi),
+        DpiScale(value.Width, oldDpi, newDpi),
+        DpiScale(value.Height, oldDpi, newDpi));
 }
