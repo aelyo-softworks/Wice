@@ -99,7 +99,7 @@ public class RtfFormatter : CodeColorizerBase
 
     public void Format(string sourceCode, ILanguage Language)
     {
-        languageParser.Parse(sourceCode, Language, (parsedSourceCode, captures) => Write(parsedSourceCode, captures));
+        languageParser.Parse(sourceCode, Language, Write);
         Writer.Write("}");
     }
 

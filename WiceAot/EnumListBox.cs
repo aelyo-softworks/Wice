@@ -1,8 +1,6 @@
-﻿using static Wice.EnumListBox;
+﻿namespace Wice;
 
-namespace Wice;
-
-public partial class EnumListBox : ListBox, IValueable, IBindList
+public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
 {
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(EnumListBox), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: EnumTypeCheck);
 

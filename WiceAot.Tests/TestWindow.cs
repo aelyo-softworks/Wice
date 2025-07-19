@@ -74,12 +74,30 @@ internal partial class TestWindow : Window
     protected override void OnPositionChanging(object? sender, DirectN.Extensions.Utilities.ValueEventArgs<WINDOWPOS> e)
     {
         base.OnPositionChanging(sender, e);
+        var flags = e.Value.flags & ~(SET_WINDOW_POS_FLAGS)0xFFFF8000; // undoc'ed
+        if (flags.HasFlag(SET_WINDOW_POS_FLAGS.SWP_NOSIZE) && flags.HasFlag(SET_WINDOW_POS_FLAGS.SWP_NOMOVE))
+            return;
+
         var pos = e.Value;
-        e.Cancel = true;
+
+        // uncomment to set position to 0,0 always
+        //e.Cancel = true;
         //pos.x = 0;
         e.Value = pos;
 
-        Title = "Wice AOT Position: " + pos.x + ", " + pos.y + " - Size: " + pos.cx + ", " + pos.cy;
+        Application.Trace("Wice AOT Position: " + pos.x + ", " + pos.y + " - Size: " + pos.cx + ", " + pos.cy + " flags:" + flags);
+
+        var title = "Wice AOT";
+        if (!flags.HasFlag(SET_WINDOW_POS_FLAGS.SWP_NOMOVE))
+        {
+            title += " - Position: " + pos.x + ", " + pos.y;
+        }
+
+        if (pos.cx >= 0 || pos.cy >= 0)
+        {
+            title += " - Size: " + pos.cx + ", " + pos.cy;
+        }
+        Title = title;
     }
 
     public void LoadSvg()
@@ -1043,11 +1061,11 @@ internal partial class TestWindow : Window
 
     public void AddScrollableRtbRtfFile()
     {
-        //var sv = new ScrollViewer
-        //{
-        //    HorizontalScrollBarVisibility = ScrollBarVisibility.Auto
-        //};
-        //Children.Add(sv);
+        var sv = new ScrollViewer
+        {
+            HorizontalScrollBarVisibility = ScrollBarVisibility.Auto
+        };
+        Children.Add(sv);
 
         var rtf = new RichTextBox
         {
@@ -1057,8 +1075,7 @@ internal partial class TestWindow : Window
         };
         rtf.Options |= DirectN.Extensions.Utilities.TextHostOptions.WordWrap;
         rtf.RtfText = File.ReadAllText(@"resources\wice.rtf");
-        Children.Add(rtf);
-        //sv.Viewer.Child = rtf;
+        sv.Viewer.Child = rtf;
     }
 
     public void AddWrap()

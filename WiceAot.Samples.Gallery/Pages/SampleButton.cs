@@ -42,26 +42,31 @@ public partial class SampleButton : ButtonBase
     {
         base.OnAttachedToComposition(sender, e);
         RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGray.ChangeAlpha(128).ToColor());
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
+
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
         var theme = (GalleryTheme)GetWindowTheme();
+        var margin = theme.SampleButtonMargin;
+        Margin = margin;
+        Width = theme.SampleButtonWidth;
+        Height = theme.SampleButtonHeight;
+        Child!.Margin = theme.SampleButtonChildMargin;
 
-        update();
-        void update()
-        {
-            var margin = theme.SampleButtonMargin;
-            Margin = margin;
-            Width = theme.SampleButtonWidth;
-            Height = theme.SampleButtonHeight;
-            Child!.Margin = theme.SampleButtonChildMargin;
+        _icon.Margin = margin;
+        _description.Margin = margin;
+        margin.top = 0;
+        _title.Margin = margin;
 
-            _icon.Margin = margin;
-            _description.Margin = margin;
-            margin.top = 0;
-            _title.Margin = margin;
-
-            _icon.FontSize = theme.SampleButtonTextFontSize;
-            _title.FontSize = theme.SampleButtonTextFontSize;
-        }
-
-        Window!.ThemeDpiChanged += (s, e) => update();
+        _icon.FontSize = theme.SampleButtonTextFontSize;
+        _title.FontSize = theme.SampleButtonTextFontSize;
     }
 }

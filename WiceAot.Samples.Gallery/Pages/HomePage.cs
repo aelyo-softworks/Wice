@@ -1,5 +1,4 @@
-﻿
-namespace Wice.Samples.Gallery.Pages;
+﻿namespace Wice.Samples.Gallery.Pages;
 
 #if !NETFRAMEWORK
 [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
@@ -21,8 +20,8 @@ public partial class HomePage : Page
         sv.Viewer.IsWidthUnconstrained = false;
         Children.Add(sv);
 
-        VerticalAlignment = Alignment.Near;
-        DisposeOnDetachFromComposition = false;
+        _richTextBox.VerticalAlignment = Alignment.Near;
+        _richTextBox.DisposeOnDetachFromComposition = false;
         _richTextBox.Options |= TextHostOptions.WordWrap;
         SetDockType(_richTextBox, DockType.Top);
 
@@ -65,13 +64,19 @@ public partial class HomePage : Page
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
-        var theme = (GalleryTheme)GetWindowTheme();
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
 
-        update();
-        void update()
-        {
-            _richTextBox.Padding = theme.HomePageRichTextBoxPadding;
-        }
-        Window!.ThemeDpiChanged += (s, e) => update();
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        var theme = (GalleryTheme)GetWindowTheme();
+        _richTextBox.Padding = theme.HomePageRichTextBoxPadding;
     }
 }

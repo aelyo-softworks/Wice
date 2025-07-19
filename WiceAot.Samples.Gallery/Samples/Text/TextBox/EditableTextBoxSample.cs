@@ -14,8 +14,8 @@ public class EditableTextBoxSample : Sample
 
         tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Green);
         tb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightSalmon.ToColor());
-        tb.Padding = D2D_RECT_F.Thickness(10);
-        tb.Margin = D2D_RECT_F.Thickness(10);
+        tb.Padding = parent.Window!.DipsToPixels(10);
+        tb.Margin = parent.Window!.DipsToPixels(10);
         tb.Text = "Click me and edit!";
     }
 }

@@ -7,7 +7,7 @@ public class UnicodeTextBoxSample : Sample
 
     public override void Layout(Visual parent)
     {
-        var sv = new ScrollViewer { Height = 200, Width = 500 };
+        var sv = new ScrollViewer { Height = parent.Window!.DipsToPixels(200), Width = parent.Window!.DipsToPixels(500) };
         parent.Children.Add(sv);
         Dock.SetDockType(sv, DockType.Top);
 
@@ -15,8 +15,8 @@ public class UnicodeTextBoxSample : Sample
         sv.Viewer.Child = tb;
         tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Coral);
         tb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.CornflowerBlue.ToColor());
-        tb.Padding = D2D_RECT_F.Thickness(10);
-        tb.Margin = D2D_RECT_F.Thickness(10);
+        tb.Padding = parent.Window!.DipsToPixels(10);
+        tb.Margin = parent.Window!.DipsToPixels(10);
 
         tb.Text = getLorem();
 

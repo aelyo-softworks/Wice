@@ -36,21 +36,26 @@ public partial class SampleListVisual : Titled
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
+
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
         var theme = (GalleryTheme)GetWindowTheme();
-
-        update();
-        void update()
+        _description.FontSize = theme.SampleListVisualFontSize;
+        var margin = theme.SampleListVisualMargin;
+        _description.Margin = margin;
+        margin.right = 0;
+        foreach (var visual in _sampleVisuals)
         {
-            _description.FontSize = theme.SampleListVisualFontSize;
-            var margin = theme.SampleListVisualMargin;
-            _description.Margin = margin;
-            margin.right = 0;
-            foreach (var visual in _sampleVisuals)
-            {
-                visual.Margin = margin;
-            }
+            visual.Margin = margin;
         }
-
-        Window!.ThemeDpiChanged += (s, e) => update();
     }
 }

@@ -7,6 +7,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
     private bool _disposedValue;
     private D2D_SIZE_F _maxConstraintSize = new(ushort.MaxValue, ushort.MaxValue);
     private TXTNATURALSIZE _naturalSize = TXTNATURALSIZE.TXTNS_FITTOCONTENT;
+    private float _zoomFactor = 1;
 
     public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
     {
@@ -226,6 +227,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
+    // default is Calibri (Windows 10/11?)
     [Category(CategoryLayout)]
     public virtual string FontName
     {
@@ -242,6 +244,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
+    // default is 10 (Windows 10/11?)
     [Category(CategoryLayout)]
     public virtual int FontSize
     {
@@ -255,6 +258,23 @@ public partial class RichTextBox : RenderVisual, IDisposable
             OnPropertyChanging();
             host.Height = value;
             Invalidate();
+        }
+    }
+
+    // mostly used for hi-dpi scenarios where we want to scale the whole text box
+    // independently from a specific font size
+    [Category(CategoryLayout)]
+    public virtual float ZoomFactor
+    {
+        get => _zoomFactor;
+        set
+        {
+            if (_zoomFactor == value)
+                return;
+
+            OnPropertyChanging();
+            _zoomFactor = value;
+            Invalidate(VisualPropertyInvalidateModes.Render);
         }
     }
 
@@ -329,18 +349,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
-    public HRESULT SendMessage(uint msg, LPARAM lParam) => SendMessage(msg, 0, lParam);
-    public HRESULT SendMessage(uint msg, WPARAM wParam) => SendMessage(msg, wParam, 0);
-    public HRESULT SendMessage(uint msg, WPARAM wParam, LPARAM lParam) => SendMessage(msg, wParam, lParam, out _);
-    public HRESULT SendMessage(uint msg, WPARAM wParam, LPARAM lParam, out LRESULT result)
-    {
-        result = default;
-        if (_host == null)
-            return Constants.E_FAIL;
-
-        return _host.SendMessage(msg, wParam, lParam, out result);
-    }
-
     public virtual string? GetText(tomConstants flags) => _host?.GetText(flags);
     public virtual void SetText(tomConstants flags, string text)
     {
@@ -353,14 +361,50 @@ public partial class RichTextBox : RenderVisual, IDisposable
         CheckRunningAsMainThread();
         base.Invalidate(VisualPropertyInvalidateModes.Measure);
     }
-
 #endif
+
+    public HRESULT SendMessage(uint msg, LPARAM lParam) => SendMessage(msg, 0, lParam);
+    public HRESULT SendMessage(uint msg, WPARAM wParam) => SendMessage(msg, wParam, 0);
+    public HRESULT SendMessage(uint msg, WPARAM wParam, LPARAM lParam) => SendMessage(msg, wParam, lParam, out _);
+    public HRESULT SendMessage(uint msg, WPARAM wParam, LPARAM lParam, out LRESULT result)
+    {
+        result = default;
+        if (_host == null)
+            return WiceCommons.E_FAIL;
+
+#if NETFRAMEWORK
+        var hr = _host.Services.TxSendMessage((int)msg, wParam, lParam, out var res);
+        result = res;
+        return hr;
+#else
+        return _host.SendMessage(msg, wParam, lParam, out result);
+#endif
+    }
 
     protected virtual void Invalidate(VisualPropertyInvalidateModes modes = VisualPropertyInvalidateModes.Measure, [CallerMemberName] string? propertyName = null)
     {
         OnPropertyChanged(propertyName);
         CheckRunningAsMainThread();
         base.Invalidate(modes);
+    }
+
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
+    {
+        base.OnAttachedToComposition(sender, e);
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
+
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        FontSize = UIExtensions.DpiScale(FontSize, e.OldDpi, e.NewDpi);
+        ZoomFactor = Window!.Dpi / (float)WiceCommons.USER_DEFAULT_SCREEN_DPI;
     }
 
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
@@ -406,30 +450,46 @@ public partial class RichTextBox : RenderVisual, IDisposable
             constraint.height = max.height;
         }
 
+        // divide by zoom factor when asking rtb to measure
+        var zf = ZoomFactor;
+        if (zf != 0)
+        {
+            constraint.width = constraint.width / zf;
+            constraint.height = constraint.height / zf;
+        }
+
         var size = host.GetNaturalSize(NaturalSize, constraint).ToD2D_SIZE_F();
-        D2D_SIZE_U dpi;
-        if (Window != null && Window.Handle != 0)
+
+        // multiply by zoom factor what rtb has given us
+        if (zf != 0)
         {
-            dpi = DpiUtilities.GetDpiForWindow(Window.Handle);
-        }
-        else
-        {
-            dpi = DpiUtilities.GetDpiForDesktop();
+            size.width *= zf;
+            size.height *= zf;
         }
 
-        if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        {
-            size.width = size.width * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi.width;
-        }
+        //D2D_SIZE_U dpi;
+        //if (Window != null && Window.Handle != 0)
+        //{
+        //    dpi = DpiUtilities.GetDpiForWindow(Window.Handle);
+        //}
+        //else
+        //{
+        //    dpi = DpiUtilities.GetDpiForDesktop();
+        //}
 
-        if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        {
-            size.height = size.height * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi.height;
-        }
+        //if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
+        //{
+        //    size.width = size.width * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi.width;
+        //}
 
-        var ratio = GetMonitorDpiRatioToPrimary(Window?.Monitor);
-        size.width = size.width * ratio.Monitor / ratio.Primary;
-        size.height = size.height * ratio.Monitor / ratio.Primary;
+        //if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
+        //{
+        //    size.height = size.height * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi.height;
+        //}
+
+        //var ratio = GetMonitorDpiRatioToPrimary(Window?.Monitor);
+        //size.width = size.width * ratio.Monitor / ratio.Primary;
+        //size.height = size.height * ratio.Monitor / ratio.Primary;
 
         if (leftPadding)
         {
@@ -454,7 +514,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         return size;
     }
 
-    private RECT GetRect(D2D_RECT_F finalRect)
+    private RECT GetRect(D2D_RECT_F finalRect, bool adjustForDpi)
     {
         var padding = Padding;
         var rc = new D2D_RECT_F();
@@ -486,6 +546,12 @@ public partial class RichTextBox : RenderVisual, IDisposable
             rc.Height = finalRect.Height;
         }
 
+        if (adjustForDpi && Window != null)
+        {
+            var dpi = Window.Dpi;
+            rc.Width = rc.Width * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi;
+            rc.Height = rc.Height * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi;
+        }
         return rc.ToRECT();
     }
 
@@ -496,7 +562,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         if (host == null)
             return;
 
-        var rc = GetRect(finalRect);
+        var rc = GetRect(finalRect, false);
         host.Activate(rc);
     }
 
@@ -507,43 +573,50 @@ public partial class RichTextBox : RenderVisual, IDisposable
         if (host == null)
             return;
 
-        var rc = GetRect(ArrangedRect);
-        D2D_SIZE_U dpi;
-        if (Window?.Handle.Value != 0)
-        {
-            dpi = DpiUtilities.GetDpiForWindow(Window!.Handle);
-        }
-        else
-        {
-            dpi = DpiUtilities.GetDpiForDesktop();
-        }
+        var rc = GetRect(ArrangedRect, true);
+        //D2D_SIZE_U dpi;
+        //if (Window?.Handle.Value != 0)
+        //{
+        //    dpi = DpiUtilities.GetDpiForWindow(Window!.Handle);
+        //}
+        //else
+        //{
+        //    dpi = DpiUtilities.GetDpiForDesktop();
+        //}
 
-        if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        {
-            rc.Width = (int)(rc.Width * dpi.width / WiceCommons.USER_DEFAULT_SCREEN_DPI);
-        }
+        //if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
+        //{
+        //    rc.Width = (int)(rc.Width * dpi.width / WiceCommons.USER_DEFAULT_SCREEN_DPI);
+        //}
 
-        if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        {
-            rc.Height = (int)(rc.Height * dpi.height / WiceCommons.USER_DEFAULT_SCREEN_DPI);
-        }
+        //if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
+        //{
+        //    rc.Height = (int)(rc.Height * dpi.height / WiceCommons.USER_DEFAULT_SCREEN_DPI);
+        //}
 
-        if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        {
-            rc.Width = (int)(rc.Width * dpi.width * dpi.width / WiceCommons.USER_DEFAULT_SCREEN_DPI / WiceCommons.USER_DEFAULT_SCREEN_DPI);
-        }
+        //if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
+        //{
+        //    rc.Width = (int)(rc.Width * dpi.width * dpi.width / WiceCommons.USER_DEFAULT_SCREEN_DPI / WiceCommons.USER_DEFAULT_SCREEN_DPI);
+        //}
 
-        if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        {
-            rc.Height = (int)(rc.Height * dpi.height * dpi.height / WiceCommons.USER_DEFAULT_SCREEN_DPI / WiceCommons.USER_DEFAULT_SCREEN_DPI);
-        }
+        //if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
+        //{
+        //    rc.Height = (int)(rc.Height * dpi.height * dpi.height / WiceCommons.USER_DEFAULT_SCREEN_DPI / WiceCommons.USER_DEFAULT_SCREEN_DPI);
+        //}
 
-        var ratio = GetMonitorDpiRatioToPrimary(Window.Monitor);
-        rc.Width = (int)((long)rc.Width * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor);
-        rc.Height = (int)((long)rc.Height * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor);
+        //var ratio = GetMonitorDpiRatioToPrimary(Window.Monitor);
+        //rc.Width = (int)((long)rc.Width * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor);
+        //rc.Height = (int)((long)rc.Height * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor);
 
         context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_PIXELS);
         var rr = RelativeRenderRect;
+        if (Window != null)
+        {
+            // adjust for dpi
+            var dpi = Window.Dpi;
+            rr.top = rr.top * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi;
+        }
+
         var urc = rc;
         urc.top = -(int)rr.top;
 
@@ -565,33 +638,33 @@ public partial class RichTextBox : RenderVisual, IDisposable
             }
         }
 
-#if NETFRAMEWORK
-        // TODO when DirectN nuget is updated, uncomment these lines and remove the one above
-        //var rr = RelativeRenderRect;
-        //var urc = rc;
-        //urc.top = -(int)rr.top;
-        //host.Draw(context.DeviceContext.Object, rc, urc);
-
-        _host.Draw(context.DeviceContext.Object, rc);
-#else
-        host.Draw(context.DeviceContext.Object, rc, urc);
-#endif
+        if (ZoomFactor != 1)
+        {
+            context.WithTransform(D2D_MATRIX_3X2_F.Scale(ZoomFactor, ZoomFactor), () =>
+            {
+                host.Draw(context.DeviceContext.Object, rc, urc);
+            });
+        }
+        else
+        {
+            host.Draw(context.DeviceContext.Object, rc, urc);
+        }
     }
 
     private IViewerParent? GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;
 
     // seems like richedit is relative to primary monitor's dpi
-    private static (int Primary, int Monitor) GetMonitorDpiRatioToPrimary(Monitor? monitor)
-    {
-        if (monitor == null || monitor.IsPrimary || monitor.EffectiveDpi.width == 0)
-            return (1, 1);
+    //private static (int Primary, int Monitor) GetMonitorDpiRatioToPrimary(Monitor? monitor)
+    //{
+    //    if (monitor == null || monitor.IsPrimary || monitor.EffectiveDpi.width == 0)
+    //        return (1, 1);
 
-        var primary = Monitor.Primary;
-        if (primary == null || primary.EffectiveDpi.width == 0)
-            return (1, 1);
+    //    var primary = Monitor.Primary;
+    //    if (primary == null || primary.EffectiveDpi.width == 0)
+    //        return (1, 1);
 
-        return ((int)primary.EffectiveDpi.width, (int)monitor.EffectiveDpi.width);
-    }
+    //    return ((int)primary.EffectiveDpi.width, (int)monitor.EffectiveDpi.width);
+    //}
 
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {

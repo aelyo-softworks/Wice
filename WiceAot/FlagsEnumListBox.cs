@@ -1,10 +1,8 @@
-﻿using static Wice.EnumListBox;
+﻿namespace Wice;
 
-namespace Wice;
-
-public partial class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
+public partial class FlagsEnumListBox : CheckBoxList, IValueable, EnumListBox.IBindList
 {
-    public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(FlagsEnumListBox), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: EnumTypeCheck);
+    public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(FlagsEnumListBox), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: EnumListBox.EnumTypeCheck);
 
     public event EventHandler<ValueEventArgs>? ValueChanged;
 
@@ -28,8 +26,8 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
         return true;
     }
 
-    Type? IBindList.Type { get; set; }
-    bool IBindList.NeedBind { get; set; }
+    Type? EnumListBox.IBindList.Type { get; set; }
+    bool EnumListBox.IBindList.NeedBind { get; set; }
 
     public override bool UpdateItemSelection(ItemVisual visual, bool? select)
     {
@@ -55,9 +53,9 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
                 if (oldValue != value)
                 {
 #if NETFRAMEWORK
-                    Value = Conversions.ChangeType(value, ((IBindList)this).Type!);
+                    Value = Conversions.ChangeType(value, ((EnumListBox.IBindList)this).Type!);
 #else
-                    Value = Conversions.ChangeObjectType(value, ((IBindList)this).Type!);
+                    Value = Conversions.ChangeObjectType(value, ((EnumListBox.IBindList)this).Type!);
 #endif
                     var ds = EnumDataSource.FromValue(Value);
                     if (ds != null)
@@ -102,7 +100,7 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, IBindList
         if (property == ValueProperty)
         {
             OnValueChanged(this, new ValueEventArgs(value));
-            var ibl = (IBindList)this;
+            var ibl = (EnumListBox.IBindList)this;
             if (ibl.NeedBind)
             {
                 DataSource = EnumDataSource.FromValue(Value!);

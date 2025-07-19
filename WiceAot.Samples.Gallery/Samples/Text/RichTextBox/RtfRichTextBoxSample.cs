@@ -12,8 +12,8 @@ public partial class RtfRichTextBoxSample : Sample
         Dock.SetDockType(rtb, DockType.Top);
 
         rtb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
-        rtb.Padding = D2D_RECT_F.Thickness(10);
-        rtb.Margin = D2D_RECT_F.Thickness(10);
+        rtb.Padding = parent.Window!.DipsToPixels(10);
+        rtb.Margin = parent.Window!.DipsToPixels(10);
 
         rtb.RtfText = @"{\rtf1\ansi\deff0
                 {\coloRtbl;\red0\green0\blue0;\red255\green0\blue0;}

@@ -72,7 +72,7 @@ public partial class Window : Canvas, ITitleBarParent
     public event EventHandler? Deactivated;
     public event EventHandler? Destroyed;
     public event EventHandler<DpiChangedEventArgs>? DpiChanged;
-    public event EventHandler<ThemeDpiChangedEventArgs>? ThemeDpiChanged;
+    public event EventHandler<ThemeDpiEventArgs>? ThemeDpiEvent;
     public event EventHandler? DpiChangedBeforeParent;
     public event EventHandler? DpiChangedAfterParent;
     public event EventHandler<ValueEventArgs<WINDOWPOS>>? PositionChanging;
@@ -240,6 +240,9 @@ public partial class Window : Canvas, ITitleBarParent
 
     [Category(CategoryLive)]
     public bool HasFocus { get => _hasFocus; private set => SetFocus(value); }
+
+    [Category(CategoryBehavior)]
+    public virtual bool CreateOnCursorMonitor { get; set; }
 
     [Browsable(false)]
     public Visual? FocusedVisual
@@ -603,6 +606,10 @@ public partial class Window : Canvas, ITitleBarParent
 
     protected sealed override BaseObjectCollection<Visual> CreateChildren() => new WindowBaseObjectCollection(this, MaxChildrenCount);
 
+    public int DipsToPixels(int dips) => (int)(dips * Dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI);
+    public uint DipsToPixels(uint dips) => dips * Dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI;
+    public float DipsToPixels(float dips) => dips * Dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI;
+
     private void RemoveFocusVisual()
     {
         if (FocusVisual != null)
@@ -794,7 +801,7 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual void OnDpiChangedBeforeParent(object sender, EventArgs e) => DpiChangedBeforeParent?.Invoke(sender, e);
     protected virtual void OnClosing(object? sender, ClosingEventArgs e) => Closing?.Invoke(sender, e);
     protected virtual void OnDpiChanged(object sender, DpiChangedEventArgs e) => DpiChanged?.Invoke(sender, e);
-    protected virtual internal void OnThemeDpiChanged(object? sender, ThemeDpiChangedEventArgs e) => ThemeDpiChanged?.Invoke(sender, e);
+    protected virtual internal void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e) => ThemeDpiEvent?.Invoke(sender, e);
 
     public virtual bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOW) => Native.Show(command);
     public bool Hide() => Native.Show(SHOW_WINDOW_CMD.SW_HIDE);
@@ -2019,7 +2026,17 @@ public partial class Window : Canvas, ITitleBarParent
 
     protected virtual NativeWindow CreateNativeWindow()
     {
-        var rc = CreateRect;
+        RECT rc;
+        if (CreateOnCursorMonitor)
+        {
+            var cursor = NativeWindow.GetCursorPosition();
+            rc = Monitor.All.First(m => m.Handle == Monitor.GetNearestFromPoint(cursor.x, cursor.y)).WorkingArea;
+        }
+        else
+        {
+            rc = CreateRect;
+        }
+
         var handle = GCHandle.Alloc(this);
         var ptr = GCHandle.ToIntPtr(handle);
 

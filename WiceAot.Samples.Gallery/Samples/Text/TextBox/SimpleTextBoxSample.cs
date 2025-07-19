@@ -12,8 +12,8 @@ public class SimpleTextBoxSample : Sample
 
         tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Red);
         tb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.GreenYellow.ToColor());
-        tb.Padding = D2D_RECT_F.Thickness(10);
-        tb.Margin = D2D_RECT_F.Thickness(10);
+        tb.Padding = parent.Window!.DipsToPixels(10);
+        tb.Margin = parent.Window!.DipsToPixels(10);
         tb.Text = "Hello World";
     }
 }

@@ -21,10 +21,11 @@ public class Theme
     private string? _legacySymbolFontName;
     private string? _defaultFontFamilyName;
     private float _defaultFontSize;
+    private int _defaultRichTextFontSize;
     private float _defaultSplitterSize;
     private readonly Window? _window;
 
-    public event EventHandler<ThemeDpiChangedEventArgs>? DpiChanged;
+    public event EventHandler<ThemeDpiEventArgs>? DpiChanged;
 
     public Theme(Window window)
         : this()
@@ -41,6 +42,7 @@ public class Theme
         ListBoxHoverColor = SelectedColor;
     }
 
+    public const int DefaultDefaultRichTextFontSize = 10; // from experience...
     public float DefaultDefaultFontSize { get; protected set; } = 14f;
     public float DefaultDefaultSplitterSize { get; protected set; } = 5f;
 
@@ -49,6 +51,7 @@ public class Theme
     public virtual string? SymbolFontName { get => _symbolFontName.Nullify() ?? DefaultSymbolFontName; set => _symbolFontName = value; }
     public virtual string? DefaultFontFamilyName { get => _defaultFontFamilyName.Nullify() ?? DefaultDefaultFontFamilyName; set => _defaultFontFamilyName = value; }
     public virtual float DefaultFontSize { get => _defaultFontSize <= 0 ? DefaultDefaultFontSize : _defaultFontSize; set => _defaultFontSize = value; }
+    public virtual int DefaultRichTextFontSize { get => _defaultRichTextFontSize <= 0 ? DefaultDefaultRichTextFontSize : _defaultRichTextFontSize; set => _defaultRichTextFontSize = value; }
     public virtual float DefaultSplitterSize { get => _defaultSplitterSize <= 0 ? DefaultDefaultSplitterSize : _defaultSplitterSize; set => _defaultSplitterSize = value; }
 
     public virtual D3DCOLORVALUE LinkColor { get; set; }
@@ -75,6 +78,7 @@ public class Theme
     public virtual float ButtonMinWidth { get; set; } = 70;
     public virtual float DialogBoxButtonFontSize { get; set; }
     public virtual float RoundedButtonCornerRadius { get; set; } = 4;
+    public virtual float MessageBoxPadding { get; set; } = 5;
 
     public virtual D3DCOLORVALUE CaretColor { get; set; } = D3DCOLORVALUE.Blue;
 
@@ -112,6 +116,8 @@ public class Theme
     public virtual float DialogWindowOverlayOpacity { get; set; } = 0.2f;
 
     public virtual float HeaderSelectionWidth { get; set; } = 4;
+    public virtual D2D_RECT_F HeaderPanelMargin { get; set; } = D2D_RECT_F.Thickness(10);
+    public virtual D2D_RECT_F HeaderCloseButtonMargin { get; set; } = D2D_RECT_F.Thickness(20, 0, 0, 0);
 
     public virtual float TitleBarFontSize { get; set; } = 12f;
     public virtual D2D_RECT_F TitleBarMargin { get; set; } = D2D_RECT_F.Thickness(10, 0, 0, 0);
@@ -135,10 +141,10 @@ public class Theme
         if (newDpi != CurrentDpi)
         {
             UpdateDpi(CurrentDpi, newDpi);
+            var e = new ThemeDpiEventArgs(CurrentDpi, newDpi);
             CurrentDpi = newDpi;
-            var e = new ThemeDpiChangedEventArgs(CurrentDpi, newDpi);
             OnDpiChanged(this, e);
-            _window.OnThemeDpiChanged(this, e);
+            _window.OnThemeDpiEvent(this, e);
             return true;
         }
         return false;
@@ -157,16 +163,16 @@ public class Theme
         if (newDpi != CurrentDpi)
         {
             UpdateDpi(CurrentDpi, newDpi);
+            var e = new ThemeDpiEventArgs(CurrentDpi, newDpi);
             CurrentDpi = newDpi;
-            var e = new ThemeDpiChangedEventArgs(CurrentDpi, newDpi);
             OnDpiChanged(this, e);
-            _window.OnThemeDpiChanged(this, e);
+            _window.OnThemeDpiEvent(this, e);
             return true;
         }
         return false;
     }
 
-    protected virtual void OnDpiChanged(object sender, ThemeDpiChangedEventArgs e) => DpiChanged?.Invoke(sender, e);
+    protected virtual void OnDpiChanged(object sender, ThemeDpiEventArgs e) => DpiChanged?.Invoke(sender, e);
 
     protected virtual void UpdateDpi(uint oldDpi, uint newDpi)
     {
@@ -175,6 +181,11 @@ public class Theme
         if (_defaultFontSize > 0)
         {
             DefaultFontSize = UIExtensions.DpiScale(DefaultFontSize, oldDpi, newDpi);
+        }
+
+        if (_defaultRichTextFontSize > 0)
+        {
+            DefaultRichTextFontSize = UIExtensions.DpiScale(DefaultRichTextFontSize, oldDpi, newDpi);
         }
 
         if (_defaultSplitterSize > 0)
@@ -201,7 +212,10 @@ public class Theme
         DialogBoxButtonFontSize = UIExtensions.DpiScale(DialogBoxButtonFontSize, oldDpi, newDpi);
         RoundedButtonCornerRadius = UIExtensions.DpiScale(RoundedButtonCornerRadius, oldDpi, newDpi);
         HeaderSelectionWidth = UIExtensions.DpiScale(HeaderSelectionWidth, oldDpi, newDpi);
+        HeaderCloseButtonMargin = UIExtensions.DpiScaleThickness(HeaderCloseButtonMargin, oldDpi, newDpi);
+        HeaderPanelMargin = UIExtensions.DpiScaleThickness(HeaderPanelMargin, oldDpi, newDpi);
         TitleBarFontSize = UIExtensions.DpiScale(TitleBarFontSize, oldDpi, newDpi);
         TitleBarMargin = UIExtensions.DpiScaleThickness(TitleBarMargin, oldDpi, newDpi);
+        MessageBoxPadding = UIExtensions.DpiScale(MessageBoxPadding, oldDpi, newDpi);
     }
 }

@@ -10,17 +10,17 @@ public class FormattedTextBoxSample : Sample
         var tb = new Wice.TextBox
         {
             FontFamilyName = "Gabriola",
-            FontSize = 72,
+            FontSize = parent.Window!.DipsToPixels(72),
             Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
-            Padding = D2D_RECT_F.Thickness(10, 10, 10, 50),
+            Padding = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(50)),
             ClipText = false,
             Text = "Hello World using   DirectWrite!"
         };
         Dock.SetDockType(tb, DockType.Top);
 
         // format the "DirectWrite" substring to be of font size 100.
-        tb.SetFontSize(100, new DWRITE_TEXT_RANGE(
+        tb.SetFontSize(parent.Window!.DipsToPixels(100), new DWRITE_TEXT_RANGE(
             20,     // Index where "DirectWrite" appears.
             6       // Length of the substring "Direct" in "DirectWrite".
         ));

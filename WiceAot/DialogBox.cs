@@ -194,4 +194,38 @@ public partial class DialogBox : Dialog
     public virtual Button AddYesButton() => AddCommandButton(MESSAGEBOX_RESULT.IDYES, true, AccessKey.Enter);
     public virtual Button AddNoButton() => AddCommandButton(MESSAGEBOX_RESULT.IDNO, false, AccessKey.Escape);
     public virtual Button AddCloseButton() => AddCommandButton(MESSAGEBOX_RESULT.IDCLOSE, false, AccessKey.Enter, AccessKey.Escape);
+
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
+    {
+        base.OnAttachedToComposition(sender, e);
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
+
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        DialogContent.Margin = GetWindowTheme().ButtonMargin;
+        if (Border is RoundedRectangle roundedRectangle)
+        {
+            roundedRectangle.CornerRadius = new Vector2(GetWindowTheme().RoundedButtonCornerRadius);
+        }
+        TitleBar?.Update();
+
+        if (ButtonsPanel != null)
+        {
+            var margin = GetWindowTheme().ButtonMargin;
+            ButtonsPanel.Margin = margin;
+            foreach (var button in ButtonsPanel.Children.OfType<Button>())
+            {
+                button.Margin = D2D_RECT_F.Thickness(margin, 0, 0, 0);
+                button.Text.FontSize = GetWindowTheme().DialogBoxButtonFontSize;
+            }
+        }
+    }
 }

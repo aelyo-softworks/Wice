@@ -34,6 +34,7 @@ public partial class SampleVisual : Dock
             var text = sample.GetSampleText();
             if (text != null)
             {
+                _codeBox.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
                 _codeBox.Options |= TextHostOptions.WordWrap;
                 _codeBox.CodeLanguage = WiceLanguage.Default.Id; // init & put in repo
                 SetDockType(_codeBox, DockType.Top);
@@ -46,21 +47,24 @@ public partial class SampleVisual : Dock
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
+
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
         var theme = (GalleryTheme)GetWindowTheme();
-
-        _codeBox.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
-
-        update();
-        void update()
-        {
-            _description.Margin = theme.SampleVisualDescriptionMargin;
-            _description.FontSize = theme.SampleVisualFontSize;
-            _border.Padding = theme.SampleVisualBorderPadding;
-            _border.BorderThickness = theme.SampleVisualBorderThickness;
-            _codeBox.Margin = theme.SampleVisualCodeBoxMargin;
-            _codeBox.Padding = theme.SampleVisualCodeBoxPadding;
-        }
-
-        Window!.ThemeDpiChanged += (s, e) => update();
+        _description.Margin = theme.SampleVisualDescriptionMargin;
+        _description.FontSize = theme.SampleVisualFontSize;
+        _border.Padding = theme.SampleVisualBorderPadding;
+        _border.BorderThickness = theme.SampleVisualBorderThickness;
+        _codeBox.Margin = theme.SampleVisualCodeBoxMargin;
+        _codeBox.Padding = theme.SampleVisualCodeBoxPadding;
     }
 }

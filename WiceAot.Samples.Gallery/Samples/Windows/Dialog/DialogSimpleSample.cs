@@ -14,8 +14,8 @@ public class DialogSimpleSample : Sample
 
             // a dialog is a children of a Window, it's not a standalone window
             parent.Window!.Children.Add(dlg);
-            dlg.Width = 300;
-            dlg.Height = 300;
+            dlg.Width = parent.Window!.DipsToPixels(300);
+            dlg.Height = dlg.Width;
             dlg.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
 
             var tb = new TextBox { Text = "Press ESC to close" };

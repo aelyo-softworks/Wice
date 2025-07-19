@@ -15,12 +15,12 @@ public class DialogBoxSimpleSample : Sample
 
             // a dialog box is a children of a Window, it's not a standalone window
             parent.Window!.Children.Add(dlg);
-            dlg.Width = 300;
-            dlg.Height = 300;
+            dlg.Width = parent.Window!.DipsToPixels(300);
+            dlg.Height = dlg.Width;
             dlg.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
 
             // add content to the dialog
-            dlg.DialogContent.Children.Add(new Border { Width = 200, Height = 100 });
+            dlg.DialogContent.Children.Add(new Border { Width = parent.Window!.DipsToPixels(200), Height = parent.Window!.DipsToPixels(100) });
 
             // add standard (localized) buttons
             dlg.AddCancelButton();

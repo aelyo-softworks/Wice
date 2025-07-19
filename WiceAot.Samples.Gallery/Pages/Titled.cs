@@ -32,14 +32,20 @@ public abstract class Titled : Dock
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
-        var theme = (GalleryTheme)GetWindowTheme();
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
 
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        var theme = (GalleryTheme)GetWindowTheme();
         Title.Padding = theme.TitledMargin;
         Title.FontSize = theme.TitledFontSize;
-        Window!.ThemeDpiChanged += (s, e) =>
-        {
-            Title.Padding = theme.TitledMargin;
-            Title.FontSize = theme.TitledFontSize;
-        };
     }
 }

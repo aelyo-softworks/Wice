@@ -21,6 +21,16 @@ public partial class MessageBox : DialogBox
         }
     }
 
+    protected override void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        base.OnThemeDpiEvent(sender, e);
+        var theme = GetWindowTheme();
+        foreach (var tb in DialogContent.Children.OfType<MessageTextBox>())
+        {
+            tb.Padding = D2D_RECT_F.Thickness(theme.MessageBoxPadding);
+        }
+    }
+
     public static void Show(Window window, string text, string? title = null, Action<MessageBox>? onClose = null)
     {
         ExceptionExtensions.ThrowIfNull(window, nameof(window));
@@ -29,20 +39,24 @@ public partial class MessageBox : DialogBox
         var button = dlg.AddCloseButton();
         button.Click += (s, e) => dlg.MessageBoxResult = MESSAGEBOX_RESULT.IDOK;
 
-        var tv = new TextBox
+        var tb = new MessageTextBox
         {
 #if DEBUG
             Name = "messageBoxText",
 #endif
-            Padding = D2D_RECT_F.Thickness(5),
             Text = text
         };
-        dlg.DialogContent.Children.Add(tv);
+
+        dlg.DialogContent.Children.Add(tb);
         window.Children.Add(dlg);
 
         if (onClose != null)
         {
             dlg.DoWhenDetachedFromParent(() => onClose(dlg));
         }
+    }
+
+    private sealed partial class MessageTextBox : TextBox
+    {
     }
 }

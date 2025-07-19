@@ -133,9 +133,10 @@ public partial class FocusVisual : Border
 
         if (Child is SingleShape singleShape)
         {
-            singleShape.StrokeBrush = Compositor.CreateColorBrush(GetWindowTheme().FocusColor.ToColor());
-            singleShape.StrokeThickness = GetWindowTheme().FocusThickness;
-            singleShape.StrokeDashArray = GetWindowTheme().FocusDashArray;
+            var theme = GetWindowTheme();
+            singleShape.StrokeBrush = Compositor.CreateColorBrush(theme.FocusColor.ToColor());
+            singleShape.StrokeThickness = theme.FocusThickness;
+            singleShape.StrokeDashArray = theme.FocusDashArray;
         }
     }
 }

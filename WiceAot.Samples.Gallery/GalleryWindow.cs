@@ -18,6 +18,7 @@ public sealed partial class GalleryWindow : Window, IDisposable
         EnableDiagnosticKeys = true;
 #endif
 
+        CreateOnCursorMonitor = true;
         // we draw our own titlebar using Wice itself
         WindowsFrameMode = WindowsFrameMode.None;
 
@@ -47,24 +48,12 @@ public sealed partial class GalleryWindow : Window, IDisposable
         AddControls();
     }
 
-    // create on the monitor where the mouse is at startup
-    // remove this if you always want to create on primary monitor
-    public override RECT CreateRect
-    {
-        get
-        {
-            var cursor = NativeWindow.GetCursorPosition();
-            var area = Monitor.All.First(m => m.Handle == Monitor.GetNearestFromPoint(cursor.x, cursor.y)).WorkingArea;
-            return area;
-        }
-    }
-
     public new GalleryTheme Theme => (GalleryTheme)base.Theme;
     protected override Theme CreateTheme() => new GalleryTheme(this);
 
-    protected override void OnThemeDpiChanged(object? sender, ThemeDpiChangedEventArgs e)
+    protected override void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
-        base.OnThemeDpiChanged(sender, e);
+        base.OnThemeDpiEvent(sender, e);
 
         if (_menuBack != null)
         {

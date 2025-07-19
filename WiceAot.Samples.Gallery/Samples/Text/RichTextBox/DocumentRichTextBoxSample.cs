@@ -11,11 +11,11 @@ public partial class DocumentRichTextBoxSample : Sample
         parent.Children.Add(rtb);
         Dock.SetDockType(rtb, DockType.Top);
 
-        rtb.MaxWidth = 500;
-        rtb.MaxHeight = 400;
+        rtb.MaxWidth = parent.Window!.DipsToPixels(500);
+        rtb.MaxHeight = parent.Window!.DipsToPixels(400);
         rtb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
-        rtb.Padding = D2D_RECT_F.Thickness(10);
-        rtb.Margin = D2D_RECT_F.Thickness(10);
+        rtb.Padding = parent.Window!.DipsToPixels(10);
+        rtb.Margin = parent.Window!.DipsToPixels(10);
 
         // Document is a COM IDispatch object. Cf https://docs.microsoft.com/en-us/windows/win32/api/tom/nf-tom-itextdocument-open
 
