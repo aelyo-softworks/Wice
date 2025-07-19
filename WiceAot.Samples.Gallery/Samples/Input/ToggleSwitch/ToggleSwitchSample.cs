@@ -21,7 +21,7 @@ public class ToggleSwitchSample : Sample
         // add results textbox
         var results = new TextBox
         {
-            Margin = D2D_RECT_F.Thickness(10, 0),
+            Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0),
             HorizontalAlignment = Alignment.Center,
             VerticalAlignment = Alignment.Center
         };

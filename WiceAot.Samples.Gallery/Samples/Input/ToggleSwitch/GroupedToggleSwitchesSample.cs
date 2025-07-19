@@ -16,13 +16,13 @@ public class GroupedToggleSwitchesSample : Sample
         var list = new List<Wice.ToggleSwitch>();
         for (var i = 0; i < 3; i++)
         {
-            var toggle = new Wice.ToggleSwitch { Margin = D2D_RECT_F.Thickness(10, 0), Name = "switch " + i };
+            var toggle = new Wice.ToggleSwitch { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0), Name = "switch " + i };
             dock.Children.Add(toggle);
             list.Add(toggle);
         }
 
         // add results textbox
-        var results = new TextBox { Margin = D2D_RECT_F.Thickness(10, 0) };
+        var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0) };
         dock.Children.Add(results);
 
         // hook click events

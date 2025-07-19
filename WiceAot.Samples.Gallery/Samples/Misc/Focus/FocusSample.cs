@@ -8,7 +8,7 @@ public class FocusSample : Sample
     {
         for (var i = 0; i < 4; i++)
         {
-            var btn = new Button { Margin = 5 };
+            var btn = new Button { Margin = parent.Window!.DipsToPixels(5) };
             btn.FocusedChanged += (s, e) => { btn.Text.Text = e.Value ? "Focused" : "Unfocused"; };
             btn.Text.Text = "Unfocused";
             Dock.SetDockType(btn, DockType.Top); // remove from display

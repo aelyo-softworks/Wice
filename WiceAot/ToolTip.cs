@@ -19,7 +19,6 @@ public partial class ToolTip : PopupWindow, IContentParent
         // we need a margin for the drop shadow so we need to force 1 child only
         Content.Margin = GetWindowTheme().ToolTipBaseSize;
         Content.RenderShadow = CreateShadow(); // may be null if overriden
-
         VerticalOffset = GetWindowTheme().ToolTipVerticalOffset * NativeWindow.GetAccessibilityCursorSize();
     }
 
@@ -63,5 +62,16 @@ public partial class ToolTip : PopupWindow, IContentParent
         parameters.HorizontalOffset -= offset.left;
         parameters.VerticalOffset -= offset.top;
         return parameters;
+    }
+
+    protected internal override void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        base.OnThemeDpiEvent(sender, e);
+        Content.Margin = GetWindowTheme().ToolTipBaseSize;
+        VerticalOffset = GetWindowTheme().ToolTipVerticalOffset * NativeWindow.GetAccessibilityCursorSize();
+        if (Content.RenderShadow is DropShadow dropShadow)
+        {
+            dropShadow.BlurRadius = GetWindowTheme().ToolTipShadowBlurRadius;
+        }
     }
 }

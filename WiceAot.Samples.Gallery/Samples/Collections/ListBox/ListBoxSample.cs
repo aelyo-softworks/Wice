@@ -16,7 +16,7 @@ public class ListBoxSample : Sample
             // called when an item visual (container) is being created
             DataItemVisualCreator = (ctx) =>
             {
-                var tb = new TextBox { Height = 20 };
+                var tb = new TextBox { Height = parent.Window!.DipsToPixels(20) };
                 ctx.DataVisual = tb;
             },
             // called when an item visual (container) is being bound to the data

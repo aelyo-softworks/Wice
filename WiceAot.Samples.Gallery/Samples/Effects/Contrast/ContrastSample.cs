@@ -8,7 +8,7 @@ public class ContrastSample : Sample
         Dock.SetDockType(visual, DockType.Top); // remove from display
         parent.Children.Add(visual);
 
-        var cb = new CheckBox { Margin = D2D_RECT_F.Thickness(5) };
+        var cb = new CheckBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(5)) };
         Dock.SetDockType(cb, DockType.Top); // remove from display
         parent.Children.Add(cb);
 
@@ -49,7 +49,7 @@ public class ContrastSample : Sample
 
             // use image size to determine visual size
             var size = im.GetSizeF();
-            visual.Width = 300;
+            visual.Width = parent.Window!.DipsToPixels(parent.Window!.DipsToPixels(300));
             visual.Height = visual.Width * size.height / size.width;
 
             // create a drawing (D2D1) surface

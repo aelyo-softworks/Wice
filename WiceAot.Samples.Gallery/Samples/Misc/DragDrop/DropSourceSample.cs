@@ -17,7 +17,7 @@ public class DropSourceSample : Sample
         var info = new Stack { Orientation = Orientation.Vertical }; // remove from display
         stack.Children.Add(info);// remove from display
 
-        var target = new TextBox { VerticalAlignment = Alignment.Near, Padding = 10 };
+        var target = new TextBox { VerticalAlignment = Alignment.Near, Padding = parent.Window!.DipsToPixels(10) };
         info.Children.Add(target);
 
         btn.MouseButtonDown += (s, e) =>

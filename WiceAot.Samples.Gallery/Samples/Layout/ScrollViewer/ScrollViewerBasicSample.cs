@@ -9,7 +9,7 @@ public class ScrollViewerBasicSample : Sample
         // create a 300 pixels height scroll viewer
         var scrollViewer = new Wice.ScrollViewer();
         parent.Children.Add(scrollViewer);
-        scrollViewer.Height = 300;
+        scrollViewer.Height = parent.Window!.DipsToPixels(300);
         scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
         Wice.Dock.SetDockType(scrollViewer, DockType.Top); // remove from display
 

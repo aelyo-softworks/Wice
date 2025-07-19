@@ -9,10 +9,10 @@ public class LineShapeSample : Sample
     {
         var line1 = new Line
         {
-            Width = 200,
-            Height = 100,
+            Width = parent.Window!.DipsToPixels(200),
+            Height = parent.Window!.DipsToPixels(100),
             StrokeBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Maroon.ToColor()),
-            StrokeThickness = 1
+            StrokeThickness = parent.Window!.DipsToPixels(1)
         };
         parent.Children.Add(line1);
         line1.Arranged += (s, e) =>
@@ -23,10 +23,10 @@ public class LineShapeSample : Sample
 
         var line2 = new Line
         {
-            Width = 200,
-            Height = 100,
+            Width = parent.Window!.DipsToPixels(200),
+            Height = parent.Window!.DipsToPixels(100),
             StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.BlueViolet.ToColor()),
-            StrokeThickness = 4
+            StrokeThickness = parent.Window!.DipsToPixels(4)
         };
         parent.Children.Add(line2);
         line2.Arranged += (s, e) =>

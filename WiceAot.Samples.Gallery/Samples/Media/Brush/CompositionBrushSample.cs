@@ -9,8 +9,8 @@ public class CompositionBrushSample : Sample
         var box = new Border();
         parent.Children.Add(box);
         Dock.SetDockType(box, DockType.Top); // remove from display
-        box.Width = 100;
-        box.Height = 100;
+        box.Width = parent.Window!.DipsToPixels(100);
+        box.Height = parent.Window!.DipsToPixels(100);
 
         // to create a composition brush, the visual must be attached to composition
         // to be able to use the Compositor instance corresponding to its parent Window.

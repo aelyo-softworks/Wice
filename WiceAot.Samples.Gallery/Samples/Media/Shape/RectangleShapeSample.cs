@@ -8,10 +8,10 @@ public class RectangleShapeSample : Sample
     {
         var rectangle = new Rectangle
         {
-            Width = 200,
-            Height = 100,
+            Width = parent.Window!.DipsToPixels(200),
+            Height = parent.Window!.DipsToPixels(100),
             StrokeBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()),
-            StrokeThickness = 10
+            StrokeThickness = parent.Window!.DipsToPixels(10)
         };
         parent.Children.Add(rectangle);
         Dock.SetDockType(rectangle, DockType.Top); // remove from display

@@ -9,8 +9,8 @@ public class BasicImageSample : Sample
         var img = new Wice.Image();
         parent.Children.Add(img);
         Dock.SetDockType(img, DockType.Top); // remove from display
-        img.Width = 400;
-        img.Margin = 10;
+        img.Width = parent.Window!.DipsToPixels(400);
+        img.Margin = parent.Window!.DipsToPixels(10);
         img.InterpolationMode = D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC;
 
         // load from .NET embedded resource

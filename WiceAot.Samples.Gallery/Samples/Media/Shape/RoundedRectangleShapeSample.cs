@@ -9,11 +9,11 @@ public class RoundedRectangleShapeSample : Sample
     {
         var rectangle = new RoundedRectangle
         {
-            CornerRadius = new Vector2(50),
-            Width = 100,
-            Height = 100,
+            CornerRadius = new Vector2(parent.Window!.DipsToPixels(50)),
+            Width = parent.Window!.DipsToPixels(100),
+            Height = parent.Window!.DipsToPixels(100),
             StrokeBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor()),
-            StrokeThickness = 20
+            StrokeThickness = parent.Window!.DipsToPixels(20)
         };
         parent.Children.Add(rectangle);
         Dock.SetDockType(rectangle, DockType.Top); // remove from display

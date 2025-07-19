@@ -9,9 +9,9 @@ public class WebViewSample : Sample
         var webView = new Wice.WebView();
         parent.Children.Add(webView);
         Dock.SetDockType(webView, DockType.Top); // remove from display
-        webView.Width = 900;
-        webView.Height = 500;
-        webView.Margin = 10;
+        webView.Width = parent.Window!.DipsToPixels(900);
+        webView.Height = parent.Window!.DipsToPixels(500);
+        webView.Margin = parent.Window!.DipsToPixels(10);
         webView.SourceUri = "https://www.bing.com";
     }
 }

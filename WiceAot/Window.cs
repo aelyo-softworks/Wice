@@ -764,25 +764,34 @@ public partial class Window : Canvas, ITitleBarParent
         if (text == null)
             return;
 
+        var theme = parent.GetWindowTheme();
         var rr = new RoundedRectangle
         {
-            CornerRadius = new Vector2(parent.GetWindowTheme().ToolTipCornerRadius),
-            RenderBrush = parent.Compositor.CreateColorBrush(parent.GetWindowTheme().ToolTipColor.ToColor())
+            RenderBrush = parent.Compositor.CreateColorBrush(theme.ToolTipColor.ToColor())
         };
         parent.Content.Children.Add(rr);
 
         var tb = new TextBox
         {
-            Margin = 4,
             Text = text,
-            FontSize = parent.GetWindowTheme().ToolTipBaseSize + 4,
             FontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_ULTRA_CONDENSED,
             DrawOptions = D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT,
             WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WRAP
         };
+        updateStyle();
 
         tb.SetTypography(Typography.WithLigatures.DWriteTypography?.Object);
         parent.Content.Children.Add(tb);
+
+        parent.ThemeDpiEvent += (s, e) => updateStyle();
+
+        void updateStyle()
+        {
+            var theme = parent.GetWindowTheme();
+            rr.CornerRadius = new Vector2(theme.ToolTipCornerRadius);
+            tb.Margin = theme.ToolTipMargin;
+            tb.FontSize = theme.ToolTipBaseSize + theme.ToolTipMargin;
+        }
     }
 
     protected virtual void OnActivated(object? sender, EventArgs e) => Activated?.Invoke(sender, e);

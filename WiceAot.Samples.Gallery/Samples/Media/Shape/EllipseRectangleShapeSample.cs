@@ -9,11 +9,11 @@ public class EllipseRectangleShapeSample : Sample
     {
         var ellipse = new Ellipse
         {
-            Width = 300,
-            Height = 100,
-            Radius = new Vector2(150, 50),
+            Width = parent.Window!.DipsToPixels(300),
+            Height = parent.Window!.DipsToPixels(100),
+            Radius = new Vector2(parent.Window!.DipsToPixels(150), parent.Window!.DipsToPixels(50)),
             StrokeBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor()),
-            StrokeThickness = 2,
+            StrokeThickness = parent.Window!.DipsToPixels(2),
             StrokeDashArray = [1, 2, 3]
         };
         parent.Children.Add(ellipse);

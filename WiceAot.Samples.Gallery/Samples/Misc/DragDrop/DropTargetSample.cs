@@ -13,8 +13,8 @@ public class DropTargetSample : Sample
         var box = new Border
         {
             RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor()),
-            Width = 400, // remove from display
-            Height = 200, // remove from display
+            Width = parent.Window!.DipsToPixels(400), // remove from display
+            Height = parent.Window!.DipsToPixels(200), // remove from display
             AllowDrop = true, // enable the visual as a drop target
         };
         stack.Children.Add(box);
@@ -28,17 +28,19 @@ public class DropTargetSample : Sample
             WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WHOLE_WORD, // remove from display
         };
         box.Child = tb;
+
+        var padding = parent.Window!.DipsToPixels(10);
         // remove from display
         var info = new Stack { Orientation = Orientation.Vertical }; // remove from display
         stack.Children.Add(info); // remove from display
                                   // remove from display
-        var type = new TextBox { VerticalAlignment = Alignment.Near, Padding = 10 }; // remove from display
+        var type = new TextBox { VerticalAlignment = Alignment.Near, Padding = padding }; // remove from display
         info.Children.Add(type); // remove from display
                                  // remove from display
-        var point = new TextBox { VerticalAlignment = Alignment.Near, Padding = 10 }; // remove from display
+        var point = new TextBox { VerticalAlignment = Alignment.Near, Padding = padding }; // remove from display
         info.Children.Add(point); // remove from display
                                   // remove from display
-        var flags = new TextBox { VerticalAlignment = Alignment.Near, Padding = 10 }; // remove from display
+        var flags = new TextBox { VerticalAlignment = Alignment.Near, Padding = padding }; // remove from display
         info.Children.Add(flags); // remove from display
                                   // remove from display
         box.DragDrop += (s, e) =>

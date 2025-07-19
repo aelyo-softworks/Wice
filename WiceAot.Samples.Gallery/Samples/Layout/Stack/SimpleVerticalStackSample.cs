@@ -7,7 +7,7 @@ public class SimpleVerticalStackSample : Sample
 
     public override void Layout(Visual parent)
     {
-        var stack = new Wice.Stack { Spacing = new D2D_SIZE_F(10, 10) };
+        var stack = new Wice.Stack { Spacing = new D2D_SIZE_F(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10)) };
         parent.Children.Add(stack);
         Wice.Dock.SetDockType(stack, DockType.Top); // remove from display
         stack.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
@@ -15,13 +15,13 @@ public class SimpleVerticalStackSample : Sample
         var b0 = new Wice.Border();
         stack.Children.Add(b0);
         b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
-        b0.Width = 100;
-        b0.Height = 100;
+        b0.Width = parent.Window!.DipsToPixels(100);
+        b0.Height = parent.Window!.DipsToPixels(100);
 
         var b1 = new Wice.Border();
         stack.Children.Add(b1);
         b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
-        b1.Width = 50;
-        b1.Height = 50;
+        b1.Width = parent.Window!.DipsToPixels(50);
+        b1.Height = parent.Window!.DipsToPixels(50);
     }
 }

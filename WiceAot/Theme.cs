@@ -104,6 +104,7 @@ public class Theme
     public virtual float ToolTipVerticalOffset { get; set; } = 20; // don't know any API where to get that info from (that would support system cursor size change by end-user)
     public virtual float ToolTipShadowBlurRadius { get; set; } = 4;
     public virtual float ToolTipCornerRadius { get; set; } = 3;
+    public virtual float ToolTipMargin { get; set; } = 4;
     public virtual uint ToolTipInitialTime { get; set; } = WiceCommons.GetDoubleClickTime(); // https://docs.microsoft.com/en-us/windows/win32/controls/ttm-setdelaytime#remarks
     public virtual uint ToolTipVisibleTime { get; set; }
     public virtual uint ToolTipReshowTime { get; set; }
@@ -198,6 +199,7 @@ public class Theme
         ToolTipVerticalOffset = UIExtensions.DpiScale(ToolTipVerticalOffset, oldDpi, newDpi);
         ToolTipShadowBlurRadius = UIExtensions.DpiScale(ToolTipShadowBlurRadius, oldDpi, newDpi);
         ToolTipCornerRadius = UIExtensions.DpiScale(ToolTipCornerRadius, oldDpi, newDpi);
+        ToolTipMargin = UIExtensions.DpiScale(ToolTipMargin, oldDpi, newDpi);
         DialogShadowBlurRadius = UIExtensions.DpiScale(DialogShadowBlurRadius, oldDpi, newDpi);
         ScrollBarOverlayCornerRadius = UIExtensions.DpiScale(ScrollBarOverlayCornerRadius, oldDpi, newDpi);
         ScrollBarButtonStrokeThickness = UIExtensions.DpiScale(ScrollBarButtonStrokeThickness, oldDpi, newDpi);

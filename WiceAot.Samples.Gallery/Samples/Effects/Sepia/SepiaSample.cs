@@ -31,7 +31,7 @@ public class SepiaSample : Sample
 
             // use image size to determine visual size
             var size = im.GetSizeF();
-            visual.Width = 300;
+            visual.Width = parent.Window!.DipsToPixels(300);
             visual.Height = visual.Width * size.height / size.width;
 
             // create a drawing (D2D1) surface

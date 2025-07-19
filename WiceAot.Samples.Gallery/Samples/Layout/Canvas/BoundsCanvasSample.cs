@@ -9,8 +9,8 @@ public class BoundsCanvasSample : Sample
     {
         var canvas = new Wice.Canvas
         {
-            Width = 120,
-            Height = 120,
+            Width = parent.Window!.DipsToPixels(120),
+            Height = parent.Window!.DipsToPixels(120),
             RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor())
         };
         parent.Children.Add(canvas);
@@ -19,8 +19,8 @@ public class BoundsCanvasSample : Sample
         var b0 = new Wice.Border
         {
             RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()),
-            Width = 40,
-            Height = 40
+            Width = parent.Window!.DipsToPixels(40),
+            Height = parent.Window!.DipsToPixels(40)
         };
         Wice.Canvas.SetLeft(b0, 0);
         Wice.Canvas.SetTop(b0, 0);
@@ -29,8 +29,8 @@ public class BoundsCanvasSample : Sample
         var b1 = new Wice.Border
         {
             RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor()),
-            Width = 40,
-            Height = 40
+            Width = parent.Window!.DipsToPixels(40),
+            Height = parent.Window!.DipsToPixels(40)
         };
         Wice.Canvas.SetLeft(b1, 0);
         Wice.Canvas.SetBottom(b1, 0);
@@ -39,8 +39,8 @@ public class BoundsCanvasSample : Sample
         var b2 = new Wice.Border
         {
             RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor()),
-            Width = 40,
-            Height = 40
+            Width = parent.Window!.DipsToPixels(40),
+            Height = parent.Window!.DipsToPixels(40)
         };
         Wice.Canvas.SetRight(b2, 0);
         Wice.Canvas.SetTop(b2, 0);
@@ -49,8 +49,8 @@ public class BoundsCanvasSample : Sample
         var b3 = new Wice.Border
         {
             RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor()),
-            Width = 40,
-            Height = 40
+            Width = parent.Window!.DipsToPixels(40),
+            Height = parent.Window!.DipsToPixels(40)
         };
         Wice.Canvas.SetRight(b3, 0);
         Wice.Canvas.SetBottom(b3, 0);

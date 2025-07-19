@@ -8,8 +8,8 @@ public class SimpleDockSample : Sample
     {
         var dock = new Wice.Dock
         {
-            Width = 120,
-            Height = 120,
+            Width = parent.Window!.DipsToPixels(120),
+            Height = parent.Window!.DipsToPixels(120),
             RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor())
         };
         parent.Children.Add(dock);
@@ -18,32 +18,32 @@ public class SimpleDockSample : Sample
         var b0 = new Wice.Border();
         Wice.Dock.SetDockType(b0, DockType.Top);
         b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
-        b0.Width = 40;
-        b0.Height = 40;
+        b0.Width = parent.Window!.DipsToPixels(40);
+        b0.Height = parent.Window!.DipsToPixels(40);
         dock.Children.Add(b0);
 
         var b1 = new Wice.Border();
         Wice.Dock.SetDockType(b1, DockType.Left);
         b1.VerticalAlignment = Alignment.Near;
         b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
-        b1.Width = 40;
-        b1.Height = 40;
+        b1.Width = parent.Window!.DipsToPixels(40);
+        b1.Height = parent.Window!.DipsToPixels(40);
         dock.Children.Add(b1);
 
         var b2 = new Wice.Border();
         Wice.Dock.SetDockType(b2, DockType.Right);
         b2.VerticalAlignment = Alignment.Near;
         b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
-        b2.Width = 40;
-        b2.Height = 40;
+        b2.Width = parent.Window!.DipsToPixels(40);
+        b2.Height = parent.Window!.DipsToPixels(40);
         dock.Children.Add(b2);
 
         var b3 = new Wice.Border();
         Wice.Dock.SetDockType(b3, DockType.Bottom);
         b3.VerticalAlignment = Alignment.Far;
         b3.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
-        b3.Width = 40;
-        b3.Height = 40;
+        b3.Width = parent.Window!.DipsToPixels(40);
+        b3.Height = parent.Window!.DipsToPixels(40);
         dock.Children.Add(b3);
     }
 }

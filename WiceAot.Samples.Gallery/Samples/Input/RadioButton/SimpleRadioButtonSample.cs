@@ -16,7 +16,7 @@ public class SimpleRadioButtonSample : Sample
         stack.Children.Add(btn);
 
         // add results textbox
-        var results = new TextBox { Margin = D2D_RECT_F.Thickness(10, 0) };
+        var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0) };
         stack.Children.Add(results);
 
         btn.Click += (s, e) => { results.Text = "RadioButton is " + (btn.Value ? "Checked" : "Unchecked"); };

@@ -20,15 +20,16 @@ public class PdfViewSample : Sample
             HorizontalAlignment = Alignment.Center
         };
         Dock.SetDockType(pdfView, DockType.Top); // remove from display
-        pdfView.Height = 600;
-        pdfView.Margin = 10;
+        pdfView.Height = parent.Window!.DipsToPixels(600);
+        pdfView.Margin = parent.Window!.DipsToPixels(10);
         pdfView.SourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Wice.Samples.Gallery.Resources.sample.pdf");
 
         var buttons = new Stack { Orientation = Orientation.Horizontal, HorizontalAlignment = Alignment.Stretch };
         Dock.SetDockType(buttons, DockType.Top); // remove from display
         dock.Children.Add(buttons);
 
-        var load = new Button { HorizontalAlignment = Alignment.Near, Margin = D2D_RECT_F.Thickness(5) };
+        var thickness = parent.Window!.DipsToPixels(5);
+        var load = new Button { HorizontalAlignment = Alignment.Near, Margin = thickness };
         load.Text.Text = "Load PDF File...";
         load.Click += async (s, e) =>
         {
@@ -44,17 +45,17 @@ public class PdfViewSample : Sample
         };
         buttons.Children.Add(load);
 
-        var next = new Button { HorizontalAlignment = Alignment.Near, Margin = D2D_RECT_F.Thickness(5) };
+        var next = new Button { HorizontalAlignment = Alignment.Near, Margin = thickness };
         next.Text.Text = "Next Page";
         next.Click += (s, e) => pdfView.CurrentPage += 1;
         buttons.Children.Add(next);
 
-        var prev = new Button { HorizontalAlignment = Alignment.Near, Margin = D2D_RECT_F.Thickness(5) };
+        var prev = new Button { HorizontalAlignment = Alignment.Near, Margin = thickness };
         prev.Text.Text = "Previous Page";
         prev.Click += (s, e) => pdfView.CurrentPage += -1;
         buttons.Children.Add(prev);
 
-        var pagesCount = new TextBox { VerticalAlignment = Alignment.Center, Margin = D2D_RECT_F.Thickness(5) };
+        var pagesCount = new TextBox { VerticalAlignment = Alignment.Center, Margin = thickness };
         buttons.Children.Add(pagesCount);
 
         dock.Children.Add(pdfView);

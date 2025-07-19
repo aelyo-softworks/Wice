@@ -11,7 +11,7 @@ public class Direct2DBrushSample : Sample
         parent.Children.Add(tb);
         Dock.SetDockType(tb, DockType.Top); // remove from display
         tb.HorizontalAlignment = Alignment.Center;
-        tb.Padding = 5;
+        tb.Padding = parent.Window!.DipsToPixels(5);
         tb.Text = "This text is white";
 
         // D3DCOLORVALUE is the base DirectX color using single/float (0 => 1) ARGB.

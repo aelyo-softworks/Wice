@@ -9,19 +9,16 @@ public class RoundBorderSample : Sample
     {
         var border = new Wice.Border
         {
-            BorderThickness = 2.5f,
-            CornerRadius = new Vector2(5),
+            BorderThickness = parent.Window!.DipsToPixels(2.5f),
+            CornerRadius = new Vector2(parent.Window!.DipsToPixels(6)),
             BorderBrush = new SolidColorBrush(D3DCOLORVALUE.YellowGreen) // well-known colors
         };
         parent.Children.Add(border);
         Wice.Dock.SetDockType(border, DockType.Top); // remove from display
 
-        var textBox = new TextBox
-        {
-            Padding = 10
-        };
+        var textBox = new TextBox { Padding = parent.Window!.DipsToPixels(10) };
         border.Children.Add(textBox);
         textBox.Text = "Text inside a round border";
-        textBox.FontSize = 18;
+        textBox.FontSize = parent.Window!.DipsToPixels(18);
     }
 }

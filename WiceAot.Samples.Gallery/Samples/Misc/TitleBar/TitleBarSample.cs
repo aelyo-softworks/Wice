@@ -12,16 +12,16 @@ public class TitleBarSample : Sample
             var window = new Window
             {
                 // we draw our own titlebar using Wice
-                WindowsFrameMode = WindowsFrameMode.None
+                WindowsFrameMode = WindowsFrameMode.None,
+                CreateOnCursorMonitor = true,
             };
+            window.ResizeClient(parent.Window!.DipsToPixels(400), parent.Window!.DipsToPixels(400));
             window.Center();
             window.Show();
 
             // add a Wice titlebar
             var titleBar = new Wice.TitleBar { IsMain = true };
             window.Children.Add(titleBar);
-            // remove from display - this is here because there's a bug where the title bar is not refreshed
-            window.ResizeClient(400, 400);
         };
 
         btn.Text.Text = "Open new window";

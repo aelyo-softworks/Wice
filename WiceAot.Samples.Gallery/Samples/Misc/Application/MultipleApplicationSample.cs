@@ -22,10 +22,11 @@ public class MultipleApplicationSample : Sample
                 var win = new Window
                 {
                     Title = "Window in another application (Thread " + Environment.CurrentManagedThreadId + ")",
-                    WindowsFrameMode = WindowsFrameMode.None
+                    WindowsFrameMode = WindowsFrameMode.None,
+                    CreateOnCursorMonitor = true
                 };
                 win.Children.Add(new Wice.TitleBar { IsMain = true });
-                win.ResizeClient(400, 400);
+                win.ResizeClient(parent.Window!.DipsToPixels(400), parent.Window!.DipsToPixels(400));
                 win.Center();
                 win.Show();
                 dw.Run();

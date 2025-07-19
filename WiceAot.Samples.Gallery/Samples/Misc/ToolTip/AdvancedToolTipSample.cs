@@ -28,12 +28,19 @@ public class AdvancedToolTipSample : Sample
 
             var tb = new TextBox
             {
-                Margin = 4,
                 Text = text,
                 ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White),
-                FontSize = 25
             };
             tt.Content.Children.Add(tb);
+            updateStyle();
+
+            void updateStyle()
+            {
+                tb.Margin = tt.Window!.DipsToPixels(4);
+                tb.FontSize = tt.Window!.DipsToPixels(25);
+            }
+
+            tt.ThemeDpiEvent += (s, e) => updateStyle();
         }
     }
 }

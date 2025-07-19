@@ -8,19 +8,16 @@ public class SimpleBorderSample : Sample
     {
         var border = new Wice.Border
         {
-            BorderThickness = 2,
+            BorderThickness = parent.Window!.DipsToPixels(2),
             HorizontalAlignment = Alignment.Near, // force border to use child's size (default is Stretch)
             BorderBrush = new SolidColorBrush(new D3DCOLORVALUE(0xFFFFD700)) // by-value color
         };
         parent.Children.Add(border);
         Wice.Dock.SetDockType(border, DockType.Top); // remove from display
 
-        var textBox = new TextBox
-        {
-            Padding = 10
-        };
+        var textBox = new TextBox { Padding = parent.Window!.DipsToPixels(10) };
         border.Children.Add(textBox);
         textBox.Text = "Text inside a border";
-        textBox.FontSize = 18;
+        textBox.FontSize = parent.Window!.DipsToPixels(18);
     }
 }

@@ -9,9 +9,9 @@ public class BasicSvgImageSample : Sample
         var img = new Wice.SvgImage();
         parent.Children.Add(img);
         Dock.SetDockType(img, DockType.Top); // remove from display
-        img.Width = 400;
-        img.Height = 400;
-        img.Margin = 10;
+        img.Width = parent.Window!.DipsToPixels(400);
+        img.Height = parent.Window!.DipsToPixels(400);
+        img.Margin = parent.Window!.DipsToPixels(10);
 
         // load from .NET embedded resource
         img.Document = new AssemblyResourceStreamer(Assembly.GetExecutingAssembly(), "Wice.Samples.Gallery.Resources.tiger.svg");
