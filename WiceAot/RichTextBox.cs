@@ -582,10 +582,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
         if (ZoomFactor != 1)
         {
-            //context.WithTransform(D2D_MATRIX_3X2_F.Scale(ZoomFactor, ZoomFactor), () =>
-            //{
-            host.Draw(context.DeviceContext.Object, rc, urc);
-            //});
+            context.WithTransform(D2D_MATRIX_3X2_F.Scale(ZoomFactor, ZoomFactor), () =>
+            {
+                host.Draw(context.DeviceContext.Object, rc, urc);
+            });
         }
         else
         {
