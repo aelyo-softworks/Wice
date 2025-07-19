@@ -76,7 +76,7 @@
         // called when an item visual (container) is being created
         DataItemVisualCreator = (ctx) =&gt;
         {
-            var tb = new TextBox { Height = 20 };
+            var tb = new TextBox { Height = parent.Window!.DipsToPixels(20) };
             ctx.DataVisual = tb;
         },
         // called when an item visual (container) is being bound to the data
@@ -102,7 +102,7 @@
     var visual = new Visual();
     parent.Children.Add(visual);
 
-    var cb = new CheckBox { Margin = D2D_RECT_F.Thickness(5) };
+    var cb = new CheckBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(5)) };
     parent.Children.Add(cb);
 
     var tb = new TextBox { HorizontalAlignment = Alignment.Center, Text = "Toggle Effect" };
@@ -141,7 +141,7 @@
 
         // use image size to determine visual size
         var size = im.GetSizeF();
-        visual.Width = 300;
+        visual.Width = parent.Window!.DipsToPixels(parent.Window!.DipsToPixels(300));
         visual.Height = visual.Width * size.height / size.width;
 
         // create a drawing (D2D1) surface
@@ -185,7 +185,7 @@
 
         // use image size to determine visual size
         var size = im.GetSizeF();
-        visual.Width = 300;
+        visual.Width = parent.Window!.DipsToPixels(300);
         visual.Height = visual.Width * size.height / size.width;
 
         // create a drawing (D2D1) surface
@@ -229,7 +229,7 @@
 
         // use image size to determine visual size
         var size = im.GetSizeF();
-        visual.Width = 300;
+        visual.Width = parent.Window!.DipsToPixels(300);
         visual.Height = visual.Width * size.height / size.width;
 
         // create a drawing (D2D1) surface
@@ -273,7 +273,7 @@
 
         // use image size to determine visual size
         var size = im.GetSizeF();
-        visual.Width = 300;
+        visual.Width = parent.Window!.DipsToPixels(300);
         visual.Height = visual.Width * size.height / size.width;
 
         // create a drawing (D2D1) surface
@@ -322,7 +322,7 @@
 
         // use image size to determine visual size
         var size = im.GetSizeF();
-        visual.Width = 300;
+        visual.Width = parent.Window!.DipsToPixels(300);
         visual.Height = visual.Width * size.height / size.width;
 
         // create a drawing (D2D1) surface
@@ -342,17 +342,17 @@
 }</sample>
   <sample namespace="Samples.Input.Button.ButtonDockSample">void Layout(Visual parent)
 {
-    var dock = new Dock { Height = 50, LastChildFill = false, RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Olive.ToColor()) };
+    var dock = new Dock { Height = parent.Window!.DipsToPixels(50), LastChildFill = false, RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Olive.ToColor()) };
     parent.Children.Add(dock);
 
-    var okButton = new Button { Margin = 10, MinWidth = 70 };
+    var okButton = new Button { Margin = parent.Window!.DipsToPixels(10), MinWidth = parent.Window!.DipsToPixels(70) };
     okButton.Click += (s, e) =&gt; MessageBox.Show(parent.Window!, "You pressed OK");
     okButton.Text.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER;
     okButton.Text.Text = "OK";
     Dock.SetDockType(okButton, DockType.Right);
     dock.Children.Add(okButton);
 
-    var cancelButton = new Button { Margin = 3, MinWidth = 70 };
+    var cancelButton = new Button { Margin = parent.Window!.DipsToPixels(3), MinWidth = parent.Window!.DipsToPixels(70) };
     cancelButton.Click += (s, e) =&gt; MessageBox.Show(parent.Window!, "You pressed Cancel");
     cancelButton.Text.Text = "Cancel";
     cancelButton.Icon.Text = MDL2GlyphResource.Cancel;
@@ -377,7 +377,7 @@
     stack.Children.Add(cb);
 
     // add results textbox
-    var results = new TextBox { Margin = D2D_RECT_F.Thickness(10, 0) };
+    var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0) };
     stack.Children.Add(results);
 
     cb.Click += (s, e) =&gt;
@@ -403,7 +403,7 @@
     stack.Children.Add(cb);
 
     // add results textbox
-    var results = new TextBox { Margin = D2D_RECT_F.Thickness(10, 0) };
+    var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0) };
     stack.Children.Add(results);
 
     cb.Click += (s, e) =&gt;
@@ -418,17 +418,18 @@
     parent.Children.Add(dock);
 
     // add radio buttons with texts
-    var rb0 = new RadioButton { Name = "button 0", Margin = D2D_RECT_F.Thickness(10, 0) };
+    var thickness = parent.Window!.DipsToPixels(10);
+    var rb0 = new RadioButton { Name = "button 0", Margin = D2D_RECT_F.Thickness(thickness, 0) };
     dock.Children.Add(rb0);
 
-    var rb1 = new RadioButton { Name = "button 1", Margin = D2D_RECT_F.Thickness(10, 0) };
+    var rb1 = new RadioButton { Name = "button 1", Margin = D2D_RECT_F.Thickness(thickness, 0) };
     dock.Children.Add(rb1);
 
-    var rb2 = new RadioButton { Name = "button 2", Margin = D2D_RECT_F.Thickness(10, 0) };
+    var rb2 = new RadioButton { Name = "button 2", Margin = D2D_RECT_F.Thickness(thickness, 0) };
     dock.Children.Add(rb2);
 
     // add results textbox
-    var results = new TextBox { Margin = D2D_RECT_F.Thickness(10, 0) };
+    var results = new TextBox { Margin = D2D_RECT_F.Thickness(thickness, 0) };
     dock.Children.Add(results);
 
     rb0.Click += onRadioButtonClick;
@@ -455,7 +456,7 @@
     stack.Children.Add(btn);
 
     // add results textbox
-    var results = new TextBox { Margin = D2D_RECT_F.Thickness(10, 0) };
+    var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0) };
     stack.Children.Add(results);
 
     btn.Click += (s, e) =&gt; { results.Text = "RadioButton is " + (btn.Value ? "Checked" : "Unchecked"); };
@@ -480,11 +481,11 @@
 
     // add "false" / unchecked set
     btn.AddState(new StateButtonState(false, (button, args, state) =&gt; new TextBox()));
-    btn.Width = 20;
-    btn.Height = 20;
+    btn.Width = parent.Window!.DipsToPixels(20);
+    btn.Height = parent.Window!.DipsToPixels(20);
 
     // add results textbox
-    var results = new TextBox { Margin = D2D_RECT_F.Thickness(10, 0), HorizontalAlignment = Alignment.Center, VerticalAlignment = Alignment.Center };
+    var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0), HorizontalAlignment = Alignment.Center, VerticalAlignment = Alignment.Center };
     stack.Children.Add(results);
 
     stack.Children.Add(btn);
@@ -497,7 +498,7 @@
     parent.Children.Add(stack);
 
     // add state button
-    var btn = new StateButton { Width = 100, Height = 100 };
+    var btn = new StateButton { Width = parent.Window!.DipsToPixels(100), Height = parent.Window!.DipsToPixels(100) };
     for (var i = 0; i &lt; 4; i++)
     {
         // second parameter defines the child visual, here just a textbox
@@ -519,7 +520,7 @@
     stack.Children.Add(btn);
 
     // add results textbox
-    var results = new TextBox { Margin = D2D_RECT_F.Thickness(10, 0), HorizontalAlignment = Alignment.Center, VerticalAlignment = Alignment.Center };
+    var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0), HorizontalAlignment = Alignment.Center, VerticalAlignment = Alignment.Center };
     stack.Children.Add(results);
 
     btn.Click += (s, e) =&gt; { results.Text = "StateButton value is " + btn.Value; };
@@ -534,13 +535,13 @@
     var list = new List&lt;ToggleSwitch&gt;();
     for (var i = 0; i &lt; 3; i++)
     {
-        var toggle = new ToggleSwitch { Margin = D2D_RECT_F.Thickness(10, 0), Name = "switch " + i };
+        var toggle = new ToggleSwitch { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0), Name = "switch " + i };
         dock.Children.Add(toggle);
         list.Add(toggle);
     }
 
     // add results textbox
-    var results = new TextBox { Margin = D2D_RECT_F.Thickness(10, 0) };
+    var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0) };
     dock.Children.Add(results);
 
     // hook click events
@@ -569,7 +570,7 @@
     // add results textbox
     var results = new TextBox
     {
-        Margin = D2D_RECT_F.Thickness(10, 0),
+        Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0),
         HorizontalAlignment = Alignment.Center,
         VerticalAlignment = Alignment.Center
     };
@@ -588,18 +589,24 @@ gma warning restore IDE0017 // Simplify object initialization
     parent.Children.Add(canvas);
 
     var rnd = new Random(Environment.TickCount);
+    var widthMin = parent.Window!.DipsToPixels(10);
+    var widthMax = parent.Window.DipsToPixels(200);
+    var heightMin = parent.Window!.DipsToPixels(10);
+    var heightMax = parent.Window.DipsToPixels(150);
+    var leftMax = parent.Window.DipsToPixels(200);
+    var topMax = parent.Window.DipsToPixels(100);
     for (var i = 0; i &lt; 10; i++)
     {
         var box = new Border
         {
             // use composition brush
             RenderBrush = Compositor!.CreateColorBrush(new D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)).ToColor()),
-            Width = rnd.Next(10, 200),
-            Height = rnd.Next(10, 150)
+            Width = rnd.Next(widthMin, widthMax),
+            Height = rnd.Next(heightMin, heightMax)
         };
         canvas.Children.Add(box);
-        Canvas.SetLeft(box, rnd.Next(0, 200));
-        Canvas.SetTop(box, rnd.Next(0, 100));
+        Canvas.SetLeft(box, rnd.Next(0, leftMax));
+        Canvas.SetTop(box, rnd.Next(0, topMax));
 
         // if you hover the mouse on a box, it's color will change
         box.HoverRenderBrush = Compositor.CreateColorBrush(new D3DCOLORVALUE(rnd.Next(0, int.MaxValue), rnd.NextByte(30)).ToColor());
@@ -609,44 +616,38 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     var border = new Border
     {
-        BorderThickness = 2.5f,
-        CornerRadius = new Vector2(5),
+        BorderThickness = parent.Window!.DipsToPixels(2.5f),
+        CornerRadius = new Vector2(parent.Window!.DipsToPixels(6)),
         BorderBrush = new SolidColorBrush(D3DCOLORVALUE.YellowGreen) // well-known colors
     };
     parent.Children.Add(border);
 
-    var textBox = new TextBox
-    {
-        Padding = 10
-    };
+    var textBox = new TextBox { Padding = parent.Window!.DipsToPixels(10) };
     border.Children.Add(textBox);
     textBox.Text = "Text inside a round border";
-    textBox.FontSize = 18;
+    textBox.FontSize = parent.Window!.DipsToPixels(18);
 }</sample>
   <sample namespace="Samples.Layout.Border.SimpleBorderSample">void Layout(Visual parent)
 {
     var border = new Border
     {
-        BorderThickness = 2,
+        BorderThickness = parent.Window!.DipsToPixels(2),
         HorizontalAlignment = Alignment.Near, // force border to use child's size (default is Stretch)
         BorderBrush = new SolidColorBrush(new D3DCOLORVALUE(0xFFFFD700)) // by-value color
     };
     parent.Children.Add(border);
 
-    var textBox = new TextBox
-    {
-        Padding = 10
-    };
+    var textBox = new TextBox { Padding = parent.Window!.DipsToPixels(10) };
     border.Children.Add(textBox);
     textBox.Text = "Text inside a border";
-    textBox.FontSize = 18;
+    textBox.FontSize = parent.Window!.DipsToPixels(18);
 }</sample>
   <sample namespace="Samples.Layout.Canvas.BoundsCanvasSample">void Layout(Visual parent)
 {
     var canvas = new Canvas
     {
-        Width = 120,
-        Height = 120,
+        Width = parent.Window!.DipsToPixels(120),
+        Height = parent.Window!.DipsToPixels(120),
         RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor())
     };
     parent.Children.Add(canvas);
@@ -654,8 +655,8 @@ gma warning restore IDE0017 // Simplify object initialization
     var b0 = new Border
     {
         RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()),
-        Width = 40,
-        Height = 40
+        Width = parent.Window!.DipsToPixels(40),
+        Height = parent.Window!.DipsToPixels(40)
     };
     Canvas.SetLeft(b0, 0);
     Canvas.SetTop(b0, 0);
@@ -664,8 +665,8 @@ gma warning restore IDE0017 // Simplify object initialization
     var b1 = new Border
     {
         RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor()),
-        Width = 40,
-        Height = 40
+        Width = parent.Window!.DipsToPixels(40),
+        Height = parent.Window!.DipsToPixels(40)
     };
     Canvas.SetLeft(b1, 0);
     Canvas.SetBottom(b1, 0);
@@ -674,8 +675,8 @@ gma warning restore IDE0017 // Simplify object initialization
     var b2 = new Border
     {
         RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor()),
-        Width = 40,
-        Height = 40
+        Width = parent.Window!.DipsToPixels(40),
+        Height = parent.Window!.DipsToPixels(40)
     };
     Canvas.SetRight(b2, 0);
     Canvas.SetTop(b2, 0);
@@ -684,8 +685,8 @@ gma warning restore IDE0017 // Simplify object initialization
     var b3 = new Border
     {
         RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor()),
-        Width = 40,
-        Height = 40
+        Width = parent.Window!.DipsToPixels(40),
+        Height = parent.Window!.DipsToPixels(40)
     };
     Canvas.SetRight(b3, 0);
     Canvas.SetBottom(b3, 0);
@@ -745,8 +746,8 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     var dock = new Dock
     {
-        Width = 120,
-        Height = 120,
+        Width = parent.Window!.DipsToPixels(120),
+        Height = parent.Window!.DipsToPixels(120),
         RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Gray.ToColor())
     };
     parent.Children.Add(dock);
@@ -754,44 +755,44 @@ gma warning restore IDE0017 // Simplify object initialization
     var b0 = new Border();
     Dock.SetDockType(b0, DockType.Top);
     b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
-    b0.Width = 40;
-    b0.Height = 40;
+    b0.Width = parent.Window!.DipsToPixels(40);
+    b0.Height = parent.Window!.DipsToPixels(40);
     dock.Children.Add(b0);
 
     var b1 = new Border();
     Dock.SetDockType(b1, DockType.Left);
     b1.VerticalAlignment = Alignment.Near;
     b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
-    b1.Width = 40;
-    b1.Height = 40;
+    b1.Width = parent.Window!.DipsToPixels(40);
+    b1.Height = parent.Window!.DipsToPixels(40);
     dock.Children.Add(b1);
 
     var b2 = new Border();
     Dock.SetDockType(b2, DockType.Right);
     b2.VerticalAlignment = Alignment.Near;
     b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
-    b2.Width = 40;
-    b2.Height = 40;
+    b2.Width = parent.Window!.DipsToPixels(40);
+    b2.Height = parent.Window!.DipsToPixels(40);
     dock.Children.Add(b2);
 
     var b3 = new Border();
     Dock.SetDockType(b3, DockType.Bottom);
     b3.VerticalAlignment = Alignment.Far;
     b3.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
-    b3.Width = 40;
-    b3.Height = 40;
+    b3.Width = parent.Window!.DipsToPixels(40);
+    b3.Height = parent.Window!.DipsToPixels(40);
     dock.Children.Add(b3);
 }</sample>
   <sample namespace="Samples.Layout.DockSplitter.SimpleDockSplitterSample">void Layout(Visual parent)
 {
     var dock = new Dock();
     parent.Children.Add(dock);
-    dock.Height = 200;
+    dock.Height = parent.Window!.DipsToPixels(200);
 
     var b1 = new Border();
     dock.Children.Add(b1);
     Dock.SetDockType(b1, DockType.Top);
-    b1.MinHeight = 20;
+    b1.MinHeight = parent.Window!.DipsToPixels(20);
     b1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
 
     var splitter1 = new DockSplitter();
@@ -801,7 +802,7 @@ gma warning restore IDE0017 // Simplify object initialization
 
     var b2 = new Border();
     dock.Children.Add(b2);
-    b2.MinHeight = 20;
+    b2.MinHeight = parent.Window!.DipsToPixels(20);
     Dock.SetDockType(b2, DockType.Bottom);
     b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
 
@@ -812,7 +813,7 @@ gma warning restore IDE0017 // Simplify object initialization
 
     var b3 = new Border();
     dock.Children.Add(b3);
-    b3.MinWidth = 20;
+    b3.MinWidth = parent.Window!.DipsToPixels(20);
     Dock.SetDockType(b3, DockType.Left);
     b3.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
 
@@ -823,7 +824,7 @@ gma warning restore IDE0017 // Simplify object initialization
 
     var b4 = new Border();
     dock.Children.Add(b4);
-    b4.MinWidth = 20;
+    b4.MinWidth = parent.Window!.DipsToPixels(20);
     Dock.SetDockType(b4, DockType.Right);
     b4.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
 
@@ -835,16 +836,16 @@ gma warning restore IDE0017 // Simplify object initialization
     var b5 = new Border();
     dock.Children.Add(b5);
     Dock.SetDockType(b5, DockType.Left);
-    b5.MinWidth = 10;
-    b5.MinHeight = 10;
+    b5.MinWidth = parent.Window!.DipsToPixels(10);
+    b5.MinHeight = parent.Window!.DipsToPixels(10);
     b5.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Violet.ToColor());
 }</sample>
   <sample namespace="Samples.Layout.Grid.SimpleGridSample">void Layout(Visual parent)
 {
     var grid = new Grid
     {
-        Height = 100,
-        Width = 100
+        Height = parent.Window!.DipsToPixels(100),
+        Width = parent.Window!.DipsToPixels(1000)
     };
     parent.Children.Add(grid);
 
@@ -856,12 +857,12 @@ gma warning restore IDE0017 // Simplify object initialization
 
     var cell0 = new Border();
     grid.Children.Add(cell0);
-    cell0.Margin = 10;
+    cell0.Margin = parent.Window!.DipsToPixels(10);
     cell0.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Purple.ToColor());
 
     var cell1 = new Border();
     grid.Children.Add(cell1);
-    cell1.Margin = 10;
+    cell1.Margin = parent.Window!.DipsToPixels(10);
     cell1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
 
     Grid.SetColumn(cell1, 2);
@@ -875,7 +876,7 @@ gma warning restore IDE0017 // Simplify object initialization
     // create a 300 pixels height scroll viewer
     var scrollViewer = new ScrollViewer();
     parent.Children.Add(scrollViewer);
-    scrollViewer.Height = 300;
+    scrollViewer.Height = parent.Window!.DipsToPixels(300);
     scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
 
     // add an image
@@ -894,21 +895,21 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     var stack = new Stack();
     parent.Children.Add(stack);
-    stack.Width = 150;
-    stack.Width = 150;
+    stack.Width = parent.Window!.DipsToPixels(150);
+    stack.Width = parent.Window!.DipsToPixels(150);
     stack.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
 
     var b0 = new Border();
     stack.Children.Add(b0);
     b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
-    b0.Width = 100;
-    b0.Height = 100;
+    b0.Width = parent.Window!.DipsToPixels(100);
+    b0.Height = parent.Window!.DipsToPixels(100);
 
     var b1 = new Border();
     stack.Children.Add(b1);
     b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
-    b1.Width = 50;
-    b1.Height = 50;
+    b1.Width = parent.Window!.DipsToPixels(50);
+    b1.Height = parent.Window!.DipsToPixels(50);
 }</sample>
   <sample namespace="Samples.Layout.Stack.SimpleHorizontalStackSample">void Layout(Visual parent)
 {
@@ -920,37 +921,37 @@ gma warning restore IDE0017 // Simplify object initialization
     var b0 = new Border();
     stack.Children.Add(b0);
     b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
-    b0.Width = 100;
-    b0.Height = 100;
+    b0.Width = parent.Window!.DipsToPixels(100);
+    b0.Height = parent.Window!.DipsToPixels(100);
 
     var b1 = new Border();
     stack.Children.Add(b1);
     b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
-    b1.Width = 50;
-    b1.Height = 50;
+    b1.Width = parent.Window!.DipsToPixels(50);
+    b1.Height = parent.Window!.DipsToPixels(50);
 }</sample>
   <sample namespace="Samples.Layout.Stack.SimpleVerticalStackSample">void Layout(Visual parent)
 {
-    var stack = new Stack { Spacing = new D2D_SIZE_F(10, 10) };
+    var stack = new Stack { Spacing = new D2D_SIZE_F(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10)) };
     parent.Children.Add(stack);
     stack.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
 
     var b0 = new Border();
     stack.Children.Add(b0);
     b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
-    b0.Width = 100;
-    b0.Height = 100;
+    b0.Width = parent.Window!.DipsToPixels(100);
+    b0.Height = parent.Window!.DipsToPixels(100);
 
     var b1 = new Border();
     stack.Children.Add(b1);
     b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
-    b1.Width = 50;
-    b1.Height = 50;
+    b1.Width = parent.Window!.DipsToPixels(50);
+    b1.Height = parent.Window!.DipsToPixels(50);
 }</sample>
   <sample namespace="Samples.Layout.Tabs.TabsSample">void Layout(Visual parent)
 {
     var tabs = new Tabs();
-    tabs.PagesHeader.Spacing = new D2D_SIZE_F(5, 5);
+    tabs.PagesHeader.Spacing = new D2D_SIZE_F(parent.Window!.DipsToPixels(5), parent.Window!.DipsToPixels(5));
     tabs.VerticalAlignment = Alignment.Near;
     parent.Children.Add(tabs);
 
@@ -998,7 +999,7 @@ gma warning restore IDE0017 // Simplify object initialization
 
         page.Content = new TextBox
         {
-            Margin = D2D_RECT_F.Thickness(10, 50, 10, 50),
+            Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(50), parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(50)),
             Text = "This is the content of page #" + index,
         };
 
@@ -1010,8 +1011,8 @@ gma warning restore IDE0017 // Simplify object initialization
     var grid = new UniformGrid { BackgroundColor = D3DCOLORVALUE.Transparent, Rows = 10 };
     grid.Columns = grid.Rows;
     parent.Children.Add(grid);
-    grid.Width = 300;
-    grid.Height = 300;
+    grid.Width = parent.Window!.DipsToPixels(300);
+    grid.Height = parent.Window!.DipsToPixels(300);
 
     for (var i = 0; i &lt; grid.Rows; i++)
     {
@@ -1022,7 +1023,7 @@ gma warning restore IDE0017 // Simplify object initialization
             var color = new D3DCOLORVALUE(0, i / (float)grid.Rows, j / (float)grid.Columns);
             shape.RenderBrush = Compositor!.CreateColorBrush(color.ToColor());
             shape.Shape!.StrokeBrush = Compositor.CreateColorBrush(color.ToColor());
-            shape.Shape.StrokeThickness = 0.5f;
+            shape.Shape.StrokeThickness = parent.Window!.DipsToPixels(0.5f);
         }
     }
 }</sample>
@@ -1032,33 +1033,33 @@ gma warning restore IDE0017 // Simplify object initialization
     parent.Children.Add(grid);
     grid.Columns = 2;
     grid.Rows = 2;
-    grid.Width = 300;
-    grid.Height = 300;
+    grid.Width = parent.Window!.DipsToPixels(300);
+    grid.Height = parent.Window!.DipsToPixels(300);
     grid.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
 
     var b0 = new Border();
     grid.Children.Add(b0);
     b0.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
-    b0.Width = 100;
-    b0.Height = 100;
+    b0.Width = parent.Window!.DipsToPixels(100);
+    b0.Height = parent.Window!.DipsToPixels(100);
 
     var b1 = new Border();
     grid.Children.Add(b1);
     b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
-    b1.Width = 50;
-    b1.Height = 50;
+    b1.Width = parent.Window!.DipsToPixels(50);
+    b1.Height = parent.Window!.DipsToPixels(50);
 
     var b2 = new Border();
     grid.Children.Add(b2);
     b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
-    b2.Width = 50;
-    b2.Height = 50;
+    b2.Width = parent.Window!.DipsToPixels(50);
+    b2.Height = parent.Window!.DipsToPixels(50);
 
     var b3 = new Border();
     grid.Children.Add(b3);
     b3.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
-    b3.Width = 100;
-    b3.Height = 100;
+    b3.Width = parent.Window!.DipsToPixels(100);
+    b3.Height = parent.Window!.DipsToPixels(100);
 }</sample>
   <sample namespace="Samples.Layout.Wrap.SimpleWrapSample">void Layout(Visual parent)
 {
@@ -1067,22 +1068,24 @@ gma warning restore IDE0017 // Simplify object initialization
 
     var rnd = new Random(Environment.TickCount);
     var max = 100;
+    var rndMin = parent.Window!.DipsToPixels(10);
+    var rndMax = parent.Window.DipsToPixels(60);
     for (var i = 0; i &lt; max; i++)
     {
         var border = new Border();
         wrap.Children.Add(border);
         var color = D3DCOLORVALUE.FromArgb(rnd.NextByte(), rnd.NextByte(), rnd.NextByte());
         border.RenderBrush = Compositor!.CreateColorBrush(color.ToColor());
-        border.Width = rnd.Next(10, 60);
-        border.Height = rnd.Next(10, 60);
+        border.Width = rnd.Next(rndMin, rndMax);
+        border.Height = rnd.Next(rndMin, rndMax);
     }
 }</sample>
   <sample namespace="Samples.Media.Brush.CompositionBrushSample">void Layout(Visual parent)
 {
     var box = new Border();
     parent.Children.Add(box);
-    box.Width = 100;
-    box.Height = 100;
+    box.Width = parent.Window!.DipsToPixels(100);
+    box.Height = parent.Window!.DipsToPixels(100);
 
     // to create a composition brush, the visual must be attached to composition
     // to be able to use the Compositor instance corresponding to its parent Window.
@@ -1093,7 +1096,7 @@ gma warning restore IDE0017 // Simplify object initialization
     var tb = new TextBox();
     parent.Children.Add(tb);
     tb.HorizontalAlignment = Alignment.Center;
-    tb.Padding = 5;
+    tb.Padding = parent.Window!.DipsToPixels(5);
     tb.Text = "This text is white";
 
     // D3DCOLORVALUE is the base DirectX color using single/float (0 =&gt; 1) ARGB.
@@ -1112,8 +1115,8 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     var img = new Image();
     parent.Children.Add(img);
-    img.Width = 400;
-    img.Margin = 10;
+    img.Width = parent.Window!.DipsToPixels(400);
+    img.Margin = parent.Window!.DipsToPixels(10);
     img.InterpolationMode = D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC;
 
     // load from .NET embedded resource
@@ -1126,14 +1129,15 @@ gma warning restore IDE0017 // Simplify object initialization
     {
         HorizontalAlignment = Alignment.Center
     };
-    pdfView.Height = 600;
-    pdfView.Margin = 10;
+    pdfView.Height = parent.Window!.DipsToPixels(600);
+    pdfView.Margin = parent.Window!.DipsToPixels(10);
     pdfView.SourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Samples.Gallery.Resources.sample.pdf");
 
     var buttons = new Stack { Orientation = Orientation.Horizontal, HorizontalAlignment = Alignment.Stretch };
     dock.Children.Add(buttons);
 
-    var load = new Button { HorizontalAlignment = Alignment.Near, Margin = D2D_RECT_F.Thickness(5) };
+    var thickness = parent.Window!.DipsToPixels(5);
+    var load = new Button { HorizontalAlignment = Alignment.Near, Margin = thickness };
     load.Text.Text = "Load PDF File...";
     load.Click += async (s, e) =&gt;
     {
@@ -1149,17 +1153,17 @@ gma warning restore IDE0017 // Simplify object initialization
     };
     buttons.Children.Add(load);
 
-    var next = new Button { HorizontalAlignment = Alignment.Near, Margin = D2D_RECT_F.Thickness(5) };
+    var next = new Button { HorizontalAlignment = Alignment.Near, Margin = thickness };
     next.Text.Text = "Next Page";
     next.Click += (s, e) =&gt; pdfView.CurrentPage += 1;
     buttons.Children.Add(next);
 
-    var prev = new Button { HorizontalAlignment = Alignment.Near, Margin = D2D_RECT_F.Thickness(5) };
+    var prev = new Button { HorizontalAlignment = Alignment.Near, Margin = thickness };
     prev.Text.Text = "Previous Page";
     prev.Click += (s, e) =&gt; pdfView.CurrentPage += -1;
     buttons.Children.Add(prev);
 
-    var pagesCount = new TextBox { VerticalAlignment = Alignment.Center, Margin = D2D_RECT_F.Thickness(5) };
+    var pagesCount = new TextBox { VerticalAlignment = Alignment.Center, Margin = thickness };
     buttons.Children.Add(pagesCount);
 
     dock.Children.Add(pdfView);
@@ -1172,11 +1176,11 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     var ellipse = new Ellipse
     {
-        Width = 300,
-        Height = 100,
-        Radius = new Vector2(150, 50),
+        Width = parent.Window!.DipsToPixels(300),
+        Height = parent.Window!.DipsToPixels(100),
+        Radius = new Vector2(parent.Window!.DipsToPixels(150), parent.Window!.DipsToPixels(50)),
         StrokeBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor()),
-        StrokeThickness = 2,
+        StrokeThickness = parent.Window!.DipsToPixels(2),
         StrokeDashArray = [1, 2, 3]
     };
     parent.Children.Add(ellipse);
@@ -1185,10 +1189,10 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     var line1 = new Line
     {
-        Width = 200,
-        Height = 100,
+        Width = parent.Window!.DipsToPixels(200),
+        Height = parent.Window!.DipsToPixels(100),
         StrokeBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Maroon.ToColor()),
-        StrokeThickness = 1
+        StrokeThickness = parent.Window!.DipsToPixels(1)
     };
     parent.Children.Add(line1);
     line1.Arranged += (s, e) =&gt;
@@ -1198,10 +1202,10 @@ gma warning restore IDE0017 // Simplify object initialization
 
     var line2 = new Line
     {
-        Width = 200,
-        Height = 100,
+        Width = parent.Window!.DipsToPixels(200),
+        Height = parent.Window!.DipsToPixels(100),
         StrokeBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.BlueViolet.ToColor()),
-        StrokeThickness = 4
+        StrokeThickness = parent.Window!.DipsToPixels(4)
     };
     parent.Children.Add(line2);
     line2.Arranged += (s, e) =&gt;
@@ -1216,10 +1220,10 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     var rectangle = new Rectangle
     {
-        Width = 200,
-        Height = 100,
+        Width = parent.Window!.DipsToPixels(200),
+        Height = parent.Window!.DipsToPixels(100),
         StrokeBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()),
-        StrokeThickness = 10
+        StrokeThickness = parent.Window!.DipsToPixels(10)
     };
     parent.Children.Add(rectangle);
 }</sample>
@@ -1227,11 +1231,11 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     var rectangle = new RoundedRectangle
     {
-        CornerRadius = new Vector2(50),
-        Width = 100,
-        Height = 100,
+        CornerRadius = new Vector2(parent.Window!.DipsToPixels(50)),
+        Width = parent.Window!.DipsToPixels(100),
+        Height = parent.Window!.DipsToPixels(100),
         StrokeBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor()),
-        StrokeThickness = 20
+        StrokeThickness = parent.Window!.DipsToPixels(20)
     };
     parent.Children.Add(rectangle);
 }</sample>
@@ -1239,9 +1243,9 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     var img = new SvgImage();
     parent.Children.Add(img);
-    img.Width = 400;
-    img.Height = 400;
-    img.Margin = 10;
+    img.Width = parent.Window!.DipsToPixels(400);
+    img.Height = parent.Window!.DipsToPixels(400);
+    img.Margin = parent.Window!.DipsToPixels(10);
 
     // load from .NET embedded resource
     img.Document = new AssemblyResourceStreamer(Assembly.GetExecutingAssembly(), "Samples.Gallery.Resources.tiger.svg");
@@ -1250,9 +1254,9 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     var webView = new WebView();
     parent.Children.Add(webView);
-    webView.Width = 900;
-    webView.Height = 500;
-    webView.Margin = 10;
+    webView.Width = parent.Window!.DipsToPixels(900);
+    webView.Height = parent.Window!.DipsToPixels(500);
+    webView.Margin = parent.Window!.DipsToPixels(10);
     webView.SourceUri = "https://www.bing.com";
 }</sample>
   <sample namespace="Samples.Misc.Application.ApplicationSample">class Program
@@ -1287,13 +1291,18 @@ gma warning restore IDE0017 // Simplify object initialization
             var win = new Window
             {
                 Title = "Window in another application (Thread " + Environment.CurrentManagedThreadId + ")",
-                WindowsFrameMode = WindowsFrameMode.None
+                WindowsFrameMode = WindowsFrameMode.None,
+                CreateOnCursorMonitor = true
             };
             win.Children.Add(new TitleBar { IsMain = true });
-            win.ResizeClient(400, 400);
+            win.ResizeClient(parent.Window!.DipsToPixels(400), parent.Window!.DipsToPixels(400));
             win.Center();
             win.Show();
             dw.Run();
+
+            // put this here to ensure .NET will not stay blocked on the thread...
+            // if you put it before creating the app, the app will be killed if the main thread exits
+            Thread.CurrentThread.IsBackground = true;
         });
     };
     parent.Children.Add(btn);
@@ -1307,7 +1316,7 @@ gma warning restore IDE0017 // Simplify object initialization
     stack.Children.Add(btn);
 
 
-    var target = new TextBox { VerticalAlignment = Alignment.Near, Padding = 10 };
+    var target = new TextBox { VerticalAlignment = Alignment.Near, Padding = parent.Window!.DipsToPixels(10) };
     info.Children.Add(target);
 
     btn.MouseButtonDown += (s, e) =&gt;
@@ -1352,6 +1361,8 @@ gma warning restore IDE0017 // Simplify object initialization
         Text = defaultText,
     };
     box.Child = tb;
+
+    var padding = parent.Window!.DipsToPixels(10);
     box.DragDrop += (s, e) =&gt;
     {
         switch (e.Type)
@@ -1381,7 +1392,7 @@ gma warning restore IDE0017 // Simplify object initialization
 {
     for (var i = 0; i &lt; 4; i++)
     {
-        var btn = new Button { Margin = 5 };
+        var btn = new Button { Margin = parent.Window!.DipsToPixels(5) };
         btn.FocusedChanged += (s, e) =&gt; { btn.Text.Text = e.Value ? "Focused" : "Unfocused"; };
         btn.Text.Text = "Unfocused";
         parent.Children.Add(btn);
@@ -1401,15 +1412,16 @@ gma warning restore IDE0017 // Simplify object initialization
         var window = new Window
         {
             // we draw our own titlebar using Wice
-            WindowsFrameMode = WindowsFrameMode.None
+            WindowsFrameMode = WindowsFrameMode.None,
+            CreateOnCursorMonitor = true,
         };
+        window.ResizeClient(parent.Window!.DipsToPixels(400), parent.Window!.DipsToPixels(400));
         window.Center();
         window.Show();
 
         // add a Wice titlebar
         var titleBar = new TitleBar { IsMain = true };
         window.Children.Add(titleBar);
-        window.ResizeClient(400, 400);
     };
 
     btn.Text.Text = "Open new window";
@@ -1436,12 +1448,19 @@ gma warning restore IDE0017 // Simplify object initialization
 
         var tb = new TextBox
         {
-            Margin = 4,
             Text = text,
             ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White),
-            FontSize = 25
         };
         tt.Content.Children.Add(tb);
+        updateStyle();
+
+        void updateStyle()
+        {
+            tb.Margin = tt.Window!.DipsToPixels(4);
+            tb.FontSize = tt.Window!.DipsToPixels(25);
+        }
+
+        tt.ThemeDpiEvent += (s, e) =&gt; updateStyle();
     }
 }</sample>
   <sample namespace="Samples.Misc.ToolTip.ToolTipSample">void Layout(Visual parent)
@@ -1460,11 +1479,11 @@ gma warning restore IDE0017 // Simplify object initialization
     parent.Children.Add(rtb);
     Dock.SetDockType(rtb, DockType.Top);
 
-    rtb.MaxWidth = 500;
-    rtb.MaxHeight = 400;
+    rtb.MaxWidth = parent.Window!.DipsToPixels(500);
+    rtb.MaxHeight = parent.Window!.DipsToPixels(400);
     rtb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
-    rtb.Padding = D2D_RECT_F.Thickness(10);
-    rtb.Margin = D2D_RECT_F.Thickness(10);
+    rtb.Padding = parent.Window!.DipsToPixels(10);
+    rtb.Margin = parent.Window!.DipsToPixels(10);
 
     // Document is a COM IDispatch object. Cf https://docs.microsoft.com/en-us/windows/win32/api/tom/nf-tom-itextdocument-open
 
@@ -1485,8 +1504,8 @@ gma warning restore IDE0017 // Simplify object initialization
     Dock.SetDockType(rtb, DockType.Top);
 
     rtb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
-    rtb.Padding = D2D_RECT_F.Thickness(10);
-    rtb.Margin = D2D_RECT_F.Thickness(10);
+    rtb.Padding = parent.Window!.DipsToPixels(10);
+    rtb.Margin = parent.Window!.DipsToPixels(10);
 
     rtb.RtfText = @"{\rtf1\ansi\deff0
             {\coloRtbl;\red0\green0\blue0;\red255\green0\blue0;}
@@ -1500,27 +1519,25 @@ gma warning restore IDE0017 // Simplify object initialization
   <sample namespace="Samples.Text.RichTextBox.SimpleRichTextBoxSample">void Layout(Visual parent)
 {
     var rtb = new RichTextBox();
+    rtb.FontSize = parent.Window!.DipsToPixels(10);
     parent.Children.Add(rtb);
     Dock.SetDockType(rtb, DockType.Top);
 
     rtb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.GreenYellow.ToColor());
-    rtb.Padding = D2D_RECT_F.Thickness(10);
-    rtb.Margin = D2D_RECT_F.Thickness(10);
+    rtb.Padding = parent.Window!.DipsToPixels(10);
+    rtb.Margin = parent.Window!.DipsToPixels(10);
     rtb.Text = "Hello World";
 }</sample>
   <sample namespace="Samples.Text.TextBox.ColorFontTextBoxSample">void Layout(Visual parent)
 {
-    var tb = new TextBox
-    {
-        IsFocusable = true
-    };
+    var tb = new TextBox { IsFocusable = true };
     parent.Children.Add(tb);
     Dock.SetDockType(tb, DockType.Top);
 
     tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Yellow);
     tb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
-    tb.Padding = D2D_RECT_F.Thickness(10);
-    tb.Margin = D2D_RECT_F.Thickness(10);
+    tb.Padding = parent.Window!.DipsToPixels(10);
+    tb.Margin = parent.Window!.DipsToPixels(10);
 
     // note there can be difference between the source code (created with Windows' emoji editor) and the Wice's rendered text (from DirectWrite)
     tb.Text = "These are colored emoji: 😝👸🎅👨‍👩‍👧‍👦";
@@ -1534,8 +1551,8 @@ gma warning restore IDE0017 // Simplify object initialization
 
     tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Green);
     tb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightSalmon.ToColor());
-    tb.Padding = D2D_RECT_F.Thickness(10);
-    tb.Margin = D2D_RECT_F.Thickness(10);
+    tb.Padding = parent.Window!.DipsToPixels(10);
+    tb.Margin = parent.Window!.DipsToPixels(10);
     tb.Text = "Click me and edit!";
 }</sample>
   <sample namespace="Samples.Text.TextBox.FormattedTextBoxSample">void Layout(Visual parent)
@@ -1543,17 +1560,17 @@ gma warning restore IDE0017 // Simplify object initialization
     var tb = new TextBox
     {
         FontFamilyName = "Gabriola",
-        FontSize = 72,
+        FontSize = parent.Window!.DipsToPixels(72),
         Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
         ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
-        Padding = D2D_RECT_F.Thickness(10, 10, 10, 50),
+        Padding = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(50)),
         ClipText = false,
         Text = "Hello World using   DirectWrite!"
     };
     Dock.SetDockType(tb, DockType.Top);
 
     // format the "DirectWrite" substring to be of font size 100.
-    tb.SetFontSize(100, new DWRITE_TEXT_RANGE(
+    tb.SetFontSize(parent.Window!.DipsToPixels(100), new DWRITE_TEXT_RANGE(
         20,     // Index where "DirectWrite" appears.
         6       // Length of the substring "Direct" in "DirectWrite".
     ));
@@ -1589,13 +1606,13 @@ gma warning restore IDE0017 // Simplify object initialization
 
     tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Red);
     tb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.GreenYellow.ToColor());
-    tb.Padding = D2D_RECT_F.Thickness(10);
-    tb.Margin = D2D_RECT_F.Thickness(10);
+    tb.Padding = parent.Window!.DipsToPixels(10);
+    tb.Margin = parent.Window!.DipsToPixels(10);
     tb.Text = "Hello World";
 }</sample>
   <sample namespace="Samples.Text.TextBox.UnicodeTextBoxSample">void Layout(Visual parent)
 {
-    var sv = new ScrollViewer { Height = 200, Width = 500 };
+    var sv = new ScrollViewer { Height = parent.Window!.DipsToPixels(200), Width = parent.Window!.DipsToPixels(500) };
     parent.Children.Add(sv);
     Dock.SetDockType(sv, DockType.Top);
 
@@ -1603,8 +1620,8 @@ gma warning restore IDE0017 // Simplify object initialization
     sv.Viewer.Child = tb;
     tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Coral);
     tb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.CornflowerBlue.ToColor());
-    tb.Padding = D2D_RECT_F.Thickness(10);
-    tb.Margin = D2D_RECT_F.Thickness(10);
+    tb.Padding = parent.Window!.DipsToPixels(10);
+    tb.Margin = parent.Window!.DipsToPixels(10);
 
     tb.Text = getLorem();
 
@@ -1626,12 +1643,12 @@ gma warning restore IDE0017 // Simplify object initialization
 
         // a dialog box is a children of a Window, it's not a standalone window
         parent.Window!.Children.Add(dlg);
-        dlg.Width = 300;
-        dlg.Height = 300;
+        dlg.Width = parent.Window!.DipsToPixels(300);
+        dlg.Height = dlg.Width;
         dlg.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
 
         // add content to the dialog
-        dlg.DialogContent.Children.Add(new Border { Width = 200, Height = 100 });
+        dlg.DialogContent.Children.Add(new Border { Width = parent.Window!.DipsToPixels(200), Height = parent.Window!.DipsToPixels(100) });
 
         // add standard (localized) buttons
         dlg.AddCancelButton();
@@ -1650,8 +1667,8 @@ gma warning restore IDE0017 // Simplify object initialization
 
         // a dialog is a children of a Window, it's not a standalone window
         parent.Window!.Children.Add(dlg);
-        dlg.Width = 300;
-        dlg.Height = 300;
+        dlg.Width = parent.Window!.DipsToPixels(300);
+        dlg.Height = dlg.Width;
         dlg.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
 
         var tb = new TextBox { Text = "Press ESC to close" };
@@ -1674,9 +1691,9 @@ gma warning restore IDE0017 // Simplify object initialization
     btn.Text.Text = "Open a new Window...";
     btn.Click += (s, e) =&gt;
     {
-        var window = new Window { Title = "Hello World" };
+        var window = new Window { Title = "Hello World", CreateOnCursorMonitor = true };
         window.RenderBrush = window.Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
-        window.ResizeClient(400, 400);
+        window.ResizeClient(parent.Window!.DipsToPixels(400), parent.Window.DipsToPixels(400));
         window.Center();
         window.Show();
 

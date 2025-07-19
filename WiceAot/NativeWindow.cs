@@ -582,7 +582,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
 
         if (ptMouse.y >= rcWindow.top && ptMouse.y < rcWindow.top + extend.top)
         {
-            fOnResizeBorder = (ptMouse.y < (rcWindow.top - rcFrame.top));
+            fOnResizeBorder = ptMouse.y < (rcWindow.top - rcFrame.top);
             uRow = 0;
         }
         else if (ptMouse.y < rcWindow.bottom && ptMouse.y >= rcWindow.bottom - extend.bottom)

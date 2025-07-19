@@ -511,7 +511,7 @@ public partial class Grid : Visual
                 // we may have max = 0 here (star cols w/o children)
                 foreach (var col in starCols)
                 {
-                    col.DesiredSize = starsForMax != 0 ? (max * col.Stars) / starsForMax : 0;
+                    col.DesiredSize = starsForMax != 0 ? max * col.Stars / starsForMax : 0;
                 }
             }
         }
@@ -560,7 +560,7 @@ public partial class Grid : Visual
                 // we may have max = 0 here (star rows w/o children)
                 foreach (var row in starRows)
                 {
-                    row.DesiredSize = starsForMax != 0 ? (max * row.Stars) / starsForMax : 0;
+                    row.DesiredSize = starsForMax != 0 ? max * row.Stars / starsForMax : 0;
                 }
             }
         }
@@ -575,7 +575,6 @@ public partial class Grid : Visual
         }
 
         var finalSize = finalRect.Size;
-        //Application.Trace("this: " + this + " final: " + finalSize);
         var padding = Padding;
         var position = 0f;
 
@@ -597,7 +596,6 @@ public partial class Grid : Visual
                 position += col.DesiredSize!.Value;
                 position += padding.right;
             }
-            //Application.Trace(" col: " + col);
         }
 
         position = 0f;
@@ -615,7 +613,6 @@ public partial class Grid : Visual
                 position += row.DesiredSize!.Value;
                 position += padding.bottom;
             }
-            //Application.Trace(" row: " + row);
         }
 
         var children = VisibleChildren.ToArray();
@@ -681,7 +678,6 @@ public partial class Grid : Visual
 
                 // integralize child
                 rect = D2D_RECT_F.Sized(rect.left.Floor(), rect.top.Floor(), rect.Width.Ceiling(), rect.Height.Ceiling());
-                //Application.Trace(" child: " + child + " gs: " + gs + " rect: " + rect);
                 child.Arrange(rect);
             }
             else

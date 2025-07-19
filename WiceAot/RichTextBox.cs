@@ -467,30 +467,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
             size.height *= zf;
         }
 
-        //D2D_SIZE_U dpi;
-        //if (Window != null && Window.Handle != 0)
-        //{
-        //    dpi = DpiUtilities.GetDpiForWindow(Window.Handle);
-        //}
-        //else
-        //{
-        //    dpi = DpiUtilities.GetDpiForDesktop();
-        //}
-
-        //if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        //{
-        //    size.width = size.width * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi.width;
-        //}
-
-        //if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        //{
-        //    size.height = size.height * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi.height;
-        //}
-
-        //var ratio = GetMonitorDpiRatioToPrimary(Window?.Monitor);
-        //size.width = size.width * ratio.Monitor / ratio.Primary;
-        //size.height = size.height * ratio.Monitor / ratio.Primary;
-
         if (leftPadding)
         {
             size.width += padding.left;
@@ -574,40 +550,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
             return;
 
         var rc = GetRect(ArrangedRect, true);
-        //D2D_SIZE_U dpi;
-        //if (Window?.Handle.Value != 0)
-        //{
-        //    dpi = DpiUtilities.GetDpiForWindow(Window!.Handle);
-        //}
-        //else
-        //{
-        //    dpi = DpiUtilities.GetDpiForDesktop();
-        //}
-
-        //if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        //{
-        //    rc.Width = (int)(rc.Width * dpi.width / WiceCommons.USER_DEFAULT_SCREEN_DPI);
-        //}
-
-        //if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        //{
-        //    rc.Height = (int)(rc.Height * dpi.height / WiceCommons.USER_DEFAULT_SCREEN_DPI);
-        //}
-
-        //if (dpi.width != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        //{
-        //    rc.Width = (int)(rc.Width * dpi.width * dpi.width / WiceCommons.USER_DEFAULT_SCREEN_DPI / WiceCommons.USER_DEFAULT_SCREEN_DPI);
-        //}
-
-        //if (dpi.height != WiceCommons.USER_DEFAULT_SCREEN_DPI)
-        //{
-        //    rc.Height = (int)(rc.Height * dpi.height * dpi.height / WiceCommons.USER_DEFAULT_SCREEN_DPI / WiceCommons.USER_DEFAULT_SCREEN_DPI);
-        //}
-
-        //var ratio = GetMonitorDpiRatioToPrimary(Window.Monitor);
-        //rc.Width = (int)((long)rc.Width * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor);
-        //rc.Height = (int)((long)rc.Height * ratio.Primary * ratio.Primary / ratio.Monitor / ratio.Monitor);
-
         context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_PIXELS);
         var rr = RelativeRenderRect;
         if (Window != null)
@@ -642,6 +584,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         {
             context.WithTransform(D2D_MATRIX_3X2_F.Scale(ZoomFactor, ZoomFactor), () =>
             {
+                //Application.Trace("zf: " + ZoomFactor + " rc:" + rc + " urc:" + urc);
                 host.Draw(context.DeviceContext.Object, rc, urc);
             });
         }
@@ -652,19 +595,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
     }
 
     private IViewerParent? GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;
-
-    // seems like richedit is relative to primary monitor's dpi
-    //private static (int Primary, int Monitor) GetMonitorDpiRatioToPrimary(Monitor? monitor)
-    //{
-    //    if (monitor == null || monitor.IsPrimary || monitor.EffectiveDpi.width == 0)
-    //        return (1, 1);
-
-    //    var primary = Monitor.Primary;
-    //    if (primary == null || primary.EffectiveDpi.width == 0)
-    //        return (1, 1);
-
-    //    return ((int)primary.EffectiveDpi.width, (int)monitor.EffectiveDpi.width);
-    //}
 
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {

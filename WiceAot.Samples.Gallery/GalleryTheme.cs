@@ -21,6 +21,7 @@ public class GalleryTheme(GalleryWindow window) : Theme(window)
 
     public virtual D2D_RECT_F SampleListVisualMargin { get; set; } = D2D_RECT_F.Thickness(0, 0, 10, 10);
     public virtual float SampleListVisualFontSize { get; set; } = 18;
+    public virtual D2D_RECT_F SampleListVisualDockMargin { get; set; } = D2D_RECT_F.Thickness(10, 0, 0, 0);
 
     public virtual D2D_RECT_F SampleVisualCodeBoxMargin { get; set; } = D2D_RECT_F.Thickness(0, 10, 0, 0);
     public virtual D2D_RECT_F SampleVisualCodeBoxPadding { get; set; } = D2D_RECT_F.Thickness(5);
@@ -59,6 +60,7 @@ public class GalleryTheme(GalleryWindow window) : Theme(window)
 
         SampleListVisualMargin = UIExtensions.DpiScaleThickness(SampleListVisualMargin, oldDpi, newDpi);
         SampleListVisualFontSize = UIExtensions.DpiScale(SampleListVisualFontSize, oldDpi, newDpi);
+        SampleListVisualDockMargin = UIExtensions.DpiScaleThickness(SampleListVisualDockMargin, oldDpi, newDpi);
 
         SampleVisualCodeBoxMargin = UIExtensions.DpiScaleThickness(SampleVisualCodeBoxMargin, oldDpi, newDpi);
         SampleVisualCodeBoxPadding = UIExtensions.DpiScaleThickness(SampleVisualCodeBoxPadding, oldDpi, newDpi);

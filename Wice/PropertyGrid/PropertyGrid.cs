@@ -214,6 +214,19 @@ public class PropertyGrid : Grid
     protected virtual void BindDimensions()
     {
         Rows.Clear();
+        foreach (var kv in _propertyVisuals)
+        {
+            if (kv.Value.Text != null)
+            {
+                Children.Remove(kv.Value.Text);
+            }
+
+            if (kv.Value.ValueVisual != null)
+            {
+                Children.Remove(kv.Value.ValueVisual);
+            }
+        }
+
         _propertyVisuals.Clear();
         if (Source == null)
             return;

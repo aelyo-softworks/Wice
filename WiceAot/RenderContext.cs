@@ -13,11 +13,11 @@ public class RenderContext
     public SurfaceCreationOptions? SurfaceCreationOptions { get; }
     public RECT? SurfaceRect { get; }
 
-    public virtual void WithTransform(D2D_MATRIX_3X2_F transform, Action action)
+    public virtual void WithTransform(D2D_MATRIX_3X2_F transform, Action action, bool useExisting = true)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
 
-        var existing = DeviceContext.GetTransform();
+        var existing = useExisting ? DeviceContext.GetTransform() : D2D_MATRIX_3X2_F.Identity();
         DeviceContext.SetTransform(existing * transform);
         try
         {

@@ -4,8 +4,8 @@ public partial class ScrollBarButton : ButtonBase
 {
     private GeometrySource2D? _lastGeometrySource2D;
 
-    public static VisualProperty IsArrowOpenProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(IsArrowOpen), VisualPropertyInvalidateModes.Render, true);
-    public static VisualProperty ArrowRatioProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(ArrowRatio), VisualPropertyInvalidateModes.Render, float.NaN);
+    public static VisualProperty IsArrowOpenProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(IsArrowOpen), VisualPropertyInvalidateModes.Arrange, true);
+    public static VisualProperty ArrowRatioProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(ArrowRatio), VisualPropertyInvalidateModes.Arrange, float.NaN);
 
     public ScrollBarButton(DockType type)
     {
@@ -18,7 +18,8 @@ public partial class ScrollBarButton : ButtonBase
         Child.Name = Name + nameof(Path);
 #endif
         Dock.SetDockType(this, type);
-        Child.Margin = GetWindowTheme().ScrollBarArrowMargin; // TODO: vary per scrollbar width/height?
+
+        Child.Margin = GetWindowTheme().ScrollBarArrowMargin; // vary per scrollbar width/height?
     }
 
     [Browsable(false)]
@@ -37,9 +38,9 @@ public partial class ScrollBarButton : ButtonBase
             return;
 
         var size = (Child.ArrangedRect - Child.Margin).Size;
-        var open = IsArrowOpen;
+        var width = size.width;
         var type = Dock.GetDockType(this);
-        var geoSource = Application.CurrentResourceManager.GetScrollBarButtonGeometrySource(type, size.width, ArrowRatio, open);
+        var geoSource = Application.CurrentResourceManager.GetScrollBarButtonGeometrySource(type, width, ArrowRatio, IsArrowOpen);
         if (geoSource.Equals(_lastGeometrySource2D))
             return;
 
@@ -50,11 +51,28 @@ public partial class ScrollBarButton : ButtonBase
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
-        if (Child?.Shape == null)
-            return;
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
 
-        Child.Shape.StrokeThickness = GetWindowTheme().ScrollBarButtonStrokeThickness;
-        Child.StrokeBrush = Compositor!.CreateColorBrush(GetWindowTheme().ScrollBarButtonStrokeColor.ToColor());
-        Child.RenderBrush = Child.StrokeBrush;
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        if (Child != null)
+        {
+            var theme = GetWindowTheme();
+            if (Child.Shape != null)
+            {
+                Child.Shape.StrokeThickness = theme.ScrollBarButtonStrokeThickness;
+            }
+            Child.Margin = theme.ScrollBarArrowMargin; // TODO: vary per scrollbar width/height?
+            Child.StrokeBrush = Compositor!.CreateColorBrush(theme.ScrollBarButtonStrokeColor.ToColor());
+            Child.RenderBrush = Child.StrokeBrush;
+        }
     }
 }

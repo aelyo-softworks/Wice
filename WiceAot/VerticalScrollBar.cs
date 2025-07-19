@@ -67,16 +67,37 @@ public partial class VerticalScrollBar : ScrollBar
         {
             if (IsMouseOver)
             {
-                Thumb.Width = Width - 4; //keep an empty border on right
+                Thumb.Width = Width - Window?.DipsToPixels(4) ?? 4; //keep an empty border on right
             }
             else
             {
-                Thumb.Width = GetWindowTheme().GetHorizontalScrollBarHeight(WiceCommons.USER_DEFAULT_SCREEN_DPI);
+                Thumb.Width = GetWindowTheme().GetHorizontalScrollBarHeight(Window?.Dpi ?? WiceCommons.USER_DEFAULT_SCREEN_DPI);
             }
         }
         else
         {
             Thumb.Width = Width;
         }
+    }
+
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
+    {
+        base.OnAttachedToComposition(sender, e);
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
+
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        Width = GetWindowTheme().GetVerticalScrollBarWidth(e.NewDpi);
+        SmallDecrease.Height = Width;
+        SmallIncrease.Height = Width;
+        Thumb.Width = Width;
     }
 }

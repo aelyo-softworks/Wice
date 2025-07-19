@@ -3,6 +3,7 @@
 public partial class SampleListVisual : Titled
 {
     private readonly TextBox _description = new();
+    private readonly Dock _dock = new();
     private readonly List<SampleVisual> _sampleVisuals = [];
 
     public SampleListVisual(SampleList sampleList)
@@ -21,34 +22,25 @@ public partial class SampleListVisual : Titled
         Children.Add(sv);
 
         // a dock for all sample visuals
-        var dock = new Dock { Margin = D2D_RECT_F.Thickness(10, 0, 0, 0), HorizontalAlignment = Alignment.Near, VerticalAlignment = Alignment.Near };
-        sv.Child = dock;
+        _dock.HorizontalAlignment = Alignment.Near;
+        _dock.VerticalAlignment = Alignment.Near;
+        sv.Child = _dock;
 
         foreach (var sample in sampleList.Samples)
         {
             var visual = new SampleVisual(sample);
             SetDockType(visual, DockType.Top);
-            dock.Children.Add(visual);
+            _dock.Children.Add(visual);
             _sampleVisuals.Add(visual);
         }
     }
 
-    protected override void OnAttachedToComposition(object? sender, EventArgs e)
+    protected override void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
-        base.OnAttachedToComposition(sender, e);
-        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
-        Window!.ThemeDpiEvent += OnThemeDpiEvent;
-    }
-
-    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
-    {
-        base.OnDetachingFromComposition(sender, e);
-        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
-    }
-
-    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
-    {
+        base.OnThemeDpiEvent(sender, e);
         var theme = (GalleryTheme)GetWindowTheme();
+
+        _dock.Margin = theme.SampleListVisualDockMargin;
         _description.FontSize = theme.SampleListVisualFontSize;
         var margin = theme.SampleListVisualMargin;
         _description.Margin = margin;

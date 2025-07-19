@@ -25,6 +25,6 @@ public class ElasticEase : IEasingFunction
             expo = (Math.Exp(springiness * normalizedTime) - 1) / (Math.Exp(springiness) - 1);
         }
 
-        return (float)(expo * (Math.Sin((Math.PI * 2 * oscillations + Math.PI * 0.5) * normalizedTime)));
+        return (float)(expo * Math.Sin((Math.PI * 2 * oscillations + Math.PI * 0.5) * normalizedTime));
     }
 }
