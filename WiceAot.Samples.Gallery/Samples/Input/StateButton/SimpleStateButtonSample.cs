@@ -12,7 +12,11 @@ public class SimpleStateButtonSample : Sample
         Dock.SetDockType(stack, DockType.Top); // remove from display
 
         // add state button
-        var btn = new Wice.StateButton { Width = parent.Window!.DipsToPixels(100), Height = parent.Window!.DipsToPixels(100) };
+        var btn = new Wice.StateButton
+        {
+            Width = parent.Window!.DipsToPixels(100),
+            Height = parent.Window!.DipsToPixels(100)
+        };
         for (var i = 0; i < 4; i++)
         {
             // second parameter defines the child visual, here just a textbox
@@ -34,7 +38,12 @@ public class SimpleStateButtonSample : Sample
         stack.Children.Add(btn);
 
         // add results textbox
-        var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0), HorizontalAlignment = Alignment.Center, VerticalAlignment = Alignment.Center };
+        var results = new TextBox
+        {
+            Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0),
+            HorizontalAlignment = Alignment.Center,
+            VerticalAlignment = Alignment.Center
+        };
         stack.Children.Add(results);
 
         btn.Click += (s, e) => { results.Text = "StateButton value is " + btn.Value; };

@@ -15,7 +15,10 @@ public class TitleBarSample : Sample
                 WindowsFrameMode = WindowsFrameMode.None,
                 CreateOnCursorMonitor = true,
             };
-            window.ResizeClient(parent.Window!.DipsToPixels(400), parent.Window!.DipsToPixels(400));
+            window.ResizeClient(
+                parent.Window!.DipsToPixels(400),
+                parent.Window!.DipsToPixels(400)
+            );
             window.Center();
             window.Show();
 

@@ -25,7 +25,10 @@ public class RenderContext
         }
         finally
         {
-            DeviceContext.SetTransform(existing);
+            if (useExisting)
+            {
+                DeviceContext.SetTransform(existing);
+            }
         }
     }
 

@@ -1,7 +1,10 @@
 <samples>
   <sample namespace="Samples.Collections.CheckBoxList.CheckBoxListSample">void Layout(Visual parent)
 {
-    var lb = new CheckBoxList { RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor()) };
+    var lb = new CheckBoxList
+    {
+        RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
+    };
     parent.Children.Add(lb);
 
     // set the list box's data source
@@ -68,7 +71,10 @@
 }</sample>
   <sample namespace="Samples.Collections.ListBox.ListBoxSample">void Layout(Visual parent)
 {
-    var lb = new ListBox { RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor()) };
+    var lb = new ListBox
+    {
+        RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
+    };
     parent.Children.Add(lb);
 
     lb.DataBinder = new DataBinder
@@ -109,7 +115,12 @@
     parent.Children.Add(tb);
 
     // use the sepia effect
-    var fx = new ContrastEffect { ClampInput = true, Contrast = 1, Source = new CompositionEffectSourceParameter("Input") };
+    var fx = new ContrastEffect
+    {
+        ClampInput = true,
+        Contrast = 1,
+        Source = new CompositionEffectSourceParameter("Input")
+    };
 
     // build an effect graph
     var fac = Compositor!.CreateEffectFactory(fx);
@@ -145,7 +156,11 @@
         visual.Height = visual.Width * size.height / size.width;
 
         // create a drawing (D2D1) surface
-        var surface = Window!.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+        var surface = Window!.CompositionDevice.CreateDrawingSurface(
+            Utilities.Extensions.ToSize(size),
+            DirectXPixelFormat.B8G8R8A8UIntNormalized,
+            DirectXAlphaMode.Premultiplied
+        );
         using var interop = surface.AsComObject&lt;ICompositionDrawingSurfaceInterop&gt;();
         using var dc = interop.BeginDraw();
         // we don't need to clear the surface as we redraw it completely
@@ -165,7 +180,11 @@
     parent.Children.Add(visual);
 
     // use the sepia effect
-    var fx = new GaussianBlurEffect { StandardDeviation = 3, Source = new CompositionEffectSourceParameter("Input") };
+    var fx = new GaussianBlurEffect
+    {
+        StandardDeviation = 3,
+        Source = new CompositionEffectSourceParameter("Input")
+    };
 
     // build an effect graph
     var fac = Compositor!.CreateEffectFactory(fx);
@@ -189,7 +208,11 @@
         visual.Height = visual.Width * size.height / size.width;
 
         // create a drawing (D2D1) surface
-        var surface = Window!.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+        var surface = Window!.CompositionDevice.CreateDrawingSurface(
+            Utilities.Extensions.ToSize(size),
+            DirectXPixelFormat.B8G8R8A8UIntNormalized,
+            DirectXAlphaMode.Premultiplied
+        );
         using var interop = surface.AsComObject&lt;ICompositionDrawingSurfaceInterop&gt;();
         using var dc = interop.BeginDraw();
         // we don't need to clear the surface as we redraw it completely
@@ -233,7 +256,11 @@
         visual.Height = visual.Width * size.height / size.width;
 
         // create a drawing (D2D1) surface
-        var surface = Window!.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+        var surface = Window!.CompositionDevice.CreateDrawingSurface(
+            Utilities.Extensions.ToSize(size),
+            DirectXPixelFormat.B8G8R8A8UIntNormalized,
+            DirectXAlphaMode.Premultiplied
+        );
         using var interop = surface.AsComObject&lt;ICompositionDrawingSurfaceInterop&gt;();
         using var dc = interop.BeginDraw();
         // we don't need to clear the surface as we redraw it completely
@@ -253,7 +280,11 @@
     parent.Children.Add(visual);
 
     // use the sepia effect
-    var fx = new SepiaEffect { Intensity = 1, Source = new CompositionEffectSourceParameter("Input") };
+    var fx = new SepiaEffect
+    {
+        Intensity = 1,
+        Source = new CompositionEffectSourceParameter("Input")
+    };
 
     // build an effect graph
     var fac = Compositor!.CreateEffectFactory(fx);
@@ -277,7 +308,11 @@
         visual.Height = visual.Width * size.height / size.width;
 
         // create a drawing (D2D1) surface
-        var surface = Window!.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+        var surface = Window!.CompositionDevice.CreateDrawingSurface(
+            Utilities.Extensions.ToSize(size),
+            DirectXPixelFormat.B8G8R8A8UIntNormalized,
+            DirectXAlphaMode.Premultiplied
+        );
         using var interop = surface.AsComObject&lt;ICompositionDrawingSurfaceInterop&gt;();
         using var dc = interop.BeginDraw();
         // we don't need to clear the surface as we redraw it completely
@@ -326,7 +361,11 @@
         visual.Height = visual.Width * size.height / size.width;
 
         // create a drawing (D2D1) surface
-        var surface = Window!.CompositionDevice.CreateDrawingSurface(Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+        var surface = Window!.CompositionDevice.CreateDrawingSurface(
+            Utilities.Extensions.ToSize(size),
+            DirectXPixelFormat.B8G8R8A8UIntNormalized,
+            DirectXAlphaMode.Premultiplied
+        );
         using var interop = surface.AsComObject&lt;ICompositionDrawingSurfaceInterop&gt;();
         using var dc = interop.BeginDraw();
         // we don't need to clear the surface as we redraw it completely
@@ -342,7 +381,12 @@
 }</sample>
   <sample namespace="Samples.Input.Button.ButtonDockSample">void Layout(Visual parent)
 {
-    var dock = new Dock { Height = parent.Window!.DipsToPixels(50), LastChildFill = false, RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Olive.ToColor()) };
+    var dock = new Dock
+    {
+        Height = parent.Window!.DipsToPixels(50),
+        LastChildFill = false,
+        RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Olive.ToColor())
+    };
     parent.Children.Add(dock);
 
     var okButton = new Button { Margin = parent.Window!.DipsToPixels(10), MinWidth = parent.Window!.DipsToPixels(70) };
@@ -485,7 +529,12 @@
     btn.Height = parent.Window!.DipsToPixels(20);
 
     // add results textbox
-    var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0), HorizontalAlignment = Alignment.Center, VerticalAlignment = Alignment.Center };
+    var results = new TextBox
+    {
+        Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0),
+        HorizontalAlignment = Alignment.Center,
+        VerticalAlignment = Alignment.Center
+    };
     stack.Children.Add(results);
 
     stack.Children.Add(btn);
@@ -498,7 +547,11 @@
     parent.Children.Add(stack);
 
     // add state button
-    var btn = new StateButton { Width = parent.Window!.DipsToPixels(100), Height = parent.Window!.DipsToPixels(100) };
+    var btn = new StateButton
+    {
+        Width = parent.Window!.DipsToPixels(100),
+        Height = parent.Window!.DipsToPixels(100)
+    };
     for (var i = 0; i &lt; 4; i++)
     {
         // second parameter defines the child visual, here just a textbox
@@ -520,7 +573,12 @@
     stack.Children.Add(btn);
 
     // add results textbox
-    var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0), HorizontalAlignment = Alignment.Center, VerticalAlignment = Alignment.Center };
+    var results = new TextBox
+    {
+        Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0),
+        HorizontalAlignment = Alignment.Center,
+        VerticalAlignment = Alignment.Center
+    };
     stack.Children.Add(results);
 
     btn.Click += (s, e) =&gt; { results.Text = "StateButton value is " + btn.Value; };
@@ -535,13 +593,20 @@
     var list = new List&lt;ToggleSwitch&gt;();
     for (var i = 0; i &lt; 3; i++)
     {
-        var toggle = new ToggleSwitch { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0), Name = "switch " + i };
+        var toggle = new ToggleSwitch
+        {
+            Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0),
+            Name = "switch " + i
+        };
         dock.Children.Add(toggle);
         list.Add(toggle);
     }
 
     // add results textbox
-    var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0) };
+    var results = new TextBox
+    {
+        Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0)
+    };
     dock.Children.Add(results);
 
     // hook click events
@@ -932,7 +997,11 @@ gma warning restore IDE0017 // Simplify object initialization
 }</sample>
   <sample namespace="Samples.Layout.Stack.SimpleVerticalStackSample">void Layout(Visual parent)
 {
-    var stack = new Stack { Spacing = new D2D_SIZE_F(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10)) };
+    var stack = new Stack
+    {
+        Spacing = new D2D_SIZE_F(parent.Window!.DipsToPixels(10),
+        parent.Window!.DipsToPixels(10))
+    };
     parent.Children.Add(stack);
     stack.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
 
@@ -951,7 +1020,10 @@ gma warning restore IDE0017 // Simplify object initialization
   <sample namespace="Samples.Layout.Tabs.TabsSample">void Layout(Visual parent)
 {
     var tabs = new Tabs();
-    tabs.PagesHeader.Spacing = new D2D_SIZE_F(parent.Window!.DipsToPixels(5), parent.Window!.DipsToPixels(5));
+    tabs.PagesHeader.Spacing = new D2D_SIZE_F(
+        parent.Window!.DipsToPixels(5),
+        parent.Window!.DipsToPixels(5)
+    );
     tabs.VerticalAlignment = Alignment.Near;
     parent.Children.Add(tabs);
 
@@ -999,7 +1071,12 @@ gma warning restore IDE0017 // Simplify object initialization
 
         page.Content = new TextBox
         {
-            Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(50), parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(50)),
+            Margin = D2D_RECT_F.Thickness(
+                parent.Window!.DipsToPixels(10),
+                parent.Window!.DipsToPixels(50),
+                parent.Window!.DipsToPixels(10),
+                parent.Window!.DipsToPixels(50)
+            ),
             Text = "This is the content of page #" + index,
         };
 
@@ -1008,7 +1085,11 @@ gma warning restore IDE0017 // Simplify object initialization
 }</sample>
   <sample namespace="Samples.Layout.UniformGrid.ShapesUniformGridSample">void Layout(Visual parent)
 {
-    var grid = new UniformGrid { BackgroundColor = D3DCOLORVALUE.Transparent, Rows = 10 };
+    var grid = new UniformGrid
+    {
+        BackgroundColor = D3DCOLORVALUE.Transparent,
+        Rows = 10
+    };
     grid.Columns = grid.Rows;
     parent.Children.Add(grid);
     grid.Width = parent.Window!.DipsToPixels(300);
@@ -1295,7 +1376,10 @@ gma warning restore IDE0017 // Simplify object initialization
                 CreateOnCursorMonitor = true
             };
             win.Children.Add(new TitleBar { IsMain = true });
-            win.ResizeClient(parent.Window!.DipsToPixels(400), parent.Window!.DipsToPixels(400));
+            win.ResizeClient(
+                parent.Window!.DipsToPixels(400),
+                parent.Window!.DipsToPixels(400)
+            );
             win.Center();
             win.Show();
             dw.Run();
@@ -1316,7 +1400,11 @@ gma warning restore IDE0017 // Simplify object initialization
     stack.Children.Add(btn);
 
 
-    var target = new TextBox { VerticalAlignment = Alignment.Near, Padding = parent.Window!.DipsToPixels(10) };
+    var target = new TextBox
+    {
+        VerticalAlignment = Alignment.Near,
+        Padding = parent.Window!.DipsToPixels(10)
+    };
     info.Children.Add(target);
 
     btn.MouseButtonDown += (s, e) =&gt;
@@ -1415,7 +1503,10 @@ gma warning restore IDE0017 // Simplify object initialization
             WindowsFrameMode = WindowsFrameMode.None,
             CreateOnCursorMonitor = true,
         };
-        window.ResizeClient(parent.Window!.DipsToPixels(400), parent.Window!.DipsToPixels(400));
+        window.ResizeClient(
+            parent.Window!.DipsToPixels(400),
+            parent.Window!.DipsToPixels(400)
+        );
         window.Center();
         window.Show();
 
@@ -1563,7 +1654,12 @@ gma warning restore IDE0017 // Simplify object initialization
         FontSize = parent.Window!.DipsToPixels(72),
         Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
         ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
-        Padding = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(50)),
+        Padding = D2D_RECT_F.Thickness(
+            parent.Window!.DipsToPixels(10),
+            parent.Window!.DipsToPixels(10),
+            parent.Window!.DipsToPixels(10),
+            parent.Window!.DipsToPixels(50)
+        ),
         ClipText = false,
         Text = "Hello World using   DirectWrite!"
     };
@@ -1612,7 +1708,11 @@ gma warning restore IDE0017 // Simplify object initialization
 }</sample>
   <sample namespace="Samples.Text.TextBox.UnicodeTextBoxSample">void Layout(Visual parent)
 {
-    var sv = new ScrollViewer { Height = parent.Window!.DipsToPixels(200), Width = parent.Window!.DipsToPixels(500) };
+    var sv = new ScrollViewer
+    {
+        Height = parent.Window!.DipsToPixels(200),
+        Width = parent.Window!.DipsToPixels(500)
+    };
     parent.Children.Add(sv);
     Dock.SetDockType(sv, DockType.Top);
 
@@ -1648,7 +1748,11 @@ gma warning restore IDE0017 // Simplify object initialization
         dlg.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
 
         // add content to the dialog
-        dlg.DialogContent.Children.Add(new Border { Width = parent.Window!.DipsToPixels(200), Height = parent.Window!.DipsToPixels(100) });
+        dlg.DialogContent.Children.Add(new Border
+        {
+            Width = parent.Window!.DipsToPixels(200),
+            Height = parent.Window!.DipsToPixels(100)
+        });
 
         // add standard (localized) buttons
         dlg.AddCancelButton();
@@ -1693,7 +1797,10 @@ gma warning restore IDE0017 // Simplify object initialization
     {
         var window = new Window { Title = "Hello World", CreateOnCursorMonitor = true };
         window.RenderBrush = window.Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
-        window.ResizeClient(parent.Window!.DipsToPixels(400), parent.Window.DipsToPixels(400));
+        window.ResizeClient(
+            parent.Window!.DipsToPixels(400),
+            parent.Window.DipsToPixels(400)
+        );
         window.Center();
         window.Show();
 

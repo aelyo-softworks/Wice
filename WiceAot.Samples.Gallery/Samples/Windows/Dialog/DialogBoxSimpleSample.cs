@@ -20,7 +20,11 @@ public class DialogBoxSimpleSample : Sample
             dlg.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
 
             // add content to the dialog
-            dlg.DialogContent.Children.Add(new Border { Width = parent.Window!.DipsToPixels(200), Height = parent.Window!.DipsToPixels(100) });
+            dlg.DialogContent.Children.Add(new Border
+            {
+                Width = parent.Window!.DipsToPixels(200),
+                Height = parent.Window!.DipsToPixels(100)
+            });
 
             // add standard (localized) buttons
             dlg.AddCancelButton();

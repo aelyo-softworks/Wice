@@ -7,7 +7,12 @@ public class ButtonDockSample : Sample
 
     public override void Layout(Visual parent)
     {
-        var dock = new Dock { Height = parent.Window!.DipsToPixels(50), LastChildFill = false, RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Olive.ToColor()) };
+        var dock = new Dock
+        {
+            Height = parent.Window!.DipsToPixels(50),
+            LastChildFill = false,
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Olive.ToColor())
+        };
         parent.Children.Add(dock);
         Dock.SetDockType(dock, DockType.Top); // remove from display
 

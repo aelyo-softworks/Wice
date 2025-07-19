@@ -13,7 +13,12 @@ public class FormattedTextBoxSample : Sample
             FontSize = parent.Window!.DipsToPixels(72),
             Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
-            Padding = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(50)),
+            Padding = D2D_RECT_F.Thickness(
+                parent.Window!.DipsToPixels(10),
+                parent.Window!.DipsToPixels(10),
+                parent.Window!.DipsToPixels(10),
+                parent.Window!.DipsToPixels(50)
+            ),
             ClipText = false,
             Text = "Hello World using   DirectWrite!"
         };

@@ -522,7 +522,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
             rc.Height = finalRect.Height;
         }
 
-        if (adjustForDpi && Window != null)
+        if (adjustForDpi && ZoomFactor != 1 && Window != null)
         {
             var dpi = Window.Dpi;
             rc.Width = rc.Width * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi;
@@ -582,11 +582,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
         if (ZoomFactor != 1)
         {
-            context.WithTransform(D2D_MATRIX_3X2_F.Scale(ZoomFactor, ZoomFactor), () =>
-            {
-                //Application.Trace("zf: " + ZoomFactor + " rc:" + rc + " urc:" + urc);
-                host.Draw(context.DeviceContext.Object, rc, urc);
-            });
+            //context.WithTransform(D2D_MATRIX_3X2_F.Scale(ZoomFactor, ZoomFactor), () =>
+            //{
+            host.Draw(context.DeviceContext.Object, rc, urc);
+            //});
         }
         else
         {

@@ -30,7 +30,12 @@ public class CheckBoxStateButtonSample : Sample
         btn.Height = parent.Window!.DipsToPixels(20);
 
         // add results textbox
-        var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0), HorizontalAlignment = Alignment.Center, VerticalAlignment = Alignment.Center };
+        var results = new TextBox
+        {
+            Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0),
+            HorizontalAlignment = Alignment.Center,
+            VerticalAlignment = Alignment.Center
+        };
         stack.Children.Add(results);
 
         stack.Children.Add(btn);

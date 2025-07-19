@@ -7,7 +7,10 @@ public class TabsSample : Sample
     public override void Layout(Visual parent)
     {
         var tabs = new Wice.Tabs();
-        tabs.PagesHeader.Spacing = new D2D_SIZE_F(parent.Window!.DipsToPixels(5), parent.Window!.DipsToPixels(5));
+        tabs.PagesHeader.Spacing = new D2D_SIZE_F(
+            parent.Window!.DipsToPixels(5),
+            parent.Window!.DipsToPixels(5)
+        );
         tabs.VerticalAlignment = Alignment.Near;
         Wice.Dock.SetDockType(tabs, DockType.Top); // remove from display
         parent.Children.Add(tabs);
@@ -56,7 +59,12 @@ public class TabsSample : Sample
 
             page.Content = new TextBox
             {
-                Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(50), parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(50)),
+                Margin = D2D_RECT_F.Thickness(
+                    parent.Window!.DipsToPixels(10),
+                    parent.Window!.DipsToPixels(50),
+                    parent.Window!.DipsToPixels(10),
+                    parent.Window!.DipsToPixels(50)
+                ),
                 Text = "This is the content of page #" + index,
             };
 

@@ -9,7 +9,11 @@ public class GaussianBlurSample : Sample
         parent.Children.Add(visual);
 
         // use the sepia effect
-        var fx = new GaussianBlurEffect { StandardDeviation = 3, Source = new CompositionEffectSourceParameter("Input") };
+        var fx = new GaussianBlurEffect
+        {
+            StandardDeviation = 3,
+            Source = new CompositionEffectSourceParameter("Input")
+        };
 
         // build an effect graph
         var fac = Compositor!.CreateEffectFactory(fx);
@@ -33,7 +37,11 @@ public class GaussianBlurSample : Sample
             visual.Height = visual.Width * size.height / size.width;
 
             // create a drawing (D2D1) surface
-            var surface = Window!.CompositionDevice.CreateDrawingSurface(Wice.Utilities.Extensions.ToSize(size), DirectXPixelFormat.B8G8R8A8UIntNormalized, DirectXAlphaMode.Premultiplied);
+            var surface = Window!.CompositionDevice.CreateDrawingSurface(
+                Wice.Utilities.Extensions.ToSize(size),
+                DirectXPixelFormat.B8G8R8A8UIntNormalized,
+                DirectXAlphaMode.Premultiplied
+            );
             using var interop = surface.AsComObject<ICompositionDrawingSurfaceInterop>();
             using var dc = interop.BeginDraw();
             // we don't need to clear the surface as we redraw it completely

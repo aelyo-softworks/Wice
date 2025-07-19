@@ -7,7 +7,11 @@ public class ShapesUniformGridSample : Sample
 
     public override void Layout(Visual parent)
     {
-        var grid = new Wice.UniformGrid { BackgroundColor = D3DCOLORVALUE.Transparent, Rows = 10 };
+        var grid = new Wice.UniformGrid
+        {
+            BackgroundColor = D3DCOLORVALUE.Transparent,
+            Rows = 10
+        };
         grid.Columns = grid.Rows;
         parent.Children.Add(grid);
         grid.Width = parent.Window!.DipsToPixels(300);

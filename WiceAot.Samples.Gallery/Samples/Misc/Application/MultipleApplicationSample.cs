@@ -26,7 +26,10 @@ public class MultipleApplicationSample : Sample
                     CreateOnCursorMonitor = true
                 };
                 win.Children.Add(new Wice.TitleBar { IsMain = true });
-                win.ResizeClient(parent.Window!.DipsToPixels(400), parent.Window!.DipsToPixels(400));
+                win.ResizeClient(
+                    parent.Window!.DipsToPixels(400),
+                    parent.Window!.DipsToPixels(400)
+                );
                 win.Center();
                 win.Show();
                 dw.Run();

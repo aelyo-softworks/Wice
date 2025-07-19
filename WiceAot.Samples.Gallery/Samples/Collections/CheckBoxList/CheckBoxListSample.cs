@@ -6,7 +6,10 @@ public class CheckBoxListSample : Sample
 
     public override void Layout(Visual parent)
     {
-        var lb = new Wice.CheckBoxList { RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor()) };
+        var lb = new Wice.CheckBoxList
+        {
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
+        };
         parent.Children.Add(lb);
         Dock.SetDockType(lb, DockType.Top); // remove from display
 

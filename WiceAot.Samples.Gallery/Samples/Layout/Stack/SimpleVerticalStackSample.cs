@@ -7,7 +7,11 @@ public class SimpleVerticalStackSample : Sample
 
     public override void Layout(Visual parent)
     {
-        var stack = new Wice.Stack { Spacing = new D2D_SIZE_F(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10)) };
+        var stack = new Wice.Stack
+        {
+            Spacing = new D2D_SIZE_F(parent.Window!.DipsToPixels(10),
+            parent.Window!.DipsToPixels(10))
+        };
         parent.Children.Add(stack);
         Wice.Dock.SetDockType(stack, DockType.Top); // remove from display
         stack.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());

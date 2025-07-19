@@ -12,7 +12,10 @@ public class WindowSample : Sample
         {
             var window = new Wice.Window { Title = "Hello World", CreateOnCursorMonitor = true };
             window.RenderBrush = window.Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor());
-            window.ResizeClient(parent.Window!.DipsToPixels(400), parent.Window.DipsToPixels(400));
+            window.ResizeClient(
+                parent.Window!.DipsToPixels(400),
+                parent.Window.DipsToPixels(400)
+            );
             window.Center();
             window.Show();
 
