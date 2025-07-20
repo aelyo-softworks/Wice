@@ -179,6 +179,19 @@
         {
             base.OnAttachedToComposition(sender, e);
             BindDataSource();
+            OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+            Window!.ThemeDpiEvent += OnThemeDpiEvent;
+        }
+
+        protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+        {
+            base.OnDetachingFromComposition(sender, e);
+            Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+        }
+
+        protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+        {
+            // do nothing by default
         }
 
         public virtual Visual? GetVisualForMouseEvent(MouseEventArgs e)
@@ -406,7 +419,6 @@
 
                 var selected = SelectedItems.Select(i => i.Data).ToArray();
                 Children.Clear();
-                //var children = new List<Visual>();
                 if (ds != null)
                 {
                     var binder = DataBinder ?? new DataBinder();
@@ -449,7 +461,6 @@
                             {
                                 item.Children.Add(ctx.DataVisual!);
                                 Children.Add(item);
-                                //children.Add(item);
                                 binder.DataItemVisualBinder(ctx);
                                 UpdateItemSelection(item, null);
 
@@ -461,16 +472,12 @@
                                     if (ctx.SeparatorVisual != null)
                                     {
                                         Children.Add(ctx.SeparatorVisual);
-                                        //children.Add(ctx.SeparatorVisual);
                                     }
                                 }
                             }
                         }
                     }
                 }
-
-                //Children.Clear();
-                //Children.AddRange(children);
 
                 OnDataBound(this, EventArgs.Empty);
                 if (!selected.SequenceEqual(SelectedItems.Select(i => i.Data)))
@@ -483,7 +490,6 @@
         protected virtual void BindDataItemVisual(DataBindContext context)
         {
             ExceptionExtensions.ThrowIfNull(context, nameof(context));
-
             if (context.DataVisual is not TextBox tb)
                 return;
 
@@ -493,18 +499,13 @@
         protected virtual void CreateDataItemVisual(DataBindContext context)
         {
             ExceptionExtensions.ThrowIfNull(context, nameof(context));
-
-            var visual = new TextBox
-            {
-                IsFocusable = true
-            };
+            var visual = new TextBox { IsFocusable = true };
             context.DataVisual = visual;
         }
 
         protected virtual void CreateSeparatorVisual(DataBindContext context)
         {
             ExceptionExtensions.ThrowIfNull(context, nameof(context));
-
             return;
         }
 
@@ -513,7 +514,6 @@
         protected virtual void CreateItemVisual(DataBindContext context)
         {
             ExceptionExtensions.ThrowIfNull(context, nameof(context));
-
             var item = NewItemVisual();
             if (item == null)
                 return;
@@ -531,7 +531,6 @@
                 item.HoverRenderBrush = item.IsSelected || !IsEnabled ? null : Compositor?.CreateColorBrush(GetWindowTheme().ListBoxHoverColor.ToColor());
             }
 
-            //item.SelectionChanged += (s, e) => updateHover();
             item.IsSelectedChanged += OnItemIsSelectedChanged;
             item.MouseOverChanged += (s, e) => updateHover();
             item.Data = context.Data;

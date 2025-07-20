@@ -79,6 +79,7 @@ public class Theme
     public virtual float DialogBoxButtonFontSize { get; set; }
     public virtual float RoundedButtonCornerRadius { get; set; } = 4;
     public virtual float MessageBoxPadding { get; set; } = 5;
+    public virtual float StateButtonListPadding { get; set; } = 5;
 
     public virtual D3DCOLORVALUE CaretColor { get; set; } = D3DCOLORVALUE.Blue;
 
@@ -219,5 +220,6 @@ public class Theme
         TitleBarFontSize = UIExtensions.DpiScale(TitleBarFontSize, oldDpi, newDpi);
         TitleBarMargin = UIExtensions.DpiScaleThickness(TitleBarMargin, oldDpi, newDpi);
         MessageBoxPadding = UIExtensions.DpiScale(MessageBoxPadding, oldDpi, newDpi);
+        StateButtonListPadding = UIExtensions.DpiScale(StateButtonListPadding, oldDpi, newDpi);
     }
 }

@@ -274,7 +274,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
             OnPropertyChanging();
             _zoomFactor = value;
-            Invalidate(VisualPropertyInvalidateModes.Render);
+            Invalidate(VisualPropertyInvalidateModes.Measure);
         }
     }
 
@@ -454,8 +454,8 @@ public partial class RichTextBox : RenderVisual, IDisposable
         var zf = ZoomFactor;
         if (zf != 0)
         {
-            constraint.width = constraint.width / zf;
-            constraint.height = constraint.height / zf;
+            constraint.width /= zf;
+            constraint.height /= zf;
         }
 
         var size = host.GetNaturalSize(NaturalSize, constraint).ToD2D_SIZE_F();
@@ -551,6 +551,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
         var rc = GetRect(ArrangedRect, true);
         context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_PIXELS);
+        //context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_DIPS);
         var rr = RelativeRenderRect;
         if (Window != null)
         {

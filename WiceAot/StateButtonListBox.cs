@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public abstract class StateButtonListBox : ListBox
+public abstract partial class StateButtonListBox : ListBox
 {
     protected StateButtonListBox()
     {
@@ -23,8 +23,9 @@ public abstract class StateButtonListBox : ListBox
 
         panel.Children.Add(button);
 
-        var text = new TextBox
+        var text = new TextBox2
         {
+            Margin = D2D_RECT_F.Thickness(GetWindowTheme().StateButtonListPadding, 0, 0, 0),
             IsFocusable = true,
             IsEditable = false
         };
@@ -61,5 +62,18 @@ public abstract class StateButtonListBox : ListBox
                 return false;
         }
         return base.SetPropertyValue(property, value, options);
+    }
+
+    private sealed partial class TextBox2 : TextBox
+    {
+    }
+
+    protected override void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        base.OnThemeDpiEvent(sender, e);
+        foreach (var tb in AllChildren.OfType<TextBox2>())
+        {
+            tb.Margin = D2D_RECT_F.Thickness(GetWindowTheme().StateButtonListPadding, 0, 0, 0);
+        }
     }
 }
