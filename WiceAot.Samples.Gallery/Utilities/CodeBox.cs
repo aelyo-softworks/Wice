@@ -48,17 +48,4 @@ public partial class CodeBox : RichTextBox
         }
         return true;
     }
-
-    protected override void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
-    {
-        base.OnThemeDpiEvent(sender, e);
-
-        // not sure why codebox (rich text box) doesn't render always properly when DPI is not 96
-        // we fix it using a fixed ZoomFactor and RenderScale, result is less than perfect but works
-        var zf = e.NewDpi / (float)WiceCommons.USER_DEFAULT_SCREEN_DPI;
-        Zoom = zf;
-        RenderScale = new Vector3(zf, zf, zf);
-    }
-
-    public override float ZoomFactor { get => 1; set { } }
 }

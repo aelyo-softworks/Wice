@@ -6,7 +6,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
 {
     private bool _disposedValue;
     private D2D_SIZE_F _maxConstraintSize = new(ushort.MaxValue, ushort.MaxValue);
-    private TXTNATURALSIZE _naturalSize = TXTNATURALSIZE.TXTNS_FITTOCONTENT;
+    private TXTNATURALSIZE _naturalSize = TXTNATURALSIZE.TXTNS_FITTOCONTENT2;
     private float _zoomFactor = 1;
 
     public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
@@ -47,9 +47,33 @@ public partial class RichTextBox : RenderVisual, IDisposable
     protected virtual RichTextBoxTextHost CreateTextHost(TextServicesGenerator generator, RichTextBox richTextBox) => new(generator, richTextBox);
 
     [System.Runtime.InteropServices.Marshalling.GeneratedComClass]
-    protected partial class RichTextBoxTextHost(TextServicesGenerator generator, RichTextBox richTextBox) : TextHost(generator)
+    protected partial class RichTextBoxTextHost : TextHost
     {
-        public RichTextBox RichTextBox { get; } = richTextBox;
+        public RichTextBoxTextHost(TextServicesGenerator generator, RichTextBox richTextBox) : base(generator)
+        {
+            ExceptionExtensions.ThrowIfNull(richTextBox, nameof(richTextBox));
+            RichTextBox = richTextBox;
+            RichTextBox.DoWhenAttachedToComposition(() =>
+            {
+                WindowHandle = richTextBox.Window?.Handle ?? 0;
+            });
+        }
+
+        public RichTextBox RichTextBox { get; }
+
+        public override unsafe HRESULT TxGetExtent(nint lpExtent)
+        {
+            if (lpExtent == 0)
+                return Constants.E_INVALIDARG;
+
+            var dpi = DpiUtilities.GetDpiForWindow(WindowHandle).width;
+            var value = ClientRect.Size;
+            value.cx = value.cx.PixelToHiMetric(dpi);
+            value.cy = value.cy.PixelToHiMetric(dpi);
+            *(SIZE*)lpExtent = value;
+            //Trace("lpExtent: " + value);
+            return Constants.S_OK;
+        }
 
         // avoid too many traces in debug
         public override uint TxGetSysColor(SYS_COLOR_INDEX nIndex) => Functions.GetSysColor(nIndex);
@@ -104,19 +128,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
             {
                 *(WINDOW_EX_STYLE*)pdwExStyle = window.ExtendedStyle;
             }
-            return WiceCommons.S_OK;
-        }
-
-        public unsafe override HRESULT TxGetWindow(nint phwnd)
-        {
-            if (phwnd == 0 || RichTextBox == null)
-                return base.TxGetWindow(phwnd);
-
-            var window = RichTextBox.Window;
-            if (window == null)
-                return base.TxGetWindow(phwnd);
-
-            *(HWND*)phwnd = window.Handle;
             return WiceCommons.S_OK;
         }
 
@@ -490,7 +501,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         return size;
     }
 
-    private RECT GetRect(D2D_RECT_F finalRect, bool adjustForDpi)
+    private RECT GetRect(D2D_RECT_F finalRect)
     {
         var padding = Padding;
         var rc = new D2D_RECT_F();
@@ -522,12 +533,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
             rc.Height = finalRect.Height;
         }
 
-        if (adjustForDpi && ZoomFactor != 1 && Window != null)
-        {
-            var dpi = Window.Dpi;
-            rc.Width = rc.Width * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi;
-            rc.Height = rc.Height * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi;
-        }
         return rc.ToRECT();
     }
 
@@ -538,7 +543,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         if (host == null)
             return;
 
-        var rc = GetRect(finalRect, false);
+        var rc = GetRect(finalRect);
         host.Activate(rc);
     }
 
@@ -549,17 +554,8 @@ public partial class RichTextBox : RenderVisual, IDisposable
         if (host == null)
             return;
 
-        var rc = GetRect(ArrangedRect, true);
-        context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_PIXELS);
-        //context.DeviceContext.Object.SetUnitMode(D2D1_UNIT_MODE.D2D1_UNIT_MODE_DIPS);
+        var rc = GetRect(ArrangedRect);
         var rr = RelativeRenderRect;
-        if (Window != null)
-        {
-            // adjust for dpi
-            var dpi = Window.Dpi;
-            rr.top = rr.top * WiceCommons.USER_DEFAULT_SCREEN_DPI / dpi;
-        }
-
         var urc = rc;
         urc.top = -(int)rr.top;
 
@@ -581,17 +577,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
             }
         }
 
-        if (ZoomFactor != 1)
-        {
-            context.WithTransform(D2D_MATRIX_3X2_F.Scale(ZoomFactor, ZoomFactor), () =>
-            {
-                host.Draw(context.DeviceContext.Object, rc, urc);
-            });
-        }
-        else
-        {
-            host.Draw(context.DeviceContext.Object, rc, urc);
-        }
+        host.Draw(context.DeviceContext.Object, rc, urc);
     }
 
     private IViewerParent? GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;

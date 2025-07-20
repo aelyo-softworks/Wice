@@ -61,20 +61,7 @@ public partial class HomePage : Page
     public override string IconText => MDL2GlyphResource.Home;
     public override int SortOrder => 0;
 
-    protected override void OnAttachedToComposition(object? sender, EventArgs e)
-    {
-        base.OnAttachedToComposition(sender, e);
-        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
-        Window!.ThemeDpiEvent += OnThemeDpiEvent;
-    }
-
-    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
-    {
-        base.OnDetachingFromComposition(sender, e);
-        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
-    }
-
-    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    protected override void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         var theme = (GalleryTheme)GetWindowTheme();
         _richTextBox.Padding = theme.HomePageRichTextBoxPadding;
