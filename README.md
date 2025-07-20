@@ -92,6 +92,14 @@ A **Pdf** visual
 
 ![image](https://github.com/user-attachments/assets/4e9c56da-4908-4ddc-a2c4-14f3e7ab14c0)
 
+# Hi-DPI support
+Wice now supports hi-dpi scaling. It's not 100% automatic, your code may have to react to dpi changes, but everything is prepared.
+
+![Wice](Assets/wice_hi_dpi.png)
+
+Note: *RichTextBox* hi-dpi scaling doesn't work with Wice .NET Framework, only with Wice AOT.
+
+# Debugging
 And last but not least, the "snoop"-like feature (press F9 anytime when compiled in DEBUG), that shows all the details of the visuals tree and also allow you to modify values in real-time:
 
 ![Wice](Assets/wice_snoop.jpg)
