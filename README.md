@@ -18,7 +18,7 @@ Here are the key points for Wice:
 But... why Wice?
 
 * It **still supports .NET Framework 4.7.2**.
-* It's **native AOT deployment compatible**, unlike most .NET UI frameworks.
+* It's **native AOT deployment compatible**, aka "one file to rule them all", unlike most .NET UI frameworks.
 * It's **100% open source C# code**, with something like 50000 lines of code (which is a relatively small code base).
 * It's more modern than Winforms (GDI/GDI+) and WPF (which is still based on DirectX 9 and that causes lots of issues).
 * It has **no sandbox like UWP** and **doesn't require Win2D** (it's too complex to use and requires all sort of painful MSVC dependencies).
