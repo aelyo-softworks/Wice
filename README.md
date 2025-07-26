@@ -2,7 +2,7 @@
 
 ![Wice](Assets/wice_color.svg)
 
-The Windows Interface Composition Engine ("Wice") is a .NET UI engine for creating Windows applications.
+The **Windows Interface Composition Engine** ("Wice") is a .NET UI engine for creating Windows applications.
 
 Here are the key points for Wice:
 
@@ -34,7 +34,7 @@ Wice is always a work in progress. Please post an issue if you have a problem or
 * **Wice**: the Wice engine.
 * **Wice.Samples.Gallery**: a sample demo / gallery project. **===>** This is what you should try if you're new to Wice.
 * Wice.Tests: a test bench project. You shouldn't really use it.
-* Wice.DevTools: an internal tool that helps synchronize .NET 6 projects from .NET Framework projects.
+* Wice.DevTools: an internal tool that helps transform sample code into rtf colorizable texts.
 
 # .NET 9+ AOT-compatible:
 * **WiceAot**: this is the same as Wice but compiled for .NET 9, AOT friendly. Source has been adapted and project is using [DirectNAot](https://github.com/smourier/DirectNAot).
