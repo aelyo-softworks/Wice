@@ -9,7 +9,7 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
     public static VisualProperty OffPathBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(ToggleSwitch), nameof(OffPathBrush), VisualPropertyInvalidateModes.Render);
 
     private readonly Canvas _canvas = new();
-    private readonly Path _path;
+    private readonly Path _path = new();
     private readonly Ellipse _button = new();
 
     private event EventHandler<ValueEventArgs>? _valueChanged;
@@ -39,33 +39,33 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
     bool ISelectable.RaiseIsSelectedChanged { get; set; }
     bool ISelectable.IsSelected { get => Value; set => Value = value; }
 
+    [Category(CategoryBehavior)]
+    public virtual bool AutoSize { get; set; } = true;
+
     public ToggleSwitch()
     {
-        Width = GetWindowTheme().BoxSize * 2;
-        Height = GetWindowTheme().BoxSize;
-
-        _path = new Path();
+        OnThemeDpiEvent(null, ThemeDpiEventArgs.FromWindow(Window));
 
         _button.HorizontalAlignment = Alignment.Near;
 
         _canvas.Arranged += (s, e) =>
         {
-            var geoSource = Application.CurrentResourceManager.GetToggleSwitchGeometrySource(_canvas.ArrangedRect.Width - _path.StrokeThickness, _canvas.ArrangedRect.Height - _path.StrokeThickness, _path.StrokeThickness / 2);
+            var theme = GetWindowTheme();
+
+            var thickness = 0.5f;
+            var ratio = theme.ToggleBorderRatio;
+            if (ratio > 0)
+            {
+                thickness = Math.Max(thickness, _button.Height * ratio);
+            }
+
+            var ar = _canvas.ArrangedRect;
+            var geoSource = Application.CurrentResourceManager.GetToggleSwitchGeometrySource(ar.Width - thickness, ar.Height - thickness, thickness / 2);
             _path.GeometrySource2D = geoSource;
 
-            var radius = _canvas.ArrangedRect.Height / 2 - _path.StrokeThickness * 2.5f;
+            var radiusRatio = Math.Max(theme.ToggleRadiusRatio, 0.4f);
+            var radius = ar.Height / 2 - thickness / radiusRatio;
             _button.Radius = new Vector2(radius, radius);
-
-            var thickness = 0f;
-            var ratio = GetWindowTheme().ToggleBorderRatio;
-            if (ratio <= 0)
-            {
-                thickness = 0;
-            }
-            else
-            {
-                thickness = _button.Height * ratio;
-            }
 
             _path.StrokeThickness = Math.Max(0.5f, thickness);
         };
@@ -75,8 +75,8 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
 
 #if DEBUG
         _canvas.Name = nameof(ToggleSwitch) + nameof(_canvas);
-        _path.Name = nameof(_path);
-        _button.Name = nameof(_button);
+        _path.Name = nameof(ToggleSwitch) + nameof(_path);
+        _button.Name = nameof(ToggleSwitch) + nameof(_button);
 #endif
         Child = _canvas;
 #if NETFRAMEWORK
@@ -116,11 +116,12 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         if (Compositor == null)
             return;
 
+        var theme = GetWindowTheme();
         if (Value)
         {
             _path.StrokeBrush = null;
-            _path.FillBrush = OnPathBrush ?? Compositor.CreateColorBrush(GetWindowTheme().SelectedColor.ToColor());
-            _button.FillBrush = OnButtonBrush ?? Compositor.CreateColorBrush(GetWindowTheme().UnselectedColor.ToColor());
+            _path.FillBrush = OnPathBrush ?? Compositor.CreateColorBrush(theme.SelectedColor.ToColor());
+            _button.FillBrush = OnButtonBrush ?? Compositor.CreateColorBrush(theme.UnselectedColor.ToColor());
         }
         else
         {
@@ -128,10 +129,13 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
             var button = OffButtonBrush;
             if (path == null)
             {
-                button ??= Compositor.CreateColorBrush(GetWindowTheme().BorderColor.ToColor());
+                button ??= Compositor.CreateColorBrush(theme.BorderColor.ToColor());
                 path = button;
             }
-            else button ??= path;
+            else
+            {
+                button ??= path;
+            }
 
             _path.StrokeBrush = path;
             _path.FillBrush = null;
@@ -165,12 +169,32 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
             _button.HorizontalAlignment = (bool)value! ? Alignment.Far : Alignment.Near;
             OnValueChanged(this, new ValueEventArgs<bool>((bool)value));
         }
-        else if (property == HeightProperty)
-        {
-            // ellipse has no size by itself, if we want to be able to use HorizontalAlignment, we need to set it
-            _button.Width = (float)value!;
-            _button.Height = (float)value;
-        }
         return true;
+    }
+
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
+    {
+        base.OnAttachedToComposition(sender, e);
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
+
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        if (!AutoSize)
+            return;
+
+        var theme = GetWindowTheme();
+        var boxSize = theme.BoxSize;
+        Width = boxSize * 2;
+        Height = boxSize;
+        _button.Width = boxSize;
+        _button.Height = boxSize;
     }
 }

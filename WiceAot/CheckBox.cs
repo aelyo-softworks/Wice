@@ -12,53 +12,81 @@ public partial class CheckBox : StateButton
     [Category(CategoryBehavior)]
     public new bool Value { get => (bool)base.Value!; set => base.Value = value; }
 
-    public static Visual CreateDefaultTrueVisual(Theme theme)
+    protected virtual Visual CreateTrueVisual() => new TrueVisual();
+    protected virtual Visual CreateFalseVisual() => new FalseVisual();
+    protected virtual Visual CreateChild(StateButton box, EventArgs e, StateButtonState state) => true.Equals(state.Value) ? CreateTrueVisual() : CreateFalseVisual();
+
+    public partial class TrueVisual : Border
     {
-        ExceptionExtensions.ThrowIfNull(theme, nameof(theme));
-        var border = new Border();
-
-        var path = new Path
+        public TrueVisual()
         {
-            StrokeThickness = theme.BorderSize / 2,
-        };
-
-        border.Arranged += (s, e) =>
-        {
-            var geoSource = Application.CurrentResourceManager.GetCheckButtonGeometrySource(border.ArrangedRect.Width, border.ArrangedRect.Height);
-            path.GeometrySource2D = geoSource;
-        };
-
-        border.AttachedToComposition += (s, e) =>
-        {
-            border.RenderBrush = border.Compositor!.CreateColorBrush(theme.SelectedColor.ToColor());
-            path.StrokeBrush = border.Compositor.CreateColorBrush(theme.UnselectedColor.ToColor());
-        };
-
-        border.Children.Add(path);
 #if DEBUG
-        border.Name ??= nameof(CheckBox) + ".true";
+            Name ??= nameof(CheckBox) + ".true";
 #endif
-        return border;
+            Children.Add(Path);
+        }
+
+        public Path Path { get; } = new();
+
+        protected override void OnArranged(object? sender, EventArgs e)
+        {
+            base.OnArranged(sender, e);
+            var ar = ArrangedRect;
+            var geoSource = Application.CurrentResourceManager.GetCheckButtonGeometrySource(ar.Width, ar.Height);
+            Path.GeometrySource2D = geoSource;
+        }
+
+        protected override void OnAttachedToComposition(object? sender, EventArgs e)
+        {
+            base.OnAttachedToComposition(sender, e);
+            OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+            var theme = GetWindowTheme();
+            RenderBrush = Compositor!.CreateColorBrush(theme.SelectedColor.ToColor());
+            Path.StrokeBrush = Compositor.CreateColorBrush(theme.UnselectedColor.ToColor());
+            Window!.ThemeDpiEvent += OnThemeDpiEvent;
+        }
+
+        protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+        {
+            base.OnDetachingFromComposition(sender, e);
+            Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+        }
+
+        protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+        {
+            var theme = GetWindowTheme();
+            Path.StrokeThickness = theme.BorderSize / 2;
+        }
     }
 
-    public static Visual CreateDefaultFalseVisual(Theme theme)
+    public partial class FalseVisual : Rectangle
     {
-        ExceptionExtensions.ThrowIfNull(theme, nameof(theme));
-        var rect = new Rectangle
+        public FalseVisual()
         {
-            StrokeThickness = theme.BorderSize,
-        };
-
-        rect.AttachedToComposition += (s, e) =>
-        {
-            rect.StrokeBrush = rect.Compositor!.CreateColorBrush(theme.BorderColor.ToColor());
-        };
 #if DEBUG
-        rect.Name ??= nameof(CheckBox) + ".false";
+            Name ??= nameof(CheckBox) + ".false";
 #endif
+        }
 
-        return rect;
+        protected override void OnAttachedToComposition(object? sender, EventArgs e)
+        {
+            base.OnAttachedToComposition(sender, e);
+            OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+            var theme = GetWindowTheme();
+            StrokeBrush = Compositor!.CreateColorBrush(theme.BorderColor.ToColor());
+            Window!.ThemeDpiEvent += OnThemeDpiEvent;
+        }
+
+        protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+        {
+            base.OnDetachingFromComposition(sender, e);
+            Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+        }
+
+        protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+        {
+            var theme = GetWindowTheme();
+            StrokeThickness = theme.BorderSize;
+        }
     }
-
-    protected virtual Visual CreateChild(StateButton box, EventArgs e, StateButtonState state) => true.Equals(state.Value) ? CreateDefaultTrueVisual(GetWindowTheme()) : CreateDefaultFalseVisual(GetWindowTheme());
 }

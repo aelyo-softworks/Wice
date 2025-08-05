@@ -22,8 +22,7 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
 
     public StateButton()
     {
-        Width = GetWindowTheme().BoxSize;
-        Height = GetWindowTheme().BoxSize;
+        OnThemeDpiEvent(null, ThemeDpiEventArgs.FromWindow(Window));
     }
 
     bool ISelectable.RaiseIsSelectedChanged { get; set; }
@@ -56,6 +55,9 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         }
         return true;
     }
+
+    [Category(CategoryBehavior)]
+    public virtual bool AutoSize { get; set; } = true;
 
     [Category(CategoryBehavior)]
     public IReadOnlyList<StateButtonState> States => _states;
@@ -124,12 +126,6 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
 
     protected virtual void OnValueChanged(object sender, ValueEventArgs e) => ValueChanged?.Invoke(sender, e);
 
-    protected override void OnAttachedToComposition(object? sender, EventArgs e)
-    {
-        base.OnAttachedToComposition(sender, e);
-        UpdateValueState(e);
-    }
-
     private StateButtonState? GetNextState()
     {
         if (States.Count <= 1)
@@ -155,5 +151,29 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         }
 
         base.OnClick(sender, e);
+    }
+
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
+    {
+        base.OnAttachedToComposition(sender, e);
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        UpdateValueState(e);
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
+
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        if (!AutoSize)
+            return;
+
+        var theme = GetWindowTheme();
+        Width = theme.BoxSize;
+        Height = theme.BoxSize;
     }
 }

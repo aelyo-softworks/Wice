@@ -47,6 +47,24 @@ public partial class Visual : BaseObject
     protected static object? NullifyString(BaseObject obj, object? value) => ((string)value!).Nullify();
     private static void IsMouseOverChanged(BaseObject obj, object? newValue, object? oldValue) => ((Visual)obj).IsMouseOverChanged((bool)newValue!);
 
+    protected static object? ValidateEmptyVector2(BaseObject obj, object? value)
+    {
+        var v2 = (Vector2)value!;
+        var x = v2.X;
+        var y = v2.Y;
+        if (float.IsNaN(x))
+        {
+            x = 0;
+        }
+
+        if (float.IsNaN(y))
+        {
+            y = 0;
+        }
+
+        return new Vector2(x, y);
+    }
+
     protected static object? ValidateZoom(BaseObject obj, object? value)
     {
         var flt = (float)value!;

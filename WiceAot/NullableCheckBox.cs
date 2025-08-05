@@ -13,39 +13,55 @@ public partial class NullableCheckBox : StateButton
     [Category(CategoryBehavior)]
     public new bool? Value { get => (bool?)base.Value; set => base.Value = value; }
 
+    protected virtual Visual CreateTrueVisual() => new CheckBox.TrueVisual();
+    protected virtual Visual CreateFalseVisual() => new CheckBox.FalseVisual();
+    protected virtual Visual CreateNullVisual() => new NullVisual();
     protected virtual Visual CreateChild(StateButton box, EventArgs e, StateButtonState state)
     {
         if (true.Equals(state.Value))
-            return CheckBox.CreateDefaultTrueVisual(GetWindowTheme());
+            return CreateTrueVisual();
 
         if (false.Equals(state.Value))
-            return CheckBox.CreateDefaultFalseVisual(GetWindowTheme());
+            return CreateFalseVisual();
 
-        return CreateDefaultNullVisual(GetWindowTheme());
+        return CreateNullVisual();
     }
 
-    public static Visual CreateDefaultNullVisual(Theme theme)
+    public partial class NullVisual : Canvas
     {
-        ExceptionExtensions.ThrowIfNull(theme, nameof(theme));
-        var canvas = new Canvas();
-
-        var rect = (Rectangle)CheckBox.CreateDefaultFalseVisual(theme);
-        canvas.Children.Add(rect);
-
-        var b = new Border
+        public NullVisual()
         {
-            Margin = D2D_RECT_F.Thickness(theme.BorderSize)
-        };
-        canvas.Children.Add(b);
 #if DEBUG
-        canvas.Name ??= nameof(NullableCheckBox) + ".null";
+            Name ??= nameof(NullableCheckBox) + ".null";
 #endif
+            Children.Add(Rectangle);
+            Children.Add(Border);
+        }
 
-        canvas.AttachedToComposition += (s, e) =>
+        public Rectangle Rectangle { get; } = new();
+        public Border Border { get; } = new();
+
+        protected override void OnAttachedToComposition(object? sender, EventArgs e)
         {
-            rect.StrokeBrush = canvas.Compositor!.CreateColorBrush(canvas.GetWindowTheme().SelectedColor.ToColor());
-            b.RenderBrush = canvas.Compositor.CreateColorBrush(canvas.GetWindowTheme().BorderColor.ToColor());
-        };
-        return canvas;
+            base.OnAttachedToComposition(sender, e);
+            OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+            var theme = GetWindowTheme();
+            Rectangle.StrokeBrush = Compositor!.CreateColorBrush(theme.SelectedColor.ToColor());
+            Border.RenderBrush = Compositor.CreateColorBrush(theme.BorderColor.ToColor());
+            Window!.ThemeDpiEvent += OnThemeDpiEvent;
+        }
+
+        protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+        {
+            base.OnDetachingFromComposition(sender, e);
+            Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+        }
+
+        protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+        {
+            var theme = GetWindowTheme();
+            Rectangle.StrokeThickness = theme.BorderSize;
+            Border.Margin = D2D_RECT_F.Thickness(theme.BorderSize);
+        }
     }
 }

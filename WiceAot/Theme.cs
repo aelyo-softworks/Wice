@@ -63,6 +63,7 @@ public class Theme
     public virtual float BorderSize { get; set; } = 4;
     public virtual float BoxSize { get; set; } = 20;
     public virtual float ToggleBorderRatio { get; set; } = 0.07f;
+    public virtual float ToggleRadiusRatio { get; set; } = 0.4f;
     public virtual float DisabledOpacityRatio { get; set; } = 0.5f;
 
     public virtual D3DCOLORVALUE ListBoxItemColor { get; set; } = D3DCOLORVALUE.White;
@@ -210,6 +211,7 @@ public class Theme
         BoxSize = UIExtensions.DpiScale(BoxSize, oldDpi, newDpi);
         BorderSize = UIExtensions.DpiScale(BorderSize, oldDpi, newDpi);
         ToggleBorderRatio = UIExtensions.DpiScale(ToggleBorderRatio, oldDpi, newDpi);
+        ToggleRadiusRatio = UIExtensions.DpiScale(ToggleRadiusRatio, oldDpi, newDpi);
         ButtonMargin = UIExtensions.DpiScale(ButtonMargin, oldDpi, newDpi);
         ButtonMinWidth = UIExtensions.DpiScale(ButtonMinWidth, oldDpi, newDpi);
         DialogBoxButtonFontSize = UIExtensions.DpiScale(DialogBoxButtonFontSize, oldDpi, newDpi);

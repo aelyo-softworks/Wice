@@ -14,6 +14,7 @@ public class SimpleStateButtonSample : Sample
         // add state button
         var btn = new Wice.StateButton
         {
+            AutoSize = false,
             Width = parent.Window!.DipsToPixels(100),
             Height = parent.Window!.DipsToPixels(100)
         };
