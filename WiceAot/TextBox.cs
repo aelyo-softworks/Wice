@@ -1,6 +1,6 @@
 ﻿namespace Wice;
 
-public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IValueable, IPasswordCapable, IDisposable
+public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IValueable, IPasswordCapable, IDisposable, IImmVisual
 {
     public static VisualProperty ForegroundBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(ForegroundBrush), VisualPropertyInvalidateModes.Render, Theme.Default.TextBoxForegroundColor);
     public static VisualProperty HoverForegroundBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(HoverForegroundBrush), VisualPropertyInvalidateModes.Render);
@@ -460,7 +460,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     }
 
     private void SetCaretLocation() => DoWhenRendered(() => Window?.RunTaskOnMainThread(() => DoSetCaretLocation()));
-    private void DoSetCaretLocation()
+    protected virtual void DoSetCaretLocation()
     {
         if (!IsFocused || !IsEditable || !IsEnabled)
             return;
@@ -489,10 +489,11 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
             caret.Location = new D2D_POINT_2F(x, y);
             caret.IsVisible = true;
+            Window?.NativeIfCreated?.SetImmCompositionWindowPosition(new POINT(x, y));
         }
     }
 
-    private void ShowCaret()
+    protected virtual void ShowCaret()
     {
         if (IsFocused && IsEditable && IsEnabled)
         {
@@ -504,7 +505,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    private void HideCaret()
+    protected virtual void HideCaret()
     {
         var caret = Window?.Caret;
         if (caret != null)
@@ -513,9 +514,8 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    private void StopEdit() => HideCaret();
-
-    private void Edit()
+    protected virtual void StopEdit() => HideCaret();
+    protected virtual void Edit()
     {
         ShowCaret();
         UpdateCaretFormatting();
@@ -2487,7 +2487,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     private IViewerParent? GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;
 
-    private void UpdateCaretFormatting()
+    protected virtual void UpdateCaretFormatting()
     {
         var layout = CheckLayout(false);
         if (layout == null)
@@ -3001,6 +3001,16 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     {
         base.OnDetachingFromComposition(sender, e);
         Reset();
+    }
+
+    bool IImmVisual.SetImmCompositionWindowPosition(Window window) => SetImmCompositionWindowPosition(window);
+    protected virtual bool SetImmCompositionWindowPosition(Window window)
+    {
+        if (!IsEditable)
+            return true; // do nothing if not editable
+
+        // let default behavior handle it
+        return false;
     }
 
     protected virtual void Dispose(bool disposing)

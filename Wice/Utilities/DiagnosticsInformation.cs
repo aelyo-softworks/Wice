@@ -32,6 +32,9 @@ public class DiagnosticsInformation(Assembly assembly = null, Window window = nu
     public bool IsTabletPC => GetSystemMetrics(SM.SM_TABLETPC) != 0;
 
     [Category("System")]
+    public bool IsPenExtensionsInstalled => GetSystemMetrics(SM.SM_PENWINDOWS) != 0;
+
+    [Category("System")]
     public bool IsRemotelyControlled => GetSystemMetrics(SM.SM_REMOTECONTROL) != 0;
 
     [Category("System")]
@@ -402,6 +405,25 @@ public class DiagnosticsInformation(Assembly assembly = null, Window window = nu
         {
         }
         return null;
+    }
+
+    public static bool HasNonWarpAdapter
+    {
+        get
+        {
+            using var factory = DXGIFunctions.CreateDXGIFactory1();
+            var adapters = factory.EnumAdapters().ToArray();
+            try
+            {
+                // https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/d3d10-graphics-programming-guide-dxgi#new-info-about-enumerating-adapters-for-windows-8
+                const int WarpDeviceId = 0x8c;
+                return adapters.Any(adapter => adapter.GetDesc().DeviceId != WarpDeviceId);
+            }
+            finally
+            {
+                adapters.Dispose();
+            }
+        }
     }
 
     public static string Serialize(Assembly assembly = null)

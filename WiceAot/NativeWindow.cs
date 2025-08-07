@@ -335,6 +335,56 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.ShellAboutW(Handle, PWSTR.From(txt), PWSTR.From(otherStuff), IconHandle);
     }
 
+    public void WithImmContext(Action<HIMC> action)
+    {
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
+        var ctx = WiceCommons.ImmGetContext(Handle);
+        if (ctx == 0)
+            return;
+
+        try
+        {
+            action(ctx);
+        }
+        finally
+        {
+            WiceCommons.ImmReleaseContext(Handle, ctx);
+        }
+    }
+
+
+    public T? WithImmContext<T>(Func<HIMC, T> func)
+    {
+        ExceptionExtensions.ThrowIfNull(func, nameof(func));
+        var ctx = WiceCommons.ImmGetContext(Handle);
+        if (ctx == 0)
+            return default;
+
+        try
+        {
+            return func(ctx);
+        }
+        finally
+        {
+            WiceCommons.ImmReleaseContext(Handle, ctx);
+        }
+    }
+
+    public bool GetImmOpenStatus() => WithImmContext(WiceCommons.ImmGetOpenStatus);
+    public bool SetImmOpenStatus(bool open) => WithImmContext(ctx => WiceCommons.ImmSetOpenStatus(ctx, open));
+    public bool NotifyImmIME(IME_NI action, IME_CPS index = 0, uint value = 0) => WithImmContext(ctx => WiceCommons.ImmNotifyIME(ctx, action, index, value));
+    public bool SetImmConversionStatus(IME_CMODE conversion, IME_SMODE sentence) => WithImmContext(ctx => WiceCommons.ImmSetConversionStatus(ctx, conversion, sentence));
+    public bool SetImmCompositionWindowPosition(POINT pt) => WithImmContext(ctx =>
+    {
+        var form = new COMPOSITIONFORM
+        {
+            dwStyle = CFS.CFS_POINT,
+            ptCurrentPos = pt,
+        };
+
+        return WiceCommons.ImmSetCompositionWindow(ctx, form);
+    });
+
     private void OnDragDrop(DragDropEventArgs e) => DragDrop?.Invoke(this, e);
     HRESULT IDropTarget.DragEnter(IDataObject dataObject, MODIFIERKEYS_FLAGS flags, POINTL pt, ref DROPEFFECT effect)
     {

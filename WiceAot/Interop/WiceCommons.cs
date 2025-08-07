@@ -1,6 +1,6 @@
 ﻿namespace Wice.Interop;
 
-public static class WiceCommons
+public static partial class WiceCommons
 {
     public static LRESULT SendMessageW(HWND hWnd, uint Msg, WPARAM wParam) => SendMessageW(hWnd, Msg, wParam, LPARAM.Null);
     public static LRESULT SendMessageW(HWND hWnd, uint Msg, LPARAM lParam) => SendMessageW(hWnd, Msg, WPARAM.Null, lParam);
@@ -39,6 +39,7 @@ public static class WiceCommons
     public const uint WM_LBUTTONUP = MessageDecoder.WM_LBUTTONUP;
     public const uint WM_LBUTTONDOWN = MessageDecoder.WM_LBUTTONDOWN;
 
+    public static bool HasNonWarpAdapter => DiagnosticsInformation.HasNonWarpAdapter;
     public static string? MsgToString(uint msg) => MessageDecoder.MsgToString((int)msg);
     public static Monitor? GetMonitorFromWindow(HWND hwnd, MONITOR_FROM_FLAGS dwFlags) => Monitor.FromWindow(hwnd, (MFW)dwFlags);
     public static IComObject<T>? GetComObjectFromPointer<T>(nint ptr) => ComObject.From<T>(ptr);
@@ -134,6 +135,30 @@ public static class WiceCommons
         lpMsg = msg;
         return ret;
     }
+
+    public static string DecodeMessage(this MSG msg) => DecodeMessage(msg.hwnd, (uint)msg.message, msg.wParam, msg.lParam);
+    public static string DecodeMessage(HWND handle, uint msg, WPARAM wParam, LPARAM lParam, LRESULT? lResult = null) => MessageDecoder.Decode(handle, (int)msg, wParam, lParam, lResult);
+
+    [DllImport("imm32")]
+    public static extern HIMC ImmGetContext(HWND hWnd);
+
+    [DllImport("imm32")]
+    public static extern BOOL ImmReleaseContext(HWND hWnd, HIMC hIMC);
+
+    [DllImport("imm32")]
+    public static extern BOOL ImmSetCompositionWindow(HIMC hIMC, in COMPOSITIONFORM lpCompForm);
+
+    [DllImport("imm32")]
+    public static extern BOOL ImmSetOpenStatus(HIMC hIMC, BOOL fOpen);
+
+    [DllImport("imm32")]
+    public static extern BOOL ImmGetOpenStatus(HIMC hIMC);
+
+    [DllImport("imm32")]
+    public static extern BOOL ImmSetConversionStatus(HIMC hIMC, IME_CMODE conversion, IME_SMODE sentence);
+
+    [DllImport("imm32")]
+    public static extern BOOL ImmNotifyIME(HIMC hIMC, IME_NI action, IME_CPS index, uint value);
 
     [DllImport("user32")]
     public static extern BOOL PeekMessageW(out MSG lpMsg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax, PEEK_MESSAGE_REMOVE_TYPE wRemoveMsg);
@@ -324,6 +349,7 @@ public static class WiceCommons
     public const uint WM_LBUTTONUP = MessageDecoder.WM_LBUTTONUP;
     public const uint WM_LBUTTONDOWN = MessageDecoder.WM_LBUTTONDOWN;
 
+    public static bool HasNonWarpAdapter => SystemInformation.HasNonWarpAdapter;
     public static string? MsgToString(uint msg) => MessageDecoder.MsgToString(msg);
     public static Monitor? GetMonitorFromWindow(HWND hwnd, MONITOR_FROM_FLAGS dwFlags) => Monitor.FromWindow(hwnd, dwFlags);
     public static IComObject<T>? GetComObjectFromPointer<T>(nint ptr) => ComObject.FromPointer<T>(ptr);
@@ -343,6 +369,30 @@ public static class WiceCommons
 
         return obj;
     }
+
+    public static string DecodeMessage(this MSG msg) => MessageDecoder.Decode(msg);
+    public static string DecodeMessage(HWND handle, uint msg, WPARAM wParam, LPARAM lParam, LRESULT? lResult = null) => MessageDecoder.Decode(handle, msg, wParam, lParam, lResult);
+
+    [LibraryImport("imm32")]
+    public static partial HIMC ImmGetContext(HWND hWnd);
+
+    [LibraryImport("imm32")]
+    public static partial BOOL ImmReleaseContext(HWND hWnd, HIMC hIMC);
+
+    [LibraryImport("imm32")]
+    public static partial BOOL ImmSetCompositionWindow(HIMC hIMC, in COMPOSITIONFORM lpCompForm);
+
+    [LibraryImport("imm32")]
+    public static partial BOOL ImmSetOpenStatus(HIMC hIMC, BOOL fOpen);
+
+    [LibraryImport("imm32")]
+    public static partial BOOL ImmGetOpenStatus(HIMC hIMC);
+
+    [LibraryImport("imm32")]
+    public static partial BOOL ImmSetConversionStatus(HIMC hIMC, IME_CMODE conversion, IME_SMODE sentence);
+
+    [LibraryImport("imm32")]
+    public static partial BOOL ImmNotifyIME(HIMC hIMC, IME_NI action, IME_CPS index, uint value);
 
     public static int GetSystemMetrics(SYSTEM_METRICS_INDEX nIndex) => Functions.GetSystemMetrics(nIndex);
     public static uint GetDoubleClickTime() => Functions.GetDoubleClickTime();

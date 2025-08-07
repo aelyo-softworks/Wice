@@ -1568,6 +1568,23 @@ public partial class Window : Canvas, ITitleBarParent
         return base.GetInvalidateModes(childVisual, childMode, defaultModes, reason);
     }
 
+    public virtual bool SetImmCompositionWindowPosition(Visual visual)
+    {
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
+        if (visual is not IImmVisual immVisual)
+            return false;
+
+        if (immVisual.SetImmCompositionWindowPosition(this))
+            return true;
+
+        var native = NativeIfCreated;
+        if (native == null)
+            return false;
+
+        var cursorPos = native.ScreenToClient(NativeWindow.GetCursorPosition());
+        return native.SetImmCompositionWindowPosition(cursorPos);
+    }
+
     // this is to ensure render will happen on main/ui thread
     public virtual bool RequestRender()
     {
@@ -3323,14 +3340,8 @@ public partial class Window : Canvas, ITitleBarParent
             msg != MessageDecoder.WM_PAINT && msg != MessageDecoder.WM_NCPAINT && msg != MessageDecoder.WM_GETICON &&
             msg != MessageDecoder.WM_WINDOWPOSCHANGED && msg != MessageDecoder.WM_WINDOWPOSCHANGING)
         {
-            //Application.Trace("msg: " + MessageDecoder.Decode(hwnd, msg, wParam, lParam));
+            //Application.Trace("msg: " + WiceCommons.DecodeMessage(hwnd, msg, wParam, lParam));
         }
-
-        //var str = MessageDecoder.MsgToString(msg);
-        //if (str != null && (str.IndexOf("mouse", StringComparison.OrdinalIgnoreCase) >= 0 || str.IndexOf("pointer", StringComparison.OrdinalIgnoreCase) >= 0))
-        //{
-        //    Application.Trace("msg: " + MessageDecoder.Decode(hwnd, msg, wParam, lParam));
-        //}
 #endif
 
         var win = GetWindow(hwnd);
@@ -3840,6 +3851,16 @@ public partial class Window : Canvas, ITitleBarParent
                         }
                     }
                 }
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
+
+            case MessageDecoder.WM_IME_NOTIFY:
+                var imn = (IMN)wParam.Value.ToUInt32();
+                Application.Trace("IMN: " + imn);
+                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
+
+            case 0x288:
+                var imr = (IMR)wParam.Value.ToUInt32();
+                Application.Trace("IMR: " + imr);
                 return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
             case MessageDecoder.WM_CHAR:

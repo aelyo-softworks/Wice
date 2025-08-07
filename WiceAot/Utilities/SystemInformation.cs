@@ -42,6 +42,28 @@ public class SystemInformation(Assembly? assembly = null, Window? window = null,
 
     [Category("System")]
     public new string ProcessorArchitecture => SystemUtilities.GetProcessorArchitecture().ToString();
+
+    [Category("System")]
+    public bool IsPenExtensionsInstalled => Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_TABLETPC) != 0;
+
+    public static bool HasNonWarpAdapter
+    {
+        get
+        {
+            using var factory = DXGIFunctions.CreateDXGIFactory1();
+            var adapters = factory.EnumAdapters().ToArray();
+            try
+            {
+                // https://learn.microsoft.com/en-us/windows/win32/direct3ddxgi/d3d10-graphics-programming-guide-dxgi#new-info-about-enumerating-adapters-for-windows-8
+                const int WarpDeviceId = 0x8c;
+                return adapters.Any(adapter => adapter.GetDesc().DeviceId != WarpDeviceId);
+            }
+            finally
+            {
+                adapters.Dispose();
+            }
+        }
+    }
 }
 #pragma warning restore CA1826 // Do not use Enumerable methods on indexable collections
 #pragma warning restore CA1822 // Mark members as static

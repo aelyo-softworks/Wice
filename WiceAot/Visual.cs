@@ -1294,11 +1294,13 @@ public partial class Visual : BaseObject
             return doFocus();
 
         // the focus can only be shown when the item has been rendered
-        DoWhenRendered(() => doFocus());
+        DoWhenRendered(doFocus);
         return null; // not sure
 
         bool? doFocus()
         {
+            Window?.SetImmCompositionWindowPosition(this);
+
             // has any other visual taken the place?
             if (Interlocked.CompareExchange(ref _focusRequestedVisual, null, this) != this)
                 return false;
