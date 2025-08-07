@@ -3853,16 +3853,6 @@ public partial class Window : Canvas, ITitleBarParent
                 }
                 return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
-            case MessageDecoder.WM_IME_NOTIFY:
-                var imn = (IMN)wParam.Value.ToUInt32();
-                Application.Trace("IMN: " + imn);
-                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
-
-            case 0x288:
-                var imr = (IMR)wParam.Value.ToUInt32();
-                Application.Trace("IMR: " + imr);
-                return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
-
             case MessageDecoder.WM_CHAR:
             case MessageDecoder.WM_SYSCHAR:
                 if (win == null)
