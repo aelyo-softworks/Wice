@@ -370,19 +370,44 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    public bool GetImmConversionStatus(out IME_CMODE conversion, out IME_SMODE sentence)
+    {
+        var ret = WithImmContext(ctx =>
+        {
+            var r = WiceCommons.ImmGetConversionStatus(ctx, out var c, out var s);
+            return (r, c, s);
+        });
+        conversion = ret.c;
+        sentence = ret.s;
+        return ret.r;
+    }
+
+    public HWND GetDefaultIMEWnd() => WiceCommons.ImmGetDefaultIMEWnd(Handle);
     public bool GetImmOpenStatus() => WithImmContext(WiceCommons.ImmGetOpenStatus);
     public bool SetImmOpenStatus(bool open) => WithImmContext(ctx => WiceCommons.ImmSetOpenStatus(ctx, open));
     public bool NotifyImmIME(IME_NI action, IME_CPS index = 0, uint value = 0) => WithImmContext(ctx => WiceCommons.ImmNotifyIME(ctx, action, index, value));
     public bool SetImmConversionStatus(IME_CMODE conversion, IME_SMODE sentence) => WithImmContext(ctx => WiceCommons.ImmSetConversionStatus(ctx, conversion, sentence));
-    public bool SetImmCompositionWindowPosition(POINT pt) => WithImmContext(ctx =>
+    public bool SetImmStatusWindowPosition(POINT position) => WithImmContext(ctx => WiceCommons.ImmSetStatusWindowPos(ctx, position));
+    public bool SetImmCompositionWindowPosition(POINT position, COMPOSITIONFORM? form = null) => WithImmContext(ctx =>
     {
-        var form = new COMPOSITIONFORM
+        form ??= new COMPOSITIONFORM
         {
             dwStyle = CFS.CFS_POINT,
-            ptCurrentPos = pt,
+            ptCurrentPos = position,
         };
 
-        return WiceCommons.ImmSetCompositionWindow(ctx, form);
+        return WiceCommons.ImmSetCompositionWindow(ctx, form.Value);
+    });
+
+    public bool SetImmCandidateWindowPosition(POINT position, CANDIDATEFORM? form = null) => WithImmContext(ctx =>
+    {
+        form ??= new CANDIDATEFORM
+        {
+            dwStyle = CFS.CFS_POINT,
+            ptCurrentPos = position,
+        };
+
+        return WiceCommons.ImmSetCandidateWindow(ctx, form.Value);
     });
 
     private void OnDragDrop(DragDropEventArgs e) => DragDrop?.Invoke(this, e);

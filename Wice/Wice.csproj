@@ -186,9 +186,11 @@
 	  <Compile Include="..\WiceAot\IImmVisual.cs" Link="IImmVisual.cs" />
 	  <Compile Include="..\WiceAot\Image.cs" Link="Image.cs" />
 	  <Compile Include="..\WiceAot\IModalVisual.cs" Link="IModalVisual.cs" />
+	  <Compile Include="..\WiceAot\Interop\CANDIDATEFORM.cs" Link="Interop\CANDIDATEFORM.cs" />
 	  <Compile Include="..\WiceAot\Interop\CFS.cs" Link="Interop\CFS.cs" />
 	  <Compile Include="..\WiceAot\Interop\COMPOSITIONFORM.cs" Link="Interop\COMPOSITIONFORM.cs" />
 	  <Compile Include="..\WiceAot\Interop\IMECHARPOSITION.cs" Link="Interop\IMECHARPOSITION.cs" />
+	  <Compile Include="..\WiceAot\Interop\IME_CAND.cs" Link="Interop\IME_CAND.cs" />
 	  <Compile Include="..\WiceAot\Interop\IME_CMODE.cs" Link="Interop\IME_CMODE.cs" />
 	  <Compile Include="..\WiceAot\Interop\IME_CPS.cs" Link="Interop\IME_CPS.cs" />
 	  <Compile Include="..\WiceAot\Interop\IME_NI.cs" Link="Interop\IME_NI.cs" />

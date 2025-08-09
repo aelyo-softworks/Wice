@@ -149,6 +149,9 @@ public static partial class WiceCommons
     public static extern BOOL ImmSetCompositionWindow(HIMC hIMC, in COMPOSITIONFORM lpCompForm);
 
     [DllImport("imm32")]
+    public static extern BOOL ImmSetCandidateWindow(HIMC hIMC, in CANDIDATEFORM lpCompForm);
+
+    [DllImport("imm32")]
     public static extern BOOL ImmSetOpenStatus(HIMC hIMC, BOOL fOpen);
 
     [DllImport("imm32")]
@@ -156,6 +159,21 @@ public static partial class WiceCommons
 
     [DllImport("imm32")]
     public static extern BOOL ImmSetConversionStatus(HIMC hIMC, IME_CMODE conversion, IME_SMODE sentence);
+
+    [DllImport("imm32")]
+    public static extern BOOL ImmGetConversionStatus(HIMC hIMC, out IME_CMODE conversion, out IME_SMODE sentence);
+
+    [DllImport("imm32")]
+    public static extern BOOL ImmSetStatusWindowPos(HIMC hIMC, in POINT lpptPos);
+
+    [DllImport("imm32")]
+    public static extern uint ImmGetCandidateListCountW(HIMC hIMC, out uint lpdwListCount);
+
+    [DllImport("imm32")]
+    public static extern uint ImmGetCandidateListW(HIMC hIMC, uint deIndex, nint lpCandList, uint dwBufLen);
+
+    [DllImport("imm32")]
+    public static extern HWND ImmGetDefaultIMEWnd(HWND hWnd);
 
     [DllImport("imm32")]
     public static extern BOOL ImmNotifyIME(HIMC hIMC, IME_NI action, IME_CPS index, uint value);
@@ -383,6 +401,9 @@ public static partial class WiceCommons
     public static partial BOOL ImmSetCompositionWindow(HIMC hIMC, in COMPOSITIONFORM lpCompForm);
 
     [LibraryImport("imm32")]
+    public static partial BOOL ImmSetCandidateWindow(HIMC hIMC, in CANDIDATEFORM lpCandidate);
+
+    [LibraryImport("imm32")]
     public static partial BOOL ImmSetOpenStatus(HIMC hIMC, BOOL fOpen);
 
     [LibraryImport("imm32")]
@@ -390,6 +411,21 @@ public static partial class WiceCommons
 
     [LibraryImport("imm32")]
     public static partial BOOL ImmSetConversionStatus(HIMC hIMC, IME_CMODE conversion, IME_SMODE sentence);
+
+    [LibraryImport("imm32")]
+    public static partial BOOL ImmGetConversionStatus(HIMC hIMC, out IME_CMODE conversion, out IME_SMODE sentence);
+
+    [LibraryImport("imm32")]
+    public static partial BOOL ImmSetStatusWindowPos(HIMC hIMC, in POINT lpptPos);
+
+    [LibraryImport("imm32")]
+    public static partial uint ImmGetCandidateListCountW(HIMC hIMC, out uint lpdwListCount);
+
+    [LibraryImport("imm32")]
+    public static partial uint ImmGetCandidateListW(HIMC hIMC, uint deIndex, nint lpCandList, uint dwBufLen);
+
+    [LibraryImport("imm32")]
+    public static partial HWND ImmGetDefaultIMEWnd(HWND hWnd);
 
     [LibraryImport("imm32")]
     public static partial BOOL ImmNotifyIME(HIMC hIMC, IME_NI action, IME_CPS index, uint value);
