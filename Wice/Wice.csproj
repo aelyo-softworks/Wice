@@ -321,6 +321,7 @@
 	  <Compile Include="..\WiceAot\VisualSetOptions.cs" Link="VisualSetOptions.cs" />
 	  <Compile Include="..\WiceAot\WiceException.cs" Link="WiceException.cs" />
 	  <Compile Include="..\WiceAot\Window.cs" Link="Window.cs" />
+	  <Compile Include="..\WiceAot\WindowMessageEventArgs.cs" Link="WindowMessageEventArgs.cs" />
 	  <Compile Include="..\WiceAot\WindowsFrameMode.cs" Link="WindowsFrameMode.cs" />
 	  <Compile Include="..\WiceAot\WindowSynchronizationContext.cs" Link="WindowSynchronizationContext.cs" />
 	  <Compile Include="..\WiceAot\WindowTimer.cs" Link="WindowTimer.cs" />

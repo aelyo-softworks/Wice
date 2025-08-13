@@ -1,4 +1,6 @@
-﻿namespace Wice.Utilities;
+﻿using System.Security.Cryptography;
+
+namespace Wice.Utilities;
 
 public static partial class IOUtilities
 {
@@ -223,4 +225,127 @@ public static partial class IOUtilities
         const int ERROR_SHARING_VIOLATION = unchecked((int)0x80070020);
         return exception.HResult == ERROR_SHARING_VIOLATION;
     }
+
+#if !NETFRAMEWORK
+    private const uint ERROR_MOD_NOT_FOUND = 0x8007007E;
+    private static readonly ConcurrentDictionary<string, HRESULT> _initialized = new(StringComparer.OrdinalIgnoreCase);
+
+    // assembly can be present in files or in assemblies embedded resources
+    public static HRESULT EnsureNativeDllLoaded(string nativeDllName, Assembly? assembly = null, bool throwOnError = true)
+    {
+        if (!_initialized.TryGetValue(nativeDllName, out var hr))
+        {
+            hr = EnsureNativeDllLoaded(nativeDllName, assembly);
+            if (hr == ERROR_MOD_NOT_FOUND && throwOnError)
+                throw new Exception($"Cannot load {nativeDllName}.dll. Make sure it's present in the current's process path.");
+
+            hr.ThrowOnError(throwOnError);
+            _initialized[nativeDllName] = hr;
+        }
+        return hr;
+    }
+
+    private static HRESULT EnsureNativeDllLoaded(string nativeDllName, Assembly? assembly)
+    {
+        HMODULE h;
+        if (assembly != null)
+        {
+            var asmPath = GetDllPathFromAssemblyResources(assembly, nativeDllName);
+            if (asmPath != null)
+            {
+                h = Functions.LoadLibraryW(PWSTR.From(asmPath));
+                if (h.Value != 0)
+                    return Constants.S_OK;
+
+                return Marshal.GetHRForLastWin32Error();
+            }
+        }
+
+        string? firstPath = null;
+        foreach (var path in GetPossiblePaths(nativeDllName))
+        {
+            firstPath ??= path;
+            h = Functions.LoadLibraryW(PWSTR.From(path));
+            if (h.Value != 0)
+                return Constants.S_OK;
+        }
+
+        if (firstPath == null)
+            return ERROR_MOD_NOT_FOUND;
+
+        h = Functions.LoadLibraryW(PWSTR.From(firstPath));
+        if (h.Value != 0)
+            return Constants.S_OK;
+
+        return Marshal.GetHRForLastWin32Error();
+    }
+
+    private static IEnumerable<string> GetPossiblePaths(string nativeDllName)
+    {
+        if (Environment.ProcessPath == null)
+            yield break;
+
+        var processDir = System.IO.Path.GetDirectoryName(Environment.ProcessPath);
+        if (processDir == null)
+            yield break;
+
+        var name = nativeDllName + ".dll";
+        var path = System.IO.Path.Combine(processDir, name);
+        if (File.Exists(path))
+            yield return path;
+
+        var arch = RuntimeInformation.ProcessArchitecture;
+        switch (arch)
+        {
+            case Architecture.Arm64:
+            case Architecture.X64:
+            case Architecture.X86:
+                path = System.IO.Path.Combine(processDir, "runtimes", "win-" + arch.ToString().ToLowerInvariant(), "native", name);
+                if (File.Exists(path))
+                    yield return path;
+
+                break;
+        }
+    }
+
+    private static string? GetDllPathFromAssemblyResources(Assembly assembly, string nativeDllName)
+    {
+        var arch = RuntimeInformation.ProcessArchitecture.ToString();
+        var names = assembly.GetManifestResourceNames();
+
+        var dllName = nativeDllName + ".dll";
+        // first check with arch
+        var name = names.FirstOrDefault(n => n.Contains(arch, StringComparison.OrdinalIgnoreCase) && n.EndsWith(dllName, StringComparison.OrdinalIgnoreCase));
+        if (name == null)
+        {
+            // fallback to any that's not arch specific
+            var allArchs = new[] { "x86", "x64", "arm64" };
+            name = names.FirstOrDefault(n => allArchs.All(a => !n.Contains(a)) && n.EndsWith(dllName, StringComparison.OrdinalIgnoreCase));
+        }
+        if (name == null)
+            return null;
+
+        // come up with some local unique temp dir
+        var key = $"{assembly.FullName}, {name}";
+        var id = new Guid(MD5.HashData(Encoding.UTF8.GetBytes(key)));
+        var tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), id.ToString(), dllName);
+        using var stream = assembly.GetManifestResourceStream(name);
+        if (stream == null || stream.Length < 512) // bug of some sort
+            return null;
+
+        var fi = new FileInfo(tempPath);
+        if (!fi.Exists || fi.Length != stream.Length)
+        {
+            var dir = System.IO.Path.GetDirectoryName(tempPath)!;
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            using var file = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            stream.CopyTo(file);
+        }
+        return tempPath;
+    }
+#endif
 }

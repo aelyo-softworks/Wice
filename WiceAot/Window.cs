@@ -84,6 +84,7 @@ public partial class Window : Canvas, ITitleBarParent
     public event EventHandler<KeyEventArgs>? PreviewKeyDown;
     public event EventHandler<KeyEventArgs>? PreviewKeyUp;
     public event EventHandler<KeyPressEventArgs>? PreviewKeyPress;
+    public event EventHandler<WindowMessageEventArgs>? WindowMessage;
 
     public Window()
     {
@@ -938,6 +939,14 @@ public partial class Window : Canvas, ITitleBarParent
 
     protected virtual LRESULT WindowProc(uint msg, WPARAM wParam, LPARAM lParam, out bool handled)
     {
+        var e = new WindowMessageEventArgs(Handle, msg, wParam, lParam);
+        OnWindowMessage(this, e);
+        if (e.Handled)
+        {
+            handled = true;
+            return e.Result;
+        }
+
         handled = false;
         return LRESULT.Null;
     }
@@ -1050,6 +1059,7 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual void OnPreviewKeyDown(object? sender, KeyEventArgs e) => PreviewKeyDown?.Invoke(sender, e);
     protected virtual void OnPreviewKeyUp(object? sender, KeyEventArgs e) => PreviewKeyUp?.Invoke(sender, e);
     protected virtual void OnPreviewKeyPress(object? sender, KeyPressEventArgs e) => PreviewKeyPress?.Invoke(sender, e);
+    protected virtual void OnWindowMessage(object? sender, WindowMessageEventArgs e) => WindowMessage?.Invoke(sender, e);
 
     public virtual void SendKeyEvent(KeyEventArgs e)
     {
