@@ -5,7 +5,7 @@ public class PropertyGrid : Grid
     public static VisualProperty LiveSyncProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
     public static VisualProperty IsReadOnlyProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(IsReadOnly), VisualPropertyInvalidateModes.Render, false);
     public static VisualProperty GroupByCategoryProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(GroupByCategory), VisualPropertyInvalidateModes.Render, false);
-    public static VisualProperty SelectedObjectProperty { get; } = VisualProperty.Add<object>(typeof(PropertyGrid), nameof(SelectedObject), VisualPropertyInvalidateModes.Measure, null);
+    public static VisualProperty SelectedObjectProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGrid), nameof(SelectedObject), VisualPropertyInvalidateModes.Measure, null);
     public static VisualProperty CellMarginProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(CellMargin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
 
     private readonly ConcurrentDictionary<string, PropertyVisuals> _propertyVisuals = new();
@@ -64,7 +64,7 @@ public class PropertyGrid : Grid
     public bool LiveSync { get => (bool)GetPropertyValue(LiveSyncProperty); set => SetPropertyValue(LiveSyncProperty, value); }
 
     [Category(CategoryLive)]
-    public object SelectedObject { get => GetPropertyValue(SelectedObjectProperty); set => SetPropertyValue(SelectedObjectProperty, value); }
+    public object? SelectedObject { get => GetPropertyValue(SelectedObjectProperty); set => SetPropertyValue(SelectedObjectProperty, value); }
 
     protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions options = null)
     {
