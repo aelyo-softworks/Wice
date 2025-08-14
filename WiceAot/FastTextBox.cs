@@ -15,6 +15,8 @@ public partial class FastTextBox : TextBox
         : base()
     {
         _container = new TextContainer(this, null);
+        base.IsEnabled = true;
+        base.IsEditable = false;
     }
 
     protected override bool TransformMaxed => HasFallback;
