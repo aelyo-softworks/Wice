@@ -1029,6 +1029,31 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    public static void ClampMaxBitmapSize(ref SIZE size)
+    {
+#if NETFRAMEWORK
+        if (size.width > MaximumBitmapSize)
+        {
+            size.width = MaximumBitmapSize;
+        }
+
+        if (size.height > MaximumBitmapSize)
+        {
+            size.height = MaximumBitmapSize;
+        }
+#else
+        if (size.cx > MaximumBitmapSize)
+        {
+            size.cx = (int)MaximumBitmapSize;
+        }
+
+        if (size.cy > MaximumBitmapSize)
+        {
+            size.cy = (int)MaximumBitmapSize;
+        }
+#endif
+    }
+
     private Caret GetCaret()
     {
         var caret = CreateCaret();
@@ -1297,6 +1322,7 @@ public partial class Window : Canvas, ITitleBarParent
 
         var cr = ClientRect;
         var cs = cr.Size;
+        ClampMaxBitmapSize(ref cs);
         FrameVisual!.Size = cs.ToVector2();
 
         if (WindowsFrameMode == WindowsFrameMode.Standard)

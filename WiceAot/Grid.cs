@@ -6,6 +6,7 @@ public partial class Grid : Visual
     public static VisualProperty ColumnProperty { get; } = VisualProperty.Add(typeof(Grid), "Column", VisualPropertyInvalidateModes.Measure, 0, convert: ValidateRowCol);
     public static VisualProperty RowSpanProperty { get; } = VisualProperty.Add(typeof(Grid), "RowSpan", VisualPropertyInvalidateModes.Measure, 1, convert: ValidateSpan);
     public static VisualProperty ColumnSpanProperty { get; } = VisualProperty.Add(typeof(Grid), "ColumnSpan", VisualPropertyInvalidateModes.Measure, 1, convert: ValidateSpan);
+    public static VisualProperty MeasureToContentProperty { get; } = VisualProperty.Add(typeof(Grid), nameof(Canvas), VisualPropertyInvalidateModes.Measure, DimensionOptions.Manual);
 
     private static object? ValidateRowCol(BaseObject obj, object? value)
     {
@@ -39,6 +40,9 @@ public partial class Grid : Visual
             new GridColumn()
         };
     }
+
+    [Category(CategoryLayout)]
+    public DimensionOptions MeasureToContent { get => (DimensionOptions)GetPropertyValue(MeasureToContentProperty)!; set => SetPropertyValue(MeasureToContentProperty, value); }
 
     [Category(CategoryLayout)]
     public BaseObjectCollection<GridRow> Rows { get; }
@@ -224,6 +228,17 @@ public partial class Grid : Visual
 
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
+        var sizeToContent = MeasureToContent;
+        if (!sizeToContent.HasFlag(DimensionOptions.Width) && constraint.width.IsSet())
+        {
+            constraint.width = float.PositiveInfinity;
+        }
+
+        if (!sizeToContent.HasFlag(DimensionOptions.Height) && constraint.height.IsSet())
+        {
+            constraint.height = float.PositiveInfinity;
+        }
+
         // reset all
         foreach (var col in Columns)
         {

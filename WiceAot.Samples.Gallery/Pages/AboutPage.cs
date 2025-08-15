@@ -92,6 +92,7 @@ public partial class AboutPage : Page
             tlb.MinButton!.IsVisible = false;
             dlg.Content.Children.Add(tlb);
 
+            _pg.MaxWidth = DesiredSize.width * 2 / 3;
             _pg.CellMargin = ((GalleryTheme)GetWindowTheme()).AboutPagePropertyGridCellMargin;
             _pg.Margin = ((GalleryTheme)GetWindowTheme()).AboutPagePropertyGridMargin;
 
