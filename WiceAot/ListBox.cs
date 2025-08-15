@@ -1,662 +1,846 @@
-﻿namespace Wice
+﻿namespace Wice;
+
+/// <summary>
+/// Vertical item presenter with selectable items and simple data-binding support.
+/// </summary>
+/// <remarks>
+/// - Layout: Measures visible children and stacks them vertically during arrange.
+/// - Selection: Supports <see cref="SelectionMode.Single"/> or multi-select via item toggling.
+/// - Data-binding: Creates <see cref="ItemVisual"/> children from <see cref="DataSource"/> using <see cref="DataBinder"/>.
+/// - Input: Keyboard navigation (Up/Down/Home/End), Space toggles selection of the focused item.
+/// - Scrolling: <see cref="ScrollIntoView(object)"/> cooperates with a parent <see cref="ScrollViewer"/>.
+/// </remarks>
+public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
 {
-    public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
+    /// <summary>
+    /// Data source backing the list. Accepts any enumerable or a <see cref="DataSource"/>. Changes trigger Measure invalidation.
+    /// </summary>
+    public static VisualProperty DataSourceProperty { get; } = VisualProperty.Add<object>(typeof(ListBox), nameof(DataSource), VisualPropertyInvalidateModes.Measure);
+
+    /// <summary>
+    /// Optional member name projected from each item during enumeration. Null is normalized via <c>NullifyString</c>.
+    /// </summary>
+    public static VisualProperty DataItemMemberProperty { get; } = VisualProperty.Add<string>(typeof(ListBox), nameof(DataItemMember), VisualPropertyInvalidateModes.Measure, convert: NullifyString);
+
+    /// <summary>
+    /// Optional item display format applied after member projection (e.g., "{0:G}"). Null is normalized via <c>NullifyString</c>.
+    /// </summary>
+    public static VisualProperty DataItemFormatProperty { get; } = VisualProperty.Add<string>(typeof(ListBox), nameof(DataItemFormat), VisualPropertyInvalidateModes.Measure, convert: NullifyString);
+
+    /// <summary>
+    /// Binder used to create/bind item visuals. When null, a new <see cref="DataBinder"/> is used.
+    /// </summary>
+    public static VisualProperty DataBinderProperty { get; } = VisualProperty.Add<DataBinder>(typeof(ListBox), nameof(DataBinder), VisualPropertyInvalidateModes.Measure);
+
+    /// <summary>
+    /// When true, arranges to an integral multiple of the first item's height (trims bottom). Defaults to false.
+    /// </summary>
+    public static VisualProperty IntegralHeightProperty { get; } = VisualProperty.Add(typeof(ListBox), nameof(IntegralHeight), VisualPropertyInvalidateModes.Measure, false);
+
+    /// <summary>
+    /// Selection mode. Changing validates current selection and triggers arrange invalidation. Defaults to <see cref="SelectionMode.Single"/>.
+    /// </summary>
+    public static VisualProperty SelectionModeProperty { get; } = VisualProperty.Add(typeof(ListBox), nameof(SelectionMode), VisualPropertyInvalidateModes.Arrange, SelectionMode.Single);
+
+    /// <summary>
+    /// Raised when the selection set changes (after validation).
+    /// </summary>
+    public event EventHandler<EventArgs>? SelectionChanged;
+
+    /// <summary>
+    /// Raised after data-binding has rebuilt children.
+    /// </summary>
+    public event EventHandler<EventArgs>? DataBound;
+
+    /// <summary>
+    /// Raised for each item created/bound during data-binding.
+    /// </summary>
+    public event EventHandler<ValueEventArgs<ListBoxDataBindContext>>? ItemDataBound;
+
+    /// <summary>
+    /// Initializes a new <see cref="ListBox"/>. Focusable by default; centered alignment; pinned to top in a <see cref="Canvas"/>.
+    /// </summary>
+    public ListBox()
     {
-        public static VisualProperty DataSourceProperty { get; } = VisualProperty.Add<object>(typeof(ListBox), nameof(DataSource), VisualPropertyInvalidateModes.Measure);
-        public static VisualProperty DataItemMemberProperty { get; } = VisualProperty.Add<string>(typeof(ListBox), nameof(DataItemMember), VisualPropertyInvalidateModes.Measure, convert: NullifyString);
-        public static VisualProperty DataItemFormatProperty { get; } = VisualProperty.Add<string>(typeof(ListBox), nameof(DataItemFormat), VisualPropertyInvalidateModes.Measure, convert: NullifyString);
-        public static VisualProperty DataBinderProperty { get; } = VisualProperty.Add<DataBinder>(typeof(ListBox), nameof(DataBinder), VisualPropertyInvalidateModes.Measure);
-        public static VisualProperty IntegralHeightProperty { get; } = VisualProperty.Add(typeof(ListBox), nameof(IntegralHeight), VisualPropertyInvalidateModes.Measure, false);
-        public static VisualProperty SelectionModeProperty { get; } = VisualProperty.Add(typeof(ListBox), nameof(SelectionMode), VisualPropertyInvalidateModes.Arrange, SelectionMode.Single);
+        IsFocusable = true;
+        RaiseOnSelectionChanged = true;
+        VerticalAlignment = Alignment.Center; // by default we don't stretch to parent
+        HorizontalAlignment = Alignment.Center;
 
-        public event EventHandler<EventArgs>? SelectionChanged;
-        public event EventHandler<EventArgs>? DataBound;
-        public event EventHandler<ValueEventArgs<ListBoxDataBindContext>>? ItemDataBound;
+        // make sure we show the beginning otherwise it will be centered vertically
+        Canvas.SetTop(this, 0);
+    }
 
-        public ListBox()
+    bool ISelectorVisual.RaiseOnSelectionChanged { get => RaiseOnSelectionChanged; set => RaiseOnSelectionChanged = value; }
+
+    /// <summary>
+    /// When true, <see cref="OnSelectionChanged()"/> raises <see cref="SelectionChanged"/> automatically.
+    /// </summary>
+    protected virtual bool RaiseOnSelectionChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the selection mode (<see cref="SelectionMode.Single"/> or multi-select).
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public SelectionMode SelectionMode { get => (SelectionMode)GetPropertyValue(SelectionModeProperty)!; set => SetPropertyValue(SelectionModeProperty, value); }
+
+    /// <summary>
+    /// Gets or sets whether the arranged height snaps to an integral number of item heights.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public bool IntegralHeight { get => (bool)GetPropertyValue(IntegralHeightProperty)!; set => SetPropertyValue(IntegralHeightProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the data source. Can be any enumerable, array, or <see cref="DataSource"/>.
+    /// Setting rebinds items.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public object? DataSource { get => GetPropertyValue(DataSourceProperty); set => SetPropertyValue(DataSourceProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the item member name to display/project during enumeration.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public string? DataItemMember { get => (string?)GetPropertyValue(DataItemMemberProperty); set => SetPropertyValue(DataItemMemberProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the format string applied to the projected value.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public string? DataItemFormat { get => (string?)GetPropertyValue(DataItemFormatProperty); set => SetPropertyValue(DataItemFormatProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the binder used for item creation/binding. When null, a <see cref="DataBinder"/> is created on demand.
+    /// </summary>
+    [Browsable(false)]
+    public DataBinder? DataBinder { get => (DataBinder?)GetPropertyValue(DataBinderProperty); set => SetPropertyValue(DataBinderProperty, value); }
+
+    /// <summary>
+    /// Enumerates item visuals (excludes separator visuals).
+    /// </summary>
+    [Browsable(false)]
+    public IEnumerable<ItemVisual> Items => Children.OfType<ItemVisual>();
+
+    /// <summary>
+    /// Enumerates selected item visuals.
+    /// </summary>
+    [Browsable(false)]
+    public IEnumerable<ItemVisual> SelectedItems => Items.Where(v => v.IsSelected);
+
+    /// <summary>
+    /// Gets the first selected item or null.
+    /// </summary>
+    [Browsable(false)]
+    public ItemVisual? SelectedItem => Items.FirstOrDefault(v => v.IsSelected);
+
+    /// <inheritdoc />
+    protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
+    {
+        var children = VisibleChildren.ToArray();
+        if (children.Length == 0)
+            return base.MeasureCore(constraint);
+
+        var childConstraint = new D2D_SIZE_F(constraint.width, constraint.height / children.Length);
+        var maxChildDesiredWidth = 0f;
+        var height = 0f;
+
+        foreach (var child in children.Where(c => c.Parent != null))
         {
-            IsFocusable = true;
-            RaiseOnSelectionChanged = true;
-            VerticalAlignment = Alignment.Center; // by default we don't stretch to parent
-            HorizontalAlignment = Alignment.Center;
+            child.Measure(childConstraint);
+            var childDesiredSize = child.DesiredSize;
 
-            // make sure we show the beginning otherwise it will be centered vertically
-            Canvas.SetTop(this, 0);
+            if (maxChildDesiredWidth < childDesiredSize.width)
+            {
+                maxChildDesiredWidth = childDesiredSize.width;
+            }
+
+            height += childDesiredSize.height;
         }
 
-        bool ISelectorVisual.RaiseOnSelectionChanged { get => RaiseOnSelectionChanged; set => RaiseOnSelectionChanged = value; }
-        protected virtual bool RaiseOnSelectionChanged { get; set; }
+        return new D2D_SIZE_F(maxChildDesiredWidth, height);
+    }
 
-        [Category(CategoryBehavior)]
-        public SelectionMode SelectionMode { get => (SelectionMode)GetPropertyValue(SelectionModeProperty)!; set => SetPropertyValue(SelectionModeProperty, value); }
-
-        [Category(CategoryBehavior)]
-        public bool IntegralHeight { get => (bool)GetPropertyValue(IntegralHeightProperty)!; set => SetPropertyValue(IntegralHeightProperty, value); }
-
-        [Category(CategoryBehavior)]
-        public object? DataSource { get => GetPropertyValue(DataSourceProperty); set => SetPropertyValue(DataSourceProperty, value); }
-
-        [Category(CategoryBehavior)]
-        public string? DataItemMember { get => (string?)GetPropertyValue(DataItemMemberProperty); set => SetPropertyValue(DataItemMemberProperty, value); }
-
-        [Category(CategoryBehavior)]
-        public string? DataItemFormat { get => (string?)GetPropertyValue(DataItemFormatProperty); set => SetPropertyValue(DataItemFormatProperty, value); }
-
-        [Browsable(false)]
-        public DataBinder? DataBinder { get => (DataBinder?)GetPropertyValue(DataBinderProperty); set => SetPropertyValue(DataBinderProperty, value); }
-
-        [Browsable(false)]
-        public IEnumerable<ItemVisual> Items => Children.OfType<ItemVisual>();
-
-        [Browsable(false)]
-        public IEnumerable<ItemVisual> SelectedItems => Items.Where(v => v.IsSelected);
-
-        [Browsable(false)]
-        public ItemVisual? SelectedItem => Items.FirstOrDefault(v => v.IsSelected);
-
-        protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
+    /// <inheritdoc />
+    /// <remarks>
+    /// When <see cref="IntegralHeight"/> is true, trims the final rect bottom to an integer multiple
+    /// of the first child's <c>DesiredSize.height</c>.
+    /// </remarks>
+    protected override void ArrangeCore(D2D_RECT_F finalRect)
+    {
+        if (IntegralHeight)
         {
-            var children = VisibleChildren.ToArray();
-            if (children.Length == 0)
-                return base.MeasureCore(constraint);
-
-            var childConstraint = new D2D_SIZE_F(constraint.width, constraint.height / children.Length);
-            var maxChildDesiredWidth = 0f;
-            var height = 0f;
-
-            foreach (var child in children.Where(c => c.Parent != null))
+            var first = VisibleChildren.FirstOrDefault();
+            if (first != null)
             {
-                child.Measure(childConstraint);
-                var childDesiredSize = child.DesiredSize;
-
-                if (maxChildDesiredWidth < childDesiredSize.width)
+                var mod = finalRect.Height % first.DesiredSize.height;
+                if (mod != 0)
                 {
-                    maxChildDesiredWidth = childDesiredSize.width;
-                }
-
-                height += childDesiredSize.height;
-            }
-
-            return new D2D_SIZE_F(maxChildDesiredWidth, height);
-        }
-
-        protected override void ArrangeCore(D2D_RECT_F finalRect)
-        {
-            if (IntegralHeight)
-            {
-                var first = VisibleChildren.FirstOrDefault();
-                if (first != null)
-                {
-                    var mod = finalRect.Height % first.DesiredSize.height;
-                    if (mod != 0)
-                    {
-                        finalRect = new D2D_RECT_F(finalRect.left, finalRect.top, finalRect.right, finalRect.bottom - mod);
-                        Height = finalRect.Height;
-                    }
-                }
-            }
-
-            var children = VisibleChildren.ToArray();
-            if (children.Length == 0)
-            {
-                base.ArrangeCore(finalRect);
-                return;
-            }
-
-            var finalSize = finalRect.Size;
-            var top = 0f;
-            var width = finalSize.width;
-
-            foreach (var child in children.Where(c => c.Parent != null))
-            {
-                var h = child.DesiredSize.height;
-                var bounds = D2D_RECT_F.Sized(0, top, width, h);
-                child.Arrange(bounds);
-                top += h;
-            }
-        }
-
-        protected virtual void OnDataBound(object? sender, EventArgs e) => DataBound?.Invoke(sender, e);
-        protected virtual void OnItemDataBound(object sender, ValueEventArgs<ListBoxDataBindContext> e) => ItemDataBound?.Invoke(sender, e);
-        protected virtual void OnSelectionChanged(object? sender, EventArgs e) => SelectionChanged?.Invoke(sender, e);
-
-        protected virtual void OnSelectionChanged()
-        {
-            ValidateSelection();
-
-            if (RaiseOnSelectionChanged)
-            {
-                OnSelectionChanged(this, EventArgs.Empty);
-            }
-        }
-
-        protected virtual void ValidateSelection()
-        {
-            if (SelectionMode == SelectionMode.Single)
-            {
-                var count = 0;
-                var changed = false;
-                foreach (var item in Items.ToArray())
-                {
-                    if (item.IsSelected)
-                    {
-                        count++;
-                    }
-
-                    if (count > 1)
-                    {
-                        if (UpdateItemSelection(item, false))
-                        {
-                            changed = true;
-                        }
-                    }
-                }
-
-                if (changed)
-                {
-                    OnSelectionChanged();
+                    finalRect = new D2D_RECT_F(finalRect.left, finalRect.top, finalRect.right, finalRect.bottom - mod);
+                    Height = finalRect.Height;
                 }
             }
         }
 
-        protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
+        var children = VisibleChildren.ToArray();
+        if (children.Length == 0)
         {
-            if (!base.SetPropertyValue(property, value, options))
-                return false;
-
-            if (property == SelectionModeProperty)
-            {
-                ValidateSelection();
-            }
-            else if (property == DataSourceProperty)
-            {
-                BindDataSource();
-            }
-            return true;
+            base.ArrangeCore(finalRect);
+            return;
         }
 
-        protected override void OnAttachedToComposition(object? sender, EventArgs e)
+        var finalSize = finalRect.Size;
+        var top = 0f;
+        var width = finalSize.width;
+
+        foreach (var child in children.Where(c => c.Parent != null))
         {
-            base.OnAttachedToComposition(sender, e);
-            BindDataSource();
-            OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
-            Window!.ThemeDpiEvent += OnThemeDpiEvent;
+            var h = child.DesiredSize.height;
+            var bounds = D2D_RECT_F.Sized(0, top, width, h);
+            child.Arrange(bounds);
+            top += h;
         }
+    }
 
-        protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    /// <summary>
+    /// Raises <see cref="DataBound"/>.
+    /// </summary>
+    protected virtual void OnDataBound(object? sender, EventArgs e) => DataBound?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises <see cref="ItemDataBound"/> for a newly created/bound item.
+    /// </summary>
+    protected virtual void OnItemDataBound(object sender, ValueEventArgs<ListBoxDataBindContext> e) => ItemDataBound?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises <see cref="SelectionChanged"/>.
+    /// </summary>
+    protected virtual void OnSelectionChanged(object? sender, EventArgs e) => SelectionChanged?.Invoke(sender, e);
+
+    /// <summary>
+    /// Validates selection then raises <see cref="SelectionChanged"/> if <see cref="RaiseOnSelectionChanged"/> is true.
+    /// </summary>
+    protected virtual void OnSelectionChanged()
+    {
+        ValidateSelection();
+
+        if (RaiseOnSelectionChanged)
         {
-            base.OnDetachingFromComposition(sender, e);
-            Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+            OnSelectionChanged(this, EventArgs.Empty);
         }
+    }
 
-        protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    /// <summary>
+    /// Enforces <see cref="SelectionMode.Single"/> by clearing extra selected items if any.
+    /// </summary>
+    protected virtual void ValidateSelection()
+    {
+        if (SelectionMode == SelectionMode.Single)
         {
-            // do nothing by default
-        }
-
-        public virtual Visual? GetVisualForMouseEvent(MouseEventArgs e)
-        {
-            if (e == null)
-                return null;
-
-            return ((IOneChildParent?)e.VisualsStack.OfType<Visual>().LastOrDefault(v => IsChild(v) && v is IOneChildParent))?.Child;
-        }
-
-        public virtual ItemVisual? GetItemVisual(object? obj)
-        {
-            if (obj is ItemVisual visual)
-                return Items.FirstOrDefault(v => Equals(visual, v));
-
-            return Items.FirstOrDefault(v => Equals(obj, v.Data));
-        }
-
-        public virtual void Toggle(object? obj) => Toggle(GetItemVisual(obj));
-        private void Toggle(ItemVisual? obj)
-        {
-            if (obj == null)
-                return;
-
-            if (obj.IsSelected)
-            {
-                UnselectChild(obj);
-            }
-            else
-            {
-                SelectChild(obj);
-            }
-        }
-
-        public virtual void Unselect(object? obj) => UnselectChild(GetItemVisual(obj));
-        private void UnselectChild(ItemVisual? obj)
-        {
-            if (obj == null)
-                return;
-
-            if (UpdateItemSelection(obj, false))
-            {
-                OnSelectionChanged();
-            }
-        }
-
-        public virtual void Select(object? obj) => SelectChild(GetItemVisual(obj));
-        private void SelectChild(ItemVisual? obj)
-        {
-            if (obj == null)
-                return;
-
+            var count = 0;
             var changed = false;
-            if (SelectionMode == SelectionMode.Single)
+            foreach (var item in Items.ToArray())
             {
-                foreach (var item in Items.ToArray())
+                if (item.IsSelected)
                 {
-                    if (UpdateItemSelection(item, item == obj))
+                    count++;
+                }
+
+                if (count > 1)
+                {
+                    if (UpdateItemSelection(item, false))
                     {
                         changed = true;
                     }
                 }
             }
-            else
-            {
-                if (UpdateItemSelection(obj, true))
-                {
-                    changed = true;
-                }
-            }
 
             if (changed)
             {
                 OnSelectionChanged();
             }
         }
+    }
 
-        public virtual bool UpdateItemSelection(ItemVisual visual, bool? select)
+    /// <inheritdoc />
+    protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
+    {
+        if (!base.SetPropertyValue(property, value, options))
+            return false;
+
+        if (property == SelectionModeProperty)
         {
-            ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
-
-            var selected = visual.IsSelected;
-            if (select.HasValue)
-            {
-                visual.IsSelected = select.Value;
-            }
-
-            if (visual.IsSelected)
-            {
-                visual.DoWhenAttachedToComposition(() =>
-                {
-                    visual.RenderBrush = Compositor?.CreateColorBrush(GetWindowTheme().SelectedColor.ToColor());
-                });
-            }
-            else
-            {
-                visual.RenderBrush = Compositor?.CreateColorBrush(GetWindowTheme().ListBoxItemColor.ToColor());
-            }
-
-            return selected != visual.IsSelected;
+            ValidateSelection();
         }
-
-        public virtual void Select(IEnumerable<ItemVisual> visuals)
+        else if (property == DataSourceProperty)
         {
-            if (visuals == null)
-                return;
-
-            var once = false;
-            foreach (var visual in visuals.OfType<ItemVisual>())
-            {
-                if (visual == null)
-                    continue;
-
-                Select(visual);
-                once = true;
-            }
-
-            if (once)
-            {
-                OnSelectionChanged();
-            }
+            BindDataSource();
         }
+        return true;
+    }
 
-        public virtual void Unselect(IEnumerable<ItemVisual> visuals)
+    /// <inheritdoc />
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
+    {
+        base.OnAttachedToComposition(sender, e);
+        BindDataSource();
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
+
+    /// <inheritdoc />
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    /// <summary>
+    /// Called when theme DPI changes. Override to adjust item visuals. No action by default.
+    /// </summary>
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+    {
+        // do nothing by default
+    }
+
+    /// <summary>
+    /// Returns the content visual for a mouse event hit by resolving the last <see cref="IOneChildParent"/> child.
+    /// </summary>
+    public virtual Visual? GetVisualForMouseEvent(MouseEventArgs e)
+    {
+        if (e == null)
+            return null;
+
+        return ((IOneChildParent?)e.VisualsStack.OfType<Visual>().LastOrDefault(v => IsChild(v) && v is IOneChildParent))?.Child;
+    }
+
+    /// <summary>
+    /// Resolves an <see cref="ItemVisual"/> from either an <see cref="ItemVisual"/> instance or a data item.
+    /// </summary>
+    public virtual ItemVisual? GetItemVisual(object? obj)
+    {
+        if (obj is ItemVisual visual)
+            return Items.FirstOrDefault(v => Equals(visual, v));
+
+        return Items.FirstOrDefault(v => Equals(obj, v.Data));
+    }
+
+    /// <summary>
+    /// Toggles selection for the specified item or data item.
+    /// </summary>
+    public virtual void Toggle(object? obj) => Toggle(GetItemVisual(obj));
+
+    /// <summary>
+    /// Toggles selection state for the given item visual.
+    /// </summary>
+    private void Toggle(ItemVisual? obj)
+    {
+        if (obj == null)
+            return;
+
+        if (obj.IsSelected)
         {
-            if (visuals == null)
-                return;
-
-            var once = false;
-            foreach (var visual in visuals.OfType<ItemVisual>())
-            {
-                if (visual == null)
-                    continue;
-
-                Unselect(visual);
-                once = true;
-            }
-
-            if (once)
-            {
-                OnSelectionChanged();
-            }
+            UnselectChild(obj);
         }
-
-        public virtual void SelectAll()
+        else
         {
-            var changed = false;
-            var mode = SelectionMode;
-            foreach (var item in Items)
+            SelectChild(obj);
+        }
+    }
+
+    /// <summary>
+    /// Unselects the specified item or data item.
+    /// </summary>
+    public virtual void Unselect(object? obj) => UnselectChild(GetItemVisual(obj));
+
+    /// <summary>
+    /// Unselects the given item, raising <see cref="SelectionChanged"/> if changed.
+    /// </summary>
+    private void UnselectChild(ItemVisual? obj)
+    {
+        if (obj == null)
+            return;
+
+        if (UpdateItemSelection(obj, false))
+        {
+            OnSelectionChanged();
+        }
+    }
+
+    /// <summary>
+    /// Selects the specified item or data item.
+    /// </summary>
+    public virtual void Select(object? obj) => SelectChild(GetItemVisual(obj));
+
+    /// <summary>
+    /// Selects the given item visual, honoring <see cref="SelectionMode"/>.
+    /// </summary>
+    private void SelectChild(ItemVisual? obj)
+    {
+        if (obj == null)
+            return;
+
+        var changed = false;
+        if (SelectionMode == SelectionMode.Single)
+        {
+            foreach (var item in Items.ToArray())
             {
-                if (UpdateItemSelection(item, true))
+                if (UpdateItemSelection(item, item == obj))
                 {
                     changed = true;
                 }
-                if (mode == SelectionMode.Single)
-                    break;
             }
-
-            if (changed)
+        }
+        else
+        {
+            if (UpdateItemSelection(obj, true))
             {
-                OnSelectionChanged();
+                changed = true;
             }
         }
 
-        public virtual void UnselectAll()
+        if (changed)
         {
-            var changed = false;
-            foreach (var item in Items)
-            {
-                if (UpdateItemSelection(item, false))
-                {
-                    changed = true;
-                }
-            }
+            OnSelectionChanged();
+        }
+    }
 
-            if (changed)
-            {
-                OnSelectionChanged();
-            }
+    /// <summary>
+    /// Applies a selection state to an item visual and updates its brushes. When <paramref name="select"/> is null,
+    /// only visual state (brush) is refreshed. Returns true when selection state changed.
+    /// </summary>
+    public virtual bool UpdateItemSelection(ItemVisual visual, bool? select)
+    {
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
+
+        var selected = visual.IsSelected;
+        if (select.HasValue)
+        {
+            visual.IsSelected = select.Value;
         }
 
-        public virtual bool ScrollIntoView(object obj)
+        if (visual.IsSelected)
         {
-            if (Parent?.Parent is not ScrollViewer sv)
-                return false;
+            visual.DoWhenAttachedToComposition(() =>
+            {
+                visual.RenderBrush = Compositor?.CreateColorBrush(GetWindowTheme().SelectedColor.ToColor());
+            });
+        }
+        else
+        {
+            visual.RenderBrush = Compositor?.CreateColorBrush(GetWindowTheme().ListBoxItemColor.ToColor());
+        }
 
-            var visual = GetItemVisual(obj);
+        return selected != visual.IsSelected;
+    }
+
+    /// <summary>
+    /// Selects a set of visuals. Raises <see cref="SelectionChanged"/> once if any change occurred.
+    /// </summary>
+    public virtual void Select(IEnumerable<ItemVisual> visuals)
+    {
+        if (visuals == null)
+            return;
+
+        var once = false;
+        foreach (var visual in visuals.OfType<ItemVisual>())
+        {
             if (visual == null)
-                return false;
+                continue;
 
-            if (sv.ArrangedRect.IsValid)
-            {
-                sv.VerticalOffset = visual.ArrangedRect.bottom + Margin.top - sv.ArrangedRect.Height;
-                sv.HorizontalOffset = visual.ArrangedRect.right + Margin.left - sv.ArrangedRect.Width;
-            }
-            else
-            {
-                sv.Arranged += onArranged;
-            }
-
-            void onArranged(object? sender, EventArgs e)
-            {
-                sv.Arranged -= onArranged;
-                ScrollIntoView(visual);
-            }
-            return true;
+            Select(visual);
+            once = true;
         }
 
-        void IDataSourceVisual.BindDataSource() => BindDataSource();
-        protected virtual void BindDataSource()
+        if (once)
         {
-            var ds = DataSource;
-            if (ds is not DataSource source)
+            OnSelectionChanged();
+        }
+    }
+
+    /// <summary>
+    /// Unselects a set of visuals. Raises <see cref="SelectionChanged"/> once if any change occurred.
+    /// </summary>
+    public virtual void Unselect(IEnumerable<ItemVisual> visuals)
+    {
+        if (visuals == null)
+            return;
+
+        var once = false;
+        foreach (var visual in visuals.OfType<ItemVisual>())
+        {
+            if (visual == null)
+                continue;
+
+            Unselect(visual);
+            once = true;
+        }
+
+        if (once)
+        {
+            OnSelectionChanged();
+        }
+    }
+
+    /// <summary>
+    /// Selects all items. In single-select mode, only the first item is selected.
+    /// </summary>
+    public virtual void SelectAll()
+    {
+        var changed = false;
+        var mode = SelectionMode;
+        foreach (var item in Items)
+        {
+            if (UpdateItemSelection(item, true))
             {
-                source = new DataSource(ds);
+                changed = true;
             }
+            if (mode == SelectionMode.Single)
+                break;
+        }
 
-            updateSource();
-            source.SourceChanged += (s, e) => updateSource();
+        if (changed)
+        {
+            OnSelectionChanged();
+        }
+    }
 
-            void updateSource()
+    /// <summary>
+    /// Unselects all items.
+    /// </summary>
+    public virtual void UnselectAll()
+    {
+        var changed = false;
+        foreach (var item in Items)
+        {
+            if (UpdateItemSelection(item, false))
             {
-                if (Compositor == null)
-                    return;
+                changed = true;
+            }
+        }
 
-                var selected = SelectedItems.Select(i => i.Data).ToArray();
-                Children.Clear();
-                if (ds != null)
+        if (changed)
+        {
+            OnSelectionChanged();
+        }
+    }
+
+    /// <summary>
+    /// Ensures the specified item (or its data) is scrolled into the viewable area of a parent <see cref="ScrollViewer"/>.
+    /// </summary>
+    /// <returns>True if a parent <see cref="ScrollViewer"/> was found; otherwise, false.</returns>
+    public virtual bool ScrollIntoView(object obj)
+    {
+        if (Parent?.Parent is not ScrollViewer sv)
+            return false;
+
+        var visual = GetItemVisual(obj);
+        if (visual == null)
+            return false;
+
+        if (sv.ArrangedRect.IsValid)
+        {
+            sv.VerticalOffset = visual.ArrangedRect.bottom + Margin.top - sv.ArrangedRect.Height;
+            sv.HorizontalOffset = visual.ArrangedRect.right + Margin.left - sv.ArrangedRect.Width;
+        }
+        else
+        {
+            sv.Arranged += onArranged;
+        }
+
+        void onArranged(object? sender, EventArgs e)
+        {
+            sv.Arranged -= onArranged;
+            ScrollIntoView(visual);
+        }
+        return true;
+    }
+
+    void IDataSourceVisual.BindDataSource() => BindDataSource();
+
+    /// <summary>
+    /// Rebuilds item visuals from <see cref="DataSource"/> using <see cref="DataBinder"/> and raises <see cref="DataBound"/>.
+    /// Preserves selection by comparing item <see cref="ItemVisual.Data"/> references where possible.
+    /// </summary>
+    protected virtual void BindDataSource()
+    {
+        var ds = DataSource;
+        if (ds is not DataSource source)
+        {
+            source = new DataSource(ds);
+        }
+
+        updateSource();
+        source.SourceChanged += (s, e) => updateSource();
+
+        void updateSource()
+        {
+            if (Compositor == null)
+                return;
+
+            var selected = SelectedItems.Select(i => i.Data).ToArray();
+            Children.Clear();
+            if (ds != null)
+            {
+                var binder = DataBinder ?? new DataBinder();
+                binder.ItemVisualCreator ??= CreateItemVisual;
+                binder.DataItemVisualCreator ??= CreateDataItemVisual;
+                binder.DataItemVisualBinder ??= BindDataItemVisual;
+                var lbdb = binder as ListBoxDataBinder;
+                if (lbdb != null)
                 {
-                    var binder = DataBinder ?? new DataBinder();
-                    binder.ItemVisualCreator ??= CreateItemVisual;
-                    binder.DataItemVisualCreator ??= CreateDataItemVisual;
-                    binder.DataItemVisualBinder ??= BindDataItemVisual;
-                    var lbdb = binder as ListBoxDataBinder;
-                    if (lbdb != null)
-                    {
-                        lbdb.SeparatorVisualCreator ??= CreateSeparatorVisual;
-                    }
+                    lbdb.SeparatorVisualCreator ??= CreateSeparatorVisual;
+                }
 
-                    var options = new DataSourceEnumerateOptions { Member = DataItemMember, Format = DataItemFormat };
-                    object? last = null;
-                    var lastSet = false;
-                    foreach (var data in source.Enumerate(options))
-                    {
-                        if (lastSet)
-                        {
-                            bindItem(last, false);
-                        }
-                        last = data;
-                        lastSet = true;
-                    }
-
+                var options = new DataSourceEnumerateOptions { Member = DataItemMember, Format = DataItemFormat };
+                object? last = null;
+                var lastSet = false;
+                foreach (var data in source.Enumerate(options))
+                {
                     if (lastSet)
                     {
-                        bindItem(last, true);
+                        bindItem(last, false);
                     }
+                    last = data;
+                    lastSet = true;
+                }
 
-                    void bindItem(object? data, bool isLast)
+                if (lastSet)
+                {
+                    bindItem(last, true);
+                }
+
+                void bindItem(object? data, bool isLast)
+                {
+                    var ctx = new ListBoxDataBindContext(data, Children.Count, isLast);
+                    binder.DataItemVisualCreator(ctx);
+                    if (ctx.DataVisual != null && binder.ItemVisualCreator != null)
                     {
-                        var ctx = new ListBoxDataBindContext(data, Children.Count, isLast);
-                        binder.DataItemVisualCreator(ctx);
-                        if (ctx.DataVisual != null && binder.ItemVisualCreator != null)
+                        binder.ItemVisualCreator(ctx);
+                        var item = ctx.ItemVisual;
+                        if (item != null)
                         {
-                            binder.ItemVisualCreator(ctx);
-                            var item = ctx.ItemVisual;
-                            if (item != null)
+                            item.Children.Add(ctx.DataVisual!);
+                            Children.Add(item);
+                            binder.DataItemVisualBinder(ctx);
+                            UpdateItemSelection(item, null);
+
+                            OnItemDataBound(this, new ValueEventArgs<ListBoxDataBindContext>(ctx));
+
+                            if (!isLast && lbdb != null && lbdb.SeparatorVisualCreator != null)
                             {
-                                item.Children.Add(ctx.DataVisual!);
-                                Children.Add(item);
-                                binder.DataItemVisualBinder(ctx);
-                                UpdateItemSelection(item, null);
-
-                                OnItemDataBound(this, new ValueEventArgs<ListBoxDataBindContext>(ctx));
-
-                                if (!isLast && lbdb != null && lbdb.SeparatorVisualCreator != null)
+                                lbdb.SeparatorVisualCreator(ctx);
+                                if (ctx.SeparatorVisual != null)
                                 {
-                                    lbdb.SeparatorVisualCreator(ctx);
-                                    if (ctx.SeparatorVisual != null)
-                                    {
-                                        Children.Add(ctx.SeparatorVisual);
-                                    }
+                                    Children.Add(ctx.SeparatorVisual);
                                 }
                             }
                         }
                     }
                 }
+            }
 
-                OnDataBound(this, EventArgs.Empty);
-                if (!selected.SequenceEqual(SelectedItems.Select(i => i.Data)))
-                {
-                    OnSelectionChanged();
-                }
+            OnDataBound(this, EventArgs.Empty);
+            if (!selected.SequenceEqual(SelectedItems.Select(i => i.Data)))
+            {
+                OnSelectionChanged();
             }
         }
+    }
 
-        protected virtual void BindDataItemVisual(DataBindContext context)
-        {
-            ExceptionExtensions.ThrowIfNull(context, nameof(context));
-            if (context.DataVisual is not TextBox tb)
-                return;
-
-            tb.Text = context.GetDisplayName();
-        }
-
-        protected virtual void CreateDataItemVisual(DataBindContext context)
-        {
-            ExceptionExtensions.ThrowIfNull(context, nameof(context));
-            var visual = new TextBox { IsFocusable = true };
-            context.DataVisual = visual;
-        }
-
-        protected virtual void CreateSeparatorVisual(DataBindContext context)
-        {
-            ExceptionExtensions.ThrowIfNull(context, nameof(context));
+    /// <summary>
+    /// Default binder: if <see cref="DataBindContext.DataVisual"/> is a <see cref="TextBox"/>, sets <c>Text</c> to <see cref="DataBindContext.GetDisplayName()"/>.
+    /// </summary>
+    protected virtual void BindDataItemVisual(DataBindContext context)
+    {
+        ExceptionExtensions.ThrowIfNull(context, nameof(context));
+        if (context.DataVisual is not TextBox tb)
             return;
-        }
 
-        protected virtual ItemVisual NewItemVisual() => new();
+        tb.Text = context.GetDisplayName();
+    }
 
-        protected virtual void CreateItemVisual(DataBindContext context)
-        {
-            ExceptionExtensions.ThrowIfNull(context, nameof(context));
-            var item = NewItemVisual();
-            if (item == null)
-                return;
+    /// <summary>
+    /// Default creator: creates a focusable <see cref="TextBox"/> for data display.
+    /// </summary>
+    protected virtual void CreateDataItemVisual(DataBindContext context)
+    {
+        ExceptionExtensions.ThrowIfNull(context, nameof(context));
+        var visual = new TextBox { IsFocusable = true };
+        context.DataVisual = visual;
+    }
+
+    /// <summary>
+    /// Default separator creator: no-op. Override in <see cref="ListBoxDataBinder"/> scenarios to add separators.
+    /// </summary>
+    protected virtual void CreateSeparatorVisual(DataBindContext context)
+    {
+        ExceptionExtensions.ThrowIfNull(context, nameof(context));
+        return;
+    }
+
+    /// <summary>
+    /// Factory method for new item visuals. Override to customize container type.
+    /// </summary>
+    protected virtual ItemVisual NewItemVisual() => new();
+
+    /// <summary>
+    /// Default item container creator. Sets brushes, hooks events, and associates <see cref="DataBindContext.Data"/>.
+    /// </summary>
+    protected virtual void CreateItemVisual(DataBindContext context)
+    {
+        ExceptionExtensions.ThrowIfNull(context, nameof(context));
+        var item = NewItemVisual();
+        if (item == null)
+            return;
 
 #if DEBUG
-            item.Name ??= nameof(ItemVisual) + string.Format(" '{0}'", context.Data);
+        item.Name ??= nameof(ItemVisual) + string.Format(" '{0}'", context.Data);
 #endif
 
-            item.DataBinder = DataBinder;
-            item.ColorAnimationDuration = GetWindowTheme().SelectionBrushAnimationDuration;
-            item.RenderBrush = Compositor?.CreateColorBrush(GetWindowTheme().ListBoxItemColor.ToColor());
+        item.DataBinder = DataBinder;
+        item.ColorAnimationDuration = GetWindowTheme().SelectionBrushAnimationDuration;
+        item.RenderBrush = Compositor?.CreateColorBrush(GetWindowTheme().ListBoxItemColor.ToColor());
 
-            void updateHover()
-            {
-                item.HoverRenderBrush = item.IsSelected || !IsEnabled ? null : Compositor?.CreateColorBrush(GetWindowTheme().ListBoxHoverColor.ToColor());
-            }
-
-            item.IsSelectedChanged += OnItemIsSelectedChanged;
-            item.MouseOverChanged += (s, e) => updateHover();
-            item.Data = context.Data;
-
-            var mode = SelectionMode;
-            if (context.Data is ISelectable selectable && selectable.IsSelected)
-            {
-                if (UpdateItemSelection(item, true))
-                {
-                    OnSelectionChanged();
-                }
-
-                // review: do we really want to focus so early?
-                //if (mode == SelectionMode.Single)
-                //{
-                //    item.Focus();
-                //}
-            }
-            context.ItemVisual = item;
+        void updateHover()
+        {
+            item.HoverRenderBrush = item.IsSelected || !IsEnabled ? null : Compositor?.CreateColorBrush(GetWindowTheme().ListBoxHoverColor.ToColor());
         }
 
-        protected virtual void OnItemIsSelectedChanged(object? sender, ValueEventArgs<bool> e)
+        item.IsSelectedChanged += OnItemIsSelectedChanged;
+        item.MouseOverChanged += (s, e) => updateHover();
+        item.Data = context.Data;
+
+        var mode = SelectionMode;
+        if (context.Data is ISelectable selectable && selectable.IsSelected)
         {
-            if (e.Value)
+            if (UpdateItemSelection(item, true))
             {
-                Select(sender);
+                OnSelectionChanged();
             }
-            else
-            {
-                Unselect(sender);
-            }
+
+            // review: do we really want to focus so early?
+            //if (mode == SelectionMode.Single)
+            //{
+            //    item.Focus();
+            //}
         }
+        context.ItemVisual = item;
+    }
 
-        private int GetFocusedIndex() => Children.IndexOf(c => c.IsFocusedOrAnyChildrenFocused);
-
-        protected override void OnKeyDown(object? sender, KeyEventArgs e)
+    /// <summary>
+    /// Syncs selection when the item container selection state changes.
+    /// </summary>
+    protected virtual void OnItemIsSelectedChanged(object? sender, ValueEventArgs<bool> e)
+    {
+        if (e.Value)
         {
-            if (!IsEnabled)
-                return;
+            Select(sender);
+        }
+        else
+        {
+            Unselect(sender);
+        }
+    }
 
-            if (Children.Count > 0)
+    /// <summary>
+    /// Finds the index of the focused child (or a child with any focused descendant), or -1 if none.
+    /// </summary>
+    private int GetFocusedIndex() => Children.IndexOf(c => c.IsFocusedOrAnyChildrenFocused);
+
+    /// <summary>
+    /// Handles keyboard navigation: Up/Down/Home/End moves focus (with wrap-around), Space toggles focused item.
+    /// In single-select mode, focusing an item selects it.
+    /// </summary>
+    protected override void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (!IsEnabled)
+            return;
+
+        if (Children.Count > 0)
+        {
+            Visual? newChild = null;
+            // note contrary to most UI, we loop when under or over, we don't stop
+            int index;
+            switch (e.Key)
             {
-                Visual? newChild = null;
-                // note contrary to most UI, we loop when under or over, we don't stop
-                int index;
-                switch (e.Key)
-                {
-                    case VIRTUAL_KEY.VK_DOWN:
-                        index = GetFocusedIndex();
-                        if (index < 0)
-                        {
-                            newChild = Children[0];
-                        }
-                        else
-                        {
-                            if ((index + 1) < Children.Count)
-                            {
-                                newChild = Children[index + 1];
-                            }
-                            else
-                            {
-                                newChild = Children[0];
-                            }
-                        }
-                        e.Handled = true;
-                        break;
-
-                    case VIRTUAL_KEY.VK_UP:
-                        index = GetFocusedIndex();
-                        if (index < 0)
-                        {
-                            newChild = Children[0];
-                        }
-                        else
-                        {
-                            if ((index - 1) >= 0)
-                            {
-                                newChild = Children[index - 1];
-                            }
-                            else
-                            {
-#if NETFRAMEWORK
-                                newChild = Children[Children.Count - 1];
-#else
-                                newChild = Children[^1];
-#endif
-                            }
-                        }
-                        e.Handled = true;
-                        break;
-
-                    case VIRTUAL_KEY.VK_HOME:
-                        newChild = Children[0];
-                        e.Handled = true;
-                        break;
-
-                    case VIRTUAL_KEY.VK_END:
-#if NETFRAMEWORK
-                        newChild = Children[Children.Count - 1];
-#else
-                        newChild = Children[^1];
-#endif
-                        e.Handled = true;
-                        break;
-
-                    case VIRTUAL_KEY.VK_SPACE:
-                        index = GetFocusedIndex();
-                        if (index >= 0)
-                        {
-                            Toggle(Children[index] as ItemVisual);
-                        }
-                        e.Handled = true;
-                        break;
-                }
-
-                if (newChild != null)
-                {
-                    newChild.Focus();
-                    ScrollIntoView(newChild);
-                    if (SelectionMode == SelectionMode.Single && newChild is ItemVisual itemVisual)
+                case VIRTUAL_KEY.VK_DOWN:
+                    index = GetFocusedIndex();
+                    if (index < 0)
                     {
-                        SelectChild(itemVisual);
+                        newChild = Children[0];
                     }
+                    else
+                    {
+                        if ((index + 1) < Children.Count)
+                        {
+                            newChild = Children[index + 1];
+                        }
+                        else
+                        {
+                            newChild = Children[0];
+                        }
+                    }
+                    e.Handled = true;
+                    break;
+
+                case VIRTUAL_KEY.VK_UP:
+                    index = GetFocusedIndex();
+                    if (index < 0)
+                    {
+                        newChild = Children[0];
+                    }
+                    else
+                    {
+                        if ((index - 1) >= 0)
+                        {
+                            newChild = Children[index - 1];
+                        }
+                        else
+                        {
+#if NETFRAMEWORK
+                            newChild = Children[Children.Count - 1];
+#else
+                            newChild = Children[^1];
+#endif
+                        }
+                    }
+                    e.Handled = true;
+                    break;
+
+                case VIRTUAL_KEY.VK_HOME:
+                    newChild = Children[0];
+                    e.Handled = true;
+                    break;
+
+                case VIRTUAL_KEY.VK_END:
+#if NETFRAMEWORK
+                    newChild = Children[Children.Count - 1];
+#else
+                    newChild = Children[^1];
+#endif
+                    e.Handled = true;
+                    break;
+
+                case VIRTUAL_KEY.VK_SPACE:
+                    index = GetFocusedIndex();
+                    if (index >= 0)
+                    {
+                        Toggle(Children[index] as ItemVisual);
+                    }
+                    e.Handled = true;
+                    break;
+            }
+
+            if (newChild != null)
+            {
+                newChild.Focus();
+                ScrollIntoView(newChild);
+                if (SelectionMode == SelectionMode.Single && newChild is ItemVisual itemVisual)
+                {
+                    SelectChild(itemVisual);
                 }
             }
-            base.OnKeyDown(sender, e);
         }
+        base.OnKeyDown(sender, e);
     }
 }

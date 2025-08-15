@@ -1,7 +1,20 @@
 ﻿namespace Wice.Utilities;
 
+/// <summary>
+/// Utility helpers for working with Windows Imaging Component (WIC) and Direct2D.
+/// Provides methods to load <see cref="IWICBitmapSource"/> from files, streams, unmanaged memory,
+/// as well as mapping WIC pixel formats to <see cref="D2D1_PIXEL_FORMAT"/>.
+/// </summary>
 public class WicUtilities
 {
+    /// <summary>
+    /// Loads an image from a file path and returns a WIC bitmap source converted to 32bpp premultiplied BGRA (PBGRA).
+    /// </summary>
+    /// <param name="filePath">Path to an encoded image file (e.g., PNG, JPEG, BMP, etc.).</param>
+    /// <param name="metadataOptions">Decode metadata caching behavior. Defaults to <see cref="WICDecodeOptions.WICDecodeMetadataCacheOnDemand"/>.</param>
+    /// <returns>An <see cref="IComObject{T}"/> wrapping an <see cref="IWICBitmapSource"/> in 32bpp PBGRA format.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="filePath"/> is null.</exception>
+    /// <exception cref="System.Runtime.InteropServices.COMException">Propagated if the decoder fails to open or read the file.</exception>
     public static IComObject<IWICBitmapSource> LoadBitmapSource(string filePath, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
 #if NETFRAMEWORK
@@ -17,6 +30,14 @@ public class WicUtilities
 #endif
     }
 
+    /// <summary>
+    /// Loads an image from a stream and returns a WIC bitmap source converted to 32bpp premultiplied BGRA (PBGRA).
+    /// </summary>
+    /// <param name="stream">A readable stream containing an encoded image (e.g., PNG, JPEG, BMP, etc.).</param>
+    /// <param name="metadataOptions">Decode metadata caching behavior. Defaults to <see cref="WICDecodeOptions.WICDecodeMetadataCacheOnDemand"/>.</param>
+    /// <returns>An <see cref="IComObject{T}"/> wrapping an <see cref="IWICBitmapSource"/> in 32bpp PBGRA format.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="stream"/> is null.</exception>
+    /// <exception cref="System.Runtime.InteropServices.COMException">Propagated if the decoder fails to read from the stream.</exception>
     public static IComObject<IWICBitmapSource> LoadBitmapSource(Stream stream, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
 #if NETFRAMEWORK
@@ -34,6 +55,16 @@ public class WicUtilities
 
     // https://learn.microsoft.com/en-us/windows/win32/Direct2D/supported-pixel-formats-and-alpha-modes#supported-formats-for-wic-bitmap-render-target
 #if NETFRAMEWORK
+    /// <summary>
+    /// Maps a WIC pixel format GUID to a <see cref="D2D1_PIXEL_FORMAT"/> suitable for a WIC bitmap render target.
+    /// </summary>
+    /// <param name="wicPixelFormat">The WIC pixel format GUID.</param>
+    /// <returns>
+    /// A <see cref="D2D1_PIXEL_FORMAT"/> containing the corresponding <see cref="DXGI_FORMAT"/> and <see cref="D2D1_ALPHA_MODE"/>.
+    /// </returns>
+    /// <exception cref="NotSupportedException">
+    /// Thrown when the provided WIC pixel format is not supported by the mapping.
+    /// </exception>
     public static D2D1_PIXEL_FORMAT GetDxgiFormat(Guid wicPixelFormat)
     {
         if (wicPixelFormat == WICConstants.GUID_WICPixelFormat32bppPBGRA)
@@ -66,6 +97,16 @@ public class WicUtilities
         throw new NotSupportedException($"Unsupported WIC pixel format: {wicPixelFormat}.");
     }
 #else
+    /// <summary>
+    /// Maps a WIC pixel format GUID to a <see cref="D2D1_PIXEL_FORMAT"/> suitable for a WIC bitmap render target.
+    /// </summary>
+    /// <param name="wicPixelFormat">The WIC pixel format GUID.</param>
+    /// <returns>
+    /// A <see cref="D2D1_PIXEL_FORMAT"/> containing the corresponding <see cref="DXGI_FORMAT"/> and <see cref="D2D1_ALPHA_MODE"/>.
+    /// </returns>
+    /// <exception cref="NotSupportedException">
+    /// Thrown when the provided WIC pixel format is not supported by the mapping.
+    /// </exception>
     public static D2D1_PIXEL_FORMAT GetDxgiFormat(Guid wicPixelFormat)
     {
         if (wicPixelFormat == Constants.GUID_WICPixelFormat32bppPBGRA)
@@ -99,6 +140,14 @@ public class WicUtilities
     }
 #endif
 
+    /// <summary>
+    /// Loads an image from an unmanaged memory buffer containing encoded image bytes.
+    /// </summary>
+    /// <param name="pointer">Pointer to the start of the encoded image buffer.</param>
+    /// <param name="byteLength">Length, in bytes, of the encoded image buffer.</param>
+    /// <returns>An <see cref="IComObject{T}"/> wrapping an <see cref="IWICBitmapSource"/>.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="pointer"/> is zero.</exception>
+    /// <remarks>The buffer must contain an encoded image format understood by WIC (e.g., PNG, JPEG).</remarks>
     public static IComObject<IWICBitmapSource> LoadBitmapSource(nint pointer, long byteLength)
     {
         if (pointer == 0)
@@ -109,6 +158,16 @@ public class WicUtilities
     }
 
 #if NETFRAMEWORK
+    /// <summary>
+    /// Creates a WIC bitmap from raw pixel memory by copying into a managed buffer (Framework-specific path).
+    /// </summary>
+    /// <param name="width">Image width in pixels.</param>
+    /// <param name="height">Image height in pixels.</param>
+    /// <param name="pixelFormat">The WIC pixel format GUID of the buffer (e.g., GUID_WICPixelFormat32bppPBGRA).</param>
+    /// <param name="stride">The number of bytes per scanline of the source buffer.</param>
+    /// <param name="bufferSize">Total size, in bytes, of the source buffer.</param>
+    /// <param name="pointer">Pointer to the start of the raw pixel buffer.</param>
+    /// <returns>An <see cref="IComObject{T}"/> wrapping an <see cref="IWICBitmapSource"/> backed by the copied buffer.</returns>
     public static IComObject<IWICBitmapSource> LoadBitmapSourceFromMemory(
         uint width,
         uint height,
@@ -122,6 +181,17 @@ public class WicUtilities
         return WICImagingFactory.CreateBitmapFromMemory((int)width, (int)height, pixelFormat, (int)stride, buffer);
     }
 #else
+    /// <summary>
+    /// Creates a WIC bitmap from raw pixel memory without copying (passes the unmanaged pointer to WIC).
+    /// </summary>
+    /// <param name="width">Image width in pixels.</param>
+    /// <param name="height">Image height in pixels.</param>
+    /// <param name="pixelFormat">The WIC pixel format GUID of the buffer (e.g., <c>GUID_WICPixelFormat32bppPBGRA</c>).</param>
+    /// <param name="stride">The number of bytes per scanline of the source buffer.</param>
+    /// <param name="bufferSize">Total size, in bytes, of the source buffer.</param>
+    /// <param name="pointer">Pointer to the start of the raw pixel buffer.</param>
+    /// <returns>An <see cref="IComObject{T}"/> wrapping an <see cref="IWICBitmapSource"/> that references the provided memory.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="pointer"/> is zero.</exception>
     public static IComObject<IWICBitmapSource> LoadBitmapSourceFromMemory(
         uint width,
         uint height,

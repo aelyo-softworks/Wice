@@ -1,10 +1,37 @@
 ﻿namespace Wice.Utilities;
 
+/// <summary>
+/// Utilities for working with Windows Composition brushes.
+/// </summary>
+/// <remarks>
+/// Provides helpers to clone common brush types and to produce a short trace string
+/// that is useful in diagnostics/logging. The clone helper creates a new brush using
+/// the same <c>Compositor</c> as the source brush.
+/// </remarks>
 public static class CompositionUtilities
 {
 #if NET
     [return: NotNullIfNotNull(nameof(brush))]
 #endif
+    /// <summary>
+    /// Creates a new <see cref="CompositionBrush"/> that copies the state of the specified brush.
+    /// </summary>
+    /// <param name="brush">The source brush to clone. If <c>null</c>, this method returns <c>null</c>.</param>
+    /// <returns>
+    /// A new brush instance with the same configuration as <paramref name="brush"/>, or <c>null</c> if
+    /// <paramref name="brush"/> is <c>null</c>.
+    /// </returns>
+    /// <exception cref="NotSupportedException">
+    /// Thrown when <paramref name="brush"/> is a brush type that is not supported by this method.
+    /// </exception>
+    /// <remarks>
+    /// Supported brush types:
+    /// - <c>CompositionColorBrush</c>: clones the color.
+    /// - <c>CompositionBackdropBrush</c>: creates a new backdrop brush.
+    /// - <c>CompositionMaskBrush</c>: recursively clones <c>Source</c> and <c>Mask</c>.
+    /// - <c>CompositionNineGridBrush</c>: copies inset values, scales, center hollowness, and recursively clones <c>Source</c>.
+    /// For other brush types, a <see cref="NotSupportedException"/> is thrown.
+    /// </remarks>
     public static CompositionBrush? Clone(this CompositionBrush? brush)
     {
         if (brush == null)
@@ -43,6 +70,15 @@ public static class CompositionUtilities
         throw new NotSupportedException();
     }
 
+    /// <summary>
+    /// Produces a short, human-readable description of a brush for tracing or logging.
+    /// </summary>
+    /// <param name="brush">The brush to describe. May be <c>null</c>.</param>
+    /// <returns>
+    /// If <paramref name="brush"/> is <c>null</c>, returns <c>null</c>.
+    /// If it is a <c>CompositionColorBrush</c>, returns the color string.
+    /// Otherwise, returns the runtime type name of the brush.
+    /// </returns>
     public static string? Trace(this CompositionBrush? brush)
     {
         if (brush == null)

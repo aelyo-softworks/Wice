@@ -1,11 +1,52 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// A tabbed container that manages a collection of <see cref="TabPage"/> instances, a header strip,
+/// and a content host. The header strip hosts page headers (tabs) and the content host shows the
+/// currently selected page's content.
+/// </summary>
+/// <remarks>
+/// Structure:
+/// - <see cref="PagesHeader"/>: a horizontal <see cref="Stack"/> docked at the top that hosts page headers.
+/// - <see cref="PagesContent"/>: a <see cref="Canvas"/> docked at the bottom that hosts page contents at matching indices.
+/// - <see cref="LastChildFill"/> is enabled so the content area fills remaining space.
+///
+/// Behavior:
+/// - Adding/removing/replacing pages updates both the header strip and the content host.
+/// - Only one selectable page is kept selected at a time; removal ensures a selectable page remains selected when possible.
+/// - Page content visibility is tied to page header selection and the page's <c>IsSelectable</c> flag.
+/// - Hooks (<see cref="OnPageAdded(object, ValueEventArgs{TabPage})"/>, <see cref="OnPageRemoved(object, ValueEventArgs{TabPage})"/>,
+///   <see cref="OnSelectionChanged(object?, EventArgs)"/>) allow customization by derived classes.
+///
+/// Indexing:
+/// - Header and content collections keep items aligned by insertion/removal index so that header and content map 1:1.
+/// </remarks>
 public partial class Tabs : Dock
 {
+    /// <summary>
+    /// Raised after a <see cref="TabPage"/> has been added to <see cref="Pages"/> and to the visual tree
+    /// (its header/content inserted and initialized).
+    /// </summary>
     public event EventHandler<ValueEventArgs<TabPage>>? PageAdded;
+
+    /// <summary>
+    /// Raised after a <see cref="TabPage"/> has been removed from <see cref="Pages"/> and from the visual tree
+    /// (its header removed and content detached/disposed as applicable).
+    /// </summary>
     public event EventHandler<ValueEventArgs<TabPage>>? PageRemoved;
+
+    /// <summary>
+    /// Raised when the selected tab header changes to a different page.
+    /// </summary>
     public event EventHandler? SelectionChanged;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Tabs"/> control.
+    /// Sets up the pages collection, header strip docked at the top, and content host docked at the bottom.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <see cref="CreatePagesHeader"/> or <see cref="CreatePagesContent"/> returns null.
+    /// </exception>
     public Tabs()
     {
         LastChildFill = true;
@@ -36,26 +77,74 @@ public partial class Tabs : Dock
         Children.Add(PagesContent);
     }
 
+    /// <summary>
+    /// Gets the collection of pages hosted by this control.
+    /// </summary>
     [Browsable(false)]
     public BaseObjectCollection<TabPage> Pages { get; }
 
+    /// <summary>
+    /// Gets the header strip that hosts page headers (tabs). Generally docked at the top.
+    /// </summary>
     [Browsable(false)]
     public Stack PagesHeader { get; }
 
+    /// <summary>
+    /// Gets the content host that holds each page content at its corresponding index.
+    /// </summary>
     [Browsable(false)]
     public Canvas PagesContent { get; }
 
+    /// <summary>
+    /// Gets the currently selected page if any. Only considers pages that are selectable.
+    /// </summary>
     [Browsable(false)]
     public TabPage? SelectedPage => Pages.FirstOrDefault(p => p.IsSelectable && p.Header.IsSelected);
 
+    /// <summary>
+    /// Creates the pages collection. Override to provide a custom collection type or behavior.
+    /// </summary>
+    /// <returns>A collection suitable for hosting <see cref="TabPage"/> items.</returns>
     protected virtual BaseObjectCollection<TabPage> CreatePages() => [];
+
+    /// <summary>
+    /// Creates the header strip that hosts page headers. Override to customize the header container.
+    /// </summary>
+    /// <returns>A <see cref="Stack"/> configured for horizontal layout without last-child fill.</returns>
     protected virtual Stack CreatePagesHeader() => new() { Orientation = Orientation.Horizontal, LastChildFill = false };
+
+    /// <summary>
+    /// Creates the content host that displays page contents. Override to customize the content container.
+    /// </summary>
+    /// <returns>A <see cref="Canvas"/> used as the pages content host.</returns>
     protected virtual Canvas CreatePagesContent() => new();
 
+    /// <summary>
+    /// Called after a page has been added to the control and initialized.
+    /// </summary>
+    /// <param name="sender">The source of the event, typically this control.</param>
+    /// <param name="e">The added page.</param>
     protected virtual void OnPageAdded(object sender, ValueEventArgs<TabPage> e) => PageAdded?.Invoke(sender, e);
+
+    /// <summary>
+    /// Called after a page has been removed from the control and detached.
+    /// </summary>
+    /// <param name="sender">The source of the event, typically this control.</param>
+    /// <param name="e">The removed page.</param>
     protected virtual void OnPageRemoved(object sender, ValueEventArgs<TabPage> e) => PageRemoved?.Invoke(sender, e);
+
+    /// <summary>
+    /// Called when the selected header changes. Override to react to selection changes.
+    /// </summary>
+    /// <param name="sender">The header or component that initiated the selection change.</param>
+    /// <param name="e">Event args (unused).</param>
     protected virtual void OnSelectionChanged(object? sender, EventArgs e) => SelectionChanged?.Invoke(sender, e);
 
+    /// <summary>
+    /// Handles structural changes to the <see cref="Pages"/> collection, keeping headers and content in sync,
+    /// enforcing single selection, and maintaining header/content index alignment.
+    /// </summary>
+    /// <param name="e">Collection change details.</param>
     private void OnPagesCollectionChanged(NotifyCollectionChangedEventArgs e)
     {
         switch (e.Action)
@@ -80,7 +169,7 @@ public partial class Tabs : Dock
                     Invalidate(VisualPropertyInvalidateModes.Measure);
                     OnPageRemoved(this, new ValueEventArgs<TabPage>(page));
 
-                    // make sure we have at least one selected page if possible
+                    // Ensure at least one selectable page remains selected when possible.
                     if (SelectedPage == null)
                     {
                         var selectablePages = Pages.Where(p => p.IsSelectable).ToArray();
@@ -110,6 +199,7 @@ public partial class Tabs : Dock
                 break;
         }
 
+        // Adds new pages (for Add/Replace): inserts headers/contents at proper index and initializes header behavior.
         void add()
         {
             if (e.NewItems == null)
@@ -157,6 +247,14 @@ public partial class Tabs : Dock
         }
     }
 
+    /// <summary>
+    /// Removes a page's content from the content host and optionally disposes it when configured.
+    /// Invokes <see cref="TabPage.RemovedFromTabs(Tabs)"/> on the page.
+    /// </summary>
+    /// <param name="page">The page owning the content.</param>
+    /// <param name="index">The index at which the page was removed.</param>
+    /// <param name="content">The content visual to remove.</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="page"/> or <paramref name="content"/> is null.</exception>
     protected virtual void RemovePageContent(TabPage page, int index, Visual content)
     {
         ExceptionExtensions.ThrowIfNull(page, nameof(page));
@@ -169,6 +267,14 @@ public partial class Tabs : Dock
         }
     }
 
+    /// <summary>
+    /// Inserts a page's content into the content host at the specified index, aligns its visibility to the
+    /// page selection state, and positions it at origin. Invokes <see cref="TabPage.AddedToTabs(Tabs)"/>.
+    /// </summary>
+    /// <param name="page">The page owning the content.</param>
+    /// <param name="index">Insertion index matching the header index.</param>
+    /// <param name="content">The content visual to add.</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="page"/> or <paramref name="content"/> is null.</exception>
     protected virtual void AddPageContent(TabPage page, int index, Visual content)
     {
         ExceptionExtensions.ThrowIfNull(page, nameof(page));
@@ -191,6 +297,14 @@ public partial class Tabs : Dock
         page.AddedToTabs(this);
     }
 
+    /// <summary>
+    /// Replaces a page's content in the content host, removing the old visual and inserting the new one at the
+    /// same index while preserving visibility logic.
+    /// </summary>
+    /// <param name="page">The page whose content changed.</param>
+    /// <param name="newContent">The new content visual (optional).</param>
+    /// <param name="oldContent">The old content visual (optional).</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="page"/> is null.</exception>
     protected internal void OnPageContentChanged(TabPage page, Visual? newContent, Visual? oldContent)
     {
         ExceptionExtensions.ThrowIfNull(page, nameof(page));
@@ -207,6 +321,13 @@ public partial class Tabs : Dock
     }
 
 #pragma warning disable CA1822  // Mark members as static
+    /// <summary>
+    /// Responds to a change in a page's <c>IsSelectable</c> flag. If the page is currently selected and becomes
+    /// non-selectable, it is unselected to maintain valid selection invariants.
+    /// </summary>
+    /// <param name="page">The page whose selectability changed.</param>
+    /// <param name="newValue">The new selectability value.</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="page"/> is null.</exception>
     protected internal void OnPageIsSelectableChanged(TabPage page, bool newValue)
 #pragma warning restore CA1822  // Mark members as static
     {
@@ -220,6 +341,12 @@ public partial class Tabs : Dock
         }
     }
 
+    /// <summary>
+    /// Handles selection changes from page headers to enforce a single selected page and to update content visibility.
+    /// Raises <see cref="SelectionChanged"/> when a header transitions to selected.
+    /// </summary>
+    /// <param name="sender">The header whose selection changed.</param>
+    /// <param name="e">Contains the new selection state.</param>
     private void OnHeaderIsSelectedChanged(object? sender, ValueEventArgs<bool> e)
     {
         if (e.Value)

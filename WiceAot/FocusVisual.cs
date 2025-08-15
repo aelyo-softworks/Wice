@@ -1,16 +1,39 @@
 ﻿namespace Wice;
 
 // only (re)created if window loses focus
+/// <summary>
+/// Focus adornment visual rendered as an overlay around the currently focused element.
+/// Lives under the <see cref="Window"/> (a <see cref="Canvas"/>), avoids bubbling invalidations
+/// to the parent and performs its own local measure/arrange when its properties change.
+/// </summary>
+/// <remarks>
+/// - Non-interactive: disables key and pointer events.
+/// - Shape: uses a parent-provided <c>FocusVisualShapeType</c> when available, otherwise a <see cref="RoundedRectangle"/>.
+/// - Placement: computes position/size from the focused visual's absolute render rect with an optional offset from theme/parent.
+/// - Clipping: clips to the focused visual's parent clip during rendering.
+/// </remarks>
 public partial class FocusVisual : Border
 {
+    /// <summary>
+    /// Initializes a new instance of <see cref="FocusVisual"/> and disables input to keep it non-interactive.
+    /// </summary>
     public FocusVisual()
     {
         DisableKeyEvents = true;
         DisablePointerEvents = true;
     }
 
+    /// <summary>
+    /// Gets the parent window hosting this focus visual.
+    /// </summary>
     public new Window? Parent => (Window?)base.Parent;
 
+    /// <summary>
+    /// Ensures the parent is a <see cref="Window"/> and completes attachment.
+    /// </summary>
+    /// <param name="sender">Event sender.</param>
+    /// <param name="e">Event args.</param>
+    /// <exception cref="InvalidOperationException">Thrown when the parent is not a <see cref="Window"/>.</exception>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         if (Parent is null)
@@ -19,8 +42,22 @@ public partial class FocusVisual : Border
         base.OnAttachedToParent(sender, e);
     }
 
+    /// <summary>
+    /// Prevents bubbling any invalidate modes to the parent <see cref="Window"/>; layout is managed locally.
+    /// </summary>
+    /// <param name="mode">The child invalidate mode.</param>
+    /// <param name="defaultParentModes">Default parent modes.</param>
+    /// <param name="reason">Invalidate reason.</param>
+    /// <returns>Always <see cref="VisualPropertyInvalidateModes.None"/>.</returns>
     protected internal override VisualPropertyInvalidateModes GetParentInvalidateModes(InvalidateMode mode, VisualPropertyInvalidateModes defaultParentModes, InvalidateReason reason) => VisualPropertyInvalidateModes.None;
 
+    /// <summary>
+    /// Intercepts property sets to short-circuit parent invalidation by measuring/arranging locally when needed.
+    /// </summary>
+    /// <param name="property">The property descriptor being set.</param>
+    /// <param name="value">The new value.</param>
+    /// <param name="options">Optional set options.</param>
+    /// <returns>True if the stored value changed; otherwise false.</returns>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -46,7 +83,9 @@ public partial class FocusVisual : Border
         return true;
     }
 
-    // this presumes parent is a Window (which is a Canvas)
+    /// <summary>
+    /// Arranges this visual relative to its parent (assumed to be a <see cref="Window"/>/<see cref="Canvas"/>).
+    /// </summary>
     private void ArrangeWithParent()
     {
         if (DesiredSize.IsInvalid)
@@ -56,6 +95,16 @@ public partial class FocusVisual : Border
         Arrange(childRect);
     }
 
+    /// <summary>
+    /// Updates the focus adornment to track a newly focused visual.
+    /// Selects or creates the focus shape, disables its input, and positions/sizes this visual accordingly.
+    /// </summary>
+    /// <param name="newFocusedVisual">The newly focused visual (or its parent providing focus settings).</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="newFocusedVisual"/> is null.</exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="newFocusedVisual"/> is not effectively visible
+    /// or its absolute render rectangle is invalid.
+    /// </exception>
     protected virtual internal void OnUpdateFocus(Visual newFocusedVisual)
     {
         ExceptionExtensions.ThrowIfNull(newFocusedVisual, nameof(newFocusedVisual));
@@ -108,6 +157,11 @@ public partial class FocusVisual : Border
         Height = Math.Max(0, ar.Height - offset * 2);
     }
 
+    /// <summary>
+    /// Applies composition updates:
+    /// - Clips the focus adornment to the focused visual parent clip.
+    /// - Updates the child shape stroke from the current theme.
+    /// </summary>
     protected override void Render()
     {
         base.Render();

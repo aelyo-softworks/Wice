@@ -1,9 +1,29 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// A button that cycles through predefined logical states and exposes the current state via <see cref="Value"/>.
+/// </summary>
+/// <remarks>
+/// - States are provided via <see cref="AddState(StateButtonState)"/> before the control is attached to the UI tree.
+/// - Clicking the button advances to the next state (wrapping) when multiple states are present.
+/// - When <see cref="AutoSize"/> is enabled, the button sizes itself to the current window theme's box size.
+/// - The <see cref="Value"/> property change triggers creation of state-specific visual content.
+/// </remarks>
 public partial class StateButton : ButtonBase, IValueable, ISelectable
 {
+    /// <summary>
+    /// Backing property for <see cref="Value"/>. Uses <see cref="ConvertValue(BaseObject, object?)"/> to validate/normalize input and
+    /// invalidates measure on change to update layout accordingly.
+    /// </summary>
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(StateButton), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: ConvertValue);
 
+    /// <summary>
+    /// Validates the provided <paramref name="value"/> against the declared <see cref="States"/>.
+    /// </summary>
+    /// <param name="obj">The owning <see cref="StateButton"/>.</param>
+    /// <param name="value">The value to convert/validate.</param>
+    /// <returns>The original value when it matches a declared state.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the value does not match any existing state.</exception>
     internal static object? ConvertValue(BaseObject obj, object? value)
     {
         var box = (StateButton)obj;
@@ -15,17 +35,29 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         throw new ArgumentOutOfRangeException(nameof(value));
     }
 
+    /// <summary>
+    /// Raised after <see cref="Value"/> changes (after layout invalidation is queued).
+    /// </summary>
     public event EventHandler<ValueEventArgs>? ValueChanged;
+
+    /// <summary>
+    /// Raised when <see cref="ISelectable.IsSelected"/> changes. Only emitted for boolean values (true/false).
+    /// </summary>
     public event EventHandler<ValueEventArgs<bool>>? IsSelectedChanged; // only for true/false values
 
     private readonly List<StateButtonState> _states = [];
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="StateButton"/> and applies theme-dependent sizing when attached.
+    /// </summary>
     public StateButton()
     {
         OnThemeDpiEvent(null, ThemeDpiEventArgs.FromWindow(Window));
     }
 
     bool ISelectable.RaiseIsSelectedChanged { get; set; }
+
+    /// <inheritdoc />
     bool ISelectable.IsSelected
     {
         get => true.Equals(Value);
@@ -42,7 +74,18 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         }
     }
 
+    /// <summary>
+    /// Gets or sets whether the value can change. Mirrors <see cref="Visual.IsEnabled"/>.
+    /// </summary>
     bool IValueable.CanChangeValue { get => IsEnabled; set => IsEnabled = value; }
+
+    /// <summary>
+    /// Attempts to set the <see cref="Value"/> if the provided <paramref name="value"/> matches a declared state.
+    /// </summary>
+    /// <param name="value">The candidate value.</param>
+    /// <returns>
+    /// true if the value was accepted or no-op; otherwise false. Note: current implementation returns true in all cases.
+    /// </returns>
     bool IValueable.TrySetValue(object? value)
     {
         foreach (var state in States)
@@ -56,15 +99,29 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         return true;
     }
 
+    /// <summary>
+    /// Gets or sets whether this button sizes itself to the theme's box size when DPI/theme changes occur.
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual bool AutoSize { get; set; } = true;
 
+    /// <summary>
+    /// Gets the collection of states this button can cycle through.
+    /// </summary>
     [Category(CategoryBehavior)]
     public IReadOnlyList<StateButtonState> States => _states;
 
+    /// <summary>
+    /// Gets or sets the current state value. Must match one of the declared <see cref="States"/>.
+    /// </summary>
     [Category(CategoryBehavior)]
     public object? Value { get => GetPropertyValue(ValueProperty); set => SetPropertyValue(ValueProperty, value); }
 
+    /// <summary>
+    /// Called when <see cref="ISelectable.IsSelected"/> changes and <see cref="ISelectable.RaiseIsSelectedChanged"/> is enabled.
+    /// </summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The event data.</param>
     protected virtual void OnIsSelectedChanged(object? sender, ValueEventArgs<bool> e)
     {
         if (((ISelectable)this).RaiseIsSelectedChanged)
@@ -73,6 +130,12 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         }
     }
 
+    /// <summary>
+    /// Adds a new <paramref name="state"/> to the button. Must be called before the button is attached to the UI tree.
+    /// </summary>
+    /// <param name="state">The state to add.</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="state"/> is null.</exception>
+    /// <exception cref="WiceException">Thrown when attempting to add after the button is attached to the UI tree.</exception>
     public virtual void AddState(StateButtonState state)
     {
         ExceptionExtensions.ThrowIfNull(state, nameof(state));
@@ -82,6 +145,14 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         _states.Add(state);
     }
 
+    /// <summary>
+    /// Overrides property setting to react to <see cref="ValueProperty"/> changes:
+    /// updates state visuals, raises <see cref="ValueChanged"/>, and propagates selection changes.
+    /// </summary>
+    /// <param name="property">The property being set.</param>
+    /// <param name="value">The new value.</param>
+    /// <param name="options">Optional set options.</param>
+    /// <returns>true if the stored value changed; otherwise false.</returns>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -99,6 +170,10 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         return true;
     }
 
+    /// <summary>
+    /// Ensures that the visual child corresponds to the current <see cref="Value"/> and normalizes <see cref="Value"/> to the matched state's <see cref="StateButtonState.Value"/>.
+    /// </summary>
+    /// <param name="e">The originating event that triggered the update.</param>
     protected virtual void UpdateValueState(EventArgs e)
     {
         var value = Value;
@@ -124,8 +199,17 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         }
     }
 
+    /// <summary>
+    /// Raises <see cref="ValueChanged"/>.
+    /// </summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The event data.</param>
     protected virtual void OnValueChanged(object sender, ValueEventArgs e) => ValueChanged?.Invoke(sender, e);
 
+    /// <summary>
+    /// Gets the next state in <see cref="States"/> relative to the current <see cref="Value"/>, wrapping to the first.
+    /// </summary>
+    /// <returns>The next state, or <see langword="null"/> when there is fewer than two states.</returns>
     private StateButtonState? GetNextState()
     {
         if (States.Count <= 1)
@@ -141,6 +225,11 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         return States[0];
     }
 
+    /// <summary>
+    /// Cycles to the next state (if any), updates the visual, and then invokes base click handling.
+    /// </summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The event data.</param>
     protected override void OnClick(object? sender, EventArgs e)
     {
         var state = GetNextState();
@@ -153,6 +242,11 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         base.OnClick(sender, e);
     }
 
+    /// <summary>
+    /// Subscribes to DPI/theme changes, applies autosizing, and synchronizes the visual with the current <see cref="Value"/>.
+    /// </summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The event data.</param>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -161,12 +255,22 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
+    /// <summary>
+    /// Unsubscribes from DPI/theme change notifications.
+    /// </summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The event data.</param>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);
         Window!.ThemeDpiEvent -= OnThemeDpiEvent;
     }
 
+    /// <summary>
+    /// Handles DPI/theme events to update size when <see cref="AutoSize"/> is enabled.
+    /// </summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">DPI/theme event data.</param>
     protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         if (!AutoSize)

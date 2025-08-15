@@ -1,16 +1,63 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// Represents a header visual composed of an icon, text, an optional close button, and a selectable state.
+/// Provides a toggleable selection via a chevron button (animated rotation) or direct mouse click,
+/// integrates with access keys, and updates styles based on enabled/disabled and theme/DPI changes.
+/// </summary>
+/// <remarks>
+/// Layout:
+/// - Hosts a selection indicator (<see cref="Selection"/>) at the left edge when <see cref="IsSelected"/> is true.
+/// - Contains a docking panel (<see cref="Panel"/>) that arranges icon, text, selected button, and optional close button.
+/// Interaction:
+/// - Clicking the header toggles selection when <see cref="AutoSelect"/> is true.
+/// - The selected button animates a chevron and toggles state; access keys can invoke it when focused.
+/// - Optional close button raises <see cref="CloseButtonClick"/>; visibility is managed externally.
+/// Rendering:
+/// - When selected and <see cref="SelectedBrush"/> is set, it is applied to the composition visual.
+/// The control participates fully in the layout/render pipeline of <see cref="Visual"/>.
+/// </remarks>
 public partial class Header : Canvas, IAccessKeyParent, ISelectable
 {
+    /// <summary>
+    /// Identifies the <see cref="IsSelected"/> property.
+    /// Changing this property triggers a measure invalidation, selection visuals update,
+    /// chevron animation, tooltip update, and may raise <see cref="IsSelectedChanged"/>.
+    /// </summary>
     public static VisualProperty IsSelectedProperty { get; } = VisualProperty.Add(typeof(Header), nameof(IsSelected), VisualPropertyInvalidateModes.Measure, false);
+
+    /// <summary>
+    /// Identifies the <see cref="SelectedBrush"/> property.
+    /// Changing this property triggers a render invalidation.
+    /// </summary>
     public static VisualProperty SelectedBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(Header), nameof(SelectedBrush), VisualPropertyInvalidateModes.Render);
 
+    /// <summary>
+    /// Occurs when <see cref="IsSelected"/> changes after internal processing is complete.
+    /// </summary>
     public event EventHandler<ValueEventArgs<bool>>? IsSelectedChanged;
+
+    /// <summary>
+    /// Occurs when the selected (chevron) button is clicked or when the header is clicked.
+    /// </summary>
     public event EventHandler? SelectedButtonClick;
+
+    /// <summary>
+    /// Occurs when the optional close button is clicked.
+    /// </summary>
     public event EventHandler? CloseButtonClick;
 
     private readonly List<AccessKey> _accessKeys = [];
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="Header"/> and constructs its visual tree.
+    /// </summary>
+    /// <remarks>
+    /// - Creates a selection border, a dock panel, an icon, a selected button with a chevron text,
+    ///   a text box, and an optional close button.
+    /// - Wires up animations, tooltips, and input handlers.
+    /// - Defers some composition-dependent configuration via <see cref="Visual.DoWhenAttachedToComposition(Action, VisualDoOptions)"/>.
+    /// </remarks>
     public Header()
     {
         RaiseIsSelectedChanged = true;
@@ -106,60 +153,148 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
         }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether clicking the header or selected button
+    /// automatically toggles <see cref="IsSelected"/>.
+    /// </summary>
     [Category(CategoryBehavior)]
     public bool AutoSelect { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether this header is selected.
+    /// Triggers selection indicator visibility or chevron animation and raises <see cref="IsSelectedChanged"/> when enabled.
+    /// </summary>
     [Category(CategoryBehavior)]
     public bool IsSelected { get => (bool)GetPropertyValue(IsSelectedProperty)!; set => SetPropertyValue(IsSelectedProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the brush applied to the header background when <see cref="IsSelected"/> is true.
+    /// </summary>
     [Category(CategoryRender)]
     public CompositionBrush SelectedBrush { get => (CompositionBrush)GetPropertyValue(SelectedBrushProperty)!; set => SetPropertyValue(SelectedBrushProperty, value); }
 
+    /// <summary>
+    /// Gets the selection visual (left border) shown when <see cref="IsSelected"/> is true.
+    /// </summary>
     [Browsable(false)]
     public Visual Selection { get; }
 
+    /// <summary>
+    /// Gets the panel hosting the header contents (dock layout).
+    /// </summary>
     [Browsable(false)]
     public Visual Panel { get; }
 
+    /// <summary>
+    /// Gets the icon visual.
+    /// </summary>
     [Browsable(false)]
     public Visual Icon { get; }
 
+    /// <summary>
+    /// Gets the text visual.
+    /// </summary>
     [Browsable(false)]
     public TextBox Text { get; }
 
+    /// <summary>
+    /// Gets the selected (chevron) button.
+    /// </summary>
     [Browsable(false)]
     public ButtonBase SelectedButton { get; }
 
+    /// <summary>
+    /// Gets the chevron text displayed in <see cref="SelectedButton"/>.
+    /// </summary>
     [Browsable(false)]
     public TextBox SelectedButtonText { get; }
 
+    /// <summary>
+    /// Gets the optional close button (may be null when not provided by subclasses).
+    /// </summary>
     [Browsable(false)]
     public Button? CloseButton { get; }
 
+    /// <summary>
+    /// Gets the access keys handled by this header. When focused and enabled, a matching key invokes the selected button.
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual IList<AccessKey> AccessKeys => _accessKeys;
 
+    /// <summary>
+    /// Factory for the selection indicator visual.
+    /// </summary>
     protected virtual Visual CreateSelection() => new Border();
+
+    /// <summary>
+    /// Factory for the main content panel.
+    /// </summary>
     protected virtual Visual CreatePanel() => new Dock();
+
+    /// <summary>
+    /// Factory for the icon visual.
+    /// </summary>
     protected virtual Visual CreateIcon() => new();
+
+    /// <summary>
+    /// Factory for the title text.
+    /// </summary>
     protected virtual TextBox CreateText() => new();
+
+    /// <summary>
+    /// Factory for the selected (chevron) button.
+    /// </summary>
     protected virtual ButtonBase CreateSelectedButton() => new();
+
+    /// <summary>
+    /// Factory for the chevron text hosted by <see cref="SelectedButton"/>.
+    /// </summary>
     protected virtual TextBox CreateSelectedButtonText() => new();
+
+    /// <summary>
+    /// Factory for the optional close button. Default returns a new button; subclasses can return null to hide it.
+    /// </summary>
     protected virtual Button? CreateCloseButton() => new();
 
+    /// <summary>
+    /// Gets or sets whether <see cref="IsSelectedChanged"/> should be raised when <see cref="IsSelected"/> updates.
+    /// </summary>
     bool ISelectable.RaiseIsSelectedChanged { get => RaiseIsSelectedChanged; set => RaiseIsSelectedChanged = value; }
+
+    /// <summary>
+    /// Gets or sets whether <see cref="IsSelectedChanged"/> should be raised upon selection change.
+    /// </summary>
     protected virtual bool RaiseIsSelectedChanged { get; set; }
 
+    /// <summary>
+    /// Raises <see cref="IsSelectedChanged"/>.
+    /// </summary>
     protected virtual void OnIsSelectedChanged(object sender, ValueEventArgs<bool> e) => IsSelectedChanged?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises <see cref="SelectedButtonClick"/>.
+    /// </summary>
     protected virtual void OnSelectedButtonClick(object sender, EventArgs e) => SelectedButtonClick?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises <see cref="CloseButtonClick"/>.
+    /// </summary>
     protected virtual void OnCloseButtonClick(object sender, EventArgs e) => CloseButtonClick?.Invoke(sender, e);
 
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         base.MeasureCore(constraint);
         return Panel.DesiredSize;
     }
 
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Special handling:
+    /// - <see cref="IsSelectedProperty"/>: when the selected button is visible, animates the chevron via a 180° rotation
+    ///   and toggles its glyph. Otherwise shows/hides the selection visual. Optionally raises <see cref="IsSelectedChanged"/>.
+    /// - <see cref="Visual.IsEnabledProperty"/>: synchronizes focusability and calls <see cref="UpdateStyle"/>.
+    /// </remarks>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -218,12 +353,19 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
         return true;
     }
 
+    /// <summary>
+    /// Applies enabled/disabled visual style (opacity and cursor) according to the current theme.
+    /// </summary>
     protected virtual void UpdateStyle()
     {
         Opacity = IsEnabled ? 1f : GetWindowTheme().DisabledOpacityRatio;
         Cursor = IsEnabled ? Cursor.Hand : null;
     }
 
+    /// <inheritdoc/>
+    /// <remarks>
+    /// When <see cref="IsSelected"/> is true and <see cref="SelectedBrush"/> is set, applies it to the composition visual.
+    /// </remarks>
     protected override void RenderBrushes()
     {
         base.RenderBrushes();
@@ -238,6 +380,11 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
     }
 
     void IAccessKeyParent.OnAccessKey(KeyEventArgs e) => OnAccessKey(e);
+
+    /// <summary>
+    /// Handles access key input when focused and enabled. Invokes the selected button if any access key matches.
+    /// </summary>
+    /// <param name="e">Key event data.</param>
     protected virtual void OnAccessKey(KeyEventArgs e)
     {
         if (AccessKeys == null || !IsEnabled || !IsFocused)
@@ -254,6 +401,10 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
         }
     }
 
+    /// <inheritdoc/>
+    /// <remarks>
+    /// When enabled, clicking the header triggers the selected button logic and may toggle selection if <see cref="AutoSelect"/> is true.
+    /// </remarks>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         if (!IsEnabled)
@@ -263,6 +414,10 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
         base.OnMouseButtonDown(sender, e);
     }
 
+    /// <summary>
+    /// Invokes <see cref="SelectedButtonClick"/> and toggles <see cref="IsSelected"/> when <see cref="AutoSelect"/> is true.
+    /// </summary>
+    /// <param name="e">Event args that originated the click.</param>
     protected virtual void OnSelectedButtonClick(EventArgs e)
     {
         OnSelectedButtonClick(this, e);
@@ -272,6 +427,10 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
         }
     }
 
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Subscribes to theme/DPI events and applies initial theme sizing/margins.
+    /// </remarks>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -279,12 +438,21 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Unsubscribes from theme/DPI events.
+    /// </remarks>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);
         Window!.ThemeDpiEvent -= OnThemeDpiEvent;
     }
 
+    /// <summary>
+    /// Updates theme-dependent sizes and margins when theme or DPI changes.
+    /// </summary>
+    /// <param name="sender">Event source.</param>
+    /// <param name="e">Theme/DPI event data.</param>
     protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         var theme = GetWindowTheme();

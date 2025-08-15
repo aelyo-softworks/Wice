@@ -1,35 +1,98 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// A layout container that arranges its visible children by docking them to its edges:
+/// Left, Top, Right, Bottom, with an optional last child filling the remaining space.
+/// </summary>
+/// <remarks>
+/// Behavior overview:
+/// - Dock order is the visual order of <see cref="VisibleChildren"/>; each child consumes space from the current
+///   layout rectangle according to its <c>DockType</c>.
+/// - Horizontal-alignment is honored for Top/Bottom docked children; Vertical-alignment is honored for Left/Right.
+/// - When <see cref="AllowOverlap"/> is false, opposing edge docks will not overlap previously docked edges.
+/// - When <see cref="LastChildFill"/> is true, the last visible child fills any remaining area.
+/// Relationship graph:
+/// - During arrange, the container tracks neighbor relationships (left/right/top/bottom) for each child
+///   which can be queried via <see cref="GetAt(Visual, DockType)"/>.
+/// </remarks>
 public partial class Dock : Visual
 {
     private readonly Dictionary<Visual, Docked> _docked = [];
 
+    /// <summary>
+    /// Attached property used on child visuals to indicate which edge they dock to when placed in a <see cref="Dock"/>.
+    /// Default is <see cref="DockType.Left"/>.
+    /// </summary>
     public static VisualProperty DockTypeProperty { get; } = VisualProperty.Add(typeof(Dock), nameof(DockType), VisualPropertyInvalidateModes.Measure, DockType.Left);
+
+    /// <summary>
+    /// Gets or sets whether the last visible child should fill the remaining space after all other children are arranged.
+    /// Default is true.
+    /// </summary>
     public static VisualProperty LastChildFillProperty { get; } = VisualProperty.Add(typeof(Dock), nameof(LastChildFill), VisualPropertyInvalidateModes.Measure, true);
+
+    /// <summary>
+    /// Gets or sets whether opposing docks are allowed to overlap the remaining layout area.
+    /// When false (default), the container prevents overlap by clamping against consumed edges.
+    /// </summary>
     public static VisualProperty AllowOverlapProperty { get; } = VisualProperty.Add(typeof(Dock), nameof(AllowOverlap), VisualPropertyInvalidateModes.Measure, false);
 
+    /// <summary>
+    /// Maps a <see cref="DockType"/> to its primary <see cref="Orientation"/>.
+    /// </summary>
+    /// <param name="type">Dock side.</param>
+    /// <returns>Vertical for Top/Bottom, otherwise Horizontal.</returns>
     public static Orientation GetOrientation(DockType type) => type == DockType.Bottom || type == DockType.Top ? Orientation.Vertical : Orientation.Horizontal;
 
+    /// <summary>
+    /// Sets the attached <see cref="DockType"/> on a child.
+    /// </summary>
+    /// <param name="properties">Target child implementing <see cref="IPropertyOwner"/>.</param>
+    /// <param name="type">Dock side to set.</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetDockType(IPropertyOwner properties, DockType type)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         properties.SetPropertyValue(DockTypeProperty, type);
     }
 
+    /// <summary>
+    /// Gets the attached <see cref="DockType"/> from a child.
+    /// </summary>
+    /// <param name="properties">Target child implementing <see cref="IPropertyOwner"/>.</param>
+    /// <returns>The configured dock side; defaults to <see cref="DockType.Left"/>.</returns>
+    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static DockType GetDockType(IPropertyOwner properties)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return (DockType)properties.GetPropertyValue(DockTypeProperty)!;
     }
 
+    /// <summary>
+    /// Holds the last arranged child during the current layout pass.
+    /// Used to apply <see cref="LastChildFill"/> behavior.
+    /// </summary>
     internal Visual? _lastChild;
 
+    /// <summary>
+    /// When true, the last visible child fills the remaining space; otherwise it is arranged like others.
+    /// </summary>
     [Category(CategoryLayout)]
     public bool LastChildFill { get => (bool)GetPropertyValue(LastChildFillProperty)!; set => SetPropertyValue(LastChildFillProperty, value); }
 
+    /// <summary>
+    /// When true, opposing docks may overlap the remaining layout area; when false, they are constrained to avoid overlap.
+    /// </summary>
     [Category(CategoryLayout)]
     public bool AllowOverlap { get => (bool)GetPropertyValue(AllowOverlapProperty)!; set => SetPropertyValue(AllowOverlapProperty, value); }
 
+    /// <summary>
+    /// Gets the nearest neighbor of a child in a given dock direction established during the last arrange pass.
+    /// </summary>
+    /// <param name="visual">The child visual to query.</param>
+    /// <param name="type">The neighbor side to retrieve.</param>
+    /// <returns>The adjacent visual for that side, or null if none.</returns>
+    /// <exception cref="ArgumentNullException">When <paramref name="visual"/> is null.</exception>
     public Visual? GetAt(Visual visual, DockType type)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -46,6 +109,14 @@ public partial class Dock : Visual
         };
     }
 
+    /// <summary>
+    /// Measures desired size by simulating docking and accumulating consumed width/height per orientation.
+    /// </summary>
+    /// <param name="constraint">Available size including margin.</param>
+    /// <returns>The desired size required by docked children.</returns>
+    /// <remarks>
+    /// Children are measured in order with the remaining space after previously measured siblings in their orientation.
+    /// </remarks>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         _lastChild = null;
@@ -88,6 +159,10 @@ public partial class Dock : Visual
         return new D2D_SIZE_F(width, height);
     }
 
+    /// <summary>
+    /// Arranges children by docking them to the requested edges, honoring alignment and overlap rules.
+    /// </summary>
+    /// <param name="finalRect">Final rectangle allocated by the parent, without margin.</param>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         var finalSize = finalRect.Size;
@@ -115,6 +190,7 @@ public partial class Dock : Visual
             var childSize = child.DesiredSize;
             var rc = D2D_RECT_F.Sized(left, top, Math.Max(0, finalSize.width - (left + right)), Math.Max(0, finalSize.height - (top + bottom)));
 
+            // Apply alignment within the current band for the docked side.
             if (dock == DockType.Top || dock == DockType.Bottom)
             {
                 switch (child.HorizontalAlignment)
@@ -226,7 +302,7 @@ public partial class Dock : Visual
 
             if (rc.IsEmpty)
             {
-                // this is a hack to "remove" this child if it was empty, to force it not to show
+                // This is a hack to "remove" this child if it was empty, to force it not to show
                 child.Arrange(new D2D_RECT_F(float.MaxValue, float.MaxValue, float.MaxValue, float.MaxValue));
             }
             else
@@ -236,6 +312,7 @@ public partial class Dock : Visual
             _lastChild = child;
         }
 
+        // If last child should fill remaining space, also record its neighbor links
         if (lastChildFill && _lastChild != null)
         {
             var docked = new Docked();
@@ -243,6 +320,7 @@ public partial class Dock : Visual
             setDocked(docked, _lastChild);
         }
 
+        // Establish neighbor relationships between the current child and the last docked ones per side.
         void setDocked(Docked docked, Visual c)
         {
             if (lastLeft != null)
@@ -271,13 +349,21 @@ public partial class Dock : Visual
         }
     }
 
+    /// <summary>
+    /// Neighbor map for a single child produced during the last arrange pass.
+    /// </summary>
     private sealed class Docked
     {
+        /// <summary>Neighbor to the left of this visual (most recently docked on the left side).</summary>
         public Visual? Left;
+        /// <summary>Neighbor to the right of this visual (most recently docked on the right side).</summary>
         public Visual? Right;
+        /// <summary>Neighbor above this visual (most recently docked on the top side).</summary>
         public Visual? Top;
+        /// <summary>Neighbor below this visual (most recently docked on the bottom side).</summary>
         public Visual? Bottom;
 
+        /// <inheritdoc />
         public override string ToString() => "L:" + Left + " T:" + Top + " R:" + Right + " B:" + Bottom;
     }
 }

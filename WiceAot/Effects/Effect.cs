@@ -3,10 +3,33 @@
 #if !NETFRAMEWORK
 [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
 #endif
+/// <summary>
+/// Base class for custom Win2D/Direct2D effects.
+/// Implements <see cref="IGraphicsEffect"/> and <see cref="IGraphicsEffectD2D1Interop"/> to expose effect
+/// metadata (name, properties, sources) and allow Direct2D to query values at render time.
+/// </summary>
+/// <remarks>
+/// - Effect properties are discovered via reflection and mapped through <see cref="EffectProperty"/> descriptors
+///   registered on the effect type using <see cref="BaseObjectProperty"/> infrastructure.
+/// - Property values are marshaled to WinRT <c>IPropertyValue</c> using <see cref="IPropertyValueStatics"/> helpers.
+/// - Sources are tracked in a list up to <see cref="MaximumSourcesCount"/> (or unbounded if set to <c>int.MaxValue</c>).
+/// - The <see cref="Name"/> must never be <see langword="null"/> to satisfy <see cref="IGraphicsEffectD2D1Interop"/>.
+/// </remarks>
 public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraphicsEffect, IGraphicsEffectSource, IGraphicsEffectD2D1Interop
 {
+    /// <summary>
+    /// Cache of reflected, ordered property definitions per effect type.
+    /// </summary>
     private static readonly ConcurrentDictionary<Type, List<PropDef>> _properties = new();
+
+    /// <summary>
+    /// Backing store for effect sources (can contain <see langword="null"/> entries).
+    /// </summary>
     private readonly List<IGraphicsEffectSource?> _sources = [];
+
+    /// <summary>
+    /// Lazy activation factory for creating WinRT <c>IPropertyValue</c> instances.
+    /// </summary>
     private readonly Lazy<IComObject<IPropertyValueStatics>> _statics = new(() =>
 #if NETFRAMEWORK
         new ComObject<IPropertyValueStatics>(WinRTUtilities.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue"))!
@@ -14,14 +37,47 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         ComObject.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue")!
 #endif
     );
+
+    /// <summary>
+    /// Backing field for <see cref="Name"/> to ensure non-null semantics.
+    /// </summary>
     private string? _name;
 
+    /// <summary>
+    /// Gets the maximum number of effect sources supported by this instance.
+    /// </summary>
+    /// <remarks>
+    /// When set to <c>int.MaxValue</c>, the effect reports the current number of sources instead.
+    /// </remarks>
     public uint MaximumSourcesCount { get; } = sourcesCount;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Must never return <see langword="null"/> for <see cref="IGraphicsEffectD2D1Interop"/> compatibility.
+    /// </remarks>
     public override string? Name { get => _name ?? string.Empty; set => _name = value; } // *must* not be null for IGraphicsEffectD2D1Interop
+
+    /// <summary>
+    /// Gets or sets whether the effect may cache intermediate results.
+    /// </summary>
     public virtual bool Cached { get; set; }
+
+    /// <summary>
+    /// Gets or sets the precision used for effect buffers.
+    /// </summary>
     public virtual D2D1_BUFFER_PRECISION Precision { get; set; }
+
+    /// <summary>
+    /// Gets the list of sources connected to this effect, up to <see cref="MaximumSourcesCount"/>.
+    /// </summary>
     public IList<IGraphicsEffectSource?> Sources => _sources;
 
+    /// <summary>
+    /// Gets the CLSID of the effect, taken from the <see cref="GuidAttribute"/> on the concrete type.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the effect type does not define a valid <see cref="GuidAttribute"/>.
+    /// </exception>
     public Guid Clsid
     {
         get
@@ -35,9 +91,18 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     }
 
 #if NETFRAMEWORK
+    /// <summary>
+    /// Returns this instance as an <see cref="IGraphicsEffect"/> for .NET Framework interop.
+    /// </summary>
     public IGraphicsEffect GetIGraphicsEffect() => this;
 #endif
 
+    /// <summary>
+    /// Gets a source at the specified <paramref name="index"/> or <see langword="null"/> if not set.
+    /// </summary>
+    /// <param name="index">The zero-based source index.</param>
+    /// <returns>The source at the index, or <see langword="null"/> if not set.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="index"/> is greater than or equal to <see cref="MaximumSourcesCount"/>.</exception>
     protected virtual IGraphicsEffectSource? GetSource(int index)
     {
         if (index >= MaximumSourcesCount)
@@ -49,6 +114,12 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return _sources[index];
     }
 
+    /// <summary>
+    /// Sets a source at the specified <paramref name="index"/>. The <paramref name="effect"/> may be <see langword="null"/>.
+    /// </summary>
+    /// <param name="index">The zero-based source index.</param>
+    /// <param name="effect">The source to set (may be <see langword="null"/>).</param>
+    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="index"/> is greater than or equal to <see cref="MaximumSourcesCount"/>.</exception>
     protected virtual void SetSource(int index, IGraphicsEffectSource? effect)
     {
         // effect can be null
@@ -69,14 +140,36 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         }
     }
 
+    /// <summary>
+    /// Internal definition of a mapped effect property (order, mapping semantics, and reflection info).
+    /// </summary>
     private sealed class PropDef(PropertyInfo property, int index, GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
     {
+        /// <summary>
+        /// Gets the reflected CLR property.
+        /// </summary>
         public PropertyInfo Property => property;
+
+        /// <summary>
+        /// Gets the property index in the effect (used by D2D property queries).
+        /// </summary>
         public int Index => index;
+
+        /// <summary>
+        /// Gets the D2D property mapping semantics for this property.
+        /// </summary>
         public GRAPHICS_EFFECT_PROPERTY_MAPPING Mapping => mapping;
 
+        /// <inheritdoc/>
         public override string ToString() => "#" + Index + " " + Property?.Name;
 
+        /// <summary>
+        /// Creates a WinRT <c>IPropertyValue</c> pointer representing the current value of <paramref name="effect"/>.<br/>
+        /// Handles primitive, enum, struct, vector, matrix, and inspectable types.
+        /// </summary>
+        /// <param name="effect">The effect instance providing the value.</param>
+        /// <param name="ptr">On success, receives the allocated COM pointer.</param>
+        /// <returns>HRESULT indicating success or failure.</returns>
         public HRESULT GetPropertyValue(Effect effect, out nint ptr)
         {
             var statics = effect._statics.Value;
@@ -187,6 +280,11 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         }
     }
 
+    /// <summary>
+    /// Retrieves and caches property definitions for the given effect <paramref name="type"/>.
+    /// </summary>
+    /// <param name="type">The concrete effect type to inspect for public readable properties.</param>
+    /// <returns>Ordered list of property definitions used by D2D.</returns>
     private static List<PropDef> GetPropDefs(
 #if !NETFRAMEWORK
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] 
@@ -210,12 +308,24 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return list;
     }
 
+    /// <summary>
+    /// Gets the effect CLSID for D2D interop.
+    /// </summary>
+    /// <param name="id">Receives the effect class identifier.</param>
+    /// <returns><see cref="WiceCommons.S_OK"/> on success.</returns>
     HRESULT IGraphicsEffectD2D1Interop.GetEffectId(out Guid id)
     {
         id = Clsid;
         return WiceCommons.S_OK;
     }
 
+    /// <summary>
+    /// Resolves a property name to its index and mapping semantics for D2D.
+    /// </summary>
+    /// <param name="name">The property name (HSTRING pointer).</param>
+    /// <param name="index">Receives the property index.</param>
+    /// <param name="mapping">Receives the mapping semantics.</param>
+    /// <returns>S_OK if found; otherwise E_INVALIDARG.</returns>
     HRESULT IGraphicsEffectD2D1Interop.GetNamedPropertyMapping(PWSTR name, out uint index, out GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
     {
         //Application.Trace(this + "name:" + name);
@@ -236,6 +346,11 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return WiceCommons.S_OK;
     }
 
+    /// <summary>
+    /// Gets the count of exposed properties for D2D.
+    /// </summary>
+    /// <param name="count">Receives the property count.</param>
+    /// <returns><see cref="WiceCommons.S_OK"/> on success.</returns>
     HRESULT IGraphicsEffectD2D1Interop.GetPropertyCount(out uint count)
     {
         var defs = GetPropDefs(GetType());
@@ -244,6 +359,12 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return WiceCommons.S_OK;
     }
 
+    /// <summary>
+    /// Gets the property value for a given <paramref name="index"/> as a WinRT <c>IPropertyValue</c> pointer.
+    /// </summary>
+    /// <param name="index">The zero-based property index.</param>
+    /// <param name="value">Receives the COM pointer to the boxed property value.</param>
+    /// <returns>S_OK on success; E_BOUNDS for invalid index; otherwise E_FAIL.</returns>
     HRESULT IGraphicsEffectD2D1Interop.GetProperty(uint index, out nint value)
     {
         try
@@ -267,6 +388,12 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         }
     }
 
+    /// <summary>
+    /// Gets a source for D2D at the specified <paramref name="index"/>.
+    /// </summary>
+    /// <param name="index">The zero-based source index.</param>
+    /// <param name="source">Receives the source or <see langword="null"/>.</param>
+    /// <returns>S_OK on success; E_BOUNDS when out of range.</returns>
     HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource? source)
     {
         //Application.Trace(this + " index:" + index);
@@ -281,6 +408,15 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         return WiceCommons.S_OK;
     }
 
+    /// <summary>
+    /// Gets the number of sources exposed to D2D.
+    /// </summary>
+    /// <param name="count">Receives the number of sources.</param>
+    /// <returns><see cref="WiceCommons.S_OK"/> on success.</returns>
+    /// <remarks>
+    /// When <see cref="MaximumSourcesCount"/> equals <c>int.MaxValue</c>, this returns the current list size.
+    /// Otherwise, it returns the configured maximum.
+    /// </remarks>
     HRESULT IGraphicsEffectD2D1Interop.GetSourceCount(out uint count)
     {
         if (MaximumSourcesCount == int.MaxValue)

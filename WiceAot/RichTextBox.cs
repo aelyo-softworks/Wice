@@ -1,14 +1,37 @@
 ﻿namespace Wice;
 
-// this currently is only read-only
-// note this visual sits on a COM object so we must dispose it on the same thread that created it
+/// <summary>
+/// A visual Rich Text Box that renders text content using a COM-backed text services host.
+/// </summary>
+/// <remarks>
+/// - This control is currently read-only from the UI perspective; content can be set programmatically.
+/// - The underlying text host is a COM object and must be disposed on the same thread that created it.
+/// - Layout honors padding, a configurable <see cref="ZoomFactor"/>, and a <see cref="NaturalSize"/>
+///   computation constrained by <see cref="MaxConstraintSize"/>.
+/// - On DPI changes, the font size is scaled and the <see cref="ZoomFactor"/> is updated to keep visual fidelity.
+/// </remarks>
 public partial class RichTextBox : RenderVisual, IDisposable
 {
+    // Tracks whether managed resources have been disposed.
     private bool _disposedValue;
+
+    // Maximum constraints given to the host when measuring to avoid host misbehavior with smaller sentinel values.
     private D2D_SIZE_F _maxConstraintSize = new(ushort.MaxValue, ushort.MaxValue);
+
+    // Natural size computation mode for the text host.
     private TXTNATURALSIZE _naturalSize = TXTNATURALSIZE.TXTNS_FITTOCONTENT2;
+
+    // Scale factor applied around the host to scale text independently from the font size.
     private float _zoomFactor = 1;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RichTextBox"/> class.
+    /// </summary>
+    /// <param name="generator">
+    /// The text services generator to use. When <see cref="TextServicesGenerator.Default"/>,
+    /// the default generator is resolved via <see cref="GetDefaultTextServicesGenerator"/>.
+    /// </param>
+    /// <exception cref="InvalidOperationException">Thrown when the text host cannot be created.</exception>
     public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
     {
         if (generator == TextServicesGenerator.Default)
@@ -19,10 +42,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
         Generator = generator;
 
 #if NETFRAMEWORK
-        _host = new TextHost(generator)
-        {
-            TextColor = 0
-        };
+                _host = new TextHost(generator)
+                {
+                    TextColor = 0
+                };
 #else
         _host = CreateTextHost(generator, this);
 #endif
@@ -33,22 +56,47 @@ public partial class RichTextBox : RenderVisual, IDisposable
     }
 
 #if NETFRAMEWORK
-    private readonly TextHost _host;
+            private readonly TextHost _host;
 
-    [Category(CategoryLive)]
-    public dynamic Document => _host?.Document;
+            /// <summary>
+            /// Gets the underlying host document (dynamic due to differing generator implementations).
+            /// </summary>
+            [Category(CategoryLive)]
+            public dynamic Document => _host?.Document;
 
-    [Category(CategoryBehavior)]
-    public string GeneratorVersion => Document.Generator;
+            /// <summary>
+            /// Gets the version string of the active text services generator.
+            /// </summary>
+            [Category(CategoryBehavior)]
+            public string GeneratorVersion => Document.Generator;
 #else
     private readonly RichTextBoxTextHost _host;
 
+    /// <summary>
+    /// Gets the underlying text host instance.
+    /// </summary>
     public TextHost Host => _host;
+
+    /// <summary>
+    /// Creates the text host used by this <see cref="RichTextBox"/>.
+    /// </summary>
+    /// <param name="generator">The text services generator to use.</param>
+    /// <param name="richTextBox">The owning <see cref="RichTextBox"/>.</param>
+    /// <returns>A concrete <see cref="RichTextBoxTextHost"/> instance.</returns>
     protected virtual RichTextBoxTextHost CreateTextHost(TextServicesGenerator generator, RichTextBox richTextBox) => new(generator, richTextBox);
 
+    /// <summary>
+    /// Text host implementation bound to a <see cref="RichTextBox"/> with DX-based layout/sizing helpers.
+    /// </summary>
     [System.Runtime.InteropServices.Marshalling.GeneratedComClass]
     protected partial class RichTextBoxTextHost : TextHost
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RichTextBoxTextHost"/> class.
+        /// </summary>
+        /// <param name="generator">The text services generator to use.</param>
+        /// <param name="richTextBox">The owning <see cref="RichTextBox"/>.</param>
+        /// <exception cref="ArgumentNullException">When <paramref name="richTextBox"/> is null.</exception>
         public RichTextBoxTextHost(TextServicesGenerator generator, RichTextBox richTextBox) : base(generator)
         {
             ExceptionExtensions.ThrowIfNull(richTextBox, nameof(richTextBox));
@@ -59,8 +107,16 @@ public partial class RichTextBox : RenderVisual, IDisposable
             });
         }
 
+        /// <summary>
+        /// Gets the owning <see cref="RichTextBox"/>.
+        /// </summary>
         public RichTextBox RichTextBox { get; }
 
+        /// <summary>
+        /// Gets the extent of the client area in HiMetric units as required by the text host.
+        /// </summary>
+        /// <param name="lpExtent">Pointer to a <c>SIZE</c> structure to receive the extent.</param>
+        /// <returns><see cref="Constants.S_OK"/> on success; <see cref="Constants.E_INVALIDARG"/> on invalid pointer.</returns>
         public override unsafe HRESULT TxGetExtent(nint lpExtent)
         {
             if (lpExtent == 0)
@@ -75,8 +131,18 @@ public partial class RichTextBox : RenderVisual, IDisposable
             return Constants.S_OK;
         }
 
-        // avoid too many traces in debug
+        /// <summary>
+        /// Gets a system color by index, avoiding extra debug tracing.
+        /// </summary>
+        /// <param name="nIndex">The system color index.</param>
+        /// <returns>The ARGB color value.</returns>
         public override uint TxGetSysColor(SYS_COLOR_INDEX nIndex) => Functions.GetSysColor(nIndex);
+
+        /// <summary>
+        /// Converts a client point (relative to the host) to screen coordinates.
+        /// </summary>
+        /// <param name="lppt">Pointer to a <c>POINT</c> to translate.</param>
+        /// <returns>true on success; otherwise false.</returns>
         public unsafe override bool TxClientToScreen(nint lppt)
         {
             if (lppt == 0 || RichTextBox == null)
@@ -97,6 +163,11 @@ public partial class RichTextBox : RenderVisual, IDisposable
             return true;
         }
 
+        /// <summary>
+        /// Converts a screen point to the client coordinates of the host.
+        /// </summary>
+        /// <param name="lppt">Pointer to a <c>POINT</c> to translate.</param>
+        /// <returns>true on success; otherwise false.</returns>
         public unsafe override bool TxScreenToClient(nint lppt)
         {
             if (lppt == 0 || RichTextBox == null)
@@ -113,6 +184,12 @@ public partial class RichTextBox : RenderVisual, IDisposable
             return true;
         }
 
+        /// <summary>
+        /// Provides window style information to the text host (delegated from the owner window).
+        /// </summary>
+        /// <param name="pdwStyle">Pointer to receive <see cref="WINDOW_STYLE"/>.</param>
+        /// <param name="pdwExStyle">Pointer to receive <see cref="WINDOW_EX_STYLE"/>.</param>
+        /// <returns>S_OK on success; E_FAIL when the owning window is not available.</returns>
         public unsafe override HRESULT TxGetWindowStyles(nint pdwStyle, nint pdwExStyle)
         {
             var window = RichTextBox?.Window;
@@ -131,28 +208,49 @@ public partial class RichTextBox : RenderVisual, IDisposable
             return WiceCommons.S_OK;
         }
 
+        /// <summary>
+        /// Notifies the owner to update its view (invalidate) when the host changes.
+        /// </summary>
+        /// <param name="fUpdate">Indicates whether an update is requested.</param>
         public override void TxViewChange(BOOL fUpdate)
         {
             RichTextBox?.Invalidate(VisualPropertyInvalidateModes.Render);
         }
 
+        /// <summary>
+        /// Requests invalidation for a sub-rectangle; delegated to the owner with render invalidation.
+        /// </summary>
+        /// <param name="prc">Rectangle to invalidate (unused; full render invalidated).</param>
+        /// <param name="fMode">Mode flags (unused).</param>
         public override unsafe void TxInvalidateRect(nint prc, BOOL fMode)
         {
             RichTextBox?.Invalidate(VisualPropertyInvalidateModes.Render);
         }
     }
 
+    /// <summary>
+    /// Gets the underlying COM text document interface when available.
+    /// </summary>
     [Category(CategoryLive)]
     public IComObject<ITextDocument2>? Document => _host?.Document;
 
+    /// <summary>
+    /// Gets the version string of the active text services generator.
+    /// </summary>
     [Category(CategoryBehavior)]
     public string GeneratorVersion => _host?.Generator ?? string.Empty;
 
 #endif
 
+    /// <summary>
+    /// Gets the configured text services generator used by this control.
+    /// </summary>
     [Category(CategoryBehavior)]
     public TextServicesGenerator Generator { get; }
 
+    /// <summary>
+    /// Gets or sets the default text color used by the host.
+    /// </summary>
     [Category(CategoryRender)]
     public virtual D3DCOLORVALUE TextColor
     {
@@ -169,11 +267,14 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets layout-related options for the underlying text host (word-wrap, selection, etc.).
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual TextHostOptions Options
     {
 #if NETFRAMEWORK
-        get => (_host?.Options).GetValueOrDefault();
+                get => (_host?.Options).GetValueOrDefault();
 #else
         get => _host?.Options ?? TextHostOptions.Default;
 #endif
@@ -189,6 +290,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the plain text content.
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual string Text
     {
@@ -205,6 +309,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the RTF content.
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual string RtfText
     {
@@ -221,7 +328,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
-    // only works with Office generator
+    /// <summary>
+    /// Gets or sets the HTML content (only supported with the Office generator).
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual string HtmlText
     {
@@ -238,7 +347,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
-    // default is Calibri (Windows 10/11?)
+    /// <summary>
+    /// Gets or sets the default font family name (e.g., "Calibri").
+    /// </summary>
+    /// <remarks>Default is commonly "Calibri" on Windows 10/11.</remarks>
     [Category(CategoryLayout)]
     public virtual string FontName
     {
@@ -255,7 +367,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
-    // default is 10 (Windows 10/11?)
+    /// <summary>
+    /// Gets or sets the default font size in DIPs.
+    /// </summary>
+    /// <remarks>Default is commonly 10 on Windows 10/11.</remarks>
     [Category(CategoryLayout)]
     public virtual int FontSize
     {
@@ -272,8 +387,13 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
-    // mostly used for hi-dpi scenarios where we want to scale the whole text box
-    // independently from a specific font size
+    /// <summary>
+    /// Gets or sets a uniform zoom factor applied during measure/arrange/render, useful for HiDPI scaling scenarios.
+    /// </summary>
+    /// <remarks>
+    /// This scales the entire text box independently of the configured <see cref="FontSize"/>.
+    /// Changing this value triggers a measure invalidation.
+    /// </remarks>
     [Category(CategoryLayout)]
     public virtual float ZoomFactor
     {
@@ -289,6 +409,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the natural size computation mode used to measure text.
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual TXTNATURALSIZE NaturalSize
     {
@@ -304,6 +427,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets a maximum constraint used during measure, protecting the host from invalid values.
+    /// </summary>
+    /// <remarks>Defaults to (ushort.MaxValue, ushort.MaxValue).</remarks>
     [Category(CategoryLayout)]
     public virtual D2D_SIZE_F MaxConstraintSize
     {
@@ -319,11 +446,14 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the default font weight.
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual ushort FontWeight
     {
 #if NETFRAMEWORK
-        get => (ushort)(_host?.Weight ?? 0);
+                get => (ushort)(_host?.Weight ?? 0);
 #else
         get => _host?.Weight ?? 0;
 #endif
@@ -335,7 +465,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
             OnPropertyChanging();
 #if NETFRAMEWORK
-            host.Weight = (short)value;
+                    host.Weight = (short)value;
 #else
             host.Weight = value;
 #endif
@@ -344,6 +474,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
     }
 
 #if !NETFRAMEWORK
+    /// <summary>
+    /// Gets or sets the background style (opaque or transparent) used by the host.
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual TXTBACKSTYLE BackStyle
     {
@@ -360,7 +493,19 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets text using TOM flags.
+    /// </summary>
+    /// <param name="flags">TOM flags controlling which text to retrieve.</param>
+    /// <returns>The requested text, or null if the host is unavailable.</returns>
     public virtual string? GetText(tomConstants flags) => _host?.GetText(flags);
+
+    /// <summary>
+    /// Sets text using TOM flags.
+    /// </summary>
+    /// <param name="flags">TOM flags controlling which text to set.</param>
+    /// <param name="text">The text to set.</param>
+    /// <exception cref="InvalidOperationException">Thrown if the text host is not initialized.</exception>
     public virtual void SetText(tomConstants flags, string text)
     {
         if (_host == null)
@@ -374,24 +519,60 @@ public partial class RichTextBox : RenderVisual, IDisposable
     }
 #endif
 
+    /// <summary>
+    /// Sends a message to the underlying text services host.
+    /// </summary>
+    /// <param name="msg">The message identifier.</param>
+    /// <param name="lParam">Message LParam.</param>
+    /// <returns>HRESULT indicating success or failure.</returns>
     public HRESULT SendMessage(uint msg, LPARAM lParam) => SendMessage(msg, 0, lParam);
+
+    /// <summary>
+    /// Sends a message to the underlying text services host.
+    /// </summary>
+    /// <param name="msg">The message identifier.</param>
+    /// <param name="wParam">Message WParam.</param>
+    /// <returns>HRESULT indicating success or failure.</returns>
     public HRESULT SendMessage(uint msg, WPARAM wParam) => SendMessage(msg, wParam, 0);
+
+    /// <summary>
+    /// Sends a message to the underlying text services host.
+    /// </summary>
+    /// <param name="msg">The message identifier.</param>
+    /// <param name="wParam">Message WParam.</param>
+    /// <param name="lParam">Message LParam.</param>
+    /// <returns>HRESULT indicating success or failure.</returns>
     public HRESULT SendMessage(uint msg, WPARAM wParam, LPARAM lParam) => SendMessage(msg, wParam, lParam, out _);
-    public HRESULT SendMessage(uint msg, WPARAM wParam, LPARAM lParam, out LRESULT result)
+
+    /// <summary>
+    /// Sends a message to the underlying text services host and retrieves the result.
+    /// </summary>
+    /// <param name="msg">The message identifier.</param>
+    /// <param name="wParam">Message WParam.</param>
+    /// <param name="lParam">Message LParam.</param>
+    /// <param name="result">Receives the message result.</param>
+    /// <returns>HRESULT indicating success or failure.</returns>
+    public HRESULT SendMessage(uint msg, WPARAM wParam, LPARAM lParam, out LRESULT result
+    )
     {
         result = default;
         if (_host == null)
             return WiceCommons.E_FAIL;
 
 #if NETFRAMEWORK
-        var hr = _host.Services.TxSendMessage((int)msg, wParam, lParam, out var res);
-        result = res;
-        return hr;
+                var hr = _host.Services.TxSendMessage((int)msg, wParam, lParam, out var res);
+                result = res;
+                return hr;
 #else
         return _host.SendMessage(msg, wParam, lParam, out result);
 #endif
     }
 
+    /// <summary>
+    /// Invalidates the control and notifies property change hooks.
+    /// </summary>
+    /// <param name="modes">Which invalidation modes to trigger (defaults to Measure).</param>
+    /// <param name="propertyName">The property name triggering the invalidation.</param>
     protected virtual void Invalidate(VisualPropertyInvalidateModes modes = VisualPropertyInvalidateModes.Measure, [CallerMemberName] string? propertyName = null)
     {
         OnPropertyChanged(propertyName);
@@ -399,6 +580,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
         base.Invalidate(modes);
     }
 
+    /// <summary>
+    /// Called when the visual is attached to the composition. Subscribes to window DPI events and initializes zoom.
+    /// </summary>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -406,18 +590,35 @@ public partial class RichTextBox : RenderVisual, IDisposable
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
+    /// <summary>
+    /// Called when the visual is detaching from composition. Unsubscribes from window DPI events.
+    /// </summary>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);
         Window!.ThemeDpiEvent -= OnThemeDpiEvent;
     }
 
+    /// <summary>
+    /// Responds to DPI changes by scaling font size and updating <see cref="ZoomFactor"/>.
+    /// </summary>
+    /// <param name="sender">Event source.</param>
+    /// <param name="e">DPI change data.</param>
     protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         FontSize = UIExtensions.DpiScale(FontSize, e.OldDpi, e.NewDpi);
         ZoomFactor = Window!.Dpi / (float)WiceCommons.USER_DEFAULT_SCREEN_DPI;
     }
 
+    /// <summary>
+    /// Measures desired size by:
+    /// - Removing padding from the incoming constraint,
+    /// - Clamping by <see cref="MaxConstraintSize"/>,
+    /// - Dividing by <see cref="ZoomFactor"/> before asking the host,
+    /// - Adding padding and re-applying <see cref="ZoomFactor"/> to the returned size.
+    /// </summary>
+    /// <param name="constraint">The available size.</param>
+    /// <returns>The desired size.</returns>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         var host = _host;
@@ -501,6 +702,11 @@ public partial class RichTextBox : RenderVisual, IDisposable
         return size;
     }
 
+    /// <summary>
+    /// Computes the host rectangle inside <paramref name="finalRect"/> by removing padding.
+    /// </summary>
+    /// <param name="finalRect">The final arranged rectangle including padding.</param>
+    /// <returns>A Win32 <see cref="RECT"/> to activate the host with.</returns>
     private RECT GetRect(D2D_RECT_F finalRect)
     {
         var padding = Padding;
@@ -536,6 +742,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
         return rc.ToRECT();
     }
 
+    /// <summary>
+    /// Activates the host with the arranged client rectangle derived from <see cref="GetRect"/>.
+    /// </summary>
+    /// <param name="finalRect">The final arranged rectangle.</param>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         base.ArrangeCore(finalRect);
@@ -547,6 +757,11 @@ public partial class RichTextBox : RenderVisual, IDisposable
         host.Activate(rc);
     }
 
+    /// <summary>
+    /// Renders the host into the provided device context, adjusting for relative render rect and
+    /// clamping to any viewer parent visible area.
+    /// </summary>
+    /// <param name="context">The render context.</param>
     protected internal override void RenderCore(RenderContext context)
     {
         base.RenderCore(context);
@@ -580,8 +795,18 @@ public partial class RichTextBox : RenderVisual, IDisposable
         host.Draw(context.DeviceContext.Object, rc, urc);
     }
 
+    /// <summary>
+    /// Gets the viewer parent when hosted inside a <see cref="ScrollViewer"/> chain.
+    /// </summary>
     private IViewerParent? GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;
 
+    /// <summary>
+    /// Bridges property changes from the visual to the host (e.g., <see cref="BackgroundColor"/> to host BackColor).
+    /// </summary>
+    /// <param name="property">The property being set.</param>
+    /// <param name="value">The new value.</param>
+    /// <param name="options">Set options.</param>
+    /// <returns>true when the value was accepted; otherwise false.</returns>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -600,6 +825,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
         return true;
     }
 
+    /// <summary>
+    /// Disposes the underlying host. Must be called on the same thread that created the host.
+    /// </summary>
+    /// <param name="disposing">true to dispose managed resources.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
@@ -623,21 +852,38 @@ public partial class RichTextBox : RenderVisual, IDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes the control and suppresses finalization.
+    /// </summary>
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 
     // allow command line change
 #if NETFRAMEWORK
-    public static TextServicesGenerator GetDefaultTextServicesGenerator() => CommandLine.GetArgument(nameof(TextServicesGenerator), TextServicesGenerator.Default);
+            /// <summary>
+            /// Gets the default text services generator, optionally overridden by command line argument "TextServicesGenerator".
+            /// </summary>
+            public static TextServicesGenerator GetDefaultTextServicesGenerator() => CommandLine.GetArgument(nameof(TextServicesGenerator), TextServicesGenerator.Default);
 #else
+    /// <summary>
+    /// Gets the default text services generator, optionally overridden by command line argument "TextServicesGenerator".
+    /// </summary>
     public static TextServicesGenerator GetDefaultTextServicesGenerator() => CommandLine.Current.GetArgument(nameof(TextServicesGenerator), TextServicesGenerator.Default);
 #endif
 
     private static readonly Lazy<string> _defaultTextServicesGeneratorVersion = new(GetDefaultTextServicesGeneratorVersion);
+
+    /// <summary>
+    /// Creates a temporary <see cref="RichTextBox"/> to query the generator version string.
+    /// </summary>
+    /// <returns>The generator version string.</returns>
     public static string GetDefaultTextServicesGeneratorVersion()
     {
         using var rtb = new RichTextBox();
         return rtb.GeneratorVersion;
     }
 
+    /// <summary>
+    /// Gets the default text services generator version, computed once lazily.
+    /// </summary>
     public static string DefaultTextServicesGeneratorVersion { get; } = _defaultTextServicesGeneratorVersion.Value;
 }

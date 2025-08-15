@@ -1,24 +1,73 @@
 ﻿namespace Wice;
 
-// note for border (thickness) rendering, it can be better (try the magnify tool) to use two composited borders than a border with BorderThickness not 0
+/// <summary>
+/// Renders an optional background, a border (with optional corner radii), and hosts a single child visual.
+/// </summary>
+/// <remarks>
+/// Notes:
+/// - For border thickness rendering quality, it can be visually better to compose two borders rather than using a single
+///   border with a non-zero <see cref="BorderThickness"/> (sub-pixel stroking differences can show when magnified).
+/// - Corner clipping is handled via Windows.UI.Composition geometric clips, while drawing is done via Direct2D; their
+///   rounded corner interpretations might not perfectly match.
+/// - This type differs from WPF's <c>Border</c>; it targets Windows composition directly.
+/// </remarks>
 public partial class Border : RenderVisual, IOneChildParent
 {
+    /// <summary>
+    /// Identifies the <see cref="BorderBrush"/> property.
+    /// </summary>
     public static VisualProperty BorderBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(Border), nameof(BorderBrush), VisualPropertyInvalidateModes.Render);
+
+    /// <summary>
+    /// Identifies the <see cref="BorderThickness"/> property.
+    /// </summary>
     public static VisualProperty BorderThicknessProperty { get; } = VisualProperty.Add(typeof(Border), nameof(BorderThickness), VisualPropertyInvalidateModes.Measure, 0f);
+
+    /// <summary>
+    /// Identifies the <see cref="CornerRadius"/> property.
+    /// </summary>
+    /// <remarks>
+    /// The value is a <see cref="Vector2"/> where X/Y describe the radii in DIPs applied to all corners.
+    /// </remarks>
     public static VisualProperty CornerRadiusProperty { get; } = VisualProperty.Add(typeof(RoundedRectangle), nameof(CornerRadius), VisualPropertyInvalidateModes.Render, new Vector2(), ValidateEmptyVector2);
 
+    /// <inheritdoc/>
     protected override bool FallbackToTransparentBackground => true;
 
-    // note this is quite different than WPF's one, it's the composition one
+    /// <summary>
+    /// Gets or sets the corner radius used when rendering the background and border.
+    /// </summary>
+    /// <remarks>
+    /// This is the composition (Windows.UI.Composition) corner radius, not the WPF one.
+    /// A non-zero radius enables rounded clipping when <see cref="Visual.ClipChildren"/> is true and
+    /// rounded rectangle drawing for background/border in Direct2D.
+    /// </remarks>
     [Category(CategoryRender)]
     public Vector2 CornerRadius { get => (Vector2)GetPropertyValue(CornerRadiusProperty)!; set => SetPropertyValue(CornerRadiusProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the brush used to stroke the border.
+    /// </summary>
     [Category(CategoryRender)]
     public Brush BorderBrush { get => (Brush)GetPropertyValue(BorderBrushProperty)!; set => SetPropertyValue(BorderBrushProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the border thickness in DIPs.
+    /// </summary>
+    /// <remarks>
+    /// A value greater than 0 will trigger Direct2D drawing for the border which disables Windows.UI.Composition animations
+    /// on this visual while active (see <see cref="RenderD2DSurface"/>).
+    /// </remarks>
     [Category(CategoryRender)]
     public float BorderThickness { get => (float)GetPropertyValue(BorderThicknessProperty)!; set => SetPropertyValue(BorderThicknessProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the single child of this border.
+    /// </summary>
+    /// <remarks>
+    /// Setting a new child replaces the previous one. The child is measured/arranged within the inner
+    /// content rectangle defined by <see cref="Visual.Padding"/> minus <see cref="BorderThickness"/>.
+    /// </remarks>
     [Browsable(false)]
     public Visual? Child
     {
@@ -41,8 +90,20 @@ public partial class Border : RenderVisual, IOneChildParent
         }
     }
 
+    /// <summary>
+    /// Creates the children collection with a capacity of 1 (single child parent).
+    /// </summary>
     protected override BaseObjectCollection<Visual> CreateChildren() => new(1);
 
+    /// <summary>
+    /// Measures the border and its child, accounting for padding and border thickness.
+    /// </summary>
+    /// <param name="constraint">The available size including this visual's margin.</param>
+    /// <returns>The desired size excluding margin.</returns>
+    /// <remarks>
+    /// - The inner constraint passed to the child is reduced by <see cref="Visual.Padding"/> minus <see cref="BorderThickness"/>.
+    /// - The desired size re-adds those paddings after measuring the child.
+    /// </remarks>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         var padding = Padding - BorderThickness.ToZero();
@@ -106,6 +167,10 @@ public partial class Border : RenderVisual, IOneChildParent
         return new D2D_SIZE_F(width, height);
     }
 
+    /// <summary>
+    /// Arranges the child within the final rectangle, honoring padding and border thickness.
+    /// </summary>
+    /// <param name="finalRect">The final rectangle excluding margin.</param>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         var child = Child;
@@ -146,6 +211,13 @@ public partial class Border : RenderVisual, IOneChildParent
         }
     }
 
+    /// <summary>
+    /// Updates composition state and applies rounded clipping when <see cref="Visual.ClipChildren"/> is enabled.
+    /// </summary>
+    /// <remarks>
+    /// Rounded clipping uses composition geometry. Due to differences with Direct2D, edges may not match pixel-perfectly
+    /// with the drawn rounded background/border.
+    /// </remarks>
     protected override void Render()
     {
         base.Render();
@@ -165,6 +237,10 @@ public partial class Border : RenderVisual, IOneChildParent
         }
     }
 
+    /// <summary>
+    /// Renders the background. When <see cref="CornerRadius"/> is non-zero, draws a rounded rectangle background.
+    /// </summary>
+    /// <param name="context">The current render context.</param>
     protected override void RenderBackgroundCore(RenderContext context)
     {
         var radius = CornerRadius;
@@ -191,6 +267,14 @@ public partial class Border : RenderVisual, IOneChildParent
         base.RenderBackgroundCore(context);
     }
 
+    /// <summary>
+    /// Ensures a D2D surface exists only when needed (rounded corners or non-zero border thickness).
+    /// </summary>
+    /// <param name="creationOptions">Optional surface creation options.</param>
+    /// <param name="rect">Optional sub-rect to render.</param>
+    /// <remarks>
+    /// Using D2D cancels Windows.UI.Composition animations; we avoid creating a D2D surface when possible.
+    /// </remarks>
     protected override void RenderD2DSurface(SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
     {
         // using D2D cancels Windows.UI.Composition animations, so avoid when possible...
@@ -201,6 +285,10 @@ public partial class Border : RenderVisual, IOneChildParent
         base.RenderD2DSurface(creationOptions, rect);
     }
 
+    /// <summary>
+    /// Draws the border (rounded or rectangular) using Direct2D when <see cref="BorderThickness"/> is greater than zero.
+    /// </summary>
+    /// <param name="context">The render context.</param>
     protected internal override void RenderCore(RenderContext context)
     {
         base.RenderCore(context);

@@ -1,15 +1,73 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// Absolute layout container similar to WPF's Canvas.
+/// Positions children using the attached properties <see cref="LeftProperty"/>, <see cref="TopProperty"/>,
+/// <see cref="RightProperty"/>, and <see cref="BottomProperty"/>. When both opposite edges are specified
+/// (e.g., Left and Right) and the parent size is known, the child's size is inferred unless an explicit
+/// <see cref="Visual.Width"/>/<see cref="Visual.Height"/> is set. Supports optional proportional resizing
+/// and stretching via <see cref="GetRectOptions"/>.
+/// </summary>
+/// <remarks>
+/// Measure:
+/// - Each visible child is measured with an infinite constraint by default, optionally constraining width/height
+///   when the child's alignment is <see cref="Alignment.Stretch"/> and the parent's corresponding constraint is set.
+/// - When <see cref="MeasureToContent"/> is not <see cref="DimensionOptions.Manual"/>, the canvas computes a union
+///   rectangle of all children and returns the requested dimension(s).
+/// Arrange:
+/// - Children are arranged based on attached edge values and alignment when the parent final size is known.
+/// </remarks>
 public partial class Canvas : Visual
 {
+    /// <summary>
+    /// Controls whether the canvas returns its size from the union of its children during Measure.
+    /// </summary>
+    /// <remarks>
+    /// - <see cref="DimensionOptions.Manual"/>: does not size to content; returns 0 for width/height in Measure.
+    /// - <see cref="DimensionOptions.Width"/>: sizes to the union width of children.
+    /// - <see cref="DimensionOptions.Height"/>: sizes to the union height of children.
+    /// - <see cref="DimensionOptions.Width"/> | <see cref="DimensionOptions.Height"/>: sizes to both.
+    /// </remarks>
     public static VisualProperty MeasureToContentProperty { get; } = VisualProperty.Add(typeof(Window), nameof(Canvas), VisualPropertyInvalidateModes.Measure, DimensionOptions.Manual);
 
     // review: invalidate measure or arrange?
+    /// <summary>
+    /// Attached property storing the left offset (DIPs) of a child within a <see cref="Canvas"/>.
+    /// Use <see cref="float.NaN"/> to clear the value. Changing it triggers a parent measure pass.
+    /// </summary>
     public static VisualProperty LeftProperty { get; } = VisualProperty.Add(typeof(Canvas), "Left", VisualPropertyInvalidateModes.ParentMeasure, float.NaN);
+
+    /// <summary>
+    /// Attached property storing the top offset (DIPs) of a child within a <see cref="Canvas"/>.
+    /// Use <see cref="float.NaN"/> to clear the value. Changing it triggers a parent measure pass.
+    /// </summary>
     public static VisualProperty TopProperty { get; } = VisualProperty.Add(typeof(Canvas), "Top", VisualPropertyInvalidateModes.ParentMeasure, float.NaN);
+
+    /// <summary>
+    /// Attached property storing the right offset (DIPs) of a child within a <see cref="Canvas"/>.
+    /// Use <see cref="float.NaN"/> to clear the value. Changing it triggers a parent measure pass.
+    /// </summary>
     public static VisualProperty RightProperty { get; } = VisualProperty.Add(typeof(Canvas), "Right", VisualPropertyInvalidateModes.ParentMeasure, float.NaN);
+
+    /// <summary>
+    /// Attached property storing the bottom offset (DIPs) of a child within a <see cref="Canvas"/>.
+    /// Use <see cref="float.NaN"/> to clear the value. Changing it triggers a parent measure pass.
+    /// </summary>
     public static VisualProperty BottomProperty { get; } = VisualProperty.Add(typeof(Canvas), "Bottom", VisualPropertyInvalidateModes.ParentMeasure, float.NaN);
 
+    /// <summary>
+    /// Computes the child rectangle relative to the parent based on attached edge values and alignment.
+    /// </summary>
+    /// <param name="parentSize">The parent's available size. Individual dimensions may be unset.</param>
+    /// <param name="child">The child visual to position.</param>
+    /// <param name="options">
+    /// Layout options:
+    /// - <see cref="GetRectOptions.KeepProportions"/>: preserves the measured aspect ratio when resizing from edges/stretch.
+    /// - <see cref="GetRectOptions.StretchWidthToParent"/>/<see cref="GetRectOptions.StretchHeightToParent"/>:
+    ///   when alignment is Stretch and the child has no explicit size, stretches to the parent if the parent dimension is set.
+    /// </param>
+    /// <returns>The rectangle (position and size) for the child.</returns>
+    /// <exception cref="ArgumentNullException">When <paramref name="child"/> is null.</exception>
     public static D2D_RECT_F GetRect(D2D_SIZE_F parentSize, Visual child, GetRectOptions options = GetRectOptions.Default)
     {
         ExceptionExtensions.ThrowIfNull(child, nameof(child));
@@ -102,7 +160,7 @@ public partial class Canvas : Visual
         {
             top = value;
 
-            // if top & bottom are set and parent heigt is set, size is forced
+            // if top & bottom are set and parent height is set, size is forced
             var other = GetBottom(child);
             if (parentSize.height.IsSet() && child.Height.IsNotSet())
             {
@@ -170,6 +228,16 @@ public partial class Canvas : Visual
         return new D2D_RECT_F(left, top, size);
     }
 
+    /// <summary>
+    /// Measures the children's desired sizes and computes the canvas desired size based on <paramref name="sizeToContent"/>.
+    /// </summary>
+    /// <param name="visual">The canvas instance being measured.</param>
+    /// <param name="constraint">The available size constraint for the canvas.</param>
+    /// <param name="sizeToContent">
+    /// Controls whether to return the union of children for width and/or height.
+    /// See <see cref="MeasureToContent"/>.
+    /// </param>
+    /// <returns>The desired size for the canvas.</returns>
     internal static D2D_SIZE_F MeasureCore(Visual visual, D2D_SIZE_F constraint, DimensionOptions sizeToContent)
     {
         D2D_RECT_F? rect = null;
@@ -215,6 +283,11 @@ public partial class Canvas : Visual
         return new D2D_SIZE_F(0, rect.Value.Size.height);
     }
 
+    /// <summary>
+    /// Arranges all visible children within the given <paramref name="finalRect"/> using <see cref="GetRect(D2D_SIZE_F, Visual, GetRectOptions)"/>.
+    /// </summary>
+    /// <param name="visual">The canvas instance being arranged.</param>
+    /// <param name="finalRect">The final rectangle allocated to the canvas.</param>
     internal static void ArrangeCore(Visual visual, D2D_RECT_F finalRect)
     {
         var finalSize = finalRect.Size;
@@ -226,12 +299,24 @@ public partial class Canvas : Visual
         }
     }
 
+    /// <summary>
+    /// Gets or sets whether the canvas sizes to the union of its children during Measure.
+    /// </summary>
     [Category(CategoryLayout)]
     public DimensionOptions MeasureToContent { get => (DimensionOptions)GetPropertyValue(MeasureToContentProperty)!; set => SetPropertyValue(MeasureToContentProperty, value); }
 
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => MeasureCore(this, constraint, MeasureToContent);
+
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect) => ArrangeCore(this, finalRect);
 
+    /// <summary>
+    /// Sets all four attached offsets on a target object from a rectangle.
+    /// </summary>
+    /// <param name="properties">The target that stores attached properties.</param>
+    /// <param name="rect">The rectangle whose left/top/right/bottom to apply.</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetRect(IPropertyOwner properties, D2D_RECT_F rect)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -241,6 +326,12 @@ public partial class Canvas : Visual
         SetBottom(properties, rect.bottom);
     }
 
+    /// <summary>
+    /// Sets the attached Left offset (DIPs). Use <see cref="float.NaN"/> to clear/unset.
+    /// </summary>
+    /// <param name="properties">The target object.</param>
+    /// <param name="value">Left offset in DIPs, or <see cref="float.NaN"/> to unset.</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetLeft(IPropertyOwner properties, float value)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -252,12 +343,24 @@ public partial class Canvas : Visual
         properties.SetPropertyValue(LeftProperty, value);
     }
 
+    /// <summary>
+    /// Gets the attached Left offset (DIPs). Returns <see cref="float.NaN"/> when not set.
+    /// </summary>
+    /// <param name="properties">The target object.</param>
+    /// <returns>The left offset or <see cref="float.NaN"/>.</returns>
+    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static float GetLeft(IPropertyOwner properties)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return (float)properties.GetPropertyValue(LeftProperty)!;
     }
 
+    /// <summary>
+    /// Sets the attached Top offset (DIPs). Use <see cref="float.NaN"/> to clear/unset.
+    /// </summary>
+    /// <param name="properties">The target object.</param>
+    /// <param name="value">Top offset in DIPs, or <see cref="float.NaN"/> to unset.</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetTop(IPropertyOwner properties, float value)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -269,12 +372,24 @@ public partial class Canvas : Visual
         properties.SetPropertyValue(TopProperty, value);
     }
 
+    /// <summary>
+    /// Gets the attached Top offset (DIPs). Returns <see cref="float.NaN"/> when not set.
+    /// </summary>
+    /// <param name="properties">The target object.</param>
+    /// <returns>The top offset or <see cref="float.NaN"/>.</returns>
+    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static float GetTop(IPropertyOwner properties)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return (float)properties.GetPropertyValue(TopProperty)!;
     }
 
+    /// <summary>
+    /// Sets the attached Right offset (DIPs). Use <see cref="float.NaN"/> to clear/unset.
+    /// </summary>
+    /// <param name="properties">The target object.</param>
+    /// <param name="value">Right offset in DIPs, or <see cref="float.NaN"/> to unset.</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetRight(IPropertyOwner properties, float value)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -286,12 +401,24 @@ public partial class Canvas : Visual
         properties.SetPropertyValue(RightProperty, value);
     }
 
+    /// <summary>
+    /// Gets the attached Right offset (DIPs). Returns <see cref="float.NaN"/> when not set.
+    /// </summary>
+    /// <param name="properties">The target object.</param>
+    /// <returns>The right offset or <see cref="float.NaN"/>.</returns>
+    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static float GetRight(IPropertyOwner properties)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
         return (float)properties.GetPropertyValue(RightProperty)!;
     }
 
+    /// <summary>
+    /// Sets the attached Bottom offset (DIPs). Use <see cref="float.NaN"/> to clear/unset.
+    /// </summary>
+    /// <param name="properties">The target object.</param>
+    /// <param name="value">Bottom offset in DIPs, or <see cref="float.NaN"/> to unset.</param>
+    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetBottom(IPropertyOwner properties, float value)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -303,6 +430,12 @@ public partial class Canvas : Visual
         properties.SetPropertyValue(BottomProperty, value);
     }
 
+    /// <summary>
+    /// Gets the attached Bottom offset (DIPs). Returns <see cref="float.NaN"/> when not set.
+    /// </summary>
+    /// <param name="properties">The target object.</param>
+    /// <returns>The bottom offset or <see cref="float.NaN"/>.</returns>
+    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static float GetBottom(IPropertyOwner properties)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));

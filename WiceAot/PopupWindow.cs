@@ -1,44 +1,132 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// A borderless, non-activating popup window that can be positioned relative to a <see cref="Visual"/> target
+/// using a configurable <see cref="PlacementMode"/>. The popup can optionally follow its target on arrange/move,
+/// support click-through behavior, and compute coordinates either in screen or window space.
+/// </summary>
+/// <remarks>
+/// Key features:
+/// - Placement computed by <see cref="Place(PlacementParameters)"/> based on <see cref="PlacementMode"/> and offsets.
+/// - Optional following of a <see cref="PlacementTarget"/> via <see cref="FollowPlacementTarget"/>:
+///   updates when the target is arranged or its window moves.
+/// - <see cref="ClickThrough"/> allows forwarding mouse clicks to the target window without activating the popup.
+/// - Coordinates may be computed in screen space (<see cref="UseScreenCoordinates"/>) and rounded to whole pixels
+///   (<see cref="UseRounding"/>).
+/// </remarks>
+/// <seealso cref="PlacementParameters"/>
+/// <seealso cref="PlacementMode"/>
+/// <seealso cref="Window"/>
 public partial class PopupWindow : Window
 {
+    /// <summary>
+    /// Identifies the <see cref="PlacementTarget"/> property. Changing it triggers a layout measure invalidation.
+    /// </summary>
     public static VisualProperty PlacementTargetProperty { get; } = VisualProperty.Add<Visual>(typeof(PopupWindow), nameof(PlacementTarget), VisualPropertyInvalidateModes.Measure);
+
+    /// <summary>
+    /// Identifies the <see cref="PlacementMode"/> property with default <see cref="Wice.PlacementMode.Relative"/>.
+    /// Changing it triggers a layout measure invalidation.
+    /// </summary>
     public static VisualProperty PlacementModeProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(PlacementMode), VisualPropertyInvalidateModes.Measure, PlacementMode.Relative);
+
+    /// <summary>
+    /// Identifies the <see cref="HorizontalOffset"/> property (default 0). Changing it triggers a layout measure invalidation.
+    /// </summary>
     public static VisualProperty HorizontalOffsetProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(HorizontalOffset), VisualPropertyInvalidateModes.Measure, 0f);
+
+    /// <summary>
+    /// Identifies the <see cref="VerticalOffset"/> property (default 0). Changing it triggers a layout measure invalidation.
+    /// </summary>
     public static VisualProperty VerticalOffsetProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(VerticalOffset), VisualPropertyInvalidateModes.Measure, 0f);
+
+    /// <summary>
+    /// Identifies the <see cref="CustomPlacementFunc"/> property. Changing it triggers an arrange invalidation.
+    /// </summary>
     public static VisualProperty CustomPlacementFuncProperty { get; } = VisualProperty.Add<Func<PlacementParameters, D2D_POINT_2F>>(typeof(PopupWindow), nameof(CustomPlacementFunc), VisualPropertyInvalidateModes.Arrange);
+
+    /// <summary>
+    /// Identifies the <see cref="FollowPlacementTarget"/> property (default false). Changing it triggers a layout measure invalidation.
+    /// </summary>
     public static VisualProperty FollowPlacementTargetProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(FollowPlacementTarget), VisualPropertyInvalidateModes.Measure, false);
+
+    /// <summary>
+    /// Identifies the <see cref="ClickThrough"/> property (default false). This does not invalidate layout/render.
+    /// </summary>
     public static VisualProperty ClickThroughProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(ClickThrough), VisualPropertyInvalidateModes.None, false);
+
+    /// <summary>
+    /// Identifies the <see cref="UseRounding"/> property (default true). Changing it triggers a layout measure invalidation.
+    /// </summary>
     public static VisualProperty UseRoundingProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(UseRounding), VisualPropertyInvalidateModes.Measure, true);
+
+    /// <summary>
+    /// Identifies the <see cref="UseScreenCoordinates"/> property (default true). Changing it triggers a layout measure invalidation.
+    /// </summary>
     public static VisualProperty UseScreenCoordinatesProperty { get; } = VisualProperty.Add(typeof(PopupWindow), nameof(UseScreenCoordinates), VisualPropertyInvalidateModes.Measure, true);
 
+    /// <summary>
+    /// When true, subscribes to the target arrange and target window move events so that the popup recomputes
+    /// placement as the target changes size/position. Default is false.
+    /// </summary>
     [Category(CategoryBehavior)]
     public bool FollowPlacementTarget { get => (bool)GetPropertyValue(FollowPlacementTargetProperty)!; set => SetPropertyValue(FollowPlacementTargetProperty, value); }
 
+    /// <summary>
+    /// When true, mouse button events received by this popup are translated into the target window's coordinate
+    /// space and forwarded, allowing the popup to be visually present while letting clicks pass through.
+    /// </summary>
     [Category(CategoryBehavior)]
     public bool ClickThrough { get => (bool)GetPropertyValue(ClickThroughProperty)!; set => SetPropertyValue(ClickThroughProperty, value); }
 
+    /// <summary>
+    /// When true, the computed popup coordinates are rounded to whole pixels to avoid sub-pixel blurriness.
+    /// </summary>
     [Category(CategoryBehavior)]
     public bool UseRounding { get => (bool)GetPropertyValue(UseRoundingProperty)!; set => SetPropertyValue(UseRoundingProperty, value); }
 
+    /// <summary>
+    /// When true, placement computations use screen coordinates (via client-to-screen transforms) instead of window/composition space.
+    /// </summary>
     [Category(CategoryBehavior)]
     public bool UseScreenCoordinates { get => (bool)GetPropertyValue(UseScreenCoordinatesProperty)!; set => SetPropertyValue(UseScreenCoordinatesProperty, value); }
 
+    /// <summary>
+    /// The visual relative to which the popup is positioned. When not set, <see cref="Place(PlacementParameters)"/>
+    /// will fall back to the popup's <see cref="Visual.Parent"/>.
+    /// </summary>
     [Category(CategoryLayout)]
     public Visual? PlacementTarget { get => (Visual?)GetPropertyValue(PlacementTargetProperty); set => SetPropertyValue(PlacementTargetProperty, value); }
 
+    /// <summary>
+    /// Specifies how to compute the popup location relative to the <see cref="PlacementTarget"/>.
+    /// For custom placement, set <see cref="CustomPlacementFunc"/>.
+    /// </summary>
     [Category(CategoryLayout)]
     public PlacementMode PlacementMode { get => (PlacementMode)GetPropertyValue(PlacementModeProperty)!; set => SetPropertyValue(PlacementModeProperty, value); }
 
+    /// <summary>
+    /// Additional horizontal delta applied to the computed position.
+    /// </summary>
     [Category(CategoryLayout)]
     public float HorizontalOffset { get => (float)GetPropertyValue(HorizontalOffsetProperty)!; set => SetPropertyValue(HorizontalOffsetProperty, value); }
 
+    /// <summary>
+    /// Additional vertical delta applied to the computed position.
+    /// </summary>
     [Category(CategoryLayout)]
     public float VerticalOffset { get => (float)GetPropertyValue(VerticalOffsetProperty)!; set => SetPropertyValue(VerticalOffsetProperty, value); }
 
+    /// <summary>
+    /// Optional function invoked when <see cref="PlacementMode.Custom"/> is selected to compute the popup position.
+    /// </summary>
     [Browsable(false)]
     public Func<PlacementParameters, D2D_POINT_2F>? CustomPlacementFunc { get => (Func<PlacementParameters, D2D_POINT_2F>?)GetPropertyValue(CustomPlacementFuncProperty); set => SetPropertyValue(CustomPlacementFuncProperty, value); }
 
+    /// <summary>
+    /// Initializes a new <see cref="PopupWindow"/> with no frame, popup style, no resize, and the NOACTIVATE and
+    /// NOREDIRECTIONBITMAP extended styles for a lightweight, non-activating popup.
+    /// </summary>
     public PopupWindow()
     {
         IsBackground = true;
@@ -48,6 +136,12 @@ public partial class PopupWindow : Window
         ExtendedStyle |= WINDOW_EX_STYLE.WS_EX_NOACTIVATE | WINDOW_EX_STYLE.WS_EX_NOREDIRECTIONBITMAP;
     }
 
+    /// <summary>
+    /// Overrides mouse button handling to optionally forward to the placement target's window when
+    /// <see cref="ClickThrough"/> is enabled. Coordinates are translated from this window to the target window.
+    /// </summary>
+    /// <param name="msg">The message identifier.</param>
+    /// <param name="e">Mouse button event data.</param>
     internal override void OnMouseButtonEvent(uint msg, MouseButtonEventArgs e)
     {
         base.OnMouseButtonEvent(msg, e);
@@ -64,6 +158,12 @@ public partial class PopupWindow : Window
         }
     }
 
+    /// <summary>
+    /// Shows the popup, mapping <see cref="SHOW_WINDOW_CMD.SW_SHOW"/> to
+    /// <see cref="SHOW_WINDOW_CMD.SW_SHOWNOACTIVATE"/> when the window has <see cref="WINDOW_EX_STYLE.WS_EX_NOACTIVATE"/>.
+    /// </summary>
+    /// <param name="command">The show command to use (default SW_SHOW).</param>
+    /// <returns>true if the window became visible; otherwise false.</returns>
     public override bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOW)
     {
         if (ExtendedStyle.HasFlag(WINDOW_EX_STYLE.WS_EX_NOACTIVATE) && command == SHOW_WINDOW_CMD.SW_SHOW)
@@ -73,6 +173,14 @@ public partial class PopupWindow : Window
         return base.Show(command);
     }
 
+    /// <summary>
+    /// Extends base property setting to manage follow/unfollow wiring when <see cref="FollowPlacementTarget"/>
+    /// or <see cref="PlacementTarget"/> changes. Unsubscribes before change and conditionally subscribes after.
+    /// </summary>
+    /// <param name="property">The property being set.</param>
+    /// <param name="value">The new value.</param>
+    /// <param name="options">Optional set behavior flags.</param>
+    /// <returns>true if the value changed; otherwise false.</returns>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (property == FollowPlacementTargetProperty || property == PlacementTargetProperty)
@@ -102,6 +210,9 @@ public partial class PopupWindow : Window
         return true;
     }
 
+    /// <summary>
+    /// Removes event subscriptions from the current <see cref="PlacementTarget"/> to stop following updates.
+    /// </summary>
     private void UnfollowTarget()
     {
         var target = PlacementTarget;
@@ -118,6 +229,10 @@ public partial class PopupWindow : Window
         });
     }
 
+    /// <summary>
+    /// Adds event subscriptions to the current <see cref="PlacementTarget"/> so the popup invalidates and repositions
+    /// when the target is arranged or its window moves.
+    /// </summary>
     private void FollowTarget()
     {
         var target = PlacementTarget;
@@ -134,9 +249,21 @@ public partial class PopupWindow : Window
         });
     }
 
+    /// <summary>
+    /// Invalidates the popup for re-render on target arrange.
+    /// </summary>
     private void OnTargetArranged(object? sender, EventArgs e) => Invalidate(VisualPropertyInvalidateModes.Render, new InvalidateReason(GetType()));
+
+    /// <summary>
+    /// Invalidates the popup for re-render on target window movement.
+    /// </summary>
     private void OnTargetWindowMoved(object? sender, EventArgs e) => Invalidate(VisualPropertyInvalidateModes.Render, new InvalidateReason(GetType()));
 
+    /// <summary>
+    /// Creates the <see cref="PlacementParameters"/> snapshot used by <see cref="Place(PlacementParameters)"/>.
+    /// Derived types can override to amend parameters before placement is computed.
+    /// </summary>
+    /// <returns>A fully populated <see cref="PlacementParameters"/> instance for this popup.</returns>
     protected virtual PlacementParameters CreatePlacementParameters()
     {
         var parameters = new PlacementParameters(this)
@@ -152,6 +279,12 @@ public partial class PopupWindow : Window
         return parameters;
     }
 
+    /// <summary>
+    /// After rendering, computes the desired position using <see cref="Place(PlacementParameters)"/> and moves the native
+    /// window if a position is available.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">Event arguments.</param>
     protected override void OnRendered(object? sender, EventArgs e)
     {
         base.OnRendered(sender, e);
@@ -164,6 +297,29 @@ public partial class PopupWindow : Window
         }
     }
 
+    /// <summary>
+    /// Computes a popup location based on the provided <paramref name="parameters"/>.
+    /// </summary>
+    /// <param name="parameters">Placement inputs including target, mode, offsets, rounding, and coordinate space.</param>
+    /// <returns>
+    /// A <see cref="D2D_POINT_2F"/> representing the top-left position for the popup. When
+    /// <see cref="PlacementParameters.UseRounding"/> is true, coordinates are rounded to whole pixels.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="parameters"/> is null.</exception>
+    /// <remarks>
+    /// Behavior:
+    /// - Target resolution: uses <see cref="PlacementParameters.Target"/> when set; otherwise falls back to <c>parameters.Visual.Parent</c>.
+    /// - Custom mode: if <see cref="PlacementParameters.Mode"/> is <see cref="PlacementMode.Custom"/> and
+    ///   <see cref="PlacementParameters.CustomFunc"/> is provided, it is invoked and its result is used.
+    /// - Mouse mode: if <see cref="PlacementMode.Mouse"/>, uses the current cursor position.
+    /// - For other modes: computes the reference rect from the target's <see cref="Visual.AbsoluteRenderRect"/>.
+    ///   When <see cref="PlacementParameters.UseScreenCoordinates"/> is true and a window is present, converts to screen space via ClientToScreen.
+    /// - Visual bounds: uses <c>parameters.Visual.AbsoluteRenderBounds</c>, or the <see cref="IContentParent.Content"/> bounds when the visual is an <see cref="IContentParent"/>.
+    /// - Each <see cref="PlacementMode"/> sets base left/top relative to the target rectangle; offsets are applied via
+    ///   <see cref="PlacementParameters.HorizontalOffset"/> and <see cref="PlacementParameters.VerticalOffset"/> by the caller if desired.
+    /// </remarks>
+    /// <seealso cref="PlacementParameters"/>
+    /// <seealso cref="PlacementMode"/>
     public static D2D_POINT_2F Place(PlacementParameters parameters)
     {
         ExceptionExtensions.ThrowIfNull(parameters, nameof(parameters));

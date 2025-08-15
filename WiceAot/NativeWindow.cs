@@ -1,5 +1,15 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// Provides a thin, safe wrapper around a Win32 window handle (HWND) and common window operations.
+/// </summary>
+/// <remarks>
+/// - Exposes convenience properties for geometry, DPI awareness, styles, parent/owner relations, and process details.
+/// - Implements COM drag-and-drop interfaces (<see cref="IDropTarget"/>, <see cref="IDropSource"/>, <see cref="IDropSourceNotify"/>).
+/// - Offers utilities for painting, hit-testing, DWM composition attributes, IME interaction, and input helpers.
+/// - Most methods forward to WiceCommons/Functions P/Invoke helpers while keeping usage ergonomic and discoverable.
+/// Thread affinity: some operations must be invoked on the UI thread; use <see cref="CheckRunningAsMainThread"/>.
+/// </remarks>
 #if !NETFRAMEWORK
 [System.Runtime.InteropServices.Marshalling.GeneratedComClass]
 #endif
@@ -10,50 +20,159 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
 {
     private static readonly ConcurrentHashSet<string> _classesNames = [];
 
+    /// <summary>
+    /// Gets a delegate to the default window procedure (DefWindowProcW).
+    /// </summary>
     public static WNDPROC DefWindowProc { get; } = GetDefWindowProc();
+
+    /// <summary>
+    /// Resolves the default window procedure address and wraps it in a managed delegate.
+    /// </summary>
     private static WNDPROC GetDefWindowProc() => Marshal.GetDelegateForFunctionPointer<WNDPROC>(WiceCommons.GetProcAddress(WiceCommons.GetModuleHandleW(PWSTR.From("user32.dll")), PSTR.From("DefWindowProcW")));
 
+    /// <summary>
+    /// Enumerates all top-level windows and returns a sequence of <see cref="NativeWindow"/> objects.
+    /// </summary>
     public static IEnumerable<NativeWindow> TopLevelWindows => EnumerateTopLevelWindows().Select(FromHandle).Where(w => w != null)!;
 
+    /// <summary>
+    /// Occurs for IDropTarget drag-and-drop notifications (enter/over/leave/drop).
+    /// </summary>
     public event EventHandler<DragDropEventArgs>? DragDrop;
+
+    /// <summary>
+    /// Occurs for IDropSource query-continue to decide continue/cancel/drop.
+    /// </summary>
     public event EventHandler<DragDropQueryContinueEventArgs>? DragDropQueryContinue;
+
+    /// <summary>
+    /// Occurs for IDropSource feedback, allowing custom cursor behavior/results.
+    /// </summary>
     public event EventHandler<DragDropGiveFeedback>? DragDropGiveFeedback;
+
+    /// <summary>
+    /// Occurs when entering or leaving a drag target while acting as a drop source.
+    /// </summary>
     public event EventHandler<DragDropTargetEventArgs>? DragDropTarget;
 
     private HWND _dragDropTarget;
     private bool _isDropTarget;
     private IDataObject? _currentDataObject;
 
+    /// <summary>
+    /// Initializes a new instance bound to an existing HWND.
+    /// </summary>
+    /// <param name="handle">The native window handle.</param>
     private NativeWindow(HWND handle)
     {
         Handle = handle;
     }
 
 #if NETFRAMEWORK
+    /// <inheritdoc />
     IntPtr System.Windows.Forms.IWin32Window.Handle => Handle;
 #endif
 
+    /// <summary>
+    /// Gets the underlying native window handle.
+    /// </summary>
     public HWND Handle { get; }
+
+    /// <summary>
+    /// Gets the native window class name for this window, if available.
+    /// </summary>
     public string? ClassName => GetClassName(Handle);
+
+    /// <summary>
+    /// Gets or sets the parent window handle (SetParent/GetParent).
+    /// </summary>
     public HWND ParentHandle { get => WiceCommons.GetParent(Handle); set => WiceCommons.SetParent(Handle, value); }
+
+    /// <summary>
+    /// Gets the owner window handle (GW_OWNER).
+    /// </summary>
     public HWND OwnerHandle => WiceCommons.GetWindow(Handle, GET_WINDOW_CMD.GW_OWNER);
+
+    /// <summary>
+    /// Gets the parent window as a <see cref="NativeWindow"/> instance, if any.
+    /// </summary>
     public NativeWindow? Parent => FromHandle(ParentHandle);
+
+    /// <summary>
+    /// Gets the owner window as a <see cref="NativeWindow"/> instance, if any.
+    /// </summary>
     public NativeWindow? Owner => FromHandle(OwnerHandle);
+
+    /// <summary>
+    /// Gets or sets the window rectangle in screen coordinates.
+    /// </summary>
     public RECT WindowRect { get { WiceCommons.GetWindowRect(Handle, out var rc); return rc; } set => WiceCommons.SetWindowPos(Handle, HWND.Null, value.left, value.top, value.Width, value.Height, SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOREDRAW | SET_WINDOW_POS_FLAGS.SWP_NOZORDER); }
+
+    /// <summary>
+    /// Gets the client rectangle in client coordinates.
+    /// </summary>
     public RECT ClientRect { get { WiceCommons.GetClientRect(Handle, out var rc); return rc; } }
+
+    /// <summary>
+    /// Gets or sets the big icon (WM_GETICON/WM_SETICON). Disposes previous icon if replaced.
+    /// </summary>
     public HICON IconHandle { get => new() { Value = WiceCommons.SendMessageW(Handle, MessageDecoder.WM_GETICON, new WPARAM { Value = WiceCommons.ICON_BIG }, LPARAM.Null).Value }; set { var ptr = WiceCommons.SendMessageW(Handle, MessageDecoder.WM_SETICON, new WPARAM { Value = WiceCommons.ICON_BIG }, new LPARAM { Value = value.Value }); if (ptr.Value != 0) { WiceCommons.DestroyIcon(new HICON { Value = ptr.Value }); } } }
+
+    /// <summary>
+    /// Gets the current DPI for the window or the system default if unavailable.
+    /// </summary>
     public uint Dpi { get { var dpi = WiceCommons.GetDpiForWindow(Handle); if (dpi <= 0) return WiceCommons.USER_DEFAULT_SCREEN_DPI; return dpi; } }
+
+    /// <summary>
+    /// Gets the DPI awareness context of the window.
+    /// </summary>
     public DPI_AWARENESS_CONTEXT DpiAwareness => DpiUtilities.GetWindowDpiAwarenessContext(Handle);
+
+    /// <summary>
+    /// Gets a descriptive string for the current <see cref="DpiAwareness"/>.
+    /// </summary>
     public string DpiAwarenessDescription => DpiUtilities.GetDpiAwarenessDescription(DpiAwareness);
+
+    /// <summary>
+    /// Gets the DPI integer associated with the current <see cref="DpiAwareness"/>.
+    /// </summary>
     public uint DpiFromDpiAwareness => WiceCommons.GetDpiFromDpiAwarenessContext(DpiAwareness);
+
+    /// <summary>
+    /// Gets or sets the window style (GWL_STYLE).
+    /// </summary>
     public WINDOW_STYLE Style { get => (WINDOW_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_STYLE).ToInt64(); set => SetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_STYLE, new IntPtr((int)value)); }
+
+    /// <summary>
+    /// Gets or sets the extended window style (GWL_EXSTYLE).
+    /// </summary>
     public WINDOW_EX_STYLE ExtendedStyle { get => (WINDOW_EX_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE).ToInt64(); set => SetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, new IntPtr((int)value)); }
+
 #if !NETFRAMEWORK
+    /// <summary>
+    /// Gets or sets the window placement (show state, normal/min/max position).
+    /// </summary>
     public WINDOWPLACEMENT Placement { get { return WINDOWPLACEMENT.GetPlacement(Handle); } set => value.SetPlacement(Handle); }
 #endif
+
+    /// <summary>
+    /// Gets or sets whether the window is enabled.
+    /// </summary>
     public bool IsEnabled { get => WiceCommons.IsWindowEnabled(Handle); set => WiceCommons.EnableWindow(Handle, value); }
+
+    /// <summary>
+    /// Gets the thread ID that created the window.
+    /// </summary>
     public uint ThreadId => WiceCommons.GetWindowThreadProcessId(Handle, 0);
+
+    /// <summary>
+    /// Gets the associated managed UI thread ID if tracked by the framework.
+    /// </summary>
     public int ManagedThreadId { get; internal set; }
+
+    /// <summary>
+    /// Gets the process ID for the window.
+    /// </summary>
     public unsafe int ProcessId
     {
         get
@@ -64,6 +183,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Gets or sets the window text (title).
+    /// </summary>
     public string Text
     {
         get => GetWindowText(Handle);
@@ -74,6 +196,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Gets the module file name for the window's process, if available.
+    /// </summary>
     public string? ModuleFileName
     {
         get
@@ -88,6 +213,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Gets the managed <see cref="System.Diagnostics.Process"/> for this window, or null if it cannot be obtained.
+    /// </summary>
     public Process? Process
     {
         get
@@ -103,6 +231,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Enumerates parent windows from nearest to the root.
+    /// </summary>
     public IEnumerable<NativeWindow> Parents
     {
         get
@@ -121,6 +252,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Gets or sets the window display affinity (monitoring/capture behavior).
+    /// </summary>
     public WINDOW_DISPLAY_AFFINITY DisplayAffinity
     {
         get
@@ -131,6 +265,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         set => WiceCommons.SetWindowDisplayAffinity(Handle, value);
     }
 
+    /// <summary>
+    /// Gets the DWM cloaked state of the window (if it is cloaked/hidden by the system).
+    /// </summary>
     public unsafe DWM_CLOAKED CloakedState
     {
         get
@@ -141,6 +278,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Gets the extended frame bounds as reported by DWM.
+    /// </summary>
     public unsafe RECT ExtendedFrameBounds
     {
         get
@@ -151,7 +291,14 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Enumerates direct child windows.
+    /// </summary>
     public IEnumerable<NativeWindow> ChildWindows => EnumerateChildWindows(Handle).Select(h => FromHandle(h)).Where(w => w != null)!;
+
+    /// <summary>
+    /// Enumerates all descendant windows (depth-first).
+    /// </summary>
     public IEnumerable<NativeWindow> AllChildWindows
     {
         get
@@ -167,6 +314,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Gets all Win32 string properties associated with the window (EnumPropsW/GetPropW).
+    /// </summary>
     public IReadOnlyDictionary<string, nint> Props
     {
         get
@@ -187,6 +337,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Gets the IPropertyStore values, if available, keyed by PROPERTYKEY.
+    /// </summary>
     public IReadOnlyDictionary<PROPERTYKEY, object?> Properties
     {
         get
@@ -224,6 +377,10 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Gets or sets whether this window is registered as a drop target (IDropTarget).
+    /// </summary>
+    /// <exception cref="WiceException">Thrown if registration fails and it's not already registered.</exception>
     public bool IsDropTarget
     {
         get => _isDropTarget;
@@ -251,53 +408,225 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <inheritdoc/>
     public override int GetHashCode() => Handle.GetHashCode();
+
+    /// <inheritdoc/>
     public override bool Equals(object? obj) => Equals(obj as NativeWindow);
+
+    /// <inheritdoc/>
     public bool Equals(NativeWindow? other) => other != null && Handle.Value == other.Handle.Value;
+
+    /// <summary>
+    /// Returns whether the window is maximized (IsZoomed).
+    /// </summary>
     public bool IsZoomed() => WiceCommons.IsZoomed(Handle);
+
+    /// <summary>
+    /// Destroys the window (DestroyWindow).
+    /// </summary>
     public bool Destroy() => WiceCommons.DestroyWindow(Handle);
+
+    /// <summary>
+    /// Shows the window with the specified command (ShowWindow).
+    /// </summary>
     public bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOW) => WiceCommons.ShowWindow(Handle, command);
+
+    /// <summary>
+    /// Moves the window to the specified screen coordinate without resizing.
+    /// </summary>
     public bool Move(int x, int y) => WiceCommons.SetWindowPos(Handle, HWND.Null, x, y, -1, -1, SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+
+    /// <summary>
+    /// Resizes the window to the specified width and height without moving it.
+    /// </summary>
     public bool Resize(int width, int height) => WiceCommons.SetWindowPos(Handle, HWND.Null, 0, 0, width, height, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+
+    /// <summary>
+    /// Moves and resizes the window using a floating-point rectangle and flags.
+    /// </summary>
     public bool MoveAndResize(D2D_RECT_F rect, HWND hWndInsertAfter, SET_WINDOW_POS_FLAGS flags) => WiceCommons.SetWindowPos(Handle, hWndInsertAfter, (int)rect.left, (int)rect.top, (int)rect.Width, (int)rect.Height, flags);
+
+    /// <summary>
+    /// Moves and resizes the window to the specified bounds and z-order with flags.
+    /// </summary>
     public bool MoveAndResize(int x, int y, int width, int height, HWND hWndInsertAfter, SET_WINDOW_POS_FLAGS flags) => WiceCommons.SetWindowPos(Handle, hWndInsertAfter, x, y, width, height, flags);
+
+    /// <summary>
+    /// Moves and resizes the window to the specified bounds.
+    /// </summary>
     public bool MoveAndResize(int x, int y, int width, int height) => WiceCommons.SetWindowPos(Handle, HWND.Null, x, y, width, height, SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+
 #if NETFRAMEWORK
+    /// <summary>
+    /// Moves and resizes using an unsigned rectangle (D2D_RECT_U).
+    /// </summary>
     public bool MoveAndResize(D2D_RECT_U rect) => MoveAndResize((int)rect.left, (int)rect.top, (int)(rect.right - rect.left), (int)(rect.bottom - rect.top));
+
+    /// <summary>
+    /// Moves and resizes using an unsigned rectangle (D2D_RECT_U) and flags.
+    /// </summary>
     public bool MoveAndResize(D2D_RECT_U rect, HWND hWndInsertAfter, SET_WINDOW_POS_FLAGS flags) => WiceCommons.SetWindowPos(Handle, hWndInsertAfter, (int)rect.left, (int)rect.top, (int)(rect.right - rect.left), (int)(rect.bottom - rect.top), flags);
 #else
+    /// <summary>
+    /// Moves and resizes using an unsigned rectangle (D2D_RECT_U).
+    /// </summary>
     public bool MoveAndResize(D2D_RECT_U rect) => MoveAndResize((int)rect.left, (int)rect.top, (int)rect.Width, (int)rect.Height);
+
+    /// <summary>
+    /// Moves and resizes using an unsigned rectangle (D2D_RECT_U) and flags.
+    /// </summary>
     public bool MoveAndResize(D2D_RECT_U rect, HWND hWndInsertAfter, SET_WINDOW_POS_FLAGS flags) => WiceCommons.SetWindowPos(Handle, hWndInsertAfter, (int)rect.left, (int)rect.top, (int)rect.Width, (int)rect.Height, flags);
+
+    /// <summary>
+    /// Brings the window to the top of the Z order.
+    /// </summary>
     public bool BringWindowToTop() => Functions.BringWindowToTop(Handle);
 #endif
+
+    /// <summary>
+    /// Moves and resizes using a floating-point rectangle (D2D_RECT_F).
+    /// </summary>
     public bool MoveAndResize(D2D_RECT_F rect) => MoveAndResize((int)rect.left, (int)rect.top, (int)rect.Width, (int)rect.Height);
+
+    /// <summary>
+    /// Moves and resizes using a RECT.
+    /// </summary>
     public bool MoveAndResize(RECT rect) => MoveAndResize(rect.left, rect.top, rect.Width, rect.Height);
+
+    /// <summary>
+    /// Notifies that the frame has changed so that the non-client area is recalculated.
+    /// </summary>
     public bool FrameChanged() => WiceCommons.SetWindowPos(Handle, HWND.Null, 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+
+    /// <summary>
+    /// Centers the window relative to its owner or parent.
+    /// </summary>
     public bool Center() => Center(HWND.Null);
+
+    /// <summary>
+    /// Sets this window to the foreground.
+    /// </summary>
     public bool SetForeground() => WiceCommons.SetForegroundWindow(Handle);
+
+    /// <summary>
+    /// Gets window long data for this window.
+    /// </summary>
     public nint GetWindowLong(WINDOW_LONG_PTR_INDEX index) => GetWindowLong(Handle, index);
+
+    /// <summary>
+    /// Sets window long data for this window.
+    /// </summary>
     public nint SetWindowLong(WINDOW_LONG_PTR_INDEX index, nint data) => SetWindowLong(Handle, index, data);
+
+    /// <summary>
+    /// Gets the GWLP_USERDATA value for this window.
+    /// </summary>
     public nint GetUserData() => GetUserData(Handle);
+
+    /// <summary>
+    /// Sets the GWLP_USERDATA value for this window.
+    /// </summary>
     public nint SetUserData(nint data) => SetUserData(Handle, data);
+
+    /// <summary>
+    /// Sends a message with no parameters.
+    /// </summary>
     public LRESULT SendMessage(uint msg) => WiceCommons.SendMessageW(Handle, msg, WPARAM.Null, LPARAM.Null);
+
+    /// <summary>
+    /// Sends a message with a wParam.
+    /// </summary>
     public LRESULT SendMessage(uint msg, WPARAM wParam) => WiceCommons.SendMessageW(Handle, msg, wParam, LPARAM.Null);
+
+    /// <summary>
+    /// Sends a message with wParam and lParam.
+    /// </summary>
     public LRESULT SendMessage(uint msg, WPARAM wParam, LPARAM lParam) => WiceCommons.SendMessageW(Handle, msg, wParam, lParam);
+
+    /// <summary>
+    /// Posts a message with no parameters.
+    /// </summary>
     public bool PostMessage(uint msg) => WiceCommons.PostMessageW(Handle, msg, WPARAM.Null, LPARAM.Null);
+
+    /// <summary>
+    /// Posts a message with wParam.
+    /// </summary>
     public bool PostMessage(uint msg, WPARAM wParam) => WiceCommons.PostMessageW(Handle, msg, wParam, LPARAM.Null);
+
+    /// <summary>
+    /// Posts a message with wParam and lParam.
+    /// </summary>
     public bool PostMessage(uint msg, WPARAM wParam, LPARAM lParam) => WiceCommons.PostMessageW(Handle, msg, wParam, lParam);
+
+    /// <summary>
+    /// Gets a monitor handle for this window using <paramref name="flags"/>.
+    /// </summary>
     public HMONITOR GetMonitorHandle(MONITOR_FROM_FLAGS flags) => WiceCommons.MonitorFromWindow(Handle, flags);
+
+    /// <summary>
+    /// Extends the DWM glass frame into the client area.
+    /// </summary>
     public HRESULT ExtendFrameIntoClientArea(int left, int right, int top, int bottom) => DwmExtendFrameIntoClientArea(Handle, left, right, top, bottom);
+
+    /// <summary>
+    /// Captures the mouse input to this window.
+    /// </summary>
     public HWND CaptureMouse() => WiceCommons.SetCapture(Handle);
+
+    /// <summary>
+    /// Creates a solid caret with the given size.
+    /// </summary>
     public bool CreateCaret(int width, int height) => CreateCaret(HBITMAP.Null, width, height);
+
+    /// <summary>
+    /// Creates a caret using a bitmap with the given size.
+    /// </summary>
     public bool CreateCaret(HBITMAP bitmap, int width, int height) => WiceCommons.CreateCaret(Handle, bitmap, width, height);
+
+    /// <summary>
+    /// Sets the caret position in client coordinates.
+    /// </summary>
     public static bool SetCaretPosition(int x, int y) => WiceCommons.SetCaretPos(x, y);
+
+    /// <summary>
+    /// Converts a screen point to client coordinates.
+    /// </summary>
     public POINT ScreenToClient(POINT pt) { WiceCommons.ScreenToClient(Handle, ref pt); return pt; }
+
+    /// <summary>
+    /// Converts a client point to screen coordinates.
+    /// </summary>
     public POINT ClientToScreen(POINT pt) { WiceCommons.ClientToScreen(Handle, ref pt); return pt; }
+
+    /// <summary>
+    /// Gets the cursor position relative to this window's client area.
+    /// </summary>
     public POINT GetClientCursorPosition() => ScreenToClient(GetCursorPosition());
+
+    /// <summary>
+    /// Gets the monitor information for this window or null based on flags.
+    /// </summary>
     public Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => WiceCommons.GetMonitorFromWindow(Handle, flags);
+
+    /// <summary>
+    /// Determines whether this window is a child of the specified parent handle.
+    /// </summary>
     public bool IsChild(HWND parentHandle) => WiceCommons.IsChild(parentHandle, Handle);
+
+    /// <summary>
+    /// Gets whether the window is visible.
+    /// </summary>
     public bool IsVisible() => WiceCommons.IsWindowVisible(Handle);
+
+    /// <summary>
+    /// Forces a paint of the window if any update region is present.
+    /// </summary>
     public bool UpdateWindow() => WiceCommons.UpdateWindow(Handle);
+
+    /// <summary>
+    /// Invalidates a rectangle region (or the entire client area), optionally erasing the background.
+    /// </summary>
     public unsafe bool InvalidateRect(RECT? rc = null, bool erase = false)
     {
         if (rc == null)
@@ -307,6 +636,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.InvalidateRect(Handle, (nint)(&r), erase);
     }
 
+    /// <summary>
+    /// Validates a rectangle region (or the entire client area), removing it from the update region.
+    /// </summary>
     public unsafe bool ValidateRect(RECT? rc = null)
     {
         if (rc == null)
@@ -316,7 +648,14 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.ValidateRect(Handle, (nint)(&r));
     }
 
+    /// <summary>
+    /// Requests a redraw of a region with optional flags and region handle.
+    /// </summary>
     public unsafe bool RedrawWindow(RECT? updateRc = null, REDRAW_WINDOW_FLAGS flags = 0) => RedrawWindow(HRGN.Null, updateRc, flags);
+
+    /// <summary>
+    /// Requests a redraw of a region with optional flags.
+    /// </summary>
     public unsafe bool RedrawWindow(HRGN region, RECT? updateRc = null, REDRAW_WINDOW_FLAGS flags = 0)
     {
         if (updateRc == null)
@@ -326,15 +665,28 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.RedrawWindow(Handle, (nint)(&r), region, flags);
     }
 
+    /// <summary>
+    /// Gets whether the current call is on the managed UI thread tracked by this window.
+    /// </summary>
     public bool IsRunningAsMainThread => ManagedThreadId == Environment.CurrentManagedThreadId;
+
+    /// <summary>
+    /// Throws if the current thread is not the tracked UI thread for this window.
+    /// </summary>
     public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0029: This method must be called on the UI thread."); }
 
+    /// <summary>
+    /// Shows the ShellAbout dialog for this window using optional text and details.
+    /// </summary>
     public int ShellAbout(string? text = null, string? otherStuff = null)
     {
         var txt = text.Nullify() ?? Assembly.GetEntryAssembly()?.GetTitle();
         return WiceCommons.ShellAboutW(Handle, PWSTR.From(txt), PWSTR.From(otherStuff), IconHandle);
     }
 
+    /// <summary>
+    /// Acquires the IME context and invokes an action with it, ensuring release.
+    /// </summary>
     public void WithImmContext(Action<HIMC> action)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
@@ -352,7 +704,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
-
+    /// <summary>
+    /// Acquires the IME context and invokes a function with it, ensuring release.
+    /// </summary>
     public T? WithImmContext<T>(Func<HIMC, T> func)
     {
         ExceptionExtensions.ThrowIfNull(func, nameof(func));
@@ -370,6 +724,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Gets the IME conversion and sentence modes.
+    /// </summary>
     public bool GetImmConversionStatus(out IME_CMODE conversion, out IME_SMODE sentence)
     {
         var ret = WithImmContext(ctx =>
@@ -382,12 +739,39 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return ret.r;
     }
 
+    /// <summary>
+    /// Gets the default IME window handle associated with this window.
+    /// </summary>
     public HWND GetDefaultIMEWnd() => WiceCommons.ImmGetDefaultIMEWnd(Handle);
+
+    /// <summary>
+    /// Gets the IME open status.
+    /// </summary>
     public bool GetImmOpenStatus() => WithImmContext(WiceCommons.ImmGetOpenStatus);
+
+    /// <summary>
+    /// Sets the IME open status.
+    /// </summary>
     public bool SetImmOpenStatus(bool open) => WithImmContext(ctx => WiceCommons.ImmSetOpenStatus(ctx, open));
+
+    /// <summary>
+    /// Sends an IME notification.
+    /// </summary>
     public bool NotifyImmIME(IME_NI action, IME_CPS index = 0, uint value = 0) => WithImmContext(ctx => WiceCommons.ImmNotifyIME(ctx, action, index, value));
+
+    /// <summary>
+    /// Sets the IME conversion and sentence modes.
+    /// </summary>
     public bool SetImmConversionStatus(IME_CMODE conversion, IME_SMODE sentence) => WithImmContext(ctx => WiceCommons.ImmSetConversionStatus(ctx, conversion, sentence));
+
+    /// <summary>
+    /// Sets the IME status window position.
+    /// </summary>
     public bool SetImmStatusWindowPosition(POINT position) => WithImmContext(ctx => WiceCommons.ImmSetStatusWindowPos(ctx, position));
+
+    /// <summary>
+    /// Sets the IME composition window position or form.
+    /// </summary>
     public bool SetImmCompositionWindowPosition(POINT position, COMPOSITIONFORM? form = null) => WithImmContext(ctx =>
     {
         form ??= new COMPOSITIONFORM
@@ -399,6 +783,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.ImmSetCompositionWindow(ctx, form.Value);
     });
 
+    /// <summary>
+    /// Sets the IME candidate window position or form.
+    /// </summary>
     public bool SetImmCandidateWindowPosition(POINT position, CANDIDATEFORM? form = null) => WithImmContext(ctx =>
     {
         form ??= new CANDIDATEFORM
@@ -410,7 +797,12 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.ImmSetCandidateWindow(ctx, form.Value);
     });
 
+    /// <summary>
+    /// Raises the DragDrop event with the specified args.
+    /// </summary>
     private void OnDragDrop(DragDropEventArgs e) => DragDrop?.Invoke(this, e);
+
+    /// <inheritdoc />
     HRESULT IDropTarget.DragEnter(IDataObject dataObject, MODIFIERKEYS_FLAGS flags, POINTL pt, ref DROPEFFECT effect)
     {
         var e = new DragDropEventArgs(DragDropEventType.Enter)
@@ -427,6 +819,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.S_OK;
     }
 
+    /// <inheritdoc />
     HRESULT IDropTarget.DragOver(MODIFIERKEYS_FLAGS flags, POINTL pt, ref DROPEFFECT effect)
     {
         var e = new DragDropEventArgs(DragDropEventType.Over)
@@ -442,6 +835,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.S_OK;
     }
 
+    /// <inheritdoc />
     HRESULT IDropTarget.DragLeave()
     {
         var e = new DragDropEventArgs(DragDropEventType.Leave);
@@ -449,6 +843,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.S_OK;
     }
 
+    /// <inheritdoc />
     HRESULT IDropTarget.Drop(IDataObject dataObject, MODIFIERKEYS_FLAGS flags, POINTL pt, ref DROPEFFECT effect)
     {
         var e = new DragDropEventArgs(DragDropEventType.Drop)
@@ -464,6 +859,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.S_OK;
     }
 
+    /// <inheritdoc />
     HRESULT IDropSourceNotify.DragEnterTarget(HWND hwndTarget)
     {
         var win = new NativeWindow(hwndTarget);
@@ -475,6 +871,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.S_OK;
     }
 
+    /// <inheritdoc />
     HRESULT IDropSourceNotify.DragLeaveTarget()
     {
         Application.Trace("DragLeaveTarget");
@@ -483,6 +880,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.S_OK;
     }
 
+    /// <inheritdoc />
     HRESULT IDropSource.QueryContinueDrag(BOOL escapePressed, MODIFIERKEYS_FLAGS flags)
     {
         //Application.Trace("QueryContinueDrag escapePressed:" + escapePressed + " flags:" + flags);
@@ -508,6 +906,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return e.Result;
     }
 
+    /// <inheritdoc />
     HRESULT IDropSource.GiveFeedback(DROPEFFECT effect)
     {
         var e = new DragDropGiveFeedback(effect);
@@ -515,6 +914,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return e.Result;
     }
 
+    /// <summary>
+    /// Returns a string representation including class name and window text.
+    /// </summary>
     public override string ToString()
     {
         var str = ClassName;
@@ -526,29 +928,94 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return str ?? string.Empty;
     }
 
+    /// <summary>
+    /// Gets the console window handle.
+    /// </summary>
     public static HWND ConsoleHandle => WiceCommons.GetConsoleWindow();
+
+    /// <summary>
+    /// Gets the console window as a <see cref="NativeWindow"/>, if any.
+    /// </summary>
     public static NativeWindow? Console => FromHandle(ConsoleHandle);
 
+    /// <summary>
+    /// Gets the active window handle.
+    /// </summary>
     public static HWND ActiveHandle => WiceCommons.GetActiveWindow();
+
+    /// <summary>
+    /// Gets the active window as a <see cref="NativeWindow"/>, if any.
+    /// </summary>
     public static NativeWindow? Active => FromHandle(ActiveHandle);
 
+    /// <summary>
+    /// Gets the foreground window handle.
+    /// </summary>
     public static HWND ForegroundHandle => WiceCommons.GetForegroundWindow();
+
+    /// <summary>
+    /// Gets the foreground window as a <see cref="NativeWindow"/>, if any.
+    /// </summary>
     public static NativeWindow? Foreground => FromHandle(ForegroundHandle);
 
+    /// <summary>
+    /// Gets the desktop window handle.
+    /// </summary>
     public static HWND DesktopHandle => WiceCommons.GetDesktopWindow();
+
+    /// <summary>
+    /// Gets the desktop window as a <see cref="NativeWindow"/>.
+    /// </summary>
     public static NativeWindow? Desktop => FromHandle(DesktopHandle);
 
+    /// <summary>
+    /// Gets the shell window handle.
+    /// </summary>
     public static HWND ShellHandle => WiceCommons.GetShellWindow();
+
+    /// <summary>
+    /// Gets the shell window as a <see cref="NativeWindow"/>.
+    /// </summary>
     public static NativeWindow? Shell => FromHandle(ShellHandle);
 
+    /// <summary>
+    /// Wraps a non-null <see cref="HWND"/> into a <see cref="NativeWindow"/>, or returns null for zero handles.
+    /// </summary>
     public static NativeWindow? FromHandle(HWND handle) { if (handle.Value == 0) return null; return new NativeWindow(handle); }
+
+    /// <summary>
+    /// Determines if a window is a child of a specified parent.
+    /// </summary>
     public static bool IsChildWindow(HWND parentHandle, HWND handle) => WiceCommons.IsChild(parentHandle, handle);
+
+    /// <summary>
+    /// Returns the window at the specified screen point.
+    /// </summary>
     public static HWND GetWindowFromPoint(POINT point) => WiceCommons.WindowFromPoint(point);
+
+    /// <summary>
+    /// Converts a virtual-key code to a character.
+    /// </summary>
     public static char VirtualKeyToCharacter(VIRTUAL_KEY vk) => (char)WiceCommons.MapVirtualKeyW((uint)vk, MAP_VIRTUAL_KEY_TYPE.MAPVK_VK_TO_CHAR);
+
+    /// <summary>
+    /// Returns whether a key is pressed. Uses GetAsyncKeyState by default, else GetKeyState.
+    /// </summary>
     public static bool IsKeyPressed(VIRTUAL_KEY vk, bool async = true) => (async ? WiceCommons.GetAsyncKeyState((int)vk) : WiceCommons.GetKeyState((int)vk)) < 0;
+
+    /// <summary>
+    /// Releases mouse capture.
+    /// </summary>
     public static bool ReleaseMouse() => WiceCommons.ReleaseCapture();
+
+    /// <summary>
+    /// Gets the current cursor position in screen coordinates.
+    /// </summary>
     public static POINT GetCursorPosition() { WiceCommons.GetCursorPos(out var pt); return pt; }
 
+    /// <summary>
+    /// Reads the accessibility cursor size preference from the registry (1..15).
+    /// </summary>
     public static int GetAccessibilityCursorSize()
     {
         using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Accessibility", false);
@@ -560,6 +1027,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return 1;
     }
 
+    /// <summary>
+    /// Gets the last message cursor position extracted from GetMessagePos.
+    /// </summary>
     public static POINT LastMessagePosision
     {
         get
@@ -569,7 +1039,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
-    // https://stackoverflow.com/a/51037982/403671
+    /// <summary>
+    /// Determines whether the mouse left the window based on the last message position and child checks.
+    /// </summary>
     internal static bool DidMouseLeaveWindow(HWND handle, HWND other)
     {
         var pt = LastMessagePosision;
@@ -579,6 +1051,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return result;
     }
 
+    /// <summary>
+    /// Calls DwmExtendFrameIntoClientArea with margin values.
+    /// </summary>
     internal static HRESULT DwmExtendFrameIntoClientArea(HWND hwnd, int left, int right, int top, int bottom)
     {
         var margin = new MARGINS
@@ -591,6 +1066,16 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.DwmExtendFrameIntoClientArea(hwnd, margin);
     }
 
+    /// <summary>
+    /// Registers a window class if it does not already exist for the module.
+    /// </summary>
+    /// <param name="className">The class name.</param>
+    /// <param name="styles">Class styles.</param>
+    /// <param name="windowProc">The WNDPROC pointer.</param>
+    /// <param name="background">Background brush.</param>
+    /// <returns>True if registered now; false if already registered.</returns>
+    /// <exception cref="ArgumentException">Thrown when <paramref name="windowProc"/> is zero.</exception>
+    /// <exception cref="Win32Exception">Thrown when RegisterClassW fails.</exception>
     internal static bool RegisterWindowClass(string className, WNDCLASS_STYLES styles, nint windowProc, HBRUSH background)
     {
         ExceptionExtensions.ThrowIfNull(className, nameof(className));
@@ -620,6 +1105,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return false;
     }
 
+    /// <summary>
+    /// Unregisters all window classes previously tracked and registered by this type.
+    /// </summary>
     internal static void UnregisterWindowClasses()
     {
         foreach (var name in _classesNames)
@@ -629,6 +1117,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Performs a BeginPaint/EndPaint pair around an optional action.
+    /// </summary>
     public static void OnPaint(HWND hwnd, Action? action = null)
     {
         WiceCommons.BeginPaint(hwnd, out var ps);
@@ -642,6 +1133,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         }
     }
 
+    /// <summary>
+    /// Performs hit-testing for the non-client area allowing custom caption/resize areas.
+    /// </summary>
     internal static HT NonClientHitTest(HWND hwnd, LPARAM lParam, ref RECT extend)
     {
         var ptMouse = new POINT(lParam.Value.SignedLOWORD(), lParam.Value.SignedHIWORD());
@@ -682,9 +1176,19 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return hitTests[uRow, uCol];
     }
 
+    /// <summary>
+    /// Sets GWLP_USERDATA.
+    /// </summary>
     internal static nint SetUserData(HWND hwnd, nint data) => SetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA, data);
+
+    /// <summary>
+    /// Gets GWLP_USERDATA.
+    /// </summary>
     internal static nint GetUserData(HWND hwnd) => GetWindowLong(hwnd, WINDOW_LONG_PTR_INDEX.GWLP_USERDATA);
 
+    /// <summary>
+    /// Sets a window long value, selecting 32/64-bit API as appropriate.
+    /// </summary>
     public static nint SetWindowLong(HWND hwnd, WINDOW_LONG_PTR_INDEX nIndex, nint dwNewLong)
 #if NETFRAMEWORK
         => IntPtr.Size == 8 ? WindowsFunctions.SetWindowLongPtr64(hwnd, (int)nIndex, dwNewLong) : WindowsFunctions.SetWindowLongPtr32(hwnd, (int)nIndex, dwNewLong);
@@ -692,6 +1196,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         => nint.Size == 8 ? Functions.SetWindowLongPtrW(hwnd, nIndex, dwNewLong) : Functions.SetWindowLongW(hwnd, nIndex, (int)dwNewLong);
 #endif
 
+    /// <summary>
+    /// Gets a window long value, selecting 32/64-bit API as appropriate.
+    /// </summary>
     public static nint GetWindowLong(HWND hwnd, WINDOW_LONG_PTR_INDEX nIndex)
 #if NETFRAMEWORK
         => IntPtr.Size == 8 ? WindowsFunctions.GetWindowLongPtr64(hwnd, (int)nIndex) : WindowsFunctions.GetWindowLong32(hwnd, (int)nIndex);
@@ -699,6 +1206,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         => nint.Size == 8 ? Functions.GetWindowLongPtrW(hwnd, nIndex) : Functions.GetWindowLongW(hwnd, nIndex);
 #endif
 
+    /// <summary>
+    /// Gets the window text, or an empty string if none.
+    /// </summary>
     public static string GetWindowText(HWND hwnd)
     {
 #if NETFRAMEWORK
@@ -716,6 +1226,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
 #endif
     }
 
+    /// <summary>
+    /// Gets the class name of a window, or null if it cannot be obtained.
+    /// </summary>
     internal static string? GetClassName(HWND hwnd)
     {
 #if NETFRAMEWORK
@@ -733,6 +1246,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
 #endif
     }
 
+    /// <summary>
+    /// Adjusts a RECT for the specified style/menu/ex-style at a given DPI.
+    /// </summary>
     public static RECT AdjustWindowRect(RECT rect, WINDOW_STYLE style, bool hasMenu, WINDOW_EX_STYLE extendedStyle, uint dpi)
     {
         var rc = rect;
@@ -740,6 +1256,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return rc;
     }
 
+    /// <summary>
+    /// Centers this window relative to an owner or parent depending on style and visibility.
+    /// </summary>
     public unsafe bool Center(HWND alternateOwner)
     {
         var style = (WINDOW_STYLE)GetWindowLong(WINDOW_LONG_PTR_INDEX.GWL_STYLE).ToInt64();
@@ -835,7 +1354,14 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return Move(left, top);
     }
 
+    /// <summary>
+    /// Gets the TITLEBARINFOEX structure for a window.
+    /// </summary>
     public TITLEBARINFOEX GetTITLEBARINFOEX() => GetTITLEBARINFOEX(Handle);
+
+    /// <summary>
+    /// Gets the TITLEBARINFOEX structure for the specified window handle.
+    /// </summary>
     public static unsafe TITLEBARINFOEX GetTITLEBARINFOEX(HWND hwnd)
     {
         var info = new TITLEBARINFOEX { cbSize = (uint)sizeof(TITLEBARINFOEX) };
@@ -846,8 +1372,14 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return info;
     }
 
-    // https://devblogs.microsoft.com/oldnewthing/20101020-00/?p=12493
+    /// <summary>
+    /// Gets an icon's dimensions and optional hotspot.
+    /// </summary>
     public static SIZE? GetIconDimension(HICON handle) => GetIconDimension(handle, out _);
+
+    /// <summary>
+    /// Gets an icon's dimensions and outputs the hotspot if available.
+    /// </summary>
     public static unsafe SIZE? GetIconDimension(HICON handle, out SIZE? hotspot)
     {
         hotspot = null;
@@ -880,21 +1412,42 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return size;
     }
 
+    /// <summary>
+    /// Sets a DWM window attribute as a boolean.
+    /// </summary>
     public void SetWindowAttribute(DWMWINDOWATTRIBUTE attribute, bool value) => SetWindowAttribute(Handle, attribute, value);
+
+    /// <summary>
+    /// Sets a DWM window attribute as a boolean on an HWND.
+    /// </summary>
     public unsafe static void SetWindowAttribute(HWND hwnd, DWMWINDOWATTRIBUTE attribute, bool value)
     {
         var i = value ? 1 : 0;
         WiceCommons.DwmSetWindowAttribute(hwnd, (uint)attribute, (nint)(&i), 4).ThrowOnError();
     }
 
+    /// <summary>
+    /// Sets the non-client rendering policy (DWM).
+    /// </summary>
     public void SetNonClientRenderingPolicy(DWMNCRENDERINGPOLICY policy) => SetNonClientRenderingPolicy(Handle, policy);
+
+    /// <summary>
+    /// Sets the non-client rendering policy (DWM) on an HWND.
+    /// </summary>
     public unsafe static void SetNonClientRenderingPolicy(HWND hwnd, DWMNCRENDERINGPOLICY policy)
     {
         var i = (int)policy;
         WiceCommons.DwmSetWindowAttribute(hwnd, (uint)DWMWINDOWATTRIBUTE.DWMWA_NCRENDERING_POLICY, (nint)(&i), 4).ThrowOnError();
     }
 
+    /// <summary>
+    /// Enables acrylic blur-behind using SetWindowCompositionAttribute.
+    /// </summary>
     public void EnableAcrylicBlurBehind() => EnableAcrylicBlurBehind(Handle);
+
+    /// <summary>
+    /// Enables acrylic blur-behind using SetWindowCompositionAttribute on an HWND.
+    /// </summary>
     public unsafe static void EnableAcrylicBlurBehind(HWND hwnd)
     {
         var accent = new ACCENT_POLICY
@@ -912,7 +1465,14 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         WiceCommons.SetWindowCompositionAttribute(hwnd, ref data).ThrowOnError();
     }
 
+    /// <summary>
+    /// Enables blur-behind using SetWindowCompositionAttribute.
+    /// </summary>
     public void EnableBlurBehind() => EnableBlurBehind(Handle);
+
+    /// <summary>
+    /// Enables blur-behind using SetWindowCompositionAttribute on an HWND.
+    /// </summary>
     public unsafe static void EnableBlurBehind(HWND hwnd)
     {
         var accent = new ACCENT_POLICY
@@ -933,6 +1493,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     private delegate bool EnumWindowsProc(IntPtr handle, IntPtr lParam);
     private delegate bool EnumChildProc(IntPtr handle, IntPtr lParam);
 
+    /// <summary>
+    /// Enumerates the child window handles of a specified parent.
+    /// </summary>
     public static IReadOnlyList<HWND> EnumerateChildWindows(HWND handle)
     {
         var list = new List<HWND>();
@@ -944,6 +1507,9 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return list.AsReadOnly();
     }
 
+    /// <summary>
+    /// Enumerates all top-level window handles.
+    /// </summary>
     public static IReadOnlyList<HWND> EnumerateTopLevelWindows()
     {
         var list = new List<HWND>();

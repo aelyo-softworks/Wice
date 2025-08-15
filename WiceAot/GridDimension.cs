@@ -1,16 +1,50 @@
 ﻿namespace Wice;
 
-// serves for cols and rows
+/// <summary>
+/// Base dimension descriptor used by <see cref="Grid"/> for both columns and rows.
+/// Encapsulates sizing modes:
+/// - Fixed: <see cref="Size"/> is a finite value.
+/// - Auto: <see cref="Size"/> is <see cref="float.NaN"/> (length is determined by children).
+/// - Star: <see cref="Stars"/> &gt; 0 (proportional sizing relative to other star dimensions).
+/// </summary>
+/// <remarks>
+/// Runtime layout values (<see cref="DesiredSize"/>, <see cref="FinalStartPosition"/>, <see cref="FinalEndPosition"/>, <see cref="FinalSize"/>)
+/// are computed during measure/arrange by <see cref="Grid"/> and are not intended to be set by callers.
+/// </remarks>
 public abstract class GridDimension : BaseObject
 {
     private float? _desiredSize;
 
+    /// <summary>
+    /// Backing property for <see cref="Stars"/>. Validates non-negative and finite values.
+    /// </summary>
     public static BaseObjectProperty StarsProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(Stars), 1f, convert: ValidateStars);
+
+    /// <summary>
+    /// Backing property for <see cref="Size"/>. Validates non-negative values and disallows <see cref="float.PositiveInfinity"/>/<see cref="float.NegativeInfinity"/>.
+    /// Allows <see cref="float.NaN"/> to represent Auto.
+    /// </summary>
     public static BaseObjectProperty SizeProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(Size), 0f, convert: ValidateSize); // TODO: float.nan?
+
+    /// <summary>
+    /// Backing property for <see cref="MinSize"/>. Validates non-negative, finite values.
+    /// </summary>
     public static BaseObjectProperty MinSizeProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(MinSize), 0f, convert: ValidateMinMaxSize);
+
+    /// <summary>
+    /// Backing property for <see cref="MaxSize"/>. Validates non-negative, finite values.
+    /// </summary>
     public static BaseObjectProperty MaxSizeProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(MaxSize), float.MaxValue, convert: ValidateMinMaxSize);
+
+    /// <summary>
+    /// Backing property for <see cref="DefaultAlignment"/> applied to children when not explicitly set.
+    /// </summary>
     public static BaseObjectProperty DefaultAlignmentProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(DefaultAlignment), typeof(Alignment?), null, null, null, null);
 
+    /// <summary>
+    /// Validates <see cref="Stars"/> values (must be finite and not negative).
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">When value is not finite or negative.</exception>
     private static object? ValidateStars(BaseObject obj, object? value)
     {
         var f = (float)value!;
@@ -20,6 +54,11 @@ public abstract class GridDimension : BaseObject
         return f;
     }
 
+    /// <summary>
+    /// Validates <see cref="Size"/> values (must be NaN for Auto, or a non-negative finite value).
+    /// Infinity is rejected.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">When value is infinite or negative.</exception>
     private static object? ValidateSize(BaseObject obj, object? value)
     {
         var f = (float)value!;
@@ -29,6 +68,10 @@ public abstract class GridDimension : BaseObject
         return f;
     }
 
+    /// <summary>
+    /// Validates <see cref="MinSize"/> and <see cref="MaxSize"/> (must be finite and not negative).
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">When value is not finite or negative.</exception>
     private static object? ValidateMinMaxSize(BaseObject obj, object? value)
     {
         var f = (float)value!;
@@ -38,55 +81,114 @@ public abstract class GridDimension : BaseObject
         return f;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GridDimension"/> class.
+    /// </summary>
     protected GridDimension()
     {
     }
 
+    /// <summary>
+    /// Gets the owning <see cref="Grid"/>, if any.
+    /// </summary>
     [Browsable(false)]
     public Grid? Parent { get; internal set; }
 
+    /// <summary>
+    /// Gets the <see cref="Window"/> that contains this dimension via its parent grid, if any.
+    /// </summary>
     [Browsable(false)]
     public Window? Window => Parent?.Window;
 
+    /// <summary>
+    /// Gets the zero-based index of this dimension within its parent collection.
+    /// </summary>
     [Category(Visual.CategoryBehavior)]
     public abstract int Index { get; }
 
+    /// <summary>
+    /// Gets the next dimension in the parent collection, or null if this is the last element.
+    /// </summary>
     [Browsable(false)]
     public abstract GridDimension? Next { get; }
 
+    /// <summary>
+    /// Gets the previous dimension in the parent collection, or null if this is the first element.
+    /// </summary>
     [Browsable(false)]
     public abstract GridDimension? Previous { get; }
 
+    /// <summary>
+    /// Gets a value indicating whether the dimension has an explicit fixed size
+    /// (i.e., not star-sized and not auto-sized).
+    /// </summary>
     [Category(Visual.CategoryBehavior)]
     public bool HasDefinedSize => !HasStarSize && !HasAutoSize;
 
+    /// <summary>
+    /// Gets a value indicating whether the dimension is auto-sized (i.e., <see cref="Size"/> is <see cref="float.NaN"/>).
+    /// Auto sizing typically stretches to fit content.
+    /// </summary>
     [Category(Visual.CategoryBehavior)]
     public bool HasAutoSize => float.IsNaN(Size);
 
+    /// <summary>
+    /// Gets a value indicating whether the dimension uses star sizing.
+    /// Star sizing divides remaining space proportionally among star-sized rows/columns.
+    /// </summary>
     [Category(Visual.CategoryBehavior)]
     public bool HasStarSize { get { var stars = Stars; return stars.IsValid() && stars != 0; } }
 
-    // like WPF GridLength's stars
+    /// <summary>
+    /// Gets or sets the star factor for proportional sizing (like WPF's GridLength star).
+    /// A value of 0 disables star sizing. When set, <see cref="Size"/> is reset to 0.
+    /// </summary>
+    /// <remarks>
+    /// All star-sized dimensions share the remaining space proportionally to their <see cref="Stars"/> values.
+    /// </remarks>
     [Category(Visual.CategoryBehavior)]
     public float Stars { get => (float)GetPropertyValue(StarsProperty)!; set => SetPropertyValue(StarsProperty, value); }
 
-    // = width for cols or height for rows
-    // NaN means stretch (like WPF's Auto)
+    /// <summary>
+    /// Gets or sets the fixed size (width for columns, height for rows).
+    /// Use <see cref="float.NaN"/> for Auto (stretch by content). When set, <see cref="Stars"/> is reset to 0.
+    /// </summary>
+    /// <remarks>
+    /// A non-NaN, finite value forces a fixed size. <see cref="float.NaN"/> enables Auto sizing.
+    /// </remarks>
     [Category(Visual.CategoryBehavior)]
     public float Size { get => (float)GetPropertyValue(SizeProperty)!; set => SetPropertyValue(SizeProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the minimum size constraint applied to this dimension.
+    /// </summary>
     [Category(Visual.CategoryBehavior)]
     public float MinSize { get => (float)GetPropertyValue(MinSizeProperty)!; set => SetPropertyValue(MinSizeProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the maximum size constraint applied to this dimension.
+    /// </summary>
     [Category(Visual.CategoryBehavior)]
     public float MaxSize { get => (float)GetPropertyValue(MaxSizeProperty)!; set => SetPropertyValue(MaxSizeProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the default child alignment used when a child does not specify its own alignment.
+    /// </summary>
     [Category(Visual.CategoryBehavior)]
     public Alignment? DefaultAlignment { get => (Alignment?)GetPropertyValue(DefaultAlignmentProperty); set => SetPropertyValue(DefaultAlignmentProperty, value); }
 
+    /// <summary>
+    /// Gets the resolved start position for this dimension within the arranged grid, if available.
+    /// </summary>
     [Category(Visual.CategoryBehavior)]
     public float? FinalStartPosition { get; internal set; }
 
+    /// <summary>
+    /// Gets the internally computed desired size for the dimension, clamped to <see cref="MinSize"/> and <see cref="MaxSize"/>.
+    /// </summary>
+    /// <remarks>
+    /// This value is computed during measure passes and not intended to be set by consumers.
+    /// </remarks>
     [Category(Visual.CategoryBehavior)]
     public float? DesiredSize
     {
@@ -114,6 +216,9 @@ public abstract class GridDimension : BaseObject
         }
     }
 
+    /// <summary>
+    /// Gets the resolved end position (start + size) within the arranged grid, if available.
+    /// </summary>
     [Category(Visual.CategoryBehavior)]
     public float? FinalEndPosition
     {
@@ -126,6 +231,9 @@ public abstract class GridDimension : BaseObject
         }
     }
 
+    /// <summary>
+    /// Gets the final arranged size (<see cref="FinalEndPosition"/> - <see cref="FinalStartPosition"/>) if available.
+    /// </summary>
     [Category(Visual.CategoryBehavior)]
     public float? FinalSize
     {
@@ -142,6 +250,18 @@ public abstract class GridDimension : BaseObject
         }
     }
 
+    /// <summary>
+    /// Overrides property setting to enforce mutual exclusivity between <see cref="Stars"/> and <see cref="Size"/>,
+    /// and to invalidate the parent grid for a new measure pass.
+    /// </summary>
+    /// <param name="property">The property being updated.</param>
+    /// <param name="value">The new value.</param>
+    /// <param name="options">Optional set options.</param>
+    /// <returns>true if the stored value changed; otherwise false.</returns>
+    /// <remarks>
+    /// When <see cref="Stars"/> is set, <see cref="Size"/> is set to 0. When <see cref="Size"/> is set, <see cref="Stars"/> becomes 0.
+    /// The parent <see cref="Grid"/> (if any) receives a Measure invalidation.
+    /// </remarks>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -162,6 +282,10 @@ public abstract class GridDimension : BaseObject
         return true;
     }
 
+    /// <summary>
+    /// Returns a human-readable representation, e.g.:
+    /// "[1] 2*" for star-sized, "[0] Auto" for auto-sized, "[2] Fixed: 100" for fixed.
+    /// </summary>
     public override string ToString()
     {
         string idx;

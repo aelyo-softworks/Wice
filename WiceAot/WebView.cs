@@ -4,20 +4,73 @@ using WinRT;
 
 namespace Wice;
 
+/// <summary>
+/// A Wice visual hosting a Microsoft Edge WebView2 instance using a composition controller
+/// (CoreWebView2CompositionController). Handles environment lifecycle (shared or per-instance),
+/// composition rooting, input forwarding (mouse), navigation, and common events.
+/// </summary>
+/// <remarks>
+/// Usage:
+/// - Set <see cref="SourceUri"/> or <see cref="SourceString"/> to navigate.
+/// - By default, uses a shared WebView2 environment across instances; configure via <see cref="UseSharedEnvironment"/>.
+/// - Disposing the visual tears down the underlying controller and WebView when this is the last user
+///   (for shared, when reference count reaches zero).
+///
+/// Threading:
+/// - Environment creation requires STA. See error messaging when RPC_E_CHANGED_MODE occurs.
+/// - Most property sets require UI thread (see VisualProperty defaults).
+///
+/// Composition:
+/// - Renders into the visual's composition tree by assigning the composition root as the controller's RootVisualTarget.
+/// - Bounds are updated in <see cref="Render"/> to synchronize with arrange/render rect.
+/// </remarks>
 public partial class WebView : Border, IDisposable
 {
+    /// <summary>
+    /// Identifies the <see cref="SourceUri"/> property. Setting this triggers a render invalidation and navigation.
+    /// </summary>
     public static VisualProperty SourceUriProperty { get; } = VisualProperty.Add<string>(typeof(WebView), nameof(SourceUri), VisualPropertyInvalidateModes.Render, convert: ValidateNonNullString, changed: OnSourceChanged);
+
+    /// <summary>
+    /// Identifies the <see cref="SourceString"/> property. Setting this triggers a render invalidation and navigation.
+    /// </summary>
     public static VisualProperty SourceStringProperty { get; } = VisualProperty.Add<string>(typeof(WebView), nameof(SourceString), VisualPropertyInvalidateModes.Render, convert: ValidateNonNullString);
 
     private static void OnSourceChanged(BaseObject obj, object? newValue, object? oldValue) => ((WebView)obj).OnSourceChanged();
 
+    /// <summary>
+    /// Gets or sets the default for <see cref="UseSharedEnvironment"/> when a new instance is created.
+    /// </summary>
     public static bool UseSharedEnvironmentDefault { get; set; } = true;
 
+    /// <summary>
+    /// Raised after a WebView2 instance is created and ready for customization (e.g., script injection, settings).
+    /// </summary>
     public event EventHandler<ValueEventArgs<ICoreWebView2>>? WebViewSetup;
+
+    /// <summary>
+    /// Raised after the composition controller is created and bound to the composition root visual.
+    /// </summary>
     public event EventHandler<ValueEventArgs<ICoreWebView2CompositionController>>? WebViewControllerSetup;
+
+    /// <summary>
+    /// Raised when top-level navigation completes.
+    /// </summary>
     public event EventHandler<ValueEventArgs<ICoreWebView2NavigationCompletedEventArgs>>? NavigationCompleted;
+
+    /// <summary>
+    /// Raised when a frame navigation completes.
+    /// </summary>
     public event EventHandler<ValueEventArgs<ICoreWebView2NavigationCompletedEventArgs>>? FrameNavigationCompleted;
+
+    /// <summary>
+    /// Raised when a new window is requested by the web content.
+    /// </summary>
     public event EventHandler<ValueEventArgs<ICoreWebView2NewWindowRequestedEventArgs>>? NewWindowRequested;
+
+    /// <summary>
+    /// Raised when the document title changes.
+    /// </summary>
     public event EventHandler<ValueEventArgs<string?>>? DocumentTitleChanged;
 
     private WebViewInfo? _webViewInfo;
@@ -37,12 +90,23 @@ public partial class WebView : Border, IDisposable
     private MouseButton? _captureButton;
     private bool _useSharedEnvironment = UseSharedEnvironmentDefault;
 
+    /// <summary>
+    /// Gets or sets the URI to navigate to. Setting this triggers navigation. Empty implies "about:blank".
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual string SourceUri { get => (string?)GetPropertyValue(SourceUriProperty) ?? string.Empty; set => SetPropertyValue(SourceUriProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the HTML content to navigate to. When set, takes precedence over <see cref="SourceUri"/>.
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual string SourceString { get => (string?)GetPropertyValue(SourceStringProperty) ?? string.Empty; set => SetPropertyValue(SourceStringProperty, value); }
 
+    /// <summary>
+    /// Gets or sets whether this instance uses the shared WebView2 environment or creates its own.
+    /// Must be set before environment initialization.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown if modified after the environment was created.</exception>
     public virtual bool UseSharedEnvironment
     {
         get => _useSharedEnvironment;
@@ -56,6 +120,11 @@ public partial class WebView : Border, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the browser executable folder for environment creation. Optional.
+    /// Must be set before environment initialization.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown if modified after the environment was created.</exception>
     public virtual string? BrowserExecutableFolder
     {
         get => _browserExecutableFolder;
@@ -69,6 +138,11 @@ public partial class WebView : Border, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the user data folder for environment creation. Optional.
+    /// Must be set before environment initialization.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown if modified after the environment was created.</exception>
     public virtual string? UserDataFolder
     {
         get => _userDataFolder;
@@ -82,6 +156,11 @@ public partial class WebView : Border, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets or sets the environment options to use while creating the WebView2 environment. Optional.
+    /// Must be set before environment initialization.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown if modified after the environment was created.</exception>
     public virtual ICoreWebView2EnvironmentOptions? Options
     {
         get => _options;
@@ -95,18 +174,56 @@ public partial class WebView : Border, IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the WebView2 environment has been initialized.
+    /// </summary>
     public bool WebViewInitialized => _webViewInfo?.Initialized == true;
+
+    /// <summary>
+    /// Gets the HRESULT of WebView2 initialization attempt (loader init), if any.
+    /// </summary>
     public HRESULT? WebViewInitializationResult => _webViewInfo?.WebViewInitializationResult;
+
+    /// <summary>
+    /// Gets a human-friendly error message for initialization failures, when applicable.
+    /// </summary>
     public string? WebViewInitializationErrorMessage => _webViewInfo?.ErrorMessage;
+
+    /// <summary>
+    /// Gets the reported WebView2 runtime version string, when available.
+    /// </summary>
     public string? WebViewVersion => _webViewInfo?.WebViewVersion;
+
+    /// <summary>
+    /// Gets the underlying WebView2 environment (v3) when initialized; otherwise null.
+    /// </summary>
     public IComObject<ICoreWebView2Environment3>? Environment => _webViewInfo?.Environment;
+
+    /// <summary>
+    /// Gets the composition controller when created; otherwise null.
+    /// </summary>
     public IComObject<ICoreWebView2CompositionController>? Controller => _controller;
+
+    /// <summary>
+    /// Gets the WebView2 instance when created; otherwise null.
+    /// </summary>
     public IComObject<ICoreWebView2>? WebView2 => _webView2;
 
+    /// <summary>
+    /// Called when either <see cref="SourceUri"/> or <see cref="SourceString"/> changes; initiates navigation.
+    /// </summary>
     protected virtual void OnSourceChanged() => _ = Navigate();
 
+    /// <inheritdoc/>
     protected override ContainerVisual? CreateCompositionVisual() => Compositor!.CreateContainerVisual();
 
+    /// <summary>
+    /// Translates current key modifiers and mouse buttons into WebView2 virtual key flags.
+    /// </summary>
+    /// <param name="vk">Pointer modifier flags.</param>
+    /// <param name="button">The active mouse button, if any.</param>
+    /// <returns>WebView2 virtual key flags.</returns>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected virtual COREWEBVIEW2_MOUSE_EVENT_VIRTUAL_KEYS GetKeys(POINTER_MOD vk, MouseButton? button)
     {
         CheckDisposed();
@@ -149,6 +266,10 @@ public partial class WebView : Border, IDisposable
         return keys;
     }
 
+    /// <summary>
+    /// Forwards a double-click mouse event to WebView2.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseButtonDoubleClick(object? sender, MouseButtonEventArgs e)
     {
         CheckDisposed();
@@ -190,6 +311,10 @@ public partial class WebView : Border, IDisposable
         controller.Object.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos).ThrowOnError();
     }
 
+    /// <summary>
+    /// Forwards a mouse down event to WebView2 and starts mouse capture on this visual.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         CheckDisposed();
@@ -233,6 +358,10 @@ public partial class WebView : Border, IDisposable
         controller.Object.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos).ThrowOnError();
     }
 
+    /// <summary>
+    /// Forwards a mouse up event to WebView2 and releases mouse capture.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
         CheckDisposed();
@@ -276,7 +405,13 @@ public partial class WebView : Border, IDisposable
         controller.Object.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos).ThrowOnError();
     }
 
+    /// <summary>
+    /// Forwards mouse move/enter events to WebView2 (includes button state and X button data when captured).
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseEnter(object? sender, MouseEventArgs e) => OnMouseMove(sender, e);
+
+    /// <inheritdoc/>
     protected override void OnMouseMove(object? sender, MouseEventArgs e)
     {
         CheckDisposed();
@@ -303,6 +438,10 @@ public partial class WebView : Border, IDisposable
         controller.Object.SendMouseInput(COREWEBVIEW2_MOUSE_EVENT_KIND.COREWEBVIEW2_MOUSE_EVENT_KIND_MOVE, keys, mouseData, pos).ThrowOnError();
     }
 
+    /// <summary>
+    /// Forwards a mouse leave event to WebView2.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseLeave(object? sender, MouseEventArgs e)
     {
         CheckDisposed();
@@ -313,6 +452,10 @@ public partial class WebView : Border, IDisposable
         controller.Object.SendMouseInput(COREWEBVIEW2_MOUSE_EVENT_KIND.COREWEBVIEW2_MOUSE_EVENT_KIND_LEAVE, 0, 0, new POINT()).ThrowOnError();
     }
 
+    /// <summary>
+    /// Forwards a mouse wheel event to WebView2.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {
         CheckDisposed();
@@ -325,6 +468,13 @@ public partial class WebView : Border, IDisposable
         controller.Object.SendMouseInput(COREWEBVIEW2_MOUSE_EVENT_KIND.COREWEBVIEW2_MOUSE_EVENT_KIND_WHEEL, keys, (uint)e.Delta, pos).ThrowOnError();
     }
 
+    /// <summary>
+    /// Creates and populates a CoreWebView2 pointer info structure from the Wice pointer event.
+    /// </summary>
+    /// <param name="e">The pointer event arguments.</param>
+    /// <returns>A COM wrapper for CoreWebView2 pointer info, or null if environment is not ready or rect invalid.</returns>
+    /// <exception cref="ArgumentNullException">When <paramref name="e"/> is null.</exception>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected virtual IComObject<ICoreWebView2PointerInfo>? CreateInfo(PointerEventArgs e)
     {
         CheckDisposed();
@@ -367,49 +517,17 @@ public partial class WebView : Border, IDisposable
         return info;
     }
 
-    // this doesn't currently work...
-    //protected override void OnPointerUpdate(object? sender, PointerPositionEventArgs e)
-    //{
-    //    var controller = _controller;
-    //    if (controller == null || controller.IsDisposed)
-    //        return;
+    // Pointer-based forwarding variants are currently disabled due to known issues with CoreWebView2 pointer routing.
+    // See mouse-path above which is supported.
 
-    //    using var info = CreateInfo(e);
-    //    if (info == null)
-    //        return;
-
-    //    var pos = e.GetPosition(this);
-    //    controller.Object.SendPointerInput(COREWEBVIEW2_POINTER_EVENT_KIND.COREWEBVIEW2_POINTER_EVENT_KIND_UPDATE, info.Object).ThrowOnError();
-    //}
-
-    //protected override void OnPointerEnter(object? sender, PointerEnterEventArgs e)
-    //{
-    //    var controller = _controller;
-    //    if (controller == null || controller.IsDisposed)
-    //        return;
-
-    //    using var info = CreateInfo(e);
-    //    if (info == null)
-    //        return;
-
-    //    var pos = e.GetPosition(this);
-    //    controller.Object.SendPointerInput(COREWEBVIEW2_POINTER_EVENT_KIND.COREWEBVIEW2_POINTER_EVENT_KIND_ENTER, info.Object).ThrowOnError();
-    //}
-
-    //protected override void OnPointerLeave(object? sender, PointerLeaveEventArgs e)
-    //{
-    //    var controller = _controller;
-    //    if (controller == null || controller.IsDisposed)
-    //        return;
-
-    //    using var info = CreateInfo(e);
-    //    if (info == null)
-    //        return;
-
-    //    var pos = e.GetPosition(this);
-    //    controller.Object.SendPointerInput(COREWEBVIEW2_POINTER_EVENT_KIND.COREWEBVIEW2_POINTER_EVENT_KIND_LEAVE, null!).ThrowOnError();
-    //}
-
+    /// <summary>
+    /// Updates the composition root and controller bounds during the render pass.
+    /// </summary>
+    /// <remarks>
+    /// - Ensures RootVisualTarget remains bound even if composition visuals are recreated.
+    /// - Updates controller bounds to the current absolute render rect (when valid).
+    /// </remarks>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void Render()
     {
         CheckDisposed();
@@ -444,6 +562,11 @@ public partial class WebView : Border, IDisposable
         }
     }
 
+    /// <summary>
+    /// Navigates the WebView2 to <see cref="SourceString"/> when set, then to <see cref="SourceUri"/>,
+    /// or to "about:blank" if neither is provided.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected virtual async Task Navigate()
     {
         CheckDisposed();
@@ -471,6 +594,14 @@ public partial class WebView : Border, IDisposable
         }
     }
 
+    /// <summary>
+    /// Ensures the WebView2 environment is initialized (shared or per-instance).
+    /// </summary>
+    /// <returns>The environment, or null if initialization failed.</returns>
+    /// <remarks>
+    /// On initialization failure, a <see cref="TextBox"/> is injected as a child showing the error message when no child exists.
+    /// </remarks>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     public virtual IComObject<ICoreWebView2Environment3>? EnsureWebView2EnvironmentLoaded()
     {
         CheckDisposed();
@@ -516,6 +647,9 @@ public partial class WebView : Border, IDisposable
         return _webViewInfo.Environment;
     }
 
+    /// <summary>
+    /// Starts first navigation (if any source is already provided) after attachment to parent.
+    /// </summary>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         base.OnAttachedToParent(sender, e);
@@ -525,12 +659,21 @@ public partial class WebView : Border, IDisposable
         }
     }
 
+    /// <summary>
+    /// Ensures WebView2 is ready then navigates to the current source.
+    /// </summary>
     private async Task NavigateFirstTime()
     {
         await EnsureWebView2Loaded();
         await Navigate();
     }
 
+    /// <summary>
+    /// Ensures the WebView2 controller and WebView are created and connected to composition.
+    /// Subsequent callers while creation is in-flight receive the same task instance.
+    /// </summary>
+    /// <returns>The created WebView2 instance, or null on failure.</returns>
+    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     public virtual Task<IComObject<ICoreWebView2>?> EnsureWebView2Loaded()
     {
         CheckDisposed();
@@ -629,16 +772,50 @@ public partial class WebView : Border, IDisposable
         return _loadingWebView2;
     }
 
+    /// <summary>
+    /// Raises <see cref="WebViewControllerSetup"/> with the freshly created composition controller.
+    /// </summary>
     protected virtual void OnWebViewControllerSetup(object? sender, ICoreWebView2CompositionController controller) => WebViewControllerSetup?.Invoke(sender, new ValueEventArgs<ICoreWebView2CompositionController>(controller));
+
+    /// <summary>
+    /// Raises <see cref="WebViewSetup"/> with the freshly created WebView2.
+    /// </summary>
     protected virtual void OnWebViewSetup(object? sender, ICoreWebView2 webView) => WebViewSetup?.Invoke(this, new ValueEventArgs<ICoreWebView2>(webView));
+
+    /// <summary>
+    /// Raises <see cref="NavigationCompleted"/>.
+    /// </summary>
     protected virtual void OnNavigationCompleted(object? sender, ICoreWebView2NavigationCompletedEventArgs args) => NavigationCompleted?.Invoke(this, new ValueEventArgs<ICoreWebView2NavigationCompletedEventArgs>(args));
+
+    /// <summary>
+    /// Raises <see cref="FrameNavigationCompleted"/>.
+    /// </summary>
     protected virtual void OnFrameNavigationCompleted(object? sender, ICoreWebView2NavigationCompletedEventArgs args) => FrameNavigationCompleted?.Invoke(this, new ValueEventArgs<ICoreWebView2NavigationCompletedEventArgs>(args));
+
+    /// <summary>
+    /// Raises <see cref="DocumentTitleChanged"/>.
+    /// </summary>
     protected virtual void OnDocumentTitleChanged(object? sender, string? title) => DocumentTitleChanged?.Invoke(this, new ValueEventArgs<string?>(title));
+
+    /// <summary>
+    /// Raises <see cref="NewWindowRequested"/>.
+    /// </summary>
     protected virtual void OnNewWindowRequested(object? sender, ICoreWebView2NewWindowRequestedEventArgs args) => NewWindowRequested?.Invoke(this, new ValueEventArgs<ICoreWebView2NewWindowRequestedEventArgs>(args));
 
+    /// <summary>
+    /// Throws <see cref="ObjectDisposedException"/> if this instance has been disposed.
+    /// </summary>
     protected void CheckDisposed() => ObjectDisposedException.ThrowIf(_disposedValue, "WebView has been disposed and cannot be used anymore.");
 
+    /// <summary>
+    /// Disposes this instance, releasing WebView2 and controller resources and managing shared environment lifetime.
+    /// </summary>
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
+
+    /// <summary>
+    /// Core dispose pattern implementation.
+    /// </summary>
+    /// <param name="disposing">True if called from <see cref="Dispose()"/>; false if from finalizer.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
@@ -702,24 +879,83 @@ public partial class WebView : Border, IDisposable
         }
     }
 
+    /// <summary>
+    /// Holds environment-related state for WebView2 including initialization results and shared lifetime tracking.
+    /// </summary>
     private sealed partial class WebViewInfo : IDisposable
     {
-        // shared environment
+        /// <summary>
+        /// Shared environment instance holder.
+        /// </summary>
         public static WebViewInfo Shared { get; } = new() { IsShared = true };
+
+        /// <summary>
+        /// Number of <see cref="WebView"/> instances referencing the shared environment.
+        /// </summary>
         public static int SharedCount;
 
+        /// <summary>
+        /// True once <see cref="EnsureEnvironment"/> has successfully run (regardless of environment creation success).
+        /// </summary>
         public bool Initialized;
+
+        /// <summary>
+        /// The created environment (v3) when successful.
+        /// </summary>
         public ComObject<ICoreWebView2Environment3>? Environment;
+
+        /// <summary>
+        /// Result of WebView2 loader initialization (Initialize call).
+        /// </summary>
         public HRESULT? WebViewInitializationResult;
+
+        /// <summary>
+        /// Result of environment creation API invocation.
+        /// </summary>
         public HRESULT? WebViewEnvironmentInitializationResult;
+
+        /// <summary>
+        /// Reported WebView2 runtime version string when available.
+        /// </summary>
         public string? WebViewVersion;
+
+        /// <summary>
+        /// Descriptive message when initialization or environment creation fails.
+        /// </summary>
         public string? ErrorMessage;
 
+        /// <summary>
+        /// Gets a value indicating whether this info represents a shared environment holder.
+        /// </summary>
         public bool IsShared { get; private set; }
+
+        /// <summary>
+        /// The browser executable folder used for environment creation, if any.
+        /// </summary>
         public string? BrowserExecutableFolder { get; private set; }
+
+        /// <summary>
+        /// The user data folder used for environment creation, if any.
+        /// </summary>
         public string? UserDataFolder { get; private set; }
+
+        /// <summary>
+        /// The environment options used for environment creation, if any.
+        /// </summary>
         public ICoreWebView2EnvironmentOptions? Options { get; private set; }
 
+        /// <summary>
+        /// Initializes the WebView2 loader and creates an environment (v3) with the provided parameters.
+        /// Safe to call multiple times; no-op after first call.
+        /// </summary>
+        /// <param name="browserExecutableFolder">Optional browser executable folder.</param>
+        /// <param name="userDataFolder">Optional user data folder.</param>
+        /// <param name="options">Optional environment options.</param>
+        /// <remarks>
+        /// - Populates <see cref="WebViewInitializationResult"/>, <see cref="WebViewEnvironmentInitializationResult"/>,
+        ///   <see cref="WebViewVersion"/>, and <see cref="ErrorMessage"/> accordingly.
+        /// - When the thread model is not STA, RPC_E_CHANGED_MODE is reported; guidance is appended to <see cref="ErrorMessage"/>.
+        /// </remarks>
         public void EnsureEnvironment(string? browserExecutableFolder, string? userDataFolder, ICoreWebView2EnvironmentOptions? options)
         {
             if (Initialized)
@@ -768,6 +1004,9 @@ public partial class WebView : Border, IDisposable
             Options = options;
         }
 
+        /// <summary>
+        /// Disposes the created environment (when present) and resets state.
+        /// </summary>
         public void Dispose()
         {
             Environment?.Dispose();
@@ -778,6 +1017,12 @@ public partial class WebView : Border, IDisposable
             Initialized = false;
         }
 
+        /// <summary>
+        /// Throws if attempting to mutate environment-affecting properties after initialization.
+        /// </summary>
+        /// <param name="info">The current info instance.</param>
+        /// <param name="methodName">The caller name (auto-supplied).</param>
+        /// <exception cref="InvalidOperationException">When <paramref name="info"/> is initialized.</exception>
         public static void ThrowIfInitialized(WebViewInfo? info, [CallerMemberName] string? methodName = null)
         {
             if (info != null && info.Initialized)

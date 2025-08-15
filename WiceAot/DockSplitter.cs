@@ -1,29 +1,96 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// A draggable splitter used within a <see cref="Dock"/> to resize two adjacent docked children.
+/// </summary>
+/// <remarks>
+/// Behavior:
+/// - When attached, the splitter infers its <see cref="DockType"/> from its position among siblings and sets
+///   <see cref="Orientation"/> accordingly (a Left/Right dock yields a vertical splitter that resizes widths,
+///   a Top/Bottom dock yields a horizontal splitter that resizes heights).
+/// - Dragging adjusts the sizes of the previous and next docked visuals while honoring their min/max constraints.
+/// - If the dock panel uses LastChildFill, the splitter avoids directly setting the size of a last child.
+/// Input:
+/// - Mouse left button starts drag (<see cref="Visual.DragMove(Wice.MouseButtonEventArgs)"/>).
+/// - Releasing the left button commits the resize (<see cref="Commit"/>).
+/// - Pressing Escape cancels and restores original sizes (<see cref="Cancel"/>).
+/// </remarks>
 public partial class DockSplitter : Visual
 {
+    /// <summary>
+    /// Dynamic property storing the splitter thickness (in DIPs). Changing this requests a new measure pass.
+    /// Default value is 5.
+    /// </summary>
     public static VisualProperty SizeProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(Size), VisualPropertyInvalidateModes.Measure, 5f);
 
+    /// <summary>
+    /// Raised when a drag operation is committed (typically on left mouse button release).
+    /// </summary>
     public event EventHandler? Commit;
+
+    /// <summary>
+    /// Raised when a drag operation is canceled (e.g., by pressing Escape).
+    /// </summary>
     public event EventHandler? Cancel;
 
+    /// <summary>
+    /// Gets the parent dock hosting this splitter, if any.
+    /// </summary>
     private Dock? ParentDock => Parent as Dock;
 
+    /// <summary>
+    /// Gets the resolved docking side for this splitter relative to its siblings.
+    /// Determined when the splitter is attached to its parent.
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual DockType DockType { get; protected set; }
 
+    /// <summary>
+    /// Gets the resize orientation controlled by this splitter:
+    /// - <see cref="Orientation.Horizontal"/> means it resizes widths (vertical splitter bar).
+    /// - <see cref="Orientation.Vertical"/> means it resizes heights (horizontal splitter bar).
+    /// Determined when attached to the parent dock.
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual Orientation Orientation { get; protected set; }
 
+    /// <summary>
+    /// Gets or sets an extra tolerance (in DIPs) applied around the visual bounds for hit testing to make the splitter easier to grab.
+    /// If 0, the default bounds are used.
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual float HitTestTolerance { get; set; }
 
+    /// <summary>
+    /// Gets or sets the splitter thickness (in DIPs).
+    /// Applied to <see cref="Visual.Width"/> for horizontal orientation (vertical bar), or to
+    /// <see cref="Visual.Height"/> for vertical orientation (horizontal bar). The value is clamped to at least 1 DIP.
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual float Size { get => (float)GetPropertyValue(SizeProperty)!; set => SetPropertyValue(SizeProperty, value); }
 
+    /// <summary>
+    /// Creates the drag state storing initial sizes and neighbor visuals.
+    /// </summary>
+    /// <param name="e">Mouse button event that initiated the drag.</param>
+    /// <returns>A <see cref="SplitDragState"/> bound to this splitter.</returns>
     protected override DragState CreateDragState(MouseButtonEventArgs e) => new SplitDragState(this, e);
+
+    /// <summary>
+    /// Invokes the <see cref="Commit"/> event.
+    /// </summary>
     protected virtual void OnCommit(object sender, EventArgs e) => Commit?.Invoke(sender, e);
+
+    /// <summary>
+    /// Invokes the <see cref="Cancel"/> event.
+    /// </summary>
     protected virtual void OnCancel(object sender, EventArgs e) => Cancel?.Invoke(sender, e);
+
+    /// <summary>
+    /// Called when the visual is attached to a parent. Determines <see cref="DockType"/>, <see cref="Orientation"/>,
+    /// updates the cursor, sets the splitter thickness on <see cref="Visual.Width"/> or <see cref="Visual.Height"/>,
+    /// and assigns the dock type on this visual.
+    /// </summary>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         var parent = Parent;
@@ -45,6 +112,11 @@ public partial class DockSplitter : Visual
         base.OnAttachedToParent(sender, e);
     }
 
+    /// <summary>
+    /// Returns the area considered for hit testing. Inflates the default bounds by <see cref="HitTestTolerance"/> when set.
+    /// </summary>
+    /// <param name="defaultBounds">The base hit-test rectangle computed by the framework.</param>
+    /// <returns>The possibly inflated rectangle used for hit testing.</returns>
     protected override D2D_RECT_F GetHitTestBounds(D2D_RECT_F defaultBounds)
     {
         var bounds = base.GetHitTestBounds(defaultBounds);
@@ -58,12 +130,21 @@ public partial class DockSplitter : Visual
         return bounds;
     }
 
+    /// <summary>
+    /// Drag callback invoked during a mouse move with capture.
+    /// </summary>
     protected override void OnMouseDrag(object? sender, DragEventArgs e)
     {
         OnMouseDrag(e);
         base.OnMouseDrag(sender, e);
     }
 
+    /// <summary>
+    /// Performs the resize logic for the dock neighbors during a drag operation.
+    /// Honors min/max constraints of both sides and avoids directly modifying the size
+    /// of a last child when <see cref="Dock.LastChildFill"/> is active.
+    /// </summary>
+    /// <param name="e">Drag event containing delta and state.</param>
     protected virtual void OnMouseDrag(DragEventArgs e)
     {
         var state = (SplitDragState)e.State;
@@ -155,6 +236,9 @@ public partial class DockSplitter : Visual
         }
     }
 
+    /// <summary>
+    /// Starts a drag move when the left mouse button is pressed.
+    /// </summary>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         if (e.Button == MouseButton.Left)
@@ -164,6 +248,9 @@ public partial class DockSplitter : Visual
         base.OnMouseButtonDown(sender, e);
     }
 
+    /// <summary>
+    /// Commits the current drag operation when the left mouse button is released.
+    /// </summary>
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
         if (e.Button == MouseButton.Left)
@@ -173,6 +260,11 @@ public partial class DockSplitter : Visual
         base.OnMouseButtonUp(sender, e);
     }
 
+    /// <summary>
+    /// Cancels the current drag operation, restoring the original sizes of the adjacent docked visuals,
+    /// and raises <see cref="Cancel"/>.
+    /// </summary>
+    /// <param name="e">Event context (key/mouse).</param>
     protected virtual void CancelDrag(EventArgs e)
     {
         if (CancelDragMove(e) is SplitDragState state)
@@ -204,6 +296,9 @@ public partial class DockSplitter : Visual
         }
     }
 
+    /// <summary>
+    /// Handles Escape to cancel the drag operation.
+    /// </summary>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == VIRTUAL_KEY.VK_ESCAPE)
@@ -213,11 +308,26 @@ public partial class DockSplitter : Visual
         base.OnKeyDown(sender, e);
     }
 
+    /// <summary>
+    /// Gets the previous sibling docked on the appropriate side relative to this splitter.
+    /// </summary>
     protected Visual? GetPrevVisual() => ParentDock?.GetAt(this, Orientation == Orientation.Horizontal ? DockType.Left : DockType.Top);
+
+    /// <summary>
+    /// Gets the next sibling docked on the appropriate side relative to this splitter.
+    /// </summary>
     protected Visual? GetNextVisual() => ParentDock?.GetAt(this, Orientation == Orientation.Horizontal ? DockType.Right : DockType.Bottom);
 
+    /// <summary>
+    /// Drag state capturing the neighbors and their initial render sizes for a splitter drag operation.
+    /// </summary>
     public class SplitDragState : DragState
     {
+        /// <summary>
+        /// Initializes a new drag state for a <see cref="DockSplitter"/>, capturing neighbors and their sizes.
+        /// </summary>
+        /// <param name="visual">The splitter being dragged.</param>
+        /// <param name="e">The initiating mouse event.</param>
         public SplitDragState(DockSplitter visual, MouseButtonEventArgs e)
             : base(visual, e)
         {
@@ -252,11 +362,38 @@ public partial class DockSplitter : Visual
             }
         }
 
+        /// <summary>
+        /// Gets the previous visual's render size along the controlled axis at drag start
+        /// (width for horizontal orientation, height for vertical orientation).
+        /// </summary>
         public virtual float PreviousRenderSize { get; protected set; }
+
+        /// <summary>
+        /// Gets the next visual's render size along the controlled axis at drag start
+        /// (width for horizontal orientation, height for vertical orientation).
+        /// </summary>
         public virtual float NextRenderSize { get; protected set; }
+
+        /// <summary>
+        /// Gets the previous sibling visual relative to the splitter.
+        /// </summary>
         public virtual Visual? Prev { get; protected set; }
+
+        /// <summary>
+        /// Gets the next sibling visual relative to the splitter.
+        /// </summary>
         public virtual Visual? Next { get; protected set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the next sibling is the dock's last child while <see cref="Dock.LastChildFill"/> is active.
+        /// When true, the next visual's size is not set directly by the drag logic.
+        /// </summary>
         public virtual bool NextIsLastChild { get; protected set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the previous sibling is the dock's last child while <see cref="Dock.LastChildFill"/> is active.
+        /// When true, the previous visual's size is not set directly by the drag logic.
+        /// </summary>
         public virtual bool PrevIsLastChild { get; protected set; }
     }
 }

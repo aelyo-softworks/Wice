@@ -1,5 +1,21 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// A scrollable container that hosts a single child inside a <see cref="Viewer"/> and manages
+/// vertical and horizontal scrolling via embedded <see cref="ScrollBar"/>s.
+/// </summary>
+/// <remarks>
+/// Behavior:
+/// - Supports two modes (<see cref="ScrollViewerMode"/>):
+///   - <see cref="ScrollViewerMode.Dock"/>: scrollbars are docked, affecting layout.
+///   - <see cref="ScrollViewerMode.Overlay"/>: scrollbars are overlaid using <see cref="Canvas"/> behavior.
+/// - Visibility of scrollbars is controlled by <see cref="VerticalScrollBarVisibility"/> and
+///   <see cref="HorizontalScrollBarVisibility"/>; when set to Auto, visibility tracks content vs viewport size.
+/// - Scrolling is applied by manipulating <see cref="Viewer.ChildOffsetTop"/> and <see cref="Viewer.ChildOffsetLeft"/>
+///   relative to the arranged child rectangle.
+/// - Mouse wheel, scrollbar buttons, and thumb dragging update the <see cref="VerticalOffset"/> and
+///   <see cref="HorizontalOffset"/> properties which are clamped to their respective max offsets.
+/// </remarks>
 public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDisposable
 {
     // values from https://github.com/wine-mirror/wine/blob/master/dlls/user32/scroll.c
@@ -7,12 +23,45 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
     private const int _repeatPeriod = 50;
     private const int _repeatDueTime = 200;
 
+    /// <summary>
+    /// Dependency property controlling the vertical scrollbar visibility policy.
+    /// Default is <see cref="ScrollBarVisibility.Auto"/>.
+    /// </summary>
     public static VisualProperty VerticalScrollBarVisibilityProperty { get; } = VisualProperty.Add(typeof(ScrollViewer), nameof(VerticalScrollBarVisibility), VisualPropertyInvalidateModes.Measure, ScrollBarVisibility.Auto);
+
+    /// <summary>
+    /// Dependency property controlling the horizontal scrollbar visibility policy.
+    /// Default is <see cref="ScrollBarVisibility.Disabled"/>.
+    /// </summary>
     public static VisualProperty HorizontalScrollBarVisibilityProperty { get; } = VisualProperty.Add(typeof(ScrollViewer), nameof(HorizontalScrollBarVisibility), VisualPropertyInvalidateModes.Measure, ScrollBarVisibility.Disabled); // note it's not auto
+
+    /// <summary>
+    /// Dependency property selecting the scrolling layout mode.
+    /// </summary>
     public static VisualProperty ScrollModeProperty { get; } = VisualProperty.Add(typeof(ScrollViewer), nameof(ScrollMode), VisualPropertyInvalidateModes.Arrange, ScrollViewerMode.Dock);
+
+    /// <summary>
+    /// Dependency property storing the current vertical scroll offset (in DIPs).
+    /// Value is clamped to [0, <see cref="VerticalMaxOffset"/>].
+    /// </summary>
     public static VisualProperty VerticalOffsetProperty { get; } = VisualProperty.Add(typeof(ScrollViewer), nameof(VerticalOffset), VisualPropertyInvalidateModes.Arrange, 0f, ConvertVerticalOffset);
+
+    /// <summary>
+    /// Dependency property storing the current horizontal scroll offset (in DIPs).
+    /// Value is clamped to [0, <see cref="HorizontalMaxOffset"/>].
+    /// </summary>
     public static VisualProperty HorizontalOffsetProperty { get; } = VisualProperty.Add(typeof(ScrollViewer), nameof(HorizontalOffset), VisualPropertyInvalidateModes.Arrange, 0f, ConvertHorizontalOffset);
+
+    /// <summary>
+    /// Dependency property defining the unit used by line up/down (vertical) and by wheel scrolling.
+    /// Default is 1 DIP.
+    /// </summary>
     public static VisualProperty VerticalLineSizeProperty { get; } = VisualProperty.Add(typeof(ScrollViewer), nameof(VerticalLineSize), VisualPropertyInvalidateModes.Arrange, 1f);
+
+    /// <summary>
+    /// Dependency property defining the unit used by line left/right (horizontal).
+    /// Default is 1 DIP.
+    /// </summary>
     public static VisualProperty HorizontalLineSizeProperty { get; } = VisualProperty.Add(typeof(ScrollViewer), nameof(HorizontalLineSize), VisualPropertyInvalidateModes.Arrange, 1f);
 
     private bool _isVerticalScrollBarVisible;
@@ -22,6 +71,15 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
     private float _horizontalOffsetStart;
     private bool _disposedValue;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ScrollViewer"/> class.
+    /// </summary>
+    /// <remarks>
+    /// Creates vertical and horizontal scrollbars, wires their events (small/large increments and thumb drag),
+    /// and creates the inner <see cref="Viewer"/> that hosts the single child. The viewer is added last to ensure
+    /// scrollbars render above it.
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">Thrown when a scrollbar or the viewer cannot be created.</exception>
     public ScrollViewer()
     {
         VerticalScrollBar = CreateVerticalScrollBar();
@@ -75,24 +133,49 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         Children.Add(Viewer);
     }
 
+    /// <summary>
+    /// Gets or sets the single content <see cref="Visual"/> hosted by the inner <see cref="Viewer"/>.
+    /// </summary>
     [Browsable(false)]
     public Visual? Child { get => Viewer.Child; set => Viewer.Child = value; }
 
+    /// <summary>
+    /// Gets the inner <see cref="Viewer"/> responsible for measuring/arranging the child,
+    /// and applying <see cref="ChildOffsetLeft"/>/<see cref="ChildOffsetTop"/> when scrolled.
+    /// </summary>
     [Browsable(false)]
     public Viewer Viewer { get; }
 
+    /// <summary>
+    /// Gets the horizontal scrollbar instance managed by this viewer.
+    /// </summary>
     [Browsable(false)]
     public ScrollBar HorizontalScrollBar { get; }
 
+    /// <summary>
+    /// Gets the vertical scrollbar instance managed by this viewer.
+    /// </summary>
     [Browsable(false)]
     public ScrollBar VerticalScrollBar { get; }
 
+    /// <summary>
+    /// Gets the current maximum vertical scroll offset in DIPs.
+    /// Computed as <c>childHeight - viewportHeight</c>; 0 when content fits.
+    /// </summary>
     [Category(CategoryLayout)]
     public float VerticalMaxOffset { get; private set; }
 
+    /// <summary>
+    /// Gets the current maximum horizontal scroll offset in DIPs.
+    /// Computed as <c>childWidth - viewportWidth</c>; 0 when content fits.
+    /// </summary>
     [Category(CategoryLayout)]
     public float HorizontalMaxOffset { get; private set; }
 
+    /// <summary>
+    /// Gets the ratio used to translate horizontal thumb movement to content offset.
+    /// Equals <c>childWidth / viewportWidth</c>; returns 1 when unavailable or zero-sized.
+    /// </summary>
     [Category(CategoryLayout)]
     public float HorizontalRatio
     {
@@ -111,6 +194,10 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         }
     }
 
+    /// <summary>
+    /// Gets the ratio used to translate vertical thumb movement to content offset.
+    /// Equals <c>childHeight / viewportHeight</c>; returns 1 when unavailable or zero-sized.
+    /// </summary>
     [Category(CategoryLayout)]
     public float VerticalRatio
     {
@@ -129,6 +216,10 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the vertical scrollbar is currently visible
+    /// (after applying the visibility policy and content/viewport sizes).
+    /// </summary>
     [Category(CategoryLayout)]
     public bool IsVerticalScrollBarVisible
     {
@@ -143,6 +234,10 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the horizontal scrollbar is currently visible
+    /// (after applying the visibility policy and content/viewport sizes).
+    /// </summary>
     [Category(CategoryLayout)]
     public bool IsHorizontalScrollBarVisible
     {
@@ -157,29 +252,68 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         }
     }
 
+    /// <summary>
+    /// Gets or sets the vertical scrollbar visibility policy.
+    /// When set to Disabled, the viewer constrains height and vertical scrolling is suppressed.
+    /// </summary>
     [Category(CategoryBehavior)]
     public ScrollBarVisibility VerticalScrollBarVisibility { get => (ScrollBarVisibility)GetPropertyValue(VerticalScrollBarVisibilityProperty)!; set => SetPropertyValue(VerticalScrollBarVisibilityProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the horizontal scrollbar visibility policy.
+    /// When set to Disabled, the viewer constrains width and horizontal scrolling is suppressed.
+    /// </summary>
     [Category(CategoryBehavior)]
     public ScrollBarVisibility HorizontalScrollBarVisibility { get => (ScrollBarVisibility)GetPropertyValue(HorizontalScrollBarVisibilityProperty)!; set => SetPropertyValue(HorizontalScrollBarVisibilityProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the composition mode used to arrange scrollbars relative to the content.
+    /// </summary>
     [Category(CategoryBehavior)]
     public ScrollViewerMode ScrollMode { get => (ScrollViewerMode)GetPropertyValue(ScrollModeProperty)!; set => SetPropertyValue(ScrollModeProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the current vertical scroll offset (DIPs). Clamped to [0, <see cref="VerticalMaxOffset"/>].
+    /// Assigning updates <see cref="Viewer.ChildOffsetTop"/> when the vertical scrollbar is visible.
+    /// </summary>
     [Category(CategoryLayout)]
     public float VerticalOffset { get => (float)GetPropertyValue(VerticalOffsetProperty)!; set => SetPropertyValue(VerticalOffsetProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the current horizontal scroll offset (DIPs). Clamped to [0, <see cref="HorizontalMaxOffset"/>].
+    /// Assigning updates <see cref="Viewer.ChildOffsetLeft"/> when the horizontal scrollbar is visible.
+    /// </summary>
     [Category(CategoryLayout)]
     public float HorizontalOffset { get => (float)GetPropertyValue(HorizontalOffsetProperty)!; set => SetPropertyValue(HorizontalOffsetProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the unit used by vertical line scrolling (buttons/wheel).
+    /// </summary>
     [Category(CategoryLayout)]
     public float VerticalLineSize { get => (float)GetPropertyValue(VerticalLineSizeProperty)!; set => SetPropertyValue(VerticalLineSizeProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the unit used by horizontal line scrolling (buttons/wheel with Control).
+    /// </summary>
     [Category(CategoryLayout)]
     public float HorizontalLineSize { get => (float)GetPropertyValue(HorizontalLineSizeProperty)!; set => SetPropertyValue(HorizontalLineSizeProperty, value); }
 
+    /// <summary>
+    /// Creates the vertical scrollbar instance. Override to provide a customized control.
+    /// </summary>
+    /// <returns>A new <see cref="ScrollBar"/> configured for vertical orientation.</returns>
     protected virtual ScrollBar CreateVerticalScrollBar() => new VerticalScrollBar();
+
+    /// <summary>
+    /// Creates the horizontal scrollbar instance. Override to provide a customized control.
+    /// </summary>
+    /// <returns>A new <see cref="ScrollBar"/> configured for horizontal orientation.</returns>
     protected virtual ScrollBar CreateHorizontalScrollBar() => new HorizontalScrollBar();
+
+    /// <summary>
+    /// Creates the inner <see cref="Viewer"/> that hosts the single child visual.
+    /// Override to provide a customized viewer.
+    /// </summary>
     protected virtual Viewer CreateViewer() => new();
 
     private static object? ConvertVerticalOffset(BaseObject obj, object? value)
@@ -220,6 +354,7 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         return f;
     }
 
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => ScrollMode switch
     {
         ScrollViewerMode.Overlay => Canvas.MeasureCore(this, constraint, DimensionOptions.WidthAndHeight),
@@ -227,6 +362,11 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         _ => throw new NotSupportedException(),
     };
 
+    /// <summary>
+    /// Arranges children depending on <see cref="ScrollMode"/>. When arranging, invalidations triggered by
+    /// internal children are temporarily suspended to avoid oscillations.
+    /// </summary>
+    /// <param name="finalRect">The final rectangle allocated by the parent.</param>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         var window = Window;
@@ -253,18 +393,32 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         });
     }
 
+    /// <summary>
+    /// Updates <see cref="VerticalOffset"/> while dragging the vertical thumb by translating
+    /// delta movement to content offset using <see cref="VerticalRatio"/>.
+    /// </summary>
     private void OnVerticalScrollBarThumbDragDelta(object? sender, DragEventArgs e)
     {
         var ratio = VerticalRatio;
         VerticalOffset = _verticalOffsetStart + ratio * e.State.DeltaY;
     }
 
+    /// <summary>
+    /// Updates <see cref="HorizontalOffset"/> while dragging the horizontal thumb by translating
+    /// delta movement to content offset using <see cref="HorizontalRatio"/>.
+    /// </summary>
     private void OnHorizontalScrollBarThumbDragDelta(object? sender, DragEventArgs e)
     {
         var ratio = HorizontalRatio;
         HorizontalOffset = _horizontalOffsetStart + ratio * e.State.DeltaX;
     }
 
+    /// <summary>
+    /// Applies side effects when dependency properties change:
+    /// - When offsets change and the corresponding scrollbar is visible, updates <see cref="Viewer.ChildOffsetLeft"/>
+    ///   or <see cref="Viewer.ChildOffsetTop"/>.
+    /// - When visibility policies change, toggles viewer constraints in that dimension.
+    /// </summary>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         var ret = base.SetPropertyValue(property, value, options);
@@ -295,6 +449,10 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         return true;
     }
 
+    /// <summary>
+    /// Recomputes scrollbar visibility, sizes, and layout-dependent state after the viewer is arranged.
+    /// Updates <see cref="VerticalMaxOffset"/>, <see cref="HorizontalMaxOffset"/>, and clamps current offsets.
+    /// </summary>
     private void OnViewerArranged(object? sender, EventArgs e)
     {
         var child = Child;
@@ -481,16 +639,57 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         HorizontalScrollBar.UpdateCorner(this);
     }
 
+    /// <summary>
+    /// Handles the "small increase" click (line down) on the vertical scrollbar.
+    /// Performs the action once and, when triggered by mouse, starts a repeat timer.
+    /// </summary>
     protected virtual void OnVerticalSmallIncreaseClick(object? sender, EventArgs e) => DoAction(LineDown, e);
+
+    /// <summary>
+    /// Handles the "small decrease" click (line up) on the vertical scrollbar.
+    /// Performs the action once and, when triggered by mouse, starts a repeat timer.
+    /// </summary>
     protected virtual void OnVerticalSmallDecreaseClick(object? sender, EventArgs e) => DoAction(LineUp, e);
+
+    /// <summary>
+    /// Handles the "large increase" click (page down) on the vertical scrollbar.
+    /// Performs the action once and, when triggered by mouse, starts a repeat timer.
+    /// </summary>
     protected virtual void OnVerticalLargeIncreaseClick(object? sender, EventArgs e) => DoAction(PageDown, e);
+
+    /// <summary>
+    /// Handles the "large decrease" click (page up) on the vertical scrollbar.
+    /// Performs the action once and, when triggered by mouse, starts a repeat timer.
+    /// </summary>
     protected virtual void OnVerticalLargeDecreaseClick(object? sender, EventArgs e) => DoAction(PageUp, e);
 
+    /// <summary>
+    /// Handles the "small increase" click (line right) on the horizontal scrollbar.
+    /// Performs the action once and, when triggered by mouse, starts a repeat timer.
+    /// </summary>
     protected virtual void OnHorizontalSmallIncreaseClick(object? sender, EventArgs e) => DoAction(LineRight, e);
+
+    /// <summary>
+    /// Handles the "small decrease" click (line left) on the horizontal scrollbar.
+    /// Performs the action once and, when triggered by mouse, starts a repeat timer.
+    /// </summary>
     protected virtual void OnHorizontalSmallDecreaseClick(object? sender, EventArgs e) => DoAction(LineLeft, e);
+
+    /// <summary>
+    /// Handles the "large increase" click (page right) on the horizontal scrollbar.
+    /// Performs the action once and, when triggered by mouse, starts a repeat timer.
+    /// </summary>
     protected virtual void OnHorizontalLargeIncreaseClick(object? sender, EventArgs e) => DoAction(PageRight, e);
+
+    /// <summary>
+    /// Handles the "large decrease" click (page left) on the horizontal scrollbar.
+    /// Performs the action once and, when triggered by mouse, starts a repeat timer.
+    /// </summary>
     protected virtual void OnHorizontalLargeDecreaseClick(object? sender, EventArgs e) => DoAction(PageLeft, e);
 
+    /// <summary>
+    /// Releases mouse capture and stops the auto-repeat timer when the left mouse button is released.
+    /// </summary>
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
         if (e.Button == MouseButton.Left)
@@ -519,6 +718,14 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         }
     }
 
+    /// <summary>
+    /// Handles mouse wheel scrolling:
+    /// - With Shift: uses the page size (<see cref="VerticalScrollBar.Thumb"/> height) as unit.
+    /// - With Control: scrolls horizontally; otherwise scrolls vertically.
+    /// The direction is inverted to produce a natural scrolling experience.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The wheel event data.</param>
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {
         float offset;
@@ -546,16 +753,56 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
     }
 
     // https://docs.microsoft.com/en-us/windows/win32/controls/about-scroll-bars
+
+    /// <summary>
+    /// Scrolls down by <see cref="VerticalLineSize"/>.
+    /// </summary>
     public virtual void LineDown() => VerticalOffset += VerticalLineSize;
+
+    /// <summary>
+    /// Scrolls up by <see cref="VerticalLineSize"/>.
+    /// </summary>
     public virtual void LineUp() => VerticalOffset -= VerticalLineSize;
+
+    /// <summary>
+    /// Scrolls left by <see cref="HorizontalLineSize"/>.
+    /// </summary>
     public virtual void LineLeft() => HorizontalOffset -= HorizontalLineSize;
+
+    /// <summary>
+    /// Scrolls right by <see cref="HorizontalLineSize"/>.
+    /// </summary>
     public virtual void LineRight() => HorizontalOffset += HorizontalLineSize;
+
+    /// <summary>
+    /// Scrolls down by one page, using the current vertical thumb height as the page size.
+    /// </summary>
     public virtual void PageDown() => VerticalOffset += VerticalScrollBar.Thumb.ArrangedRect.Height;
+
+    /// <summary>
+    /// Scrolls up by one page, using the current vertical thumb height as the page size.
+    /// </summary>
     public virtual void PageUp() => VerticalOffset -= VerticalScrollBar.Thumb.ArrangedRect.Height;
+
+    /// <summary>
+    /// Scrolls left by one page, using the current horizontal thumb width as the page size.
+    /// </summary>
     public virtual void PageLeft() => HorizontalOffset -= HorizontalScrollBar.Thumb.ArrangedRect.Width;
+
+    /// <summary>
+    /// Scrolls right by one page, using the current horizontal thumb width as the page size.
+    /// </summary>
     public virtual void PageRight() => HorizontalOffset += HorizontalScrollBar.Thumb.ArrangedRect.Width;
 
+    /// <summary>
+    /// Disposes managed resources (auto-repeat timer). Safe to call multiple times.
+    /// </summary>
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
+
+    /// <summary>
+    /// Releases resources used by the <see cref="ScrollViewer"/>.
+    /// </summary>
+    /// <param name="disposing">True when called from <see cref="Dispose()"/>.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)

@@ -1,16 +1,49 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// Read-only text box optimized for large content.
+/// </summary>
+/// <remarks>
+/// - For small inputs (line count below <see cref="FallbackLineCountThreshold"/>), falls back to base <see cref="TextBox"/> behavior.
+/// - For large inputs (line count reaching <see cref="DeferredParsingLineCountThreshold"/>), continues parsing on a background thread.
+/// - Renders a windowed (viewport) subset of the text using a custom DirectWrite layout to reduce memory and layout cost.
+/// - Disables editing and focus by design.
+/// </remarks>
 public partial class FastTextBox : TextBox
 {
+    /// <summary>
+    /// Backing container handling text storage, parsing and metrics.
+    /// </summary>
     private TextContainer _container;
+
+    /// <summary>
+    /// Cached DirectWrite layout for the currently rendered viewport lines. Disposed and recreated on invalidation.
+    /// </summary>
     private IComObject<IDWriteTextLayout>? _layout;
+
+    /// <summary>
+    /// Zero-based index of the first line currently at the top of the viewport.
+    /// </summary>
     private int _currentLineNumber;
+
+    /// <summary>
+    /// The actual text span currently represented by <see cref="_layout"/> (covers the viewport lines).
+    /// </summary>
     private string? _renderedText;
 
-    // occurs on any thread
+    /// <summary>
+    /// Raised as lines are being parsed/loaded. Can be raised from a background thread.
+    /// </summary>
     public event EventHandler<LoadEventArgs>? Loading;
+
+    /// <summary>
+    /// Raised when parsing/loading completes (synchronously or asynchronously). Can be raised from a background thread.
+    /// </summary>
     public event EventHandler<LoadEventArgs>? Loaded;
 
+    /// <summary>
+    /// Creates a new <see cref="FastTextBox"/>. Editing and focus are disabled.
+    /// </summary>
     public FastTextBox()
         : base()
     {
@@ -19,28 +52,60 @@ public partial class FastTextBox : TextBox
         base.IsEditable = false;
     }
 
+    /// <summary>
+    /// Indicates that the composition transform is maxed when we are in fallback mode (base <see cref="TextBox"/> handles layout).
+    /// </summary>
     protected override bool TransformMaxed => HasFallback;
+
+    /// <summary>
+    /// Gets the text content currently used by the DirectWrite layout for rendering (viewport lines).
+    /// </summary>
     protected override string RenderedText => _renderedText ?? string.Empty;
+
+    /// <summary>
+    /// True when the control uses base <see cref="TextBox"/> logic (fallback mode). False when using the fast viewported renderer.
+    /// </summary>
     protected virtual bool HasFallback { get; set; } // true if we're using TextBox code
 
+    /// <summary>
+    /// Gets the number of parsed lines (0 when in fallback or not yet parsed).
+    /// </summary>
     [Category(CategoryLive)]
     public int LineCount => _container.Lines?.Length ?? 0;
 
+    /// <summary>
+    /// Gets whether the last loading/parsing operation was canceled by a listener of <see cref="Loading"/>.
+    /// </summary>
     [Category(CategoryLive)]
     public virtual bool LoadingWasCancelled { get; protected set; }
 
+    /// <summary>
+    /// True while deferred parsing continues on a background thread.
+    /// </summary>
     [Category(CategoryLive)]
     public bool IsLoading => _container.LoadingLines != null;
 
+    /// <summary>
+    /// Gets the 0-based index of the first fully visible line in the current viewport.
+    /// </summary>
     [Category(CategoryLive)]
     public int CurrentLineNumber => _currentLineNumber;
 
+    /// <summary>
+    /// Returns the estimated single-character width and line height used during parsing and rough layout.
+    /// </summary>
     [Category(CategoryLive)]
     public D2D_SIZE_F RenderMetrics => _container.ParsedMetrics;
 
+    /// <summary>
+    /// Returns the wrapping mode used while parsing the source text into lines.
+    /// </summary>
     [Category(CategoryLive)]
     public DWRITE_WORD_WRAPPING RenderWrapping => _container.ParsedWrapping;
 
+    /// <summary>
+    /// Gets the <see cref="Line"/> at <see cref="CurrentLineNumber"/> when available; otherwise null.
+    /// </summary>
     [Category(CategoryLive)]
     public Line? CurrentLine
     {
@@ -57,9 +122,15 @@ public partial class FastTextBox : TextBox
         }
     }
 
+    /// <summary>
+    /// Gets or sets the control text. Setting triggers parsing and measurement invalidation.
+    /// </summary>
     [Category(CategoryLayout)]
     public override string Text { get => _container.Text; set => SetText(value); }
 
+    /// <summary>
+    /// Always throws for <see cref="true"/>. This control is read-only by design.
+    /// </summary>
     [Category(CategoryBehavior)]
     public override bool IsEditable
     {
@@ -73,6 +144,9 @@ public partial class FastTextBox : TextBox
         }
     }
 
+    /// <summary>
+    /// Always throws for <see cref="true"/>. This control does not accept focus.
+    /// </summary>
     [Category(CategoryBehavior)]
     public override bool IsFocusable
     {
@@ -86,6 +160,9 @@ public partial class FastTextBox : TextBox
         }
     }
 
+    /// <summary>
+    /// Always throws for <see cref="true"/>. The control is always enabled internally.
+    /// </summary>
     [Category(CategoryBehavior)]
     public override bool IsEnabled
     {
@@ -99,12 +176,30 @@ public partial class FastTextBox : TextBox
         }
     }
 
+    /// <summary>
+    /// Line count threshold below which the control falls back to base <see cref="TextBox"/> rendering.
+    /// </summary>
+    /// <remarks>
+    /// Default is 5000 lines. Must be non-negative.
+    /// </remarks>
     [Category(CategoryBehavior)]
     public virtual int FallbackLineCountThreshold { get; set; } = 5000; // for less than 5000 lines, we fallback to base TextBox
 
+    /// <summary>
+    /// Line count threshold at which parsing is continued on a background thread.
+    /// </summary>
+    /// <remarks>
+    /// Default is 10000 lines. Must be greater than <see cref="FallbackLineCountThreshold"/>.
+    /// </remarks>
     [Category(CategoryBehavior)]
     public virtual int DeferredParsingLineCountThreshold { get; set; } = 10000; // for more than 10000 lines, we continue parsing the text in a background thread
 
+    /// <summary>
+    /// Gets the parsed <see cref="Line"/> at <paramref name="index"/>.
+    /// </summary>
+    /// <param name="index">Zero-based line index.</param>
+    /// <returns>The line descriptor.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">When lines are unavailable or <paramref name="index"/> is out of range.</exception>
     public virtual Line GetLine(int index)
     {
         if (_container.Lines == null || index < 0 || index >= _container.Lines.Length)
@@ -113,15 +208,26 @@ public partial class FastTextBox : TextBox
         return _container.Lines[index];
     }
 
+    /// <summary>
+    /// Raises <see cref="Loading"/>.
+    /// </summary>
     protected virtual void OnLoading(object sender, LoadEventArgs e) => Loading?.Invoke(this, e);
+
+    /// <summary>
+    /// Raises <see cref="Loaded"/>.
+    /// </summary>
     protected virtual void OnLoaded(object sender, LoadEventArgs e) => Loaded?.Invoke(this, e);
 
+    /// <summary>
+    /// Internal helper that raises <see cref="Loaded"/> then requests a re-measure.
+    /// </summary>
     private void OnLoaded(LoadEventArgs e)
     {
         OnLoaded(this, e);
         Invalidate(VisualPropertyInvalidateModes.Measure);
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
@@ -131,6 +237,10 @@ public partial class FastTextBox : TextBox
         }
     }
 
+    /// <summary>
+    /// Validates threshold properties for correctness.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">When thresholds are invalid.</exception>
     protected virtual void ValidateProperties()
     {
         if (FallbackLineCountThreshold < 0)
@@ -140,6 +250,11 @@ public partial class FastTextBox : TextBox
             throw new ArgumentOutOfRangeException(nameof(DeferredParsingLineCountThreshold));
     }
 
+    /// <summary>
+    /// Measures desired size using parsed lines and viewport metrics or base fallback.
+    /// </summary>
+    /// <param name="constraint">Measure constraint.</param>
+    /// <returns>Desired size.</returns>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         ValidateProperties();
@@ -150,6 +265,10 @@ public partial class FastTextBox : TextBox
         return size;
     }
 
+    /// <summary>
+    /// Updates the current top line based on the arranged rect and invalidates the cached layout when needed.
+    /// </summary>
+    /// <param name="finalRect">Final arranged rect.</param>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         if (!HasFallback)
@@ -166,6 +285,12 @@ public partial class FastTextBox : TextBox
         base.ArrangeCore(finalRect);
     }
 
+    /// <summary>
+    /// Ensures a valid layout exists (when using the fast path). Throws if missing and <paramref name="throwIfNull"/> is true.
+    /// </summary>
+    /// <param name="throwIfNull">True to throw when layout is null/invalid.</param>
+    /// <returns>The current layout or null.</returns>
+    /// <exception cref="WiceException">When layout is unavailable and <paramref name="throwIfNull"/> is true.</exception>
     protected override IComObject<IDWriteTextLayout>? CheckLayout(bool throwIfNull)
     {
         var layout = _layout;
@@ -175,7 +300,16 @@ public partial class FastTextBox : TextBox
         return layout;
     }
 
-    // here maxHeight is the height of the text extent, but we want the height of the text window
+    /// <summary>
+    /// Builds or retrieves a DirectWrite layout for the current viewport range.
+    /// </summary>
+    /// <param name="maxWidth">Max layout width.</param>
+    /// <param name="maxHeight">Max layout height (text extent); will be clamped to the visible window height.</param>
+    /// <returns>The layout for the current viewport, or base layout when in fallback.</returns>
+    /// <remarks>
+    /// This method progressively expands the range of lines from <see cref="_currentLineNumber"/> downward until the layout height fills the viewport
+    /// or the end of the text is reached, disposing intermediate layouts to minimize memory usage.
+    /// </remarks>
     protected override IComObject<IDWriteTextLayout>? GetLayout(float maxWidth, float maxHeight)
     {
         if (HasFallback)
@@ -214,6 +348,10 @@ public partial class FastTextBox : TextBox
         return _layout;
     }
 
+    /// <summary>
+    /// Replaces the current text, resets the parsing container, and invalidates measure.
+    /// </summary>
+    /// <param name="text">New text.</param>
     private void SetText(string text)
     {
         if (_container.Text == text)
@@ -223,8 +361,21 @@ public partial class FastTextBox : TextBox
         Invalidate(VisualPropertyInvalidateModes.Measure);
     }
 
+    /// <summary>
+    /// Internal text state and parsing engine.
+    /// </summary>
+    /// <remarks>
+    /// Responsibilities:
+    /// - Stores raw text and produces a <see cref="Line"/> array according to wrapping and constraints.
+    /// - Estimates character width/line height for fast splitting and size estimation.
+    /// - Supports deferred/background parsing and batches <see cref="FastTextBox.Loading"/> notifications.
+    /// - Thread-safe appends to the intermediate lines list using a private lock.
+    /// </remarks>
     private sealed class TextContainer(FastTextBox visual, string? text)
     {
+        /// <summary>
+        /// Sentinel char used when peeking beyond the end of the string.
+        /// </summary>
         public const char NotUnicode = '\uFFFF';
 
         private D2D_SIZE_F _parsedConstraint;
@@ -232,14 +383,39 @@ public partial class FastTextBox : TextBox
         private readonly Lock _lock = new();
         private bool _wasParsingDeffered;
 
+        /// <summary>
+        /// Owning <see cref="FastTextBox"/>.
+        /// </summary>
         public FastTextBox Visual = visual;
+
+        /// <summary>
+        /// Raw text content.
+        /// </summary>
         public string Text = text ?? string.Empty;
+
+        /// <summary>
+        /// Parsed lines. Null when in fallback mode or during initial parsing.
+        /// </summary>
         public Line[]? Lines;
+
+        /// <summary>
+        /// Non-null while background parsing is in progress.
+        /// </summary>
         public Task? LoadingLines;
+
+        /// <summary>
+        /// Estimated (charWidth, lineHeight) computed from a sample layout.
+        /// </summary>
         public D2D_SIZE_F ParsedMetrics;
+
+        /// <summary>
+        /// Wrapping mode used during parsing.
+        /// </summary>
         public DWRITE_WORD_WRAPPING ParsedWrapping;
 
-        // compute or estimate char width & line height
+        /// <summary>
+        /// Computes/estimates average character width and line height using a sample sentence and the current text format.
+        /// </summary>
         private D2D_SIZE_F ComputeMetrics()
         {
             const string sample = "The quick brown fox jumps over the lazy dog";
@@ -253,6 +429,18 @@ public partial class FastTextBox : TextBox
 #endif
         }
 
+        /// <summary>
+        /// Ensures lines are parsed for the given constraint and returns the estimated size.
+        /// </summary>
+        /// <param name="constraint">Measure constraint (width used for wrapping decisions).</param>
+        /// <param name="refresh">True to ignore the cached constraint and reparse.</param>
+        /// <returns>Estimated size for the full content (or 0 when in fallback mode).</returns>
+        /// <remarks>
+        /// - When <see cref="LoadingLines"/> is non-null, returns the last computed size (parsing continues in the background).
+        /// - Switches to fallback mode when the line count is below <see cref="FastTextBox.FallbackLineCountThreshold"/>.
+        /// - Starts background parsing once line count reaches <see cref="FastTextBox.DeferredParsingLineCountThreshold"/>.
+        /// - Raises <see cref="FastTextBox.Loading"/> periodically and <see cref="FastTextBox.Loaded"/> when complete.
+        /// </remarks>
         public D2D_SIZE_F EnsureLinesParsed(D2D_SIZE_F constraint, bool refresh = false)
         {
             if (LoadingLines != null)
@@ -447,8 +635,17 @@ public partial class FastTextBox : TextBox
             return _parsedSize;
         }
 
+        /// <summary>
+        /// Returns the raw text.
+        /// </summary>
         public override string ToString() => Text;
 
+        /// <summary>
+        /// Gets a contiguous text slice spanning from <paramref name="firstLineIndex"/> to <paramref name="lastLineIndex"/> inclusive.
+        /// </summary>
+        /// <param name="firstLineIndex">First line (0-based).</param>
+        /// <param name="lastLineIndex">Last line (0-based); if beyond the last line, returns to end of text.</param>
+        /// <returns>The substring covering those lines, or null when lines are not available.</returns>
         public string? GetText(int firstLineIndex, int lastLineIndex)
         {
             if (Lines == null)
@@ -470,11 +667,26 @@ public partial class FastTextBox : TextBox
         }
     }
 
+    /// <summary>
+    /// Represents a line in the parsed source text (offset and length).
+    /// </summary>
+    /// <param name="position">Zero-based absolute character index where the line starts.</param>
+    /// <param name="length">Number of characters in the line (excluding newline).</param>
     public readonly struct Line(int position, int length)
     {
+        /// <summary>
+        /// Gets the absolute character index where the line starts.
+        /// </summary>
         public int Position { get; } = position;
+
+        /// <summary>
+        /// Gets the character length of the line (excluding newline).
+        /// </summary>
         public int Length { get; } = length;
 
+        /// <summary>
+        /// Returns a diagnostic string containing position and length.
+        /// </summary>
         public override string ToString() => Position + " (" + Length + ")";
     }
 }

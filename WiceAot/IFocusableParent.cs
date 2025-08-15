@@ -1,11 +1,52 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// Contract for a visual that can delegate keyboard focus to a designated child
+/// and provide customization hints for how a focus cue (focus adorners/visual)
+/// should be rendered around it.
+/// </summary>
+/// <remarks>
+/// Implementations typically use <see cref="FocusableVisual"/> to redirect focus to a child
+/// that can actually receive input, while still letting the parent participate in focus
+/// management. <see cref="FocusVisualShapeType"/> and <see cref="FocusOffset"/> provide
+/// optional theming hints for rendering focus indicators.
+/// </remarks>
+/// <seealso cref="Visual"/>
 public interface IFocusableParent
 {
+    /// <summary>
+    /// Gets the visual that should receive focus when this parent is focused.
+    /// </summary>
+    /// <value>
+    /// A child <see cref="Visual"/> that can accept focus. Return <see langword="null"/> if the
+    /// implementer itself is focusable or if focus delegation is not applicable.
+    /// </value>
     Visual? FocusableVisual { get; }
+
 #if !NETFRAMEWORK
+    /// <summary>
+    /// Gets the CLR <see cref="Type"/> of a shape/visual used to render the focus cue.
+    /// </summary>
+    /// <remarks>
+    /// The specified type is expected to provide a public parameterless constructor so it can
+    /// be instantiated by the framework at runtime.
+    /// The <see cref="DynamicallyAccessedMembersAttribute"/> ensures the constructor is preserved
+    /// when trimming/AOT is enabled.
+    /// </remarks>
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
+    /// <value>
+    /// A <see cref="Type"/> describing the focus visual/shape to use; <see langword="null"/> to
+    /// fall back to the theme or framework default.
+    /// </value>
     Type? FocusVisualShapeType { get; }
+
+    /// <summary>
+    /// Gets an optional offset, in device-independent pixels (DIPs), applied when drawing the focus cue.
+    /// </summary>
+    /// <value>
+    /// A positive or negative offset in DIPs to expand or contract the focus outline relative to the
+    /// visual bounds; <see langword="null"/> to use the theme default.
+    /// </value>
     float? FocusOffset { get; }
 }

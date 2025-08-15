@@ -1,11 +1,34 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// Represents the Wice application host for a single UI thread.
+/// Manages the message loop, window lifetime, resource management, and fatal error handling.
+/// </summary>
+/// <remarks>
+/// - Exactly one <see cref="Application"/> can exist per managed thread; attempting to create a second instance on the same thread throws.
+/// - The instance associated with a thread can be retrieved via <see cref="Current"/> or <see cref="GetApplication(int)"/>.
+/// - Use <see cref="Run"/> to process messages until the application exits, or <see cref="RunMessageLoop(System.Func{MSG, bool})"/> for a custom loop.
+/// - Fatal errors are collected with <see cref="AddError(Exception, string?)"/> and can be shown via <see cref="ShowFatalError(HWND)"/>.
+/// </remarks>
 public partial class Application : IDisposable
 {
     private bool _disposedValue;
 
+    /// <summary>
+    /// Occurs when the application is exiting.
+    /// </summary>
+    /// <remarks>
+    /// Raised by <see cref="Exit"/> (before posting WM_QUIT) and during <see cref="Dispose()"/>.
+    /// Handlers execute on the application's main thread.
+    /// </remarks>
     public event EventHandler? ApplicationExit;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Application"/> class on the current thread.
+    /// </summary>
+    /// <exception cref="WiceException">
+    /// Thrown if applications can no longer be created ("0030") or if an application already exists on the current thread ("0006").
+    /// </exception>
     public Application()
     {
         var apps = _applications;
@@ -32,18 +55,62 @@ public partial class Application : IDisposable
     }
 
 #if NETFRAMEWORK
+    /// <summary>
+    /// Gets the dispatcher queue controller used to pump and dispatch work on this application's UI thread.
+    /// </summary>
     public IDispatcherQueueController DispatcherQueueController { get; }
 #else
+    /// <summary>
+    /// Gets the dispatcher queue controller used to pump and dispatch work on this application's UI thread.
+    /// </summary>
     public WindowsDispatcherQueueController DispatcherQueueController { get; }
 #endif
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the application should exit when all non-background windows are removed.
+    /// </summary>
+    /// <remarks>Default is <see langword="true"/>.</remarks>
     public bool ExitOnLastWindowRemoved { get; set; } = true;
+
+    /// <summary>
+    /// Gets the managed thread ID of the application's main thread (the thread on which it was created).
+    /// </summary>
     public int MainThreadId { get; }
+
+    /// <summary>
+    /// Gets the native thread ID of the application's main thread.
+    /// </summary>
     public uint ThreadId { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the current code is executing on the application's main thread.
+    /// </summary>
     public bool IsRunningAsMainThread => MainThreadId == Environment.CurrentManagedThreadId;
+
+    /// <summary>
+    /// Gets a value indicating whether the application has been disposed.
+    /// </summary>
     public bool IsDisposed => _disposedValue;
+
+    /// <summary>
+    /// Gets the resource manager associated with this application.
+    /// </summary>
     public ResourceManager ResourceManager { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether this application instance handles fatal errors (only on the first UI thread).
+    /// </summary>
+    /// <remarks>
+    /// When <see langword="true"/>, <see cref="Run"/> will display a dialog for accumulated fatal errors.
+    /// </remarks>
     public virtual bool HandleErrors => MainThreadId == 1; // we handle errors only on the first UI thread
 
+    /// <summary>
+    /// Gets the collection of windows owned by this application on its main thread.
+    /// </summary>
+    /// <remarks>
+    /// Includes both background and non-background windows created on <see cref="MainThreadId"/>.
+    /// </remarks>
     public IReadOnlyList<Window> Windows
     {
         get
@@ -55,6 +122,9 @@ public partial class Application : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the collection of background windows for this application on its main thread.
+    /// </summary>
     public IReadOnlyList<Window> BackgroundWindows
     {
         get
@@ -66,6 +136,9 @@ public partial class Application : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the collection of non-background windows for this application on its main thread.
+    /// </summary>
     public IReadOnlyList<Window> NonBackgroundWindows
     {
         get
@@ -77,9 +150,26 @@ public partial class Application : IDisposable
         }
     }
 
+    /// <summary>
+    /// Throws if the current call is not executing on the application's main thread.
+    /// </summary>
+    /// <exception cref="WiceException">Thrown when invoked from a non-main thread ("0008").</exception>
     public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0008: This method must be called on the render thread."); }
+
+    /// <inheritdoc/>
     public override string ToString() => MainThreadId + " (" + ThreadId + ")";
 
+    /// <summary>
+    /// Retrieves a message from the calling thread's message queue.
+    /// </summary>
+    /// <param name="msg">When this method returns, contains the message information.</param>
+    /// <param name="hWnd">A handle to the window whose messages are to be retrieved, or <see cref="HWND.Null"/> for any window.</param>
+    /// <param name="wMsgFilterMin">The integer value of the lowest message value to be retrieved.</param>
+    /// <param name="wMsgFilterMax">The integer value of the highest message value to be retrieved.</param>
+    /// <returns>
+    /// A <see cref="BOOL"/> where a value greater than 0 indicates success, 0 indicates WM_QUIT, and -1 indicates error.
+    /// Returns -1 and sets a synthetic <see cref="WM_HOSTQUIT"/> when <see cref="IsDisposed"/> is <see langword="true"/>.
+    /// </returns>
     protected virtual BOOL GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax)
     {
         if (IsDisposed)
@@ -91,6 +181,18 @@ public partial class Application : IDisposable
         return WiceCommons.GetMessageW(out msg, hWnd, wMsgFilterMin, wMsgFilterMax);
     }
 
+    /// <summary>
+    /// Handles a single message by translating and dispatching it.
+    /// </summary>
+    /// <param name="msg">The message to handle.</param>
+    /// <returns>
+    /// <see langword="true"/> to continue processing the message loop; <see langword="false"/> to break the loop.
+    /// Returns <see langword="false"/> for <see cref="WM_HOSTQUIT"/> or when disposed.
+    /// </returns>
+    /// <remarks>
+    /// On first initialization (MSG.hwnd == 0) in STA, registers all windows for drag and drop.
+    /// When multiple applications exist, messages destined for other windows are skipped.
+    /// </remarks>
     protected virtual bool HandleMessage(MSG msg)
     {
         if (IsDisposed)
@@ -134,6 +236,12 @@ public partial class Application : IDisposable
         return true;
     }
 
+    /// <summary>
+    /// Runs the standard message loop until a quit or host-quit message is received or an error occurs.
+    /// </summary>
+    /// <remarks>
+    /// If <see cref="HandleErrors"/> is <see langword="true"/>, a fatal error dialog is shown when the loop exits and errors were collected.
+    /// </remarks>
     public virtual void Run()
     {
         if (_errors.Count == 0 || !HandleErrors)
@@ -156,6 +264,15 @@ public partial class Application : IDisposable
         }
     }
 
+    /// <summary>
+    /// Runs a custom message loop using PeekMessage until the provided predicate requests exit.
+    /// </summary>
+    /// <param name="exitLoopFunc">A predicate invoked for each message; return <see langword="true"/> to exit the loop.</param>
+    /// <returns>
+    /// An <see cref="ExitLoopReason"/> indicating why the loop exited.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="exitLoopFunc"/> is <see langword="null"/>.</exception>
+    /// <exception cref="WiceException">Thrown if called from a non-main thread.</exception>
     public virtual ExitLoopReason RunMessageLoop(Func<MSG, bool> exitLoopFunc)
     {
         ExceptionExtensions.ThrowIfNull(exitLoopFunc, nameof(exitLoopFunc));
@@ -194,6 +311,10 @@ public partial class Application : IDisposable
         } while (true);
     }
 
+    /// <summary>
+    /// Initiates application exit by raising <see cref="ApplicationExit"/> and posting WM_QUIT.
+    /// </summary>
+    /// <remarks>Must be called from the application's main thread.</remarks>
     public virtual void Exit()
     {
         if (IsDisposed)
@@ -204,7 +325,19 @@ public partial class Application : IDisposable
         WiceCommons.PostQuitMessage(0);
     }
 
+    /// <summary>
+    /// Raises the <see cref="ApplicationExit"/> event.
+    /// </summary>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The event data.</param>
     protected virtual void OnApplicationExit(object sender, EventArgs e) => ApplicationExit?.Invoke(sender, e);
+
+    /// <summary>
+    /// Creates the <see cref="ResourceManager"/> for this application.
+    /// </summary>
+    /// <returns>A new <see cref="ResourceManager"/> instance.</returns>
+    /// <exception cref="ObjectDisposedException">Thrown if the application is disposed.</exception>
+    /// <exception cref="WiceException">Thrown if called from a non-main thread.</exception>
     protected virtual ResourceManager CreateResourceManager()
     {
 #if NETFRAMEWORK
@@ -218,7 +351,23 @@ public partial class Application : IDisposable
         return new ResourceManager(this);
     }
 
+    /// <summary>
+    /// Releases resources used by the application.
+    /// </summary>
+    /// <remarks>
+    /// Disposes the dispatcher queue controller, removes and destroys owned windows, and raises <see cref="ApplicationExit"/>.
+    /// </remarks>
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
+
+    /// <summary>
+    /// Releases unmanaged and optionally managed resources.
+    /// </summary>
+    /// <param name="disposing">
+    /// <see langword="true"/> to dispose managed resources; otherwise, <see langword="false"/>.
+    /// </param>
+    /// <remarks>
+    /// Called once. Destroys windows, disposes the dispatcher controller, detaches from the application map, and raises <see cref="ApplicationExit"/>.
+    /// </remarks>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
@@ -247,6 +396,9 @@ public partial class Application : IDisposable
     private static bool _useDebugLayer;
 #endif
 
+    /// <summary>
+    /// The last possible application-defined message used to signal a host quit.
+    /// </summary>
     public const uint WM_HOSTQUIT = MessageDecoder.WM_APP + 0x3FFF; // last possible app message
 
     private static readonly Lock _windowsLock = new();
@@ -255,10 +407,24 @@ public partial class Application : IDisposable
     private readonly static List<Exception> _errors = [];
     private static ConcurrentDictionary<int, Application>? _applications = [];
 
+    /// <summary>
+    /// Occurs when a window is removed from any application.
+    /// </summary>
     public static event EventHandler<ValueEventArgs<Window>>? WindowRemoved;
+
+    /// <summary>
+    /// Occurs when a window is added to any application.
+    /// </summary>
     public static event EventHandler<ValueEventArgs<Window>>? WindowAdded;
+
+    /// <summary>
+    /// Occurs when all applications have posted quit and are exiting.
+    /// </summary>
     public static event EventHandler? AllApplicationsExit;
 
+    /// <summary>
+    /// Gets the <see cref="Application"/> for the current managed thread, if any.
+    /// </summary>
     public static Application? Current
     {
         get
@@ -272,6 +438,9 @@ public partial class Application : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets all windows across all applications.
+    /// </summary>
     public static IReadOnlyList<Window> AllWindows
     {
         get
@@ -283,19 +452,54 @@ public partial class Application : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the current thread's <see cref="ResourceManager"/>.
+    /// </summary>
+    /// <exception cref="WiceException">Thrown when no current application exists ("0031").</exception>
     public static ResourceManager CurrentResourceManager => Current?.ResourceManager ?? throw new WiceException("0031: Resource Manager is not available at this time.");
+
     //public static Theme CurrentTheme => CurrentResourceManager.Theme ?? throw new WiceException("0035: Theme is not available at this time.");
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to enable the DXGI debug layer when available.
+    /// </summary>
+    /// <remarks>
+    /// The getter also checks <see cref="DXGIFunctions.IsDebugLayerAvailable"/>. The setter forces enabling.
+    /// </remarks>
     public static bool UseDebugLayer { get => _useDebugLayer && DXGIFunctions.IsDebugLayerAvailable; set => _useDebugLayer = true; }
+
+    /// <summary>
+    /// Gets the HMODULE of the current process.
+    /// </summary>
     public static HMODULE ModuleHandle => WiceCommons.GetModuleHandleW(PWSTR.Null);
+
+    /// <summary>
+    /// Gets a value indicating whether a fatal error dialog is currently being shown.
+    /// </summary>
     public static bool IsFatalErrorShowing { get; private set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to exit all applications when the last non-background window is removed.
+    /// </summary>
+    /// <remarks>Default is <see langword="true"/>.</remarks>
     public static bool ExitAllOnLastWindowRemoved { get; set; } = true;
 
     static Application()
     {
+        // Subscribes to the AppDomain unhandled exception to capture and display fatal errors.
         AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainUnhandledException;
     }
 
+    /// <summary>
+    /// Gets the <see cref="Application"/> that owns the specified <paramref name="window"/>, if any.
+    /// </summary>
+    /// <param name="window">The window whose owning application to resolve.</param>
     public static Application? GetApplication(Window? window) => GetApplication(window?.ManagedThreadId ?? 0);
+
+    /// <summary>
+    /// Gets the <see cref="Application"/> associated with a specific managed <paramref name="threadId"/>, if any.
+    /// </summary>
+    /// <param name="threadId">The managed thread ID.</param>
     public static Application? GetApplication(int threadId)
     {
         if (threadId == 0)
@@ -309,6 +513,9 @@ public partial class Application : IDisposable
         return app;
     }
 
+    /// <summary>
+    /// Requests all applications to exit by posting WM_QUIT to their threads and raising <see cref="AllApplicationsExit"/>.
+    /// </summary>
     public static void AllExit()
     {
         var apps = Interlocked.Exchange(ref _applications, null);
@@ -325,7 +532,20 @@ public partial class Application : IDisposable
         AllApplicationsExit?.Invoke(null, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Gets a value indicating whether any fatal errors have been recorded.
+    /// </summary>
     public static bool HasErrors => _errors.Count > 0;
+
+    /// <summary>
+    /// Adds a fatal <paramref name="error"/> to the global error list and posts <see cref="WM_HOSTQUIT"/>.
+    /// </summary>
+    /// <param name="error">The exception to record.</param>
+    /// <param name="methodName">The calling method name (automatically supplied by the compiler).</param>
+    /// <remarks>
+    /// Duplicate errors (by string representation) are ignored. This does not post WM_QUIT to avoid
+    /// preventing UI from displaying dialogs.
+    /// </remarks>
     public static void AddError(Exception error, [CallerMemberName] string? methodName = null)
     {
         if (error == null)
@@ -345,6 +565,10 @@ public partial class Application : IDisposable
         WiceCommons.PostMessageW(HWND.Null, WM_HOSTQUIT, WPARAM.Null, LPARAM.Null);
     }
 
+    /// <summary>
+    /// Displays a fatal error dialog summarizing all recorded errors, if any.
+    /// </summary>
+    /// <param name="hwnd">An owner window handle for the dialog, or <see cref="HWND.Null"/>.</param>
     public static void ShowFatalError(HWND hwnd)
     {
         if (_errors.Count == 0)
@@ -403,6 +627,11 @@ public partial class Application : IDisposable
         }
     }
 
+    /// <summary>
+    /// Writes a trace message using the default event provider, tagged with the current thread name or ID.
+    /// </summary>
+    /// <param name="message">The message to write.</param>
+    /// <param name="methodName">The calling method name (automatically supplied by the compiler).</param>
     public static void Trace(string? message = null, [CallerMemberName] string? methodName = null)
     {
         if (!string.IsNullOrEmpty(methodName))
@@ -414,7 +643,21 @@ public partial class Application : IDisposable
         EventProvider.Default.WriteMessageEvent(name + "|" + methodName + message);
     }
 
+    /// <summary>
+    /// Gets a suitable title for the current application.
+    /// </summary>
+    /// <returns>
+    /// The window text if available; otherwise the entry assembly title, product, or assembly name; defaults to "Wice".
+    /// </returns>
     public static string GetTitle() => GetTitle(HWND.Null);
+
+    /// <summary>
+    /// Gets a suitable title for a given window.
+    /// </summary>
+    /// <param name="hwnd">The target window handle.</param>
+    /// <returns>
+    /// The window text if available; otherwise the entry assembly title, product, or assembly name; defaults to "Wice".
+    /// </returns>
     public static string GetTitle(HWND hwnd)
     {
         var text = NativeWindow.GetWindowText(hwnd).Nullify();

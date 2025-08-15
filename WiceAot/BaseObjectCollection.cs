@@ -1,5 +1,27 @@
 ﻿namespace Wice;
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+
+/// <summary>
+/// A list-like collection of <see cref="BaseObject"/> descendants that raises both
+/// <see cref="INotifyCollectionChanged.CollectionChanged"/> and property change notifications.
+/// </summary>
+/// <typeparam name="T">
+/// The element type, constrained to <see cref="BaseObject"/> to integrate with the host change plumbing.
+/// </typeparam>
+/// <remarks>
+/// - Not thread-safe. All members expect to be used from a single thread (typically UI).
+/// - Enforces an optional maximum number of children via <see cref="MaxChildrenCount"/>.
+/// - Raises <see cref="INotifyCollectionChanged.CollectionChanged"/> on structural changes and
+///   <see cref="INotifyPropertyChanging"/>/<see cref="INotifyPropertyChanged"/> on <see cref="Count"/> changes,
+///   as well as when replacing an element via the indexer.
+/// - Implements both generic <see cref="IList{T}"/> and non-generic <see cref="IList"/> for broader tooling support
+///   (e.g., property grids).
+/// </remarks>
 public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : BaseObject, INotifyCollectionChanged, IList<T>, IList where T : BaseObject // IList is good for property grid support
 {
     private readonly List<T> _list = [];
@@ -7,9 +29,27 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
     // speed-up if many many objects
     // private readonly Dictionary<T, int> _dic = [];
 
+    /// <inheritdoc />
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
+    /// <summary>
+    /// Gets the maximum allowed number of elements in this collection.
+    /// </summary>
+    /// <remarks>
+    /// When the limit is reached, subsequent add/insert operations throw a <see cref="WiceException"/> with a specific code.
+    /// </remarks>
     public int MaxChildrenCount { get; } = maxChildrenCount;
+
+    /// <summary>
+    /// Gets or sets the element at the specified index.
+    /// </summary>
+    /// <param name="index">Zero-based index of the element to get or set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="index"/> is outside of [0, <see cref="Count"/>).</exception>
+    /// <remarks>
+    /// Setting the value raises <see cref="INotifyPropertyChanging.PropertyChanging"/> and <see cref="INotifyPropertyChanged.PropertyChanged"/>
+    /// for a property named after the numeric index, and raises a <see cref="NotifyCollectionChangedAction.Replace"/> collection change.
+    /// If the new value equals the existing one (by <see cref="object.Equals(object?, object?)"/>), no events are raised.
+    /// </remarks>
     public T this[int index]
     {
         get => _list[index];
@@ -29,17 +69,56 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         }
     }
 
+    /// <summary>
+    /// Gets the number of elements contained in the collection.
+    /// </summary>
     public int Count => _list.Count;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the collection is read-only.
+    /// </summary>
+    /// <remarks>
+    /// When <see langword="true"/>, mutating members (e.g., <see cref="Add(T)"/>, <see cref="Insert(int, T)"/>,
+    /// <see cref="Remove(T)"/>, <see cref="RemoveAt(int)"/>, <see cref="Clear()"/>) throw <see cref="NotSupportedException"/>.
+    /// </remarks>
     public bool IsReadOnly { get; set; }
 
+    /// <inheritdoc />
     bool IList.IsFixedSize => false;
+
+    /// <inheritdoc />
     object ICollection.SyncRoot => null!;
+
+    /// <inheritdoc />
     bool ICollection.IsSynchronized => true;
+
+    /// <inheritdoc />
     object? IList.this[int index] { get => this[index]; set => this[index] = (T)value!; }
 
+    /// <summary>
+    /// Returns a string that represents the current object, including the current <see cref="Count"/>.
+    /// </summary>
     public override string ToString() => base.ToString() + " Count: " + Count;
+
+    /// <summary>
+    /// Raises <see cref="CollectionChanged"/> with the supplied event arguments.
+    /// </summary>
+    /// <param name="sender">The sender to pass to event subscribers.</param>
+    /// <param name="e">The event arguments describing the collection change.</param>
     protected virtual void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => CollectionChanged?.Invoke(sender, e);
 
+    /// <summary>
+    /// Adds an item to the end of the collection without checking the <see cref="IsReadOnly"/> flag,
+    /// optionally enforcing <see cref="MaxChildrenCount"/>.
+    /// </summary>
+    /// <param name="item">The item to add.</param>
+    /// <param name="checkMaxChildrenCount">If <see langword="true"/>, throws when the collection is at capacity.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="item"/> is <see langword="null"/>.</exception>
+    /// <exception cref="WiceException">Thrown when at maximum capacity (code 0002).</exception>
+    /// <remarks>
+    /// Raises <see cref="CollectionChanged"/> with <see cref="NotifyCollectionChangedAction.Add"/> and appropriate
+    /// <see cref="INotifyPropertyChanging.PropertyChanging"/>/<see cref="INotifyPropertyChanged.PropertyChanged"/> for <see cref="Count"/>.
+    /// </remarks>
     protected virtual void ProtectedAdd(T item, bool checkMaxChildrenCount)
     {
         ExceptionExtensions.ThrowIfNull(item, nameof(item));
@@ -54,6 +133,14 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         });
     }
 
+    /// <summary>
+    /// Inserts <paramref name="item"/> immediately after the first occurrence of <paramref name="after"/>.
+    /// Falls back to <see cref="Add(T)"/> if <paramref name="after"/> is not found.
+    /// </summary>
+    /// <param name="after">The item after which to insert.</param>
+    /// <param name="item">The item to insert.</param>
+    /// <exception cref="NotSupportedException">When the collection is read-only.</exception>
+    /// <exception cref="WiceException">When <see cref="MaxChildrenCount"/> would be exceeded.</exception>
     public void InsertAfter(T after, T item)
     {
         var index = _list.IndexOf(after);
@@ -67,6 +154,14 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         Insert(index, item);
     }
 
+    /// <summary>
+    /// Inserts <paramref name="item"/> immediately before the first occurrence of <paramref name="before"/>.
+    /// Falls back to inserting at index 0 if <paramref name="before"/> is not found.
+    /// </summary>
+    /// <param name="before">The item before which to insert.</param>
+    /// <param name="item">The item to insert.</param>
+    /// <exception cref="NotSupportedException">When the collection is read-only.</exception>
+    /// <exception cref="WiceException">When <see cref="MaxChildrenCount"/> would be exceeded.</exception>
     public void InsertBefore(T before, T item)
     {
         var index = _list.IndexOf(before);
@@ -80,6 +175,13 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         Insert(index, item);
     }
 
+    /// <summary>
+    /// Adds an item to the end of the collection.
+    /// </summary>
+    /// <param name="item">The item to add.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="item"/> is <see langword="null"/>.</exception>
+    /// <exception cref="NotSupportedException">When the collection is read-only.</exception>
+    /// <exception cref="WiceException">When <see cref="MaxChildrenCount"/> would be exceeded.</exception>
     public void Add(T item)
     {
         ExceptionExtensions.ThrowIfNull(item, nameof(item));
@@ -89,6 +191,12 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         ProtectedAdd(item, true);
     }
 
+    /// <summary>
+    /// Removes all elements from the collection without honoring <see cref="IsReadOnly"/>.
+    /// </summary>
+    /// <remarks>
+    /// Raises a sequence of remove notifications followed by a <see cref="NotifyCollectionChangedAction.Reset"/>.
+    /// </remarks>
     protected virtual void ProtectedClear()
     {
         if (_list.Count == 0)
@@ -106,9 +214,21 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         });
     }
 
+    /// <summary>
+    /// Sorts the elements in the entire collection using the default comparer for <typeparamref name="T"/>.
+    /// </summary>
     public void Sort() => _list.Sort();
+
+    /// <summary>
+    /// Sorts the elements in the entire collection using the specified comparer.
+    /// </summary>
+    /// <param name="comparer">The comparer to use, or <see langword="null"/> to use the default comparer.</param>
     public void Sort(IComparer<T> comparer) => _list.Sort(comparer);
 
+    /// <summary>
+    /// Removes all elements from the collection.
+    /// </summary>
+    /// <exception cref="NotSupportedException">When the collection is read-only.</exception>
     public void Clear()
     {
         if (IsReadOnly)
@@ -117,20 +237,51 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         ProtectedClear();
     }
 
+    /// <summary>
+    /// Determines whether the collection contains a specific value.
+    /// </summary>
+    /// <param name="item">The object to locate.</param>
+    /// <returns><see langword="true"/> if found; otherwise, <see langword="false"/>.</returns>
     public bool Contains(T item) => _list.Contains(item);
     //public bool Contains(T item) => _dic.ContainsKey(item);
+
+    /// <summary>
+    /// Copies the elements of the collection to an array, starting at a particular array index.
+    /// </summary>
+    /// <param name="array">The destination array.</param>
+    /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
     public void CopyTo(T[] array, int arrayIndex) => _list.CopyTo(array, arrayIndex);
+
+    /// <summary>
+    /// Returns an enumerator that iterates through the collection.
+    /// </summary>
+    /// <returns>An enumerator for the collection.</returns>
     public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
+
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    /// <summary>
+    /// Searches for the specified object and returns the zero-based index of the first occurrence.
+    /// </summary>
+    /// <param name="item">The object to locate.</param>
+    /// <returns>The zero-based index if found; otherwise, -1.</returns>
     public int IndexOf(T item) => _list.IndexOf(item);
     //public int IndexOf(T item)
     //{
     //    if (!_dic.TryGetValue(item, out var index))
     //        return -1;
-
+    //
     //    return index;
     //}
 
+    /// <summary>
+    /// Inserts an item to the collection at the specified index.
+    /// </summary>
+    /// <param name="index">Zero-based index at which <paramref name="item"/> should be inserted.</param>
+    /// <param name="item">The item to insert.</param>
+    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="index"/> is not in [0, <see cref="Count"/>].</exception>
+    /// <exception cref="NotSupportedException">When the collection is read-only.</exception>
+    /// <exception cref="WiceException">When <see cref="MaxChildrenCount"/> would be exceeded or the <paramref name="item"/> already exists.</exception>
     public void Insert(int index, T item)
     {
         if (index < 0 || index > Count)
@@ -142,6 +293,19 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         ProtectedInsert(index, item);
     }
 
+    /// <summary>
+    /// Inserts an item at a specific index without honoring <see cref="IsReadOnly"/>.
+    /// </summary>
+    /// <param name="index">Zero-based insertion index.</param>
+    /// <param name="item">The item to insert.</param>
+    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="index"/> is not in [0, <see cref="Count"/>].</exception>
+    /// <exception cref="WiceException">
+    /// Thrown when at maximum capacity (code 0004) or when the item is already present (code 0005).
+    /// </exception>
+    /// <remarks>
+    /// Raises <see cref="CollectionChanged"/> with <see cref="NotifyCollectionChangedAction.Add"/>, and
+    /// <see cref="INotifyPropertyChanging.PropertyChanging"/>/<see cref="INotifyPropertyChanged.PropertyChanged"/> for <see cref="Count"/>.
+    /// </remarks>
     protected virtual void ProtectedInsert(int index, T item)
     {
         if (index < 0 || index > Count)
@@ -161,6 +325,12 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         });
     }
 
+    /// <summary>
+    /// Removes the first occurrence of a specific object from the collection.
+    /// </summary>
+    /// <param name="item">The item to remove.</param>
+    /// <returns><see langword="true"/> if the item was removed; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="NotSupportedException">When the collection is read-only.</exception>
     public bool Remove(T item)
     {
         if (IsReadOnly)
@@ -169,6 +339,15 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         return ProtectedRemove(item);
     }
 
+    /// <summary>
+    /// Removes the first occurrence of a specific object from the collection without honoring <see cref="IsReadOnly"/>.
+    /// </summary>
+    /// <param name="item">The item to remove.</param>
+    /// <returns><see langword="true"/> if the item was removed; otherwise, <see langword="false"/>.</returns>
+    /// <remarks>
+    /// Raises <see cref="CollectionChanged"/> with <see cref="NotifyCollectionChangedAction.Remove"/>, and
+    /// <see cref="INotifyPropertyChanging.PropertyChanging"/>/<see cref="INotifyPropertyChanged.PropertyChanged"/> for <see cref="Count"/>.
+    /// </remarks>
     protected virtual bool ProtectedRemove(T item)
     {
         var index = IndexOf(item);
@@ -184,6 +363,12 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         return true;
     }
 
+    /// <summary>
+    /// Removes the element at the specified index of the collection.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to remove.</param>
+    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="index"/> is not in [0, <see cref="Count"/>).</exception>
+    /// <exception cref="NotSupportedException">When the collection is read-only.</exception>
     public void RemoveAt(int index)
     {
         if (index < 0 || index >= Count)
@@ -195,6 +380,15 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         ProtectedRemoveAt(index);
     }
 
+    /// <summary>
+    /// Removes the element at the specified index without honoring <see cref="IsReadOnly"/>.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to remove.</param>
+    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="index"/> is not in [0, <see cref="Count"/>).</exception>
+    /// <remarks>
+    /// Raises <see cref="CollectionChanged"/> with <see cref="NotifyCollectionChangedAction.Remove"/>, and
+    /// <see cref="INotifyPropertyChanging.PropertyChanging"/>/<see cref="INotifyPropertyChanged.PropertyChanged"/> for <see cref="Count"/>.
+    /// </remarks>
     protected virtual void ProtectedRemoveAt(int index)
     {
         if (index < 0 || index >= Count)
@@ -209,6 +403,11 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         });
     }
 
+    /// <summary>
+    /// Wraps an action that changes the items to raise <see cref="INotifyPropertyChanging.PropertyChanging"/> and
+    /// <see cref="INotifyPropertyChanged.PropertyChanged"/> for the <see cref="Count"/> property.
+    /// </summary>
+    /// <param name="action">The action that mutates the collection.</param>
     private void OnItemsChanged(Action action)
     {
         OnPropertyChanging(this, new PropertyChangingEventArgs(nameof(Count)));
@@ -216,6 +415,7 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(Count)));
     }
 
+    /// <inheritdoc />
     int IList.Add(object? value)
     {
         var count = Count;
@@ -223,9 +423,18 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
         return count;
     }
 
+    /// <inheritdoc />
     bool IList.Contains(object? value) => Contains((T)value!);
+
+    /// <inheritdoc />
     int IList.IndexOf(object? value) => IndexOf((T)value!);
+
+    /// <inheritdoc />
     void IList.Insert(int index, object? value) => Insert(index, (T)value!);
+
+    /// <inheritdoc />
     void IList.Remove(object? value) => Remove((T)value!);
+
+    /// <inheritdoc />
     void ICollection.CopyTo(Array array, int index) => CopyTo((T[])array, index);
 }

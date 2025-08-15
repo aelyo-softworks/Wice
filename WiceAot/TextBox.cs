@@ -2,35 +2,133 @@
 
 public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IValueable, IPasswordCapable, IDisposable, IImmVisual
 {
+    /// <summary>
+    /// Gets the foreground brush used to draw the text.
+    /// </summary>
+    /// <remarks>
+    /// Falls back to the theme's default TextBox foreground when not set.
+    /// Changing this property invalidates rendering.
+    /// </remarks>
     public static VisualProperty ForegroundBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(ForegroundBrush), VisualPropertyInvalidateModes.Render, Theme.Default.TextBoxForegroundColor);
+
+    /// <summary>
+    /// Gets the foreground brush used when the mouse is over the control.
+    /// </summary>
+    /// <remarks>
+    /// When <see langword="null"/>, <see cref="ForegroundBrush"/> is used. Changing this property invalidates rendering.
+    /// </remarks>
     public static VisualProperty HoverForegroundBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(HoverForegroundBrush), VisualPropertyInvalidateModes.Render);
+
+    /// <summary>
+    /// Gets the brush used to draw the selection highlight.
+    /// </summary>
+    /// <remarks>
+    /// When not specified, a contrast-aware color is computed from the foreground and background. Changing this property invalidates rendering.
+    /// </remarks>
     public static VisualProperty SelectionBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(SelectionBrush), VisualPropertyInvalidateModes.Render);
+
+    /// <summary>
+    /// Gets or sets the font family name for the entire text when not overridden by ranges.
+    /// </summary>
     public static VisualProperty FontFamilyNameProperty { get; } = VisualProperty.Add<string>(typeof(TextBox), nameof(FontFamilyName), VisualPropertyInvalidateModes.Measure);
+
+    /// <summary>Gets or sets the default font weight.</summary>
     public static VisualProperty FontWeightProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(FontWeight), VisualPropertyInvalidateModes.Measure, DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_NORMAL);
+
+    /// <summary>Gets or sets the default font stretch.</summary>
     public static VisualProperty FontStretchProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(FontStretch), VisualPropertyInvalidateModes.Measure, DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_NORMAL);
+
+    /// <summary>Gets or sets the default font style.</summary>
     public static VisualProperty FontStyleProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(FontStyle), VisualPropertyInvalidateModes.Measure, DWRITE_FONT_STYLE.DWRITE_FONT_STYLE_NORMAL);
+
+    /// <summary>Gets or sets the paragraph alignment (vertical alignment within the layout box).</summary>
     public static VisualProperty ParagraphAlignmentProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(ParagraphAlignment), VisualPropertyInvalidateModes.Measure, DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+
+    /// <summary>Gets or sets the text alignment (horizontal alignment within the layout box).</summary>
     public static VisualProperty AlignmentProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(Alignment), VisualPropertyInvalidateModes.Measure, DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_LEADING);
+
+    /// <summary>Gets or sets the flow direction for vertical layout scenarios.</summary>
     public static VisualProperty FlowDirectionProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(FlowDirection), VisualPropertyInvalidateModes.Measure, DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_TOP_TO_BOTTOM);
+
+    /// <summary>Gets or sets the reading direction.</summary>
     public static VisualProperty ReadingDirectionProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(ReadingDirection), VisualPropertyInvalidateModes.Measure, DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_LEFT_TO_RIGHT);
+
+    /// <summary>Gets or sets the word wrapping mode.</summary>
     public static VisualProperty WordWrappingProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(WordWrapping), VisualPropertyInvalidateModes.Measure, DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_NO_WRAP);
+
+    /// <summary>Gets or sets the trimming behavior when text overflows.</summary>
     public static VisualProperty TrimmingGranularityProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(TrimmingGranularity), VisualPropertyInvalidateModes.Measure, DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_NONE);
+
+    /// <summary>Gets or sets whether the last line is allowed to wrap.</summary>
     public static VisualProperty IsLastLineWrappingEnabledProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(IsLastLineWrappingEnabled), VisualPropertyInvalidateModes.Measure, false);
+
+    /// <summary>Gets or sets the line spacing configuration.</summary>
     public static VisualProperty LineSpacingProperty { get; } = VisualProperty.Add<DWRITE_LINE_SPACING?>(typeof(TextBox), nameof(LineSpacing), VisualPropertyInvalidateModes.Measure, null);
+
+    /// <summary>Gets or sets the optical alignment applied by DirectWrite (hanging punctuation, etc.).</summary>
     public static VisualProperty OpticalAlignmentProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(OpticalAlignment), VisualPropertyInvalidateModes.Measure, DWRITE_OPTICAL_ALIGNMENT.DWRITE_OPTICAL_ALIGNMENT_NONE);
+
+    /// <summary>Gets or sets the vertical glyph orientation used for vertical text.</summary>
     public static VisualProperty VerticalGlyphOrientationProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(VerticalGlyphOrientation), VisualPropertyInvalidateModes.Measure, DWRITE_VERTICAL_GLYPH_ORIENTATION.DWRITE_VERTICAL_GLYPH_ORIENTATION_DEFAULT);
+
+    /// <summary>
+    /// Gets or sets the plain text content of the control.
+    /// </summary>
+    /// <remarks>
+    /// When <see cref="PasswordCharacter"/> is set, the displayed layout uses a masked string,
+    /// but <see cref="Text"/> always contains the real value. Changing this value raises <see cref="TextChanged"/>
+    /// according to <see cref="RaiseTextChanged"/> and <see cref="TextChangedTrigger"/>.
+    /// </remarks>
     public static VisualProperty TextProperty { get; } = VisualProperty.Add<string>(typeof(TextBox), nameof(Text), VisualPropertyInvalidateModes.Measure, convert: ValidateNonNullString);
+
+    /// <summary>Gets or sets the DirectWrite font collection used for layout.</summary>
     public static VisualProperty FontCollectionProperty { get; } = VisualProperty.Add<IComObject<IDWriteFontCollection>>(typeof(TextBox), nameof(FontCollection), VisualPropertyInvalidateModes.Measure);
+
+    /// <summary>Gets or sets the font fallback chain.</summary>
     public static VisualProperty FontFallbackProperty { get; } = VisualProperty.Add<IComObject<IDWriteFontFallback>>(typeof(TextBox), nameof(FontFallback), VisualPropertyInvalidateModes.Measure);
+
+    /// <summary>Gets or sets Direct2D draw options used when drawing the text layout.</summary>
     public static VisualProperty DrawOptionsProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(DrawOptions), VisualPropertyInvalidateModes.Render, D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+
+    /// <summary>Gets or sets the text antialias mode applied during drawing (unless overridden by <see cref="TextRenderingParameters"/>).</summary>
     public static VisualProperty AntiAliasingModeProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(AntiAliasingMode), VisualPropertyInvalidateModes.Render, D2D1_TEXT_ANTIALIAS_MODE.D2D1_TEXT_ANTIALIAS_MODE_DEFAULT);
+
+    /// <summary>
+    /// Gets or sets whether the control is editable. When true, caret, selection and input are enabled.
+    /// </summary>
     public static VisualProperty IsEditableProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(IsEditable), VisualPropertyInvalidateModes.Render, false);
+
+    /// <summary>
+    /// Gets or sets whether Ctrl+wheel/Shift+wheel zooming (pan/scale) is enabled.
+    /// </summary>
     public static VisualProperty IsWheelZoomEnabledProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(IsWheelZoomEnabled), VisualPropertyInvalidateModes.Render, false);
+
+    /// <summary>Gets or sets whether the Tab key inserts a tab character (otherwise moves focus).</summary>
     public static VisualProperty AcceptsTabProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(AcceptsTab), VisualPropertyInvalidateModes.None, false);
+
+    /// <summary>Gets or sets whether the Return/Enter key inserts a newline.</summary>
     public static VisualProperty AcceptsReturnProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(AcceptsReturn), VisualPropertyInvalidateModes.None, false);
+
+    /// <summary>Gets or sets the base font size used by the layout.</summary>
     public static VisualProperty FontSizeProperty { get; } = VisualProperty.Add<float?>(typeof(TextBox), nameof(FontSize), VisualPropertyInvalidateModes.Measure);
+
+    /// <summary>
+    /// Gets or sets the text rendering parameters. When set, they are applied to the D2D device context before drawing.
+    /// </summary>
     public static VisualProperty TextRenderingParametersProperty { get; } = VisualProperty.Add<TextRenderingParameters>(typeof(TextBox), nameof(TextRenderingParameters), VisualPropertyInvalidateModes.Render);
+
+    /// <summary>
+    /// Gets or sets the optional password masking character.
+    /// </summary>
+    /// <remarks>
+    /// When set, the layout uses a masked string of identical length for rendering and hit-testing,
+    /// while <see cref="Text"/> persists the actual content.
+    /// </remarks>
     public static VisualProperty PasswordCharProperty { get; } = VisualProperty.Add<char?>(typeof(TextBox), nameof(PasswordCharacter), VisualPropertyInvalidateModes.Measure);
+
+    /// <summary>
+    /// Gets or sets whether the text rendering is clipped to the control bounds (padding-aware).
+    /// </summary>
     public static VisualProperty ClipTextProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(ClipText), VisualPropertyInvalidateModes.Render, true);
 
     private readonly Lock _rangesLock = new();
@@ -60,8 +158,15 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     private event EventHandler<ValueEventArgs>? _valueChanged;
     event EventHandler<ValueEventArgs> IValueable.ValueChanged { add { _valueChanged += value; } remove { _valueChanged -= value; } }
 
+    /// <summary>
+    /// Occurs when <see cref="Text"/> changes. Emission can be gated by <see cref="RaiseTextChanged"/>
+    /// and <see cref="TextChangedTrigger"/>.
+    /// </summary>
     public event EventHandler<ValueEventArgs<string>>? TextChanged;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="TextBox"/> with <see cref="RaiseTextChanged"/> set to <see langword="true"/>.
+    /// </summary>
     public TextBox()
     {
         RaiseTextChanged = true;
@@ -129,162 +234,254 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     protected override bool FallbackToTransparentBackground => true;
     protected override bool ShouldRender => !_rendered;
+
+    /// <summary>
+    /// Gets the text used for rendering and hit-testing. Defaults to <see cref="Text"/>; when in password mode,
+    /// returns the masked string.
+    /// </summary>
     protected virtual string RenderedText => Text;
 
+    /// <summary>
+    /// Gets or sets whether <see cref="TextChanged"/> is raised automatically when <see cref="Text"/> changes.
+    /// </summary>
     [Browsable(false)]
     public virtual bool RaiseTextChanged { get; set; }
 
+    /// <summary>
+    /// Gets or sets when <see cref="TextChanged"/> is emitted relative to focus/return key events.
+    /// </summary>
     [Browsable(false)]
     public virtual EventTrigger TextChangedTrigger { get; set; }
 
+    /// <summary>Gets or sets the brush used to draw the text.</summary>
     [Category(CategoryLayout)]
     public Brush ForegroundBrush { get => (Brush)GetPropertyValue(ForegroundBrushProperty)!; set => SetPropertyValue(ForegroundBrushProperty, value); }
 
+    /// <summary>Gets or sets the brush used to draw the text when the mouse is over the control.</summary>
     [Category(CategoryLayout)]
     public Brush? HoverForegroundBrush { get => (Brush)GetPropertyValue(HoverForegroundBrushProperty)!; set => SetPropertyValue(HoverForegroundBrushProperty, value); }
 
+    /// <summary>Gets or sets the selection brush used to fill the selected range background.</summary>
     [Category(CategoryLayout)]
     public Brush SelectionBrush { get => (Brush)GetPropertyValue(SelectionBrushProperty)!; set => SetPropertyValue(SelectionBrushProperty, value); }
 
+    /// <summary>Gets or sets the default font family name.</summary>
     [Category(CategoryLayout)]
     public string? FontFamilyName { get => (string?)GetPropertyValue(FontFamilyNameProperty)!; set => SetPropertyValue(FontFamilyNameProperty, value); }
 
+    /// <summary>Gets or sets the default font weight.</summary>
     [Category(CategoryLayout)]
     public DWRITE_FONT_WEIGHT FontWeight { get => (DWRITE_FONT_WEIGHT)GetPropertyValue(FontWeightProperty)!; set => SetPropertyValue(FontWeightProperty, value); }
 
+    /// <summary>Gets or sets the default font style.</summary>
     [Category(CategoryLayout)]
     public DWRITE_FONT_STYLE FontStyle { get => (DWRITE_FONT_STYLE)GetPropertyValue(FontStyleProperty)!; set => SetPropertyValue(FontStyleProperty, value); }
 
+    /// <summary>Gets or sets the default font stretch.</summary>
     [Category(CategoryLayout)]
     public DWRITE_FONT_STRETCH FontStretch { get => (DWRITE_FONT_STRETCH)GetPropertyValue(FontStretchProperty)!; set => SetPropertyValue(FontStretchProperty, value); }
 
+    /// <summary>Gets or sets the paragraph alignment inside the layout box.</summary>
     [Category(CategoryLayout)]
     public DWRITE_PARAGRAPH_ALIGNMENT ParagraphAlignment { get => (DWRITE_PARAGRAPH_ALIGNMENT)GetPropertyValue(ParagraphAlignmentProperty)!; set => SetPropertyValue(ParagraphAlignmentProperty, value); }
 
+    /// <summary>Gets or sets the horizontal text alignment inside the layout box.</summary>
     [Category(CategoryLayout)]
     public DWRITE_TEXT_ALIGNMENT Alignment { get => (DWRITE_TEXT_ALIGNMENT)GetPropertyValue(AlignmentProperty)!; set => SetPropertyValue(AlignmentProperty, value); }
 
+    /// <summary>Gets or sets the flow direction for vertical text.</summary>
     [Category(CategoryLayout)]
     public DWRITE_FLOW_DIRECTION FlowDirection { get => (DWRITE_FLOW_DIRECTION)GetPropertyValue(FlowDirectionProperty)!; set => SetPropertyValue(FlowDirectionProperty, value); }
 
+    /// <summary>Gets or sets the reading direction.</summary>
     [Category(CategoryLayout)]
     public DWRITE_READING_DIRECTION ReadingDirection { get => (DWRITE_READING_DIRECTION)GetPropertyValue(ReadingDirectionProperty)!; set => SetPropertyValue(ReadingDirectionProperty, value); }
 
+    /// <summary>Gets or sets the word wrapping mode.</summary>
     [Category(CategoryLayout)]
     public DWRITE_WORD_WRAPPING WordWrapping { get => (DWRITE_WORD_WRAPPING)GetPropertyValue(WordWrappingProperty)!; set => SetPropertyValue(WordWrappingProperty, value); }
 
+    /// <summary>Gets or sets the trimming granularity used when text overflows.</summary>
     [Category(CategoryLayout)]
     public DWRITE_TRIMMING_GRANULARITY TrimmingGranularity { get => (DWRITE_TRIMMING_GRANULARITY)GetPropertyValue(TrimmingGranularityProperty)!; set => SetPropertyValue(TrimmingGranularityProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the text content.
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual string Text { get => (string?)GetPropertyValue(TextProperty)! ?? string.Empty; set => SetPropertyValue(TextProperty, value); }
 
+    /// <summary>Gets or sets the font collection for layout.</summary>
     [Category(CategoryLayout)]
     public IComObject<IDWriteFontCollection>? FontCollection { get => (IComObject<IDWriteFontCollection>?)GetPropertyValue(FontCollectionProperty)!; set => SetPropertyValue(FontCollectionProperty, value); }
 
+    /// <summary>Gets or sets the Direct2D draw options applied when drawing the layout.</summary>
     [Category(CategoryLayout)]
     public D2D1_DRAW_TEXT_OPTIONS DrawOptions { get => (D2D1_DRAW_TEXT_OPTIONS)GetPropertyValue(DrawOptionsProperty)!; set => SetPropertyValue(DrawOptionsProperty, value); }
 
+    /// <summary>Gets or sets the text anti-aliasing mode when drawing.</summary>
     [Category(CategoryLayout)]
     public D2D1_TEXT_ANTIALIAS_MODE AntiAliasingMode { get => (D2D1_TEXT_ANTIALIAS_MODE)GetPropertyValue(AntiAliasingModeProperty)!; set => SetPropertyValue(AntiAliasingModeProperty, value); }
 
+    /// <summary>Gets or sets the optical alignment (DirectWrite) behavior.</summary>
     [Category(CategoryLayout)]
     public DWRITE_OPTICAL_ALIGNMENT OpticalAlignment { get => (DWRITE_OPTICAL_ALIGNMENT)GetPropertyValue(OpticalAlignmentProperty)!; set => SetPropertyValue(OpticalAlignmentProperty, value); }
 
+    /// <summary>Gets or sets the vertical glyph orientation (for vertical text scenarios).</summary>
     [Category(CategoryLayout)]
     public DWRITE_VERTICAL_GLYPH_ORIENTATION VerticalGlyphOrientation { get => (DWRITE_VERTICAL_GLYPH_ORIENTATION)GetPropertyValue(VerticalGlyphOrientationProperty)!; set => SetPropertyValue(VerticalGlyphOrientationProperty, value); }
 
+    /// <summary>Gets or sets the line spacing values.</summary>
     [Category(CategoryLayout)]
     public DWRITE_LINE_SPACING? LineSpacing { get => (DWRITE_LINE_SPACING?)GetPropertyValue(LineSpacingProperty)!; set => SetPropertyValue(LineSpacingProperty, value); }
 
+    /// <summary>Gets or sets the font fallback sequence used by the layout.</summary>
     [Category(CategoryLayout)]
     public IComObject<IDWriteFontFallback>? FontFallback { get => (IComObject<IDWriteFontFallback>?)GetPropertyValue(FontFallbackProperty)!; set => SetPropertyValue(FontFallbackProperty, value); }
 
+    /// <summary>Gets or sets whether the last line of text can wrap.</summary>
     [Category(CategoryLayout)]
     public bool IsLastLineWrappingEnabled { get => (bool)GetPropertyValue(IsLastLineWrappingEnabledProperty)!; set => SetPropertyValue(IsLastLineWrappingEnabledProperty, value); }
 
+    /// <summary>Gets or sets whether the control is editable.</summary>
     [Category(CategoryBehavior)]
     public virtual bool IsEditable { get => (bool)GetPropertyValue(IsEditableProperty)!; set => SetPropertyValue(IsEditableProperty, value); }
 
+    /// <summary>Gets or sets whether mouse wheel panning/zoom is enabled (with Ctrl/Shift modifiers).</summary>
     [Category(CategoryBehavior)]
     public bool IsWheelZoomEnabled { get => (bool)GetPropertyValue(IsWheelZoomEnabledProperty)!; set => SetPropertyValue(IsWheelZoomEnabledProperty, value); }
 
+    /// <summary>Gets or sets whether the Tab key inserts a tab character (otherwise moves focus).</summary>
     [Category(CategoryBehavior)]
     public bool AcceptsTab { get => (bool)GetPropertyValue(AcceptsTabProperty)!; set => SetPropertyValue(AcceptsTabProperty, value); }
 
+    /// <summary>Gets or sets whether the Return key inserts a newline (otherwise may trigger TextChanged on Return when configured).</summary>
     [Category(CategoryBehavior)]
     public bool AcceptsReturn { get => (bool)GetPropertyValue(AcceptsReturnProperty)!; set => SetPropertyValue(AcceptsReturnProperty, value); }
 
+    /// <summary>Gets or sets the base font size for the layout.</summary>
     [Category(CategoryLayout)]
     public float? FontSize { get => (float?)GetPropertyValue(FontSizeProperty); set => SetPropertyValue(FontSizeProperty, value); }
 
+    /// <summary>Gets or sets the DirectWrite/Direct2D rendering parameters applied before drawing.</summary>
     [Category(CategoryLayout)]
     public TextRenderingParameters TextRenderingParameters { get => (TextRenderingParameters)GetPropertyValue(TextRenderingParametersProperty)!; set => SetPropertyValue(TextRenderingParametersProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the optional password masking character. When set, the display masks text while preserving <see cref="Text"/>.
+    /// </summary>
     [Category(CategoryBehavior)]
     public char? PasswordCharacter { get => (char?)GetPropertyValue(PasswordCharProperty); set => SetPropertyValue(PasswordCharProperty, value); }
 
+    /// <summary>Gets or sets whether text rendering is clipped to the control bounds.</summary>
     [Category(CategoryRender)]
     public bool ClipText { get => (bool)GetPropertyValue(ClipTextProperty)!; set => SetPropertyValue(ClipTextProperty, value); }
 
+    /// <summary>Sets the font weight over the entire text or provided range(s).</summary>
     public void SetFontWeight(DWRITE_FONT_WEIGHT weight) => SetFontWeight(weight, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetFontWeight(DWRITE_FONT_WEIGHT)"/>
     public void SetFontWeight(DWRITE_FONT_WEIGHT weight, DWRITE_TEXT_RANGE range) => SetFontWeight(weight, [range]);
+    /// <summary>Sets the font weight for the specified ranges.</summary>
     public virtual void SetFontWeight(DWRITE_FONT_WEIGHT weight, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontWeight, weight, ranges);
 
+    /// <summary>Sets the font stretch over the entire text or provided range(s).</summary>
     public void SetFontStretch(DWRITE_FONT_STRETCH stretch) => SetFontStretch(stretch, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetFontStretch(DWRITE_FONT_STRETCH)"/>
     public void SetFontStretch(DWRITE_FONT_STRETCH stretch, DWRITE_TEXT_RANGE range) => SetFontStretch(stretch, [range]);
+    /// <summary>Sets the font stretch for the specified ranges.</summary>
     public virtual void SetFontStretch(DWRITE_FONT_STRETCH stretch, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontStretch, stretch, ranges);
 
+    /// <summary>Sets the font style over the entire text or provided range(s).</summary>
     public void SetFontStyle(DWRITE_FONT_STYLE style) => SetFontStyle(style, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetFontStyle(DWRITE_FONT_STYLE)"/>
     public void SetFontStyle(DWRITE_FONT_STYLE style, DWRITE_TEXT_RANGE range) => SetFontStyle(style, [range]);
+    /// <summary>Sets the font style for the specified ranges.</summary>
     public virtual void SetFontStyle(DWRITE_FONT_STYLE style, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontStyle, style, ranges);
 
+    /// <summary>Sets the font size over the entire text or provided range(s).</summary>
     public void SetFontSize(float size) => SetFontSize(size, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetFontSize(float)"/>
     public void SetFontSize(float size, DWRITE_TEXT_RANGE range) => SetFontSize(size, [range]);
+    /// <summary>Sets the font size for the specified ranges.</summary>
     public virtual void SetFontSize(float size, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontSize, size, ranges);
 
+    /// <summary>Sets the font family name over the entire text or provided range(s).</summary>
     public void SetFontFamilyName(string name) => SetFontFamilyName(name, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetFontFamilyName(string)"/>
     public void SetFontFamilyName(string name, DWRITE_TEXT_RANGE range) => SetFontFamilyName(name, [range]);
+    /// <summary>Sets the font family name for the specified ranges.</summary>
     public virtual void SetFontFamilyName(string name, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontFamilyName, name, ranges);
 
+    /// <summary>Sets the font collection over the entire text or provided range(s).</summary>
     public void SetFontCollection(string collection) => SetFontCollection(collection, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetFontCollection(string)"/>
     public void SetFontCollection(string collection, DWRITE_TEXT_RANGE range) => SetFontCollection(collection, [range]);
+    /// <summary>Sets the font collection for the specified ranges.</summary>
     public virtual void SetFontCollection(string collection, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.FontCollection, collection, ranges);
 
+    /// <summary>Applies or removes strikethrough over the entire text or provided range(s).</summary>
     public void SetStrikethrough(bool strikethrough) => SetStrikethrough(strikethrough, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetStrikethrough(bool)"/>
     public void SetStrikethrough(bool strikethrough, DWRITE_TEXT_RANGE range) => SetStrikethrough(strikethrough, [range]);
+    /// <summary>Applies or removes strikethrough for the specified ranges.</summary>
     public virtual void SetStrikethrough(bool strikethrough, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.Strikethrough, strikethrough, ranges);
 
+    /// <summary>Applies or removes underline over the entire text or provided range(s).</summary>
     public void SetUnderline(bool underline) => SetUnderline(underline, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetUnderline(bool)"/>
     public void SetUnderline(bool underline, DWRITE_TEXT_RANGE range) => SetUnderline(underline, [range]);
+    /// <summary>Applies or removes underline for the specified ranges.</summary>
     public virtual void SetUnderline(bool underline, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.Underline, underline, ranges);
 
+    /// <summary>Sets the locale name over the entire text or provided range(s).</summary>
     public void SetLocaleName(string name) => SetLocaleName(name, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetLocaleName(string)"/>
     public void SetLocaleName(string name, DWRITE_TEXT_RANGE range) => SetLocaleName(name, [range]);
+    /// <summary>Sets the locale name for the specified ranges.</summary>
     public virtual void SetLocaleName(string name, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.LocaleName, name, ranges);
 
+    /// <summary>Sets the typography object over the entire text or provided range(s).</summary>
     public void SetTypography(IDWriteTypography? typography) => SetTypography(typography, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetTypography(IDWriteTypography?)"/>
     public void SetTypography(IDWriteTypography? typography, DWRITE_TEXT_RANGE range) => SetTypography(typography, [range]);
+    /// <summary>Sets the typography object for the specified ranges.</summary>
     public virtual void SetTypography(IDWriteTypography? typography, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.Typography, typography, ranges);
 
+    /// <summary>Sets the inline object over the entire text or provided range(s).</summary>
     public void SetInlineObject(IDWriteInlineObject inlineObject) => SetInlineObject(inlineObject, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetInlineObject(IDWriteInlineObject)"/>
     public void SetInlineObject(IDWriteInlineObject inlineObject, DWRITE_TEXT_RANGE range) => SetInlineObject(inlineObject, [range]);
+    /// <summary>Sets the inline object for the specified ranges.</summary>
     public virtual void SetInlineObject(IDWriteInlineObject inlineObject, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.InlineObject, inlineObject, ranges);
 
+    /// <summary>Sets a drawing effect (brush/object) over the entire text or provided range(s).</summary>
     public void SetDrawingEffect(object drawingEffect) => SetDrawingEffect(drawingEffect, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetDrawingEffect(object)"/>
     public void SetDrawingEffect(object drawingEffect, DWRITE_TEXT_RANGE range) => SetDrawingEffect(drawingEffect, [range]);
+    /// <summary>Sets a drawing effect for the specified ranges.</summary>
     public virtual void SetDrawingEffect(object drawingEffect, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.DrawingEffect, drawingEffect, ranges);
 
+    /// <summary>Sets a solid color over the entire text or provided range(s).</summary>
     public void SetSolidColor(D3DCOLORVALUE color) => SetSolidColor(color, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetSolidColor(D3DCOLORVALUE)"/>
     public void SetSolidColor(D3DCOLORVALUE color, DWRITE_TEXT_RANGE range) => SetSolidColor(color, [range]);
+    /// <summary>Sets a solid color for the specified ranges.</summary>
     public virtual void SetSolidColor(D3DCOLORVALUE color, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.SolidColor, color, ranges);
 
+    /// <summary>Enables or disables pair kerning over the entire text or provided range(s).</summary>
     public void SetPairKerning(bool pairKerning) => SetPairKerning(pairKerning, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetPairKerning(bool)"/>
     public void SetPairKerning(bool pairKerning, DWRITE_TEXT_RANGE range) => SetPairKerning(pairKerning, [range]);
+    /// <summary>Sets pair kerning for the specified ranges.</summary>
     public virtual void SetPairKerning(bool pairKerning, DWRITE_TEXT_RANGE[] ranges) => SetFontRangeValue(FontRangeType.PairKerning, pairKerning, ranges);
 
+    /// <summary>
+    /// Sets character spacing (tracking) for the entire text or provided range(s).
+    /// </summary>
     public void SetCharacterSpacing(float leadingSpacing, float trailingSpacing, float minimumAdvanceWidth) => SetCharacterSpacing(leadingSpacing, trailingSpacing, minimumAdvanceWidth, new DWRITE_TEXT_RANGE(0));
+    /// <inheritdoc cref="SetCharacterSpacing(float, float, float)"/>
     public void SetCharacterSpacing(float leadingSpacing, float trailingSpacing, float minimumAdvanceWidth, DWRITE_TEXT_RANGE range) => SetCharacterSpacing(leadingSpacing, trailingSpacing, minimumAdvanceWidth, [range]);
+    /// <summary>Sets character spacing for the specified ranges.</summary>
     public virtual void SetCharacterSpacing(float leadingSpacing, float trailingSpacing, float minimumAdvanceWidth, DWRITE_TEXT_RANGE[] ranges)
         => SetFontRangeValue(FontRangeType.CharacterSpacing, new CharacterSpacing
         {
@@ -309,6 +506,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
+    /// <summary>
+    /// Returns a short, human-readable description including the current text (CR/LF visualized).
+    /// </summary>
     public override string ToString()
     {
         var text = base.ToString() + " '" + Text?.Replace('\r', '⏎').Replace("\n", string.Empty) + "'";
@@ -321,8 +521,14 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         //base.SetCompositionBrush(brush);
     }
 
+    /// <summary>
+    /// Resets the "pending changes" flag. Useful when batching edits to avoid spurious <see cref="TextChanged"/>.
+    /// </summary>
     public virtual void CommitChanges() => _textHasChanged = false;
 
+    /// <summary>
+    /// Internal text change handler honoring <see cref="RaiseTextChanged"/> and <see cref="TextChangedTrigger"/>.
+    /// </summary>
     protected virtual void DoOnTextChanged(object sender, ValueEventArgs<string> e)
     {
         _textHasChanged = true;
@@ -336,6 +542,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
+    /// <summary>
+    /// Raises <see cref="TextChanged"/> and the internal <see cref="IValueable.ValueChanged"/> event, then clears the pending flag.
+    /// </summary>
     protected virtual void OnTextChanged(object sender, ValueEventArgs<string> e)
     {
         TextChanged?.Invoke(sender, e);
@@ -343,6 +552,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         _textHasChanged = false;
     }
 
+    /// <inheritdoc/>
     public override void Invalidate(VisualPropertyInvalidateModes modes, InvalidateReason? reason = null)
     {
         if (modes != VisualPropertyInvalidateModes.None)
@@ -352,6 +562,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         base.Invalidate(modes, reason);
     }
 
+    /// <summary>
+    /// Shows/hides caret on focus changes and optionally defers <see cref="TextChanged"/> until focus loss.
+    /// </summary>
     protected internal override void IsFocusedChanged(bool newValue)
     {
         base.IsFocusedChanged(newValue);
@@ -370,6 +583,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
+    /// <summary>
+    /// Updates hover brush invalidation and cursor to I-beam when editable/enabled.
+    /// </summary>
     protected override void IsMouseOverChanged(bool newValue)
     {
         base.IsMouseOverChanged(newValue);
@@ -382,6 +598,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         Cursor = newValue && IsEditable && IsEnabled ? Cursor.IBeam : null;
     }
 
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -433,19 +650,12 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return true;
     }
 
+    /// <summary>
+    /// Handles caret visibility on focus gain/loss and updates caret location when focused.
+    /// </summary>
     protected override void OnFocusedChanged(object? sender, ValueEventArgs<bool> e)
     {
         base.OnFocusedChanged(sender, e);
-        //#if DEBUG
-        //            if (System.Diagnostics.Debugger.IsAttached)
-        //            {
-        //                if (!IsFocused)
-        //                {
-        //                    _selecting = false;
-        //                }
-        //                return;
-        //            }
-        //#endif
 
         if (IsFocused)
         {
@@ -460,6 +670,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     }
 
     private void SetCaretLocation() => DoWhenRendered(() => Window?.RunTaskOnMainThread(() => DoSetCaretLocation()));
+
+    /// <summary>
+    /// Positions the shared window caret visual to match the current text insertion point.
+    /// </summary>
     protected virtual void DoSetCaretLocation()
     {
         if (!IsFocused || !IsEditable || !IsEnabled)
@@ -493,6 +707,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
+    /// <summary>Shows the caret when focused, editable, and enabled.</summary>
     protected virtual void ShowCaret()
     {
         if (IsFocused && IsEditable && IsEnabled)
@@ -505,6 +720,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
+    /// <summary>Hides the caret.</summary>
     protected virtual void HideCaret()
     {
         var caret = Window?.Caret;
@@ -514,7 +730,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
+    /// <summary>Stops edit mode (currently hides the caret).</summary>
     protected virtual void StopEdit() => HideCaret();
+
+    /// <summary>Starts edit mode (shows caret and syncs caret formatting).</summary>
     protected virtual void Edit()
     {
         ShowCaret();
@@ -540,6 +759,8 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     }
 
     void IPasswordCapable.SetPasswordCharacter(char character) => PasswordCharacter = character;
+
+    /// <inheritdoc/>
     bool IPasswordCapable.IsPasswordModeEnabled
     {
         get => PasswordCharacter.HasValue;
@@ -557,14 +778,28 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
+    /// <summary>
+    /// Tests whether a window-space position falls on a given <paramref name="range"/> within the layout.
+    /// </summary>
     public bool IsPositionOverRange(D2D_POINT_2F position, DWRITE_TEXT_RANGE range) => IsPositionOverRange(position.x, position.y, range);
+
+    /// <summary>
+    /// Tests whether a window-space position falls on a given <paramref name="range"/> within the layout.
+    /// </summary>
     public bool IsPositionOverRange(float x, float y, DWRITE_TEXT_RANGE range)
     {
         var ht = HitTestPoint(x, y, out _, out var inside);
         return inside && ht != null && range.Contains(ht.Value.textPosition);
     }
 
+    /// <summary>
+    /// Hit-tests a window-space point into the text layout and returns the metrics at that point.
+    /// </summary>
     public DWRITE_HIT_TEST_METRICS? HitTestPoint(float x, float y) => HitTestPoint(x, y, out _, out _);
+
+    /// <summary>
+    /// Hit-tests a window-space point into the text layout and returns the metrics and hit information.
+    /// </summary>
     public DWRITE_HIT_TEST_METRICS? HitTestPoint(float x, float y, out bool isTrailingHit, out bool isInside)
     {
         isTrailingHit = false;
@@ -579,12 +814,22 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return metrics;
     }
 
+    /// <summary>
+    /// Creates or retrieves a DirectWrite text format for the current theme and control values.
+    /// </summary>
     internal IComObject<IDWriteTextFormat> GetFormat()
     {
         var format = Application.CurrentResourceManager.GetTextFormat(GetWindowTheme(), this)!;
         return format;
     }
 
+    /// <summary>
+    /// Builds or retrieves a cached DirectWrite text layout sized to <paramref name="maxWidth"/> x <paramref name="maxHeight"/>.
+    /// </summary>
+    /// <remarks>
+    /// Applies advanced options such as last-line wrapping, optical alignment, vertical glyph orientation, font fallback and line spacing.
+    /// When password masking is enabled, the masked text is used for layout.
+    /// </remarks>
     protected virtual IComObject<IDWriteTextLayout>? GetLayout(float maxWidth, float maxHeight)
     {
 #if DEBUG
@@ -918,8 +1163,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return new D2D_SIZE_F(width, height);
     }
 
-    // note we don't honor width & height = float.PositiveInfinity if layout is not null (which is generally the case)
-    // if float.MaxValue is not set, we always report the text metrics (the place we take)
+    /// <summary>
+    /// Measures the control using a DirectWrite text layout and accounts for padding and caret size.
+    /// </summary>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => MeasureWithPadding(constraint, c =>
     {
         var layout = GetLayout(c.width, c.height);
@@ -934,6 +1180,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 #endif
     });
 
+    /// <summary>
+    /// Arranges the control and updates the caret location after layout.
+    /// </summary>
     protected override void ArrangeCore(D2D_RECT_F finalRect) => SetCaretLocation();
 
     private IComObject<ID2D1Brush> GetSelectionBrush(RenderContext context, IComObject<ID2D1Brush> brush)
@@ -1010,6 +1259,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return context.CreateSolidColorBrush(middle);
     }
 
+    /// <summary>
+    /// Renders the text layout, including selection highlight and optional clipping.
+    /// Applies <see cref="TextRenderingParameters"/> and <see cref="AntiAliasingMode"/> as appropriate.
+    /// </summary>
     protected internal override void RenderCore(RenderContext context)
     {
         base.RenderCore(context);
@@ -1146,8 +1399,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                 trp.Set(Window.MonitorHandle, context.DeviceContext.Object);
             }
 
-            //context.DeviceContext.DrawRectangle(new D2D_RECT_F(origin, rr), brush);
-
             var options = DrawOptions;
             var aa = AntiAliasingMode;
             if (!trpMode && aa != D2D1_TEXT_ANTIALIAS_MODE.D2D1_TEXT_ANTIALIAS_MODE_DEFAULT)
@@ -1172,6 +1423,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         _rendered = true;
     }
 
+    /// <summary>
+    /// Restarts caret blinking when a key is released while the control is focused and editable.
+    /// </summary>
     protected override void OnKeyUp(object? sender, KeyEventArgs e)
     {
         base.OnKeyUp(sender, e);
@@ -1194,6 +1448,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
+    /// <summary>
+    /// Handles navigation, selection, clipboard and editing keys (including paste via Ctrl+V/Shift+Insert).
+    /// </summary>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         base.OnKeyDown(sender, e);
@@ -1490,6 +1747,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     private float GetFontSize() => Application.CurrentResourceManager.GetFontSize(GetWindowTheme(), FontSize);
 
+    /// <summary>
+    /// Handles Ctrl/Shift+wheel zooming/panning and plain wheel vertical panning when <see cref="IsWheelZoomEnabled"/> is true.
+    /// </summary>
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {
         base.OnMouseWheel(sender, e);
@@ -1524,12 +1784,18 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         Invalidate(VisualPropertyInvalidateModes.Measure, new InvalidateReason(GetType()));
     }
 
+    /// <summary>
+    /// Clears selection when mouse leaves the control.
+    /// </summary>
     protected override void OnMouseLeave(object? sender, MouseEventArgs e)
     {
         base.OnMouseLeave(sender, e);
         _selecting = false;
     }
 
+    /// <summary>
+    /// Begins selection drag on left button press and captures mouse.
+    /// </summary>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         base.OnMouseButtonDown(sender, e);
@@ -1546,6 +1812,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
+    /// <summary>
+    /// Ends selection drag on left button release and releases mouse capture.
+    /// </summary>
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
         base.OnMouseButtonUp(sender, e);
@@ -1556,18 +1825,14 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
+    /// <summary>
+    /// Extends selection while dragging the mouse.
+    /// </summary>
     protected override void OnMouseMove(object? sender, MouseEventArgs e)
     {
         base.OnMouseMove(sender, e);
         if (!IsEnabled)
             return;
-
-        //#if DEBUG
-        //            if (System.Diagnostics.Debugger.IsAttached)
-        //            {
-        //                _selecting = false;
-        //            }
-        //#endif
 
         if (_selecting)
         {
@@ -1581,6 +1846,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
         e.UTF16Character >= ' ';
 
+    /// <summary>
+    /// Inserts printable characters at the caret, replacing the current selection if any.
+    /// </summary>
     protected override void OnKeyPress(object? sender, KeyPressEventArgs e)
     {
         base.OnKeyPress(sender, e);
@@ -1597,6 +1865,11 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         PostponeCaret();
     }
 
+    /// <summary>
+    /// Inserts text at the current caret or at an explicit <paramref name="position"/>.
+    /// </summary>
+    /// <param name="text">The text to insert.</param>
+    /// <param name="position">Optional absolute character index. When null, uses caret position.</param>
     public void InsertText(string text, int? position = null)
     {
         if (!position.HasValue)
@@ -1611,6 +1884,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         InsertTextAt((uint)position.Value, text, _caretFormat);
     }
 
+    /// <summary>
+    /// Removes text starting at <paramref name="position"/> for <paramref name="lengthToRemove"/> characters
+    /// (or to the end when null).
+    /// </summary>
     public void RemoveText(int position, int? lengthToRemove = null)
     {
 #if NETFRAMEWORK
@@ -1623,8 +1900,17 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         RemoveTextAt((uint)position, (uint?)lengthToRemove);
     }
 
+    /// <summary>
+    /// Changes selection/caret using one of the <see cref="TextBoxSetSelection"/> modes.
+    /// </summary>
+    /// <param name="mode">The movement/selection mode.</param>
+    /// <param name="advance">Optional count used by some modes (e.g., characters to move).</param>
+    /// <param name="extend">Whether to extend the selection (Shift-like behavior).</param>
     public void Select(TextBoxSetSelection mode, int? advance = 0, bool extend = false) => SetSelection(mode, (uint?)advance, extend);
 
+    /// <summary>
+    /// Undoes the last edit operation if available.
+    /// </summary>
     public virtual bool Undo()
     {
         if (!_undoStack.TryUndo(UndoState.From(this), out var undo))
@@ -1634,6 +1920,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return true;
     }
 
+    /// <summary>
+    /// Redoes the last undone edit operation if available.
+    /// </summary>
     public virtual bool Redo()
     {
         if (!_undoStack.TryRedo(UndoState.From(this), out var redo))
@@ -1643,6 +1932,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return true;
     }
 
+    /// <summary>
+    /// Copies the current selection to the clipboard if non-empty.
+    /// </summary>
     public virtual void CopyToClipboard()
     {
         var text = GetSelectionText();
@@ -1652,6 +1944,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         TaskUtilities.RunWithSTAThread(() => Clipboard.SetText(text));
     }
 
+    /// <summary>
+    /// Pastes text from the clipboard, honoring <see cref="AcceptsReturn"/> to optionally strip newlines.
+    /// Replaces the current selection if any.
+    /// </summary>
     public virtual void PasteFromClipboard()
     {
         var text = TaskUtilities.RunWithSTAThread(Clipboard.GetText).Result;
@@ -1680,16 +1976,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     }
 
     //private int MirrorXCoordinate(int x, float paddingRight)
-    //{
-    //    // On RTL builds, coordinates may need to be restored to or converted from Cartesian coordinates, where x increases positively to the right.
-    //    var style = Window.ExtendedStyle;
-    //    if (style.HasFlag(WS_EX.WS_EX_LAYOUTRTL))
-    //    {
-    //        var rect = Window.ClientRect;
-    //        return rect.right - x - 1;
-    //    }
-    //    return x;
-    //}
+    //{ ... }
 
     private void InsertTextAt(uint position, string textToInsert, CaretFormat? caretFormat = null)
     {
@@ -2487,6 +2774,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     private IViewerParent? GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;
 
+    /// <summary>
+    /// Captures the formatting at the caret position so that new input inherits the preceding style.
+    /// </summary>
     protected virtual void UpdateCaretFormatting()
     {
         var layout = CheckLayout(false);
@@ -2634,10 +2924,13 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         };
         rc.right = rc.left + caretWidth;
         rc.top = caretY;
-        rc.bottom = caretY + caretHeight;
+        rc.bottom = caretY + caretHeight; // preserve original height rules
         return rc;
     }
 
+    /// <summary>
+    /// Returns the currently selected text, or an empty string if nothing is selected.
+    /// </summary>
     public string GetSelectionText()
     {
         var selection = GetSelectionRange();
@@ -2647,6 +2940,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return RenderedText?.Substring((int)selection.startPosition, (int)selection.length) ?? string.Empty;
     }
 
+    /// <summary>
+    /// Returns the current selection range as <see cref="DWRITE_TEXT_RANGE"/>, normalized (start &lt;= end) and clamped to text length.
+    /// </summary>
     public DWRITE_TEXT_RANGE GetSelectionRange()
     {
         // Returns a valid range of the current selection, regardless of whether the caret or anchor is first.
@@ -2664,6 +2960,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return new DWRITE_TEXT_RANGE(caretBegin, caretEnd - caretBegin);
     }
 
+    /// <summary>
+    /// Ensures a valid DirectWrite layout exists. Throws when not measured and <paramref name="throwIfNull"/> is true.
+    /// </summary>
     protected virtual IComObject<IDWriteTextLayout>? CheckLayout(bool throwIfNull = true)
     {
         var layout = _layout;
@@ -2997,6 +3296,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         public DWRITE_LINE_SPACING? lineSpacing;
     }
 
+    /// <summary>
+    /// Resets internal resources on composition detach (layout cache, flags).
+    /// </summary>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);
@@ -3004,6 +3306,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     }
 
     bool IImmVisual.SetImmCompositionWindowPosition(Window window) => SetImmCompositionWindowPosition(window);
+
+    /// <summary>
+    /// Allows derived classes to override IME composition window positioning. Return true to handle, false to use default behavior.
+    /// </summary>
     protected virtual bool SetImmCompositionWindowPosition(Window window)
     {
         if (!IsEditable)
@@ -3013,6 +3319,9 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return false;
     }
 
+    /// <summary>
+    /// Releases managed/unmanaged resources. Disposes the cached text layout.
+    /// </summary>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
@@ -3029,5 +3338,8 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
+    /// <summary>
+    /// Disposes the control and suppresses finalization.
+    /// </summary>
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 }

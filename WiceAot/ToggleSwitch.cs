@@ -1,25 +1,94 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// A binary on/off toggle control composed of a path track and a circular button (knob).
+/// - Visual tree: a <see cref="Canvas"/> hosting a <see cref="Path"/> (track) and an <see cref="Ellipse"/> (knob).
+/// - Interaction: clicking toggles <see cref="Value"/> via <see cref="OnClick(object?, EventArgs)"/>.
+/// - Styling: exposes brushes for on/off states for both the track and the knob.
+/// - Selection: implements <see cref="ISelectable"/>; <see cref="ISelectable.IsSelected"/> mirrors <see cref="Value"/>.
+/// - Data: implements <see cref="IValueable"/> for generic value handling and notifications.
+/// - Layout: when <see cref="AutoSize"/> is true, resizes itself based on current theme box size and DPI.
+/// </summary>
 public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
 {
+    /// <summary>
+    /// Dynamic property descriptor for <see cref="Value"/>.
+    /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
+    /// </summary>
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<bool>(typeof(ToggleSwitch), nameof(Value), VisualPropertyInvalidateModes.Render);
+
+    /// <summary>
+    /// Dynamic property descriptor for <see cref="OnButtonBrush"/>.
+    /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
+    /// </summary>
     public static VisualProperty OnButtonBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(ToggleSwitch), nameof(OnButtonBrush), VisualPropertyInvalidateModes.Render);
+
+    /// <summary>
+    /// Dynamic property descriptor for <see cref="OffButtonBrush"/>.
+    /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
+    /// </summary>
     public static VisualProperty OffButtonBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(ToggleSwitch), nameof(OffButtonBrush), VisualPropertyInvalidateModes.Render);
+
+    /// <summary>
+    /// Dynamic property descriptor for <see cref="OnPathBrush"/>.
+    /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
+    /// </summary>
     public static VisualProperty OnPathBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(ToggleSwitch), nameof(OnPathBrush), VisualPropertyInvalidateModes.Render);
+
+    /// <summary>
+    /// Dynamic property descriptor for <see cref="OffPathBrush"/>.
+    /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
+    /// </summary>
     public static VisualProperty OffPathBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(ToggleSwitch), nameof(OffPathBrush), VisualPropertyInvalidateModes.Render);
 
+    /// <summary>
+    /// Root container hosting the track and the knob.
+    /// </summary>
     private readonly Canvas _canvas = new();
+
+    /// <summary>
+    /// Track shape; stroked when off, filled when on depending on brush configuration.
+    /// </summary>
     private readonly Path _path = new();
+
+    /// <summary>
+    /// Circular knob that slides from near to far when <see cref="Value"/> changes.
+    /// </summary>
     private readonly Ellipse _button = new();
 
+    /// <summary>
+    /// Backing event for <see cref="IValueable.ValueChanged"/> explicit implementation.
+    /// </summary>
     private event EventHandler<ValueEventArgs>? _valueChanged;
+
+    /// <summary>
+    /// Explicit <see cref="IValueable.ValueChanged"/> implementation.
+    /// Raised alongside <see cref="ValueChanged"/> using non-generic <see cref="ValueEventArgs"/>.
+    /// </summary>
     event EventHandler<ValueEventArgs> IValueable.ValueChanged { add { _valueChanged += value; } remove { _valueChanged -= value; } }
 
+    /// <summary>
+    /// Occurs when <see cref="Value"/> changes.
+    /// </summary>
     public event EventHandler<ValueEventArgs<bool>>? ValueChanged;
+
+    /// <summary>
+    /// Occurs when <see cref="ISelectable.IsSelected"/> changes and <see cref="ISelectable.RaiseIsSelectedChanged"/> is true.
+    /// Mirrors <see cref="ValueChanged"/>.
+    /// </summary>
     public event EventHandler<ValueEventArgs<bool>>? IsSelectedChanged;
 
+    /// <inheritdoc/>
     bool IValueable.CanChangeValue { get => IsEnabled; set => IsEnabled = value; }
+
+    /// <inheritdoc/>
     object IValueable.Value => Value;
+
+    /// <summary>
+    /// Tries to set <see cref="Value"/> from an arbitrary object, supporting direct bool or convertible values.
+    /// </summary>
+    /// <param name="value">A value that is either a <see cref="bool"/> or convertible to <see cref="bool"/>.</param>
+    /// <returns>True when the value was converted and applied; otherwise false.</returns>
     bool IValueable.TrySetValue(object? value)
     {
         if (value is bool b)
@@ -36,12 +105,23 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         return false;
     }
 
+    /// <inheritdoc/>
     bool ISelectable.RaiseIsSelectedChanged { get; set; }
+
+    /// <inheritdoc/>
     bool ISelectable.IsSelected { get => Value; set => Value = value; }
 
+    /// <summary>
+    /// Gets or sets whether the control sizes itself based on theme metrics on DPI/theme changes.
+    /// Default is true.
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual bool AutoSize { get; set; } = true;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="ToggleSwitch"/>.
+    /// Sets up child visuals, geometry updates on arrange, default alignment and tooltip content (On/Off).
+    /// </summary>
     public ToggleSwitch()
     {
         OnThemeDpiEvent(null, ThemeDpiEventArgs.FromWindow(Window));
@@ -90,27 +170,57 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, Value ? on : off);
     }
 
+    /// <summary>
+    /// Gets or sets the current on/off state of the control.
+    /// Changing this property updates the knob alignment, invalidates rendering and raises <see cref="ValueChanged"/>.
+    /// </summary>
     [Category(CategoryBehavior)]
     public bool Value { get => (bool)GetPropertyValue(ValueProperty)!; set => SetPropertyValue(ValueProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the brush used to fill the knob when <see cref="Value"/> is true.
+    /// When null, a brush based on <c>theme.UnselectedColor</c> is created.
+    /// </summary>
     [Category(CategoryRender)]
     public CompositionBrush OnButtonBrush { get => (CompositionBrush)GetPropertyValue(OnButtonBrushProperty)!; set => SetPropertyValue(OnButtonBrushProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the brush used to fill the knob when <see cref="Value"/> is false.
+    /// When both this and <see cref="OffPathBrush"/> are null, falls back to a brush based on <c>theme.BorderColor</c>.
+    /// </summary>
     [Category(CategoryRender)]
     public CompositionBrush OffButtonBrush { get => (CompositionBrush)GetPropertyValue(OffButtonBrushProperty)!; set => SetPropertyValue(OffButtonBrushProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the brush used to fill the track when <see cref="Value"/> is true.
+    /// When null, a brush based on <c>theme.SelectedColor</c> is created.
+    /// </summary>
     [Category(CategoryRender)]
     public CompositionBrush OnPathBrush { get => (CompositionBrush)GetPropertyValue(OnPathBrushProperty)!; set => SetPropertyValue(OnPathBrushProperty, value); }
 
+    /// <summary>
+    /// Gets or sets the brush used to stroke the track when <see cref="Value"/> is false.
+    /// When null and <see cref="OffButtonBrush"/> is also null, a brush based on <c>theme.BorderColor</c> is created.
+    /// </summary>
     [Category(CategoryRender)]
     public CompositionBrush OffPathBrush { get => (CompositionBrush)GetPropertyValue(OffPathBrushProperty)!; set => SetPropertyValue(OffPathBrushProperty, value); }
 
+    /// <summary>
+    /// Toggles <see cref="Value"/> when the control is clicked.
+    /// </summary>
+    /// <param name="sender">Event source.</param>
+    /// <param name="e">Event args.</param>
     protected override void OnClick(object? sender, EventArgs e)
     {
         Value = !Value;
         base.OnClick(sender, e);
     }
 
+    /// <summary>
+    /// Applies rendering state for composition:
+    /// - Chooses brushes for the track and knob based on <see cref="Value"/>.
+    /// - Uses theme defaults when custom brushes are not provided.
+    /// </summary>
     protected override void Render()
     {
         if (Compositor == null)
@@ -144,6 +254,11 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         base.Render();
     }
 
+    /// <summary>
+    /// Raises <see cref="IsSelectedChanged"/> when enabled via <see cref="ISelectable.RaiseIsSelectedChanged"/>.
+    /// </summary>
+    /// <param name="sender">Event source.</param>
+    /// <param name="e">New selected value.</param>
     protected virtual void OnIsSelectedChanged(object? sender, ValueEventArgs<bool> e)
     {
         if (((ISelectable)this).RaiseIsSelectedChanged)
@@ -152,6 +267,12 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         }
     }
 
+    /// <summary>
+    /// Raises <see cref="ValueChanged"/>, the explicit <see cref="IValueable.ValueChanged"/>, and then
+    /// chains to <see cref="OnIsSelectedChanged(object?, ValueEventArgs{bool})"/>.
+    /// </summary>
+    /// <param name="sender">Event source.</param>
+    /// <param name="e">New value.</param>
     protected virtual void OnValueChanged(object? sender, ValueEventArgs<bool> e)
     {
         ValueChanged?.Invoke(sender, e);
@@ -159,6 +280,14 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         OnIsSelectedChanged(sender, e);
     }
 
+    /// <summary>
+    /// Intercepts property setting to react to <see cref="ValueProperty"/>:
+    /// updates knob alignment and raises change events after base storage.
+    /// </summary>
+    /// <param name="property">The property being set.</param>
+    /// <param name="value">The value to set.</param>
+    /// <param name="options">Set options.</param>
+    /// <returns>True if the stored value changed; otherwise false.</returns>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -172,6 +301,11 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         return true;
     }
 
+    /// <summary>
+    /// Subscribes to theme/DPI changes and applies initial sizing when attached to composition.
+    /// </summary>
+    /// <param name="sender">Event source.</param>
+    /// <param name="e">Event args.</param>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -179,12 +313,23 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
+    /// <summary>
+    /// Unsubscribes from theme/DPI changes when detaching from composition.
+    /// </summary>
+    /// <param name="sender">Event source.</param>
+    /// <param name="e">Event args.</param>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);
         Window!.ThemeDpiEvent -= OnThemeDpiEvent;
     }
 
+    /// <summary>
+    /// Applies automatic sizing based on current theme metrics when <see cref="AutoSize"/> is true.
+    /// Sets width to twice the theme box size and height/knob size to the theme box size.
+    /// </summary>
+    /// <param name="sender">Event source (window).</param>
+    /// <param name="e">Theme/DPI event args.</param>
     protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         if (!AutoSize)
