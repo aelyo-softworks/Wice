@@ -1084,29 +1084,6 @@ public class TestWindow : Window
         Children.Add(btn);
     }
 
-    public void AddComboBox()
-    {
-        var cb = new ComboBox
-        {
-            //cb.IntegralHeight = true;
-            MaxDropDownHeight = 125
-        };
-
-        //cb.Text.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink);
-        ((TextBox)cb.Text).Text = "hello";
-
-        Children.Add(cb);
-        //lb.DataSource = new List<string> { "hello", "world" };
-        var i = 0;
-        var words = File.ReadAllText("lorem.txt").
-            ToLowerInvariant().
-            Replace(Environment.NewLine, string.Empty).
-            Replace(".", string.Empty).
-            Replace(",", string.Empty)
-            .Split([' '], StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(24).Select(s => i++ + " : " + s);
-        cb.DataSource = words;
-    }
-
     public void AddScollableListBox()
     {
         var sv = new ScrollViewer

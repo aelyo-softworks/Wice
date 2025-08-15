@@ -37,7 +37,6 @@ public class WiceLanguage : ILanguage
             nameof(CheckBoxList),
             nameof(ClosingEventArgs),
             nameof(CollectionChangedInvalidateReason),
-            nameof(ComboBox),
             nameof(CompositionUpdateParts),
             nameof(DataBindContext),
             nameof(DataBinder),

@@ -67,7 +67,6 @@
 	  <Compile Include="..\WiceAot\CheckBoxList.cs" Link="CheckBoxList.cs" />
 	  <Compile Include="..\WiceAot\ClosingEventArgs.cs" Link="ClosingEventArgs.cs" />
 	  <Compile Include="..\WiceAot\CollectionChangedInvalidateReason.cs" Link="CollectionChangedInvalidateReason.cs" />
-	  <Compile Include="..\WiceAot\ComboBox.cs" Link="ComboBox.cs" />
 	  <Compile Include="..\WiceAot\CompositionUpdateParts.cs" Link="CompositionUpdateParts.cs" />
 	  <Compile Include="..\WiceAot\DataBindContext.cs" Link="DataBindContext.cs" />
 	  <Compile Include="..\WiceAot\DataBinder.cs" Link="DataBinder.cs" />
