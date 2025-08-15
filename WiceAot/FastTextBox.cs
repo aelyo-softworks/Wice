@@ -116,6 +116,12 @@ public partial class FastTextBox : TextBox
     protected virtual void OnLoading(object sender, LoadEventArgs e) => Loading?.Invoke(this, e);
     protected virtual void OnLoaded(object sender, LoadEventArgs e) => Loaded?.Invoke(this, e);
 
+    private void OnLoaded(LoadEventArgs e)
+    {
+        OnLoaded(this, e);
+        Invalidate(VisualPropertyInvalidateModes.Measure);
+    }
+
     protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
@@ -224,6 +230,7 @@ public partial class FastTextBox : TextBox
         private D2D_SIZE_F _parsedConstraint;
         private D2D_SIZE_F _parsedSize;
         private readonly Lock _lock = new();
+        private bool _wasParsingDeffered;
 
         public FastTextBox Visual = visual;
         public string Text = text ?? string.Empty;
@@ -314,7 +321,8 @@ public partial class FastTextBox : TextBox
                         }
                     }
 
-                    if (LoadingLines == null && lines.Count == Visual.DeferredParsingLineCountThreshold)
+                    _wasParsingDeffered = LoadingLines == null && lines.Count == Visual.DeferredParsingLineCountThreshold;
+                    if (_wasParsingDeffered)
                     {
                         var start = i;
                         e.LoadedLines = lines.Count;
@@ -345,8 +353,7 @@ public partial class FastTextBox : TextBox
 
                                 e.LoadedLines = lines.Count;
 
-                                Visual.OnLoaded(Visual, e);
-                                Visual.Invalidate(VisualPropertyInvalidateModes.Measure);
+                                Visual.OnLoaded(e);
                                 LoadingLines = null;
                             });
                         }
@@ -431,6 +438,11 @@ public partial class FastTextBox : TextBox
             else
             {
                 _parsedSize = new D2D_SIZE_F(maxCharactersPerLine * ParsedMetrics.width, Lines.Length * ParsedMetrics.height);
+            }
+
+            if (!_wasParsingDeffered)
+            {
+                Visual.OnLoaded(e);
             }
             return _parsedSize;
         }
