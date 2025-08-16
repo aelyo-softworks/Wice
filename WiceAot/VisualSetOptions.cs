@@ -12,14 +12,6 @@
 /// </remarks>
 public class VisualSetOptions : BaseObjectSetOptions
 {
-    /// <summary>
-    /// A reusable options instance that explicitly disables all visual invalidation
-    /// (i.e., equivalent to <see cref="VisualPropertyInvalidateModes.None"/>).
-    /// </summary>
-    /// <remarks>
-    /// Intended as an internal optimization to avoid repeated allocations in scenarios where invalidation
-    /// must be suppressed for a given set operation.
-    /// </remarks>
     internal static VisualSetOptions _noInvalidate = new()
     {
         InvalidateModes = VisualPropertyInvalidateModes.None

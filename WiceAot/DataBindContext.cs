@@ -14,9 +14,6 @@
 /// <param name="data">The source data object being bound. May be <see langword="null"/>.</param>
 public class DataBindContext(object? data)
 {
-    /// <summary>
-    /// Backing store for <see cref="Properties"/> using case-insensitive keys.
-    /// </summary>
     private readonly Dictionary<string, object> _properties = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>

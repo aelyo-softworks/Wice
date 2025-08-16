@@ -23,6 +23,18 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
         ArgumentNullException.ThrowIfNull(value);
 
         var toggle = new ToggleSwitch { HorizontalAlignment = Alignment.Near };
+
+        if (value.Property.Name != null)
+        {
+            var visuals = value.Property.Source.Grid.GetVisuals(value.Property.Name);
+            if (visuals?.Text is TextBox tb && tb.FontSize.HasValue)
+            {
+                toggle.AutoSize = false;
+                toggle.Height = tb.FontSize.Value;
+                toggle.Width = tb.FontSize.Value * 2; // Approximate width for toggle switch
+            }
+        }
+
         if (value.Property.TryGetTargetValue(out bool targetValue))
         {
             toggle.Value = targetValue;

@@ -373,6 +373,8 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
             {
                 Text = CreatePropertyTextVisual(property)
             };
+            _propertyVisuals[property.Name] = visuals;
+
 #if DEBUG
             visuals.Text.Name = "pgText#" + rowIndex + "[" + property.Name + "]";
 #endif
@@ -387,7 +389,6 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
             SetRow(visuals.ValueVisual, rowIndex);
             Children.Add(visuals.ValueVisual);
 
-            _propertyVisuals[property.Name] = visuals;
             rowIndex++;
         }
     }

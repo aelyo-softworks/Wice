@@ -122,11 +122,6 @@ public partial class Caret : Border, IDisposable
         return VisualPropertyInvalidateModes.None;
     }
 
-    /// <summary>
-    /// Arranges the caret within its parent canvas using its desired size and current canvas coordinates.
-    /// No-op if the caret has not been measured or the size is invalid.
-    /// </summary>
-    // this presumes parent is a Window (which is a Canvas)
     private void ArrangeWithParent()
     {
         //Application.Trace(this + " Ds:" + DesiredSize);
@@ -162,9 +157,6 @@ public partial class Caret : Border, IDisposable
         }
     }
 
-    /// <summary>
-    /// Handles a blink tick: toggles visibility and re-arms the timer when blinking and shown.
-    /// </summary>
     private void OnCaretBlink()
     {
         if (!Blink || !IsShown)

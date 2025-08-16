@@ -13,19 +13,8 @@
 /// </remarks>
 public partial class TitleBarButton : ButtonBase
 {
-    /// <summary>
-    /// Stroke thickness applied to the inner icon <see cref="Path"/> shape.
-    /// </summary>
     private const float _strokeThickness = 1;
-
-    /// <summary>
-    /// Current title bar button role (Close/Maximize/Restore/Minimize/etc.).
-    /// </summary>
     private TitleBarButtonType _buttonType;
-
-    /// <summary>
-    /// Caches the last geometry source applied to avoid redundant updates.
-    /// </summary>
     private GeometrySource2D? _lastGeometrySource2D;
 
     /// <summary>
@@ -169,15 +158,6 @@ public partial class TitleBarButton : ButtonBase
         return new SIZE(width, height);
     }
 
-    /// <summary>
-    /// Scales a value for a specific monitor DPI relative to the system default (96 DPI).
-    /// </summary>
-    /// <param name="window">The window from which to obtain DPI.</param>
-    /// <param name="value">The value to scale.</param>
-    /// <param name="reduce">
-    /// True to scale from real DPI down to 96 DPI space; false to scale from 96 DPI up to real DPI space.
-    /// </param>
-    /// <returns>The scaled value.</returns>
     private static int AdjustForMonitorDpi(Window window, int value, bool reduce = false)
     {
         var dpi = window.Dpi;

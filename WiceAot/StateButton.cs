@@ -17,13 +17,6 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
     /// </summary>
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(StateButton), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: ConvertValue);
 
-    /// <summary>
-    /// Validates the provided <paramref name="value"/> against the declared <see cref="States"/>.
-    /// </summary>
-    /// <param name="obj">The owning <see cref="StateButton"/>.</param>
-    /// <param name="value">The value to convert/validate.</param>
-    /// <returns>The original value when it matches a declared state.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the value does not match any existing state.</exception>
     internal static object? ConvertValue(BaseObject obj, object? value)
     {
         var box = (StateButton)obj;
@@ -56,8 +49,6 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
     }
 
     bool ISelectable.RaiseIsSelectedChanged { get; set; }
-
-    /// <inheritdoc />
     bool ISelectable.IsSelected
     {
         get => true.Equals(Value);
@@ -74,18 +65,7 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         }
     }
 
-    /// <summary>
-    /// Gets or sets whether the value can change. Mirrors <see cref="Visual.IsEnabled"/>.
-    /// </summary>
     bool IValueable.CanChangeValue { get => IsEnabled; set => IsEnabled = value; }
-
-    /// <summary>
-    /// Attempts to set the <see cref="Value"/> if the provided <paramref name="value"/> matches a declared state.
-    /// </summary>
-    /// <param name="value">The candidate value.</param>
-    /// <returns>
-    /// true if the value was accepted or no-op; otherwise false. Note: current implementation returns true in all cases.
-    /// </returns>
     bool IValueable.TrySetValue(object? value)
     {
         foreach (var state in States)
@@ -206,10 +186,6 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
     /// <param name="e">The event data.</param>
     protected virtual void OnValueChanged(object sender, ValueEventArgs e) => ValueChanged?.Invoke(sender, e);
 
-    /// <summary>
-    /// Gets the next state in <see cref="States"/> relative to the current <see cref="Value"/>, wrapping to the first.
-    /// </summary>
-    /// <returns>The next state, or <see langword="null"/> when there is fewer than two states.</returns>
     private StateButtonState? GetNextState()
     {
         if (States.Count <= 1)

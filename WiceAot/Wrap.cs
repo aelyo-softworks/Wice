@@ -172,17 +172,6 @@ public partial class Wrap : Visual
         }
     }
 
-    /// <summary>
-    /// Arranges a contiguous range of children on a single line/column at a given V offset.
-    /// </summary>
-    /// <param name="orientation">Flow orientation.</param>
-    /// <param name="children">Children array snapshot.</param>
-    /// <param name="v">Starting V offset of the line (Top for Horizontal, Left for Vertical).</param>
-    /// <param name="lineV">Thickness of the line along the V axis (Height for Horizontal, Width for Vertical).</param>
-    /// <param name="start">Start index (inclusive) of the line.</param>
-    /// <param name="end">End index (exclusive) of the line.</param>
-    /// <param name="useItemU">True to use a fixed slot size along U; otherwise use child's desired size.</param>
-    /// <param name="itemU">Fixed U size to apply when <paramref name="useItemU"/> is true.</param>
     private static void ArrangeLine(Orientation orientation, Visual[] children, float v, float lineV, int start, int end, bool useItemU, float itemU)
     {
         var u = 0f;
@@ -199,10 +188,6 @@ public partial class Wrap : Visual
         }
     }
 
-    /// <summary>
-    /// Helper size that maps Width/Height to U/V depending on <see cref="Orientation"/>.
-    /// When orientation is Horizontal, U=Width and V=Height. When Vertical, U=Height and V=Width.
-    /// </summary>
     private struct UVSize(Orientation orientation)
     {
         /// <summary>

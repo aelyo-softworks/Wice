@@ -108,9 +108,6 @@ public abstract partial class StateButtonListBox : ListBox
         return base.SetPropertyValue(property, value, options);
     }
 
-    /// <summary>
-    /// Private read-only text box used to identify and update item label padding on DPI/theme changes.
-    /// </summary>
     private sealed partial class TextBox2 : TextBox
     {
     }

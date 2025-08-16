@@ -659,9 +659,6 @@ public partial class WebView : Border, IDisposable
         }
     }
 
-    /// <summary>
-    /// Ensures WebView2 is ready then navigates to the current source.
-    /// </summary>
     private async Task NavigateFirstTime()
     {
         await EnsureWebView2Loaded();
@@ -879,9 +876,6 @@ public partial class WebView : Border, IDisposable
         }
     }
 
-    /// <summary>
-    /// Holds environment-related state for WebView2 including initialization results and shared lifetime tracking.
-    /// </summary>
     private sealed partial class WebViewInfo : IDisposable
     {
         /// <summary>

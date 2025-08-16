@@ -228,16 +228,6 @@ public partial class Canvas : Visual
         return new D2D_RECT_F(left, top, size);
     }
 
-    /// <summary>
-    /// Measures the children's desired sizes and computes the canvas desired size based on <paramref name="sizeToContent"/>.
-    /// </summary>
-    /// <param name="visual">The canvas instance being measured.</param>
-    /// <param name="constraint">The available size constraint for the canvas.</param>
-    /// <param name="sizeToContent">
-    /// Controls whether to return the union of children for width and/or height.
-    /// See <see cref="MeasureToContent"/>.
-    /// </param>
-    /// <returns>The desired size for the canvas.</returns>
     internal static D2D_SIZE_F MeasureCore(Visual visual, D2D_SIZE_F constraint, DimensionOptions sizeToContent)
     {
         D2D_RECT_F? rect = null;
@@ -283,11 +273,6 @@ public partial class Canvas : Visual
         return new D2D_SIZE_F(0, rect.Value.Size.height);
     }
 
-    /// <summary>
-    /// Arranges all visible children within the given <paramref name="finalRect"/> using <see cref="GetRect(D2D_SIZE_F, Visual, GetRectOptions)"/>.
-    /// </summary>
-    /// <param name="visual">The canvas instance being arranged.</param>
-    /// <param name="finalRect">The final rectangle allocated to the canvas.</param>
     internal static void ArrangeCore(Visual visual, D2D_RECT_F finalRect)
     {
         var finalSize = finalRect.Size;

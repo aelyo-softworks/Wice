@@ -12,14 +12,7 @@
 /// <seealso cref="System.Threading.Timer"/>
 public partial class WindowTimer : IDisposable
 {
-    /// <summary>
-    /// The underlying <see cref="System.Threading.Timer"/> driving ticks. May be <see langword="null"/> once disposed.
-    /// </summary>
     private Timer? _timer;
-
-    /// <summary>
-    /// Optional action to run on each tick. Executed on the window's main thread when present.
-    /// </summary>
     private readonly Action? _action;
 
     /// <summary>

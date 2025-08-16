@@ -67,15 +67,6 @@ public class StateButtonState : IEquatable<StateButtonState>
     /// </remarks>
     public Func<StateButtonState, object?, bool?>? EqualsFunc { get; set; }
 
-    /// <summary>
-    /// Creates the child <see cref="Visual"/> for this state using <see cref="CreateChildFunc"/>.
-    /// </summary>
-    /// <param name="box">The owning <see cref="StateButton"/>.</param>
-    /// <param name="e">The event that triggered the need to create the visual.</param>
-    /// <returns>The created non-null <see cref="Visual"/> instance.</returns>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when <see cref="CreateChildFunc"/> returns <see langword="null"/>.
-    /// </exception>
     internal Visual CreateChild(StateButton box, EventArgs e)
     {
         var visual = CreateChildFunc(box, e, this);

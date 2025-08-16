@@ -167,9 +167,6 @@ public partial class TitleBar : Dock
         }
     }
 
-    /// <summary>
-    /// Assigns or clears this instance as the window's main title bar, updating window style accordingly.
-    /// </summary>
     private void SetWindowMain()
     {
         var window = Window;

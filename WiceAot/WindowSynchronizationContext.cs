@@ -21,9 +21,6 @@
 /// </remarks>
 public class WindowSynchronizationContext : SynchronizationContext
 {
-    /// <summary>
-    /// The previously active <see cref="SynchronizationContext"/> captured at <see cref="Install"/> time, if any.
-    /// </summary>
     private SynchronizationContext? _previous;
 
     /// <summary>

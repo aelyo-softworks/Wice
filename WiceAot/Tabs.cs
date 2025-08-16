@@ -140,11 +140,6 @@ public partial class Tabs : Dock
     /// <param name="e">Event args (unused).</param>
     protected virtual void OnSelectionChanged(object? sender, EventArgs e) => SelectionChanged?.Invoke(sender, e);
 
-    /// <summary>
-    /// Handles structural changes to the <see cref="Pages"/> collection, keeping headers and content in sync,
-    /// enforcing single selection, and maintaining header/content index alignment.
-    /// </summary>
-    /// <param name="e">Collection change details.</param>
     private void OnPagesCollectionChanged(NotifyCollectionChangedEventArgs e)
     {
         switch (e.Action)
@@ -341,12 +336,6 @@ public partial class Tabs : Dock
         }
     }
 
-    /// <summary>
-    /// Handles selection changes from page headers to enforce a single selected page and to update content visibility.
-    /// Raises <see cref="SelectionChanged"/> when a header transitions to selected.
-    /// </summary>
-    /// <param name="sender">The header whose selection changed.</param>
-    /// <param name="e">Contains the new selection state.</param>
     private void OnHeaderIsSelectedChanged(object? sender, ValueEventArgs<bool> e)
     {
         if (e.Value)

@@ -41,30 +41,10 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
     /// </summary>
     public static VisualProperty OffPathBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(ToggleSwitch), nameof(OffPathBrush), VisualPropertyInvalidateModes.Render);
 
-    /// <summary>
-    /// Root container hosting the track and the knob.
-    /// </summary>
     private readonly Canvas _canvas = new();
-
-    /// <summary>
-    /// Track shape; stroked when off, filled when on depending on brush configuration.
-    /// </summary>
     private readonly Path _path = new();
-
-    /// <summary>
-    /// Circular knob that slides from near to far when <see cref="Value"/> changes.
-    /// </summary>
     private readonly Ellipse _button = new();
-
-    /// <summary>
-    /// Backing event for <see cref="IValueable.ValueChanged"/> explicit implementation.
-    /// </summary>
     private event EventHandler<ValueEventArgs>? _valueChanged;
-
-    /// <summary>
-    /// Explicit <see cref="IValueable.ValueChanged"/> implementation.
-    /// Raised alongside <see cref="ValueChanged"/> using non-generic <see cref="ValueEventArgs"/>.
-    /// </summary>
     event EventHandler<ValueEventArgs> IValueable.ValueChanged { add { _valueChanged += value; } remove { _valueChanged -= value; } }
 
     /// <summary>
@@ -78,17 +58,8 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
     /// </summary>
     public event EventHandler<ValueEventArgs<bool>>? IsSelectedChanged;
 
-    /// <inheritdoc/>
     bool IValueable.CanChangeValue { get => IsEnabled; set => IsEnabled = value; }
-
-    /// <inheritdoc/>
     object IValueable.Value => Value;
-
-    /// <summary>
-    /// Tries to set <see cref="Value"/> from an arbitrary object, supporting direct bool or convertible values.
-    /// </summary>
-    /// <param name="value">A value that is either a <see cref="bool"/> or convertible to <see cref="bool"/>.</param>
-    /// <returns>True when the value was converted and applied; otherwise false.</returns>
     bool IValueable.TrySetValue(object? value)
     {
         if (value is bool b)
@@ -105,10 +76,7 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         return false;
     }
 
-    /// <inheritdoc/>
     bool ISelectable.RaiseIsSelectedChanged { get; set; }
-
-    /// <inheritdoc/>
     bool ISelectable.IsSelected { get => Value; set => Value = value; }
 
     /// <summary>

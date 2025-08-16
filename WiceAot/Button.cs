@@ -121,11 +121,6 @@ public partial class Button : ButtonBase
         UpdateMargins();
     }
 
-    /// <summary>
-    /// Reacts to icon text changes to recompute margins when enabled.
-    /// </summary>
-    /// <param name="sender">The icon text box.</param>
-    /// <param name="e">Change information.</param>
     private void OnIconPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == TextBox.TextProperty.Name && UpdateMarginsOnPropertyChanged)
@@ -134,11 +129,6 @@ public partial class Button : ButtonBase
         }
     }
 
-    /// <summary>
-    /// Reacts to label text changes to recompute margins when enabled.
-    /// </summary>
-    /// <param name="sender">The label text box.</param>
-    /// <param name="e">Change information.</param>
     private void OnTextPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == TextBox.TextProperty.Name && UpdateMarginsOnPropertyChanged)
