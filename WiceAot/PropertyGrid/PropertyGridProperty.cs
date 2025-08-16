@@ -328,12 +328,15 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     }
 
     /// <summary>
-    /// Attempts to commit <see cref="Value"/> to the underlying object. If conversion fails,
+    /// Attempts to commit <see cref="Value"/> to the underlying object if this property is writable. If conversion fails,
     /// reverts <see cref="Value"/> to <see cref="OriginalValue"/> and writes it back.
     /// </summary>
     /// <returns><see langword="true"/> when a commit succeeded; <see langword="false"/> when a rollback occurred.</returns>
     public virtual bool CommitOrRollbackChanges()
     {
+        if (!IsReadWrite)
+            return false;
+
         if (TryGetTargetValue(out var value))
         {
             SetDescriptorValue(value);

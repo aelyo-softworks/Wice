@@ -92,6 +92,7 @@ public partial class AboutPage : Page
             tlb.MinButton!.IsVisible = false;
             dlg.Content.Children.Add(tlb);
 
+            _pg.LiveSync = true;
             _pg.MaxWidth = DesiredSize.width * 2 / 3;
             _pg.CellMargin = ((GalleryTheme)GetWindowTheme()).AboutPagePropertyGridCellMargin;
             _pg.Margin = ((GalleryTheme)GetWindowTheme()).AboutPagePropertyGridMargin;
@@ -116,6 +117,11 @@ public partial class AboutPage : Page
     protected override void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         var theme = (GalleryTheme)GetWindowTheme();
+        Window!.MonitorChanged += (s, e2) =>
+        {
+            _pg.Source?.UpdatePropertiesValues();
+        };
+
         _systemInfoButton.Height = theme.AboutPageSystemInfoButtonHeight;
         _mouseInPointerText.Padding = theme.AboutPageMouseInPointerTextBoxPadding;
         _systemInfoButton.Margin = theme.AboutPageSystemInfoButtonMargin;
@@ -125,11 +131,7 @@ public partial class AboutPage : Page
 
         if (_pg.SelectedObject != null)
         {
-#if NETFRAMEWORK
-            _pg.SelectedObject = new DiagnosticsInformation(null, Window);
-#else
-            _pg.SelectedObject = new SystemInformation(null, Window);
-#endif
+            _pg.Source?.UpdatePropertiesValues();
         }
     }
 }

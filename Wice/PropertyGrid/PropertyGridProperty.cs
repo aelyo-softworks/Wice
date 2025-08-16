@@ -157,6 +157,9 @@ public class PropertyGridProperty : BaseObject, IComparable, IComparable<Propert
 
     public virtual bool CommitOrRollbackChanges()
     {
+        if (!IsReadWrite)
+            return false;
+
         if (TryGetTargetValue(out var value))
         {
             SetDescriptorValue(value);

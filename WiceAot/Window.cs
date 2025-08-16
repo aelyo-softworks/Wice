@@ -3631,6 +3631,7 @@ public partial class Window : Canvas, ITitleBarParent
             case MessageDecoder.WM_WINDOWPOSCHANGED:
                 if (win != null)
                 {
+                    win.UpdateMonitor();
                     unsafe
                     {
                         var pos = *(WINDOWPOS*)lParam.Value;
