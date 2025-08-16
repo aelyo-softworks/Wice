@@ -43,11 +43,6 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     public static VisualProperty CellMarginProperty { get; } = VisualProperty.Add(typeof(PropertyGrid<T>), nameof(CellMargin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
 
     /// <summary>
-    /// Maps property names to their corresponding name and value visuals (one row per property).
-    /// </summary>
-    private readonly ConcurrentDictionary<string, PropertyVisuals<T>> _propertyVisuals = new();
-
-    /// <summary>
     /// Initializes the grid with three columns:
     /// - Column 0: property names (Auto size).
     /// - Column 1: splitter (fixed theme thickness).
@@ -83,6 +78,24 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     }
 
     /// <summary>
+    /// Gets a dictionary that maps property names to their corresponding visual representations.
+    /// </summary>
+    protected IDictionary<string, PropertyVisuals<T>> PropertyVisuals { get; } = new ConcurrentDictionary<string, PropertyVisuals<T>>();
+
+    private static IEnumerable<PropertyGridProperty<T>> EnumerateSourceProperties(PropertyGrid<T> grid)
+    {
+        var properties = grid.Source?.Properties ?? [];
+        return properties.OrderBy(p => p.DisplayName);
+    }
+
+    /// <summary>
+    /// Gets the function used to select and enumerate properties for the <see cref="PropertyGrid{T}"/>.
+    /// </summary>
+    /// <remarks>Override this property to customize the logic for selecting and enumerating properties
+    /// displayed in the property grid.</remarks>
+    protected virtual Func<PropertyGrid<T>, IEnumerable<PropertyGridProperty<T>>>? PropertiesSelector { get; } = EnumerateSourceProperties;
+
+    /// <summary>
     /// Gets the splitter that resizes the name and value columns.
     /// </summary>
     [Browsable(false)]
@@ -99,12 +112,6 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// </summary>
     [Browsable(false)]
     public PropertyGridSource<T>? Source { get; private set; }
-
-    /// <summary>
-    /// Gets the current category source used to organize properties when <see cref="GroupByCategory"/> is enabled.
-    /// </summary>
-    [Browsable(false)]
-    public PropertyGridCategorySource<T>? CategorySource { get; private set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether editing is disabled for all properties.
@@ -224,7 +231,7 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     public PropertyVisuals<T>? GetVisuals(string propertyName)
     {
         ArgumentNullException.ThrowIfNull(propertyName);
-        _propertyVisuals.TryGetValue(propertyName, out var prop);
+        PropertyVisuals.TryGetValue(propertyName, out var prop);
         return prop;
     }
 
@@ -235,18 +242,14 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     protected virtual PropertyGridSource<T> CreateSource() => new(this, SelectedObject);
 
     /// <summary>
-    /// Creates the category source used to organize properties.
-    /// </summary>
-    /// <returns>The created category source.</returns>
-    protected virtual PropertyGridCategorySource<T> CreateCategorySource() => new(this);
-
-    /// <summary>
     /// Rebuilds sources and relays out the grid for the current <see cref="SelectedObject"/>.
     /// </summary>
     protected virtual void BindSelectedObject()
     {
         Source = CreateSource();
-        CategorySource = CreateCategorySource();
+        if (Source == null)
+            throw new InvalidOperationException();
+
         BindDimensions();
     }
 
@@ -311,10 +314,10 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     }
 
     /// <summary>
-    /// Creates the read-only text visual for a property's display name (left column).
+    /// Creates the read-only visual for a property's display name (left column).
     /// </summary>
     /// <param name="property">The property descriptor.</param>
-    /// <returns>The created text visual.</returns>
+    /// <returns>The created visual.</returns>
     protected virtual Visual CreatePropertyTextVisual(PropertyGridProperty<T> property)
     {
         ArgumentNullException.ThrowIfNull(property);
@@ -331,6 +334,26 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     }
 
     /// <summary>
+    /// Creates the read-only visual for a property's category (left column).
+    /// </summary>
+    /// <param name="category">The category.</param>
+    /// <returns>The created visual.</returns>
+    protected virtual Visual CreateCategoryVisual(string category)
+    {
+        ArgumentNullException.ThrowIfNull(category);
+
+        var text = new TextBox
+        {
+            IsEditable = false,
+            TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER,
+            Text = category,
+        };
+        text.CopyFrom(this);
+        text.FontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_BOLD;
+        return text;
+    }
+
+    /// <summary>
     /// Rebuilds grid rows and child visuals from the current <see cref="Source"/>.
     /// Clears existing rows and visuals, then creates a new row per property with its
     /// name visual (column 0) and value visual (column 2). Column 1 is the splitter.
@@ -338,7 +361,7 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     protected virtual void BindDimensions()
     {
         Rows.Clear();
-        foreach (var kv in _propertyVisuals)
+        foreach (var kv in PropertyVisuals)
         {
             if (kv.Value.Text != null)
             {
@@ -351,45 +374,109 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
             }
         }
 
-        _propertyVisuals.Clear();
+        PropertyVisuals.Clear();
         if (Source == null)
             return;
 
         var rowIndex = 0;
-        foreach (var property in Source.Properties)
+        var selector = PropertiesSelector ?? EnumerateSourceProperties;
+
+        if (GroupByCategory)
         {
-            if (property.Name == null)
-                continue;
-
-            if (rowIndex > 0)
+            foreach (var category in selector(this)
+                .GroupBy(p => p.Category ?? string.Empty)
+                .OrderBy(g => g.Key))
             {
-                var row = new GridRow();
-                Rows.Add(row);
+                if (!string.IsNullOrWhiteSpace(category.Key))
+                {
+                    rowIndex += AddCategoryVisualsToRow(category.Key, rowIndex);
+                }
+
+                foreach (var property in category.OrderBy(p => p.DisplayName))
+                {
+                    rowIndex += AddPropertyVisualsToRow(property, rowIndex);
+                }
             }
-
-            Rows[rowIndex].Size = float.NaN;
-
-            var visuals = new PropertyVisuals<T>
-            {
-                Text = CreatePropertyTextVisual(property)
-            };
-            _propertyVisuals[property.Name] = visuals;
-
-#if DEBUG
-            visuals.Text.Name = "pgText#" + rowIndex + "[" + property.Name + "]";
-#endif
-            SetRow(visuals.Text, rowIndex);
-            Children.Add(visuals.Text);
-
-            visuals.ValueVisual = CreatePropertyValueVisual(property);
-#if DEBUG
-            visuals.ValueVisual.Name = "pgValue#" + rowIndex + "[" + property.Name + "]";
-#endif
-            SetColumn(visuals.ValueVisual, 2);
-            SetRow(visuals.ValueVisual, rowIndex);
-            Children.Add(visuals.ValueVisual);
-
-            rowIndex++;
         }
+        else
+        {
+            foreach (var property in selector(this))
+            {
+                rowIndex += AddPropertyVisualsToRow(property, rowIndex);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Adds a category visual element to the specified row in the grid.
+    /// </summary>
+    /// <remarks>If the specified <paramref name="rowIndex"/> does not already exist in the grid, a new row is
+    /// created and added to the grid. The category visual is a non-editable text box that spans all columns in the
+    /// grid.</remarks>
+    /// <param name="category">The text to display in the category visual. Cannot be <see langword="null"/>.</param>
+    /// <param name="rowIndex">The index of the row to which the category visual will be added. Must be greater than or equal to 0.</param>
+    /// <returns>The number of rows added. Returns 1 or more if the operation is successful; otherwise, 0.</returns>
+    protected virtual int AddCategoryVisualsToRow(string category, int rowIndex)
+    {
+        ArgumentNullException.ThrowIfNull(category);
+        if (rowIndex > 0)
+        {
+            var row = new GridRow();
+            Rows.Add(row);
+        }
+
+        Rows[rowIndex].Size = float.NaN;
+
+        var visual = CreateCategoryVisual(category) ?? throw new InvalidOperationException();
+        SetRow(visual, rowIndex);
+        SetColumnSpan(visual, Columns.Count);
+        Children.Add(visual);
+        return 1;
+    }
+
+    /// <summary>
+    /// Adds the visual elements for a property to a specified row in the grid.
+    /// </summary>
+    /// <remarks>This method creates and adds visual elements for the specified property, including text and
+    /// value visuals,  to the specified row in the grid. If the row index is greater than the current number of rows, a
+    /// new row is created. The method also updates the internal collection of property visuals for later
+    /// reference.</remarks>
+    /// <param name="property">The property for which visual elements are to be created and added. Cannot be <see langword="null"/>.</param>
+    /// <param name="rowIndex">The index of the row where the visual elements will be added. Must be a valid row index.</param>
+    /// <returns>The number of rows added. Returns 1 or more if the operation is successful; otherwise, 0.</returns>
+    protected virtual int AddPropertyVisualsToRow(PropertyGridProperty<T> property, int rowIndex)
+    {
+        ArgumentNullException.ThrowIfNull(property);
+        if (property.Name == null)
+            return 0;
+
+        if (rowIndex > 0)
+        {
+            var row = new GridRow();
+            Rows.Add(row);
+        }
+
+        Rows[rowIndex].Size = float.NaN;
+
+        var visuals = new PropertyVisuals<T>
+        {
+            Text = CreatePropertyTextVisual(property) ?? throw new InvalidOperationException()
+        };
+        PropertyVisuals[property.Name] = visuals;
+
+#if DEBUG
+        visuals.Text.Name = "pgText#" + rowIndex + "[" + property.Name + "]";
+#endif
+        SetRow(visuals.Text, rowIndex);
+        Children.Add(visuals.Text);
+
+        visuals.ValueVisual = CreatePropertyValueVisual(property) ?? throw new InvalidOperationException();
+#if DEBUG
+        visuals.ValueVisual.Name = "pgValue#" + rowIndex + "[" + property.Name + "]";
+#endif
+        SetColumn(visuals.ValueVisual, 2);
+        SetRow(visuals.ValueVisual, rowIndex);
+        Children.Add(visuals.ValueVisual);
+        return 1;
     }
 }

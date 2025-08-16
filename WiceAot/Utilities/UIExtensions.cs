@@ -35,17 +35,32 @@ public static class UIExtensions
     const int TMT_TEXTCOLOR = 3803;
 
     /// <summary>
-    /// Applies hyperlink visuals to the first occurrence of <paramref name="text"/> within the <paramref name="textBox"/> content,
-    /// sets underline and semi-bold weight, and wires hover/click behaviors.
+    /// Configures a specified range of text within a <see cref="TextBox"/> to behave as a hyperlink.
     /// </summary>
-    /// <param name="textBox">The target text box.</param>
-    /// <param name="text">The substring to present as a hyperlink.</param>
-    /// <param name="onClick">
-    /// Optional click handler. When provided and returns true, default shell navigation is suppressed.
-    /// When null or returns false, the method launches the <paramref name="text"/> via <see cref="Process.Start(ProcessStartInfo)"/> using shell execute.
-    /// </param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="textBox"/> or <paramref name="text"/> is null.</exception>
-    public static void SetHyperLinkRange(this TextBox textBox, string text, Func<string, bool>? onClick = null)
+    /// <remarks>This method enhances the specified text within the <see cref="TextBox"/> to visually and
+    /// functionally  behave as a hyperlink. It applies underline styling, adjusts font weight, and changes the text
+    /// color  based on the hyperlink's state (normal, hover, or disabled). Additionally, it handles mouse events  to
+    /// provide interactivity, such as changing the cursor to a hand icon and invoking the <paramref name="onClick"/> 
+    /// callback or opening the hyperlink in the default browser if the callback is not provided or does not handle the
+    /// event.</remarks>
+    /// <param name="textBox">The <see cref="TextBox"/> in which the hyperlink range is set. Cannot be <see langword="null"/>.</param>
+    /// <param name="text">The text to be treated as a hyperlink. Cannot be <see langword="null"/>.</param>
+    /// <param name="onClick">An optional callback function that is invoked when the hyperlink is clicked.  If provided, the function receives
+    /// the hyperlink text as a parameter and should return <see langword="true"/>  if the click event is handled;
+    /// otherwise, <see langword="false"/>.</param>
+    /// <param name="hyperLinkNormalColor">An optional color to apply to the hyperlink text when it is in its normal state. If not specified, a default
+    /// color is used.</param>
+    /// <param name="hyperLinkHotColor">An optional color to apply to the hyperlink text when the mouse hovers over it. If not specified, a default
+    /// color is used.</param>
+    /// <param name="hyperLinkDisabledColor">An optional color to apply to the hyperlink text when it is disabled. If not specified, a default color is
+    /// used.</param>
+    public static void SetHyperLinkRange(
+        this TextBox textBox,
+        string text,
+        Func<string, bool>? onClick = null,
+        D3DCOLORVALUE? hyperLinkNormalColor = null,
+        D3DCOLORVALUE? hyperLinkHotColor = null,
+        D3DCOLORVALUE? hyperLinkDisabledColor = null)
     {
         ExceptionExtensions.ThrowIfNull(textBox, nameof(textBox));
         ExceptionExtensions.ThrowIfNull(text, nameof(text));
@@ -60,7 +75,7 @@ public static class UIExtensions
         {
             if (textBox.IsPositionOverRange(e.GetPosition(textBox), range))
             {
-                textBox.SetSolidColor(HyperLinkHotColor, range);
+                textBox.SetSolidColor(hyperLinkHotColor ?? HyperLinkHotColor, range);
 #if NETFRAMEWORK
                 textBox.Cursor = DirectN.Cursor.Hand;
 #else
@@ -97,7 +112,7 @@ public static class UIExtensions
 
         void reset()
         {
-            textBox.SetSolidColor(HyperLinkNormalColor, range);
+            textBox.SetSolidColor(hyperLinkNormalColor ?? HyperLinkNormalColor, range);
             textBox.Cursor = null;
         }
     }

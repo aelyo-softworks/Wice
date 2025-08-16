@@ -245,7 +245,6 @@
 	  <Compile Include="..\WiceAot\Popup.cs" Link="Popup.cs" />
 	  <Compile Include="..\WiceAot\PopupWindow.cs" Link="PopupWindow.cs" />
 	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
-	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridCategoryOptionsAttribute.cs" Link="PropertyGrid\PropertyGridCategoryOptionsAttribute.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridItem.cs" Link="PropertyGrid\PropertyGridItem.cs" />
 	  <Compile Include="..\WiceAot\PropertyInvalidateReason.cs" Link="PropertyInvalidateReason.cs" />
 	  <Compile Include="..\WiceAot\RadialGradientBrush.cs" Link="RadialGradientBrush.cs" />

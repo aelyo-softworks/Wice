@@ -113,14 +113,7 @@ public class SystemInformation(Assembly? assembly = null, Window? window = null,
     /// <summary>
     /// Gets a value indicating whether the system exposes at least one non-WARP (hardware) DXGI adapter.
     /// </summary>
-    /// <remarks>
-    /// Implementation details:
-    /// - Creates a DXGI factory (CreateDXGIFactory1) and enumerates adapters.
-    /// - Filters out the software WARP adapter identified by DeviceId = 0x8C.
-    /// - Returns true when at least one adapter does not match the WARP DeviceId.
-    ///
-    /// Reference: "New info about enumerating adapters for Windows 8" in the DXGI docs.
-    /// </remarks>
+    [Category("Graphics")]
     public static bool HasNonWarpAdapter
     {
         get

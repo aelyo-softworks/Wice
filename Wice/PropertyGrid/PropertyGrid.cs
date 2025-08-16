@@ -8,8 +8,6 @@ public class PropertyGrid : Grid
     public static VisualProperty SelectedObjectProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGrid), nameof(SelectedObject), VisualPropertyInvalidateModes.Measure, null);
     public static VisualProperty CellMarginProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(CellMargin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
 
-    private readonly ConcurrentDictionary<string, PropertyVisuals> _propertyVisuals = new();
-
     public PropertyGrid()
     {
 #if DEBUG
@@ -39,6 +37,16 @@ public class PropertyGrid : Grid
 #endif
     }
 
+    protected IDictionary<string, PropertyVisuals> PropertyVisuals { get; } = new ConcurrentDictionary<string, PropertyVisuals>();
+
+    private static IEnumerable<PropertyGridProperty> EnumerateSourceProperties(PropertyGrid grid)
+    {
+        var properties = grid.Source?.Properties ?? [];
+        return properties.OrderBy(p => p.DisplayName);
+    }
+
+    protected virtual Func<PropertyGrid, IEnumerable<PropertyGridProperty>>? PropertiesSelector { get; } = EnumerateSourceProperties;
+
     [Browsable(false)]
     public GridSplitter Splitter { get; }
 
@@ -47,9 +55,6 @@ public class PropertyGrid : Grid
 
     [Browsable(false)]
     public PropertyGridSource Source { get; private set; }
-
-    [Browsable(false)]
-    public PropertyGridCategorySource CategorySource { get; private set; }
 
     [Category(CategoryBehavior)]
     public bool IsReadOnly { get => (bool)GetPropertyValue(IsReadOnlyProperty); set => SetPropertyValue(IsReadOnlyProperty, value); }
@@ -130,16 +135,17 @@ public class PropertyGrid : Grid
         if (propertyName == null)
             throw new ArgumentNullException(nameof(propertyName));
 
-        _propertyVisuals.TryGetValue(propertyName, out var prop);
+        PropertyVisuals.TryGetValue(propertyName, out var prop);
         return prop;
     }
 
     protected virtual PropertyGridSource CreateSource() => new(this, SelectedObject);
-    protected virtual PropertyGridCategorySource CreateCategorySource() => new(this);
     protected virtual void BindSelectedObject()
     {
         Source = CreateSource();
-        CategorySource = CreateCategorySource();
+        if (Source == null)
+            throw new InvalidOperationException();
+
         BindDimensions();
     }
 
@@ -204,17 +210,35 @@ public class PropertyGrid : Grid
         {
             IsEditable = false,
             Margin = CellMargin,
-            TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER
+            TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER,
+            Text = property.DisplayName,
         };
         text.CopyFrom(this);
-        text.Text = property.DisplayName;
         return text;
     }
+
+    protected virtual Visual CreateCategoryVisual(string category)
+    {
+        if (category == null)
+            throw new ArgumentNullException(nameof(category));
+
+        var text = new TextBox
+        {
+            IsEditable = false,
+            TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER,
+            Text = category,
+        };
+        text.CopyFrom(this);
+        text.FontWeight = DWRITE_FONT_WEIGHT.DWRITE_FONT_WEIGHT_BOLD;
+        return text;
+    }
+
+    protected IEnumerable<PropertyGridProperty> EnumerateSourceProperties() => Source.Properties;
 
     protected virtual void BindDimensions()
     {
         Rows.Clear();
-        foreach (var kv in _propertyVisuals)
+        foreach (var kv in PropertyVisuals)
         {
             if (kv.Value.Text != null)
             {
@@ -227,41 +251,94 @@ public class PropertyGrid : Grid
             }
         }
 
-        _propertyVisuals.Clear();
+        PropertyVisuals.Clear();
         if (Source == null)
             return;
 
         var rowIndex = 0;
-        foreach (var property in Source.Properties)
+        var selector = PropertiesSelector ?? EnumerateSourceProperties;
+
+        if (GroupByCategory)
         {
-            if (rowIndex > 0)
+            foreach (var category in selector(this)
+                .GroupBy(p => p.Category ?? string.Empty)
+                .OrderBy(g => g.Key))
             {
-                var row = new GridRow();
-                Rows.Add(row);
+                if (!string.IsNullOrWhiteSpace(category.Key))
+                {
+                    rowIndex += AddCategoryVisualsToRow(category.Key, rowIndex);
+                }
+
+                foreach (var property in category.OrderBy(p => p.DisplayName))
+                {
+                    rowIndex += AddPropertyVisualsToRow(property, rowIndex);
+                }
             }
-
-            Rows[rowIndex].Size = float.NaN;
-
-            var visuals = new PropertyVisuals
-            {
-                Text = CreatePropertyTextVisual(property)
-            };
-#if DEBUG
-            visuals.Text.Name ??= "pgText#" + rowIndex + "[" + property.Name + "]";
-#endif
-            SetRow(visuals.Text, rowIndex);
-            Children.Add(visuals.Text);
-
-            visuals.ValueVisual = CreatePropertyValueVisual(property);
-#if DEBUG
-            visuals.ValueVisual.Name ??= "pgValue#" + rowIndex + "[" + property.Name + "]";
-#endif
-            SetColumn(visuals.ValueVisual, 2);
-            SetRow(visuals.ValueVisual, rowIndex);
-            Children.Add(visuals.ValueVisual);
-
-            _propertyVisuals[property.Name] = visuals;
-            rowIndex++;
         }
+        else
+        {
+            foreach (var property in selector(this))
+            {
+                rowIndex += AddPropertyVisualsToRow(property, rowIndex);
+            }
+        }
+    }
+
+    protected virtual int AddCategoryVisualsToRow(string category, int rowIndex)
+    {
+        if (category == null)
+            throw new ArgumentNullException(nameof(category));
+
+        if (rowIndex > 0)
+        {
+            var row = new GridRow();
+            Rows.Add(row);
+        }
+
+        Rows[rowIndex].Size = float.NaN;
+
+        var visual = CreateCategoryVisual(category) ?? throw new InvalidOperationException();
+        SetRow(visual, rowIndex);
+        SetColumnSpan(visual, Columns.Count);
+        Children.Add(visual);
+        return 1;
+    }
+
+    protected virtual int AddPropertyVisualsToRow(PropertyGridProperty property, int rowIndex)
+    {
+        if (property == null)
+            throw new ArgumentNullException(nameof(property));
+
+        if (property.Name == null)
+            return 0;
+
+        if (rowIndex > 0)
+        {
+            var row = new GridRow();
+            Rows.Add(row);
+        }
+
+        Rows[rowIndex].Size = float.NaN;
+
+        var visuals = new PropertyVisuals
+        {
+            Text = CreatePropertyTextVisual(property)
+        };
+        PropertyVisuals[property.Name] = visuals;
+
+#if DEBUG
+        visuals.Text.Name = "pgText#" + rowIndex + "[" + property.Name + "]";
+#endif
+        SetRow(visuals.Text, rowIndex);
+        Children.Add(visuals.Text);
+
+        visuals.ValueVisual = CreatePropertyValueVisual(property);
+#if DEBUG
+        visuals.ValueVisual.Name = "pgValue#" + rowIndex + "[" + property.Name + "]";
+#endif
+        SetColumn(visuals.ValueVisual, 2);
+        SetRow(visuals.ValueVisual, rowIndex);
+        Children.Add(visuals.ValueVisual);
+        return 1;
     }
 }

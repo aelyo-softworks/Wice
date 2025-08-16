@@ -92,6 +92,7 @@ public partial class AboutPage : Page
             tlb.MinButton!.IsVisible = false;
             dlg.Content.Children.Add(tlb);
 
+            _pg.GroupByCategory = true;
             _pg.LiveSync = true;
             _pg.MaxWidth = DesiredSize.width * 2 / 3;
             _pg.CellMargin = ((GalleryTheme)GetWindowTheme()).AboutPagePropertyGridCellMargin;
