@@ -54,10 +54,10 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
     public object? Editor { get; private set; }
 
     /// <summary>
-    /// Gets the creator responsible for building/updating the editor instance, if any.
+    /// Gets or sets the creator responsible for building/updating the editor instance.
     /// </summary>
     [Browsable(false)]
-    public IEditorCreator<T>? EditorCreator { get; private set; }
+    public IEditorCreator<T>? EditorCreator { get; set; }
 
     /// <inheritdoc/>
     public override string ToString() => base.ToString() + " | [" + Property.DisplayName + "='" + Property.TextValue + " ']";
@@ -91,7 +91,7 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
     /// Chooses an <see cref="IEditorCreator{T}"/> for the property type and state.
     /// </summary>
     /// <returns>
-    /// A boolean, enum, or default editor creator depending on <see cref="Property.Type"/> and <see cref="Property.IsReadWrite"/>.
+    /// A boolean, enum, or default editor creator depending on <see cref="Property"/>.
     /// </returns>
     public virtual IEditorCreator<T> CreateEditorCreator()
     {
@@ -142,8 +142,8 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
     /// Behavior:
     /// - If the editor did not change, no work is performed.<br/>
     /// - Removes the previous editor <see cref="Visual"/> (when applicable).<br/>
-    /// - If the new editor implements <see cref="IValueable"/>, sets <c>CanChangeValue</c> and forwards <c>ValueChanged</c> to <see cref="Property.Value"/>.<br/>
-    /// - Adds the editor <see cref="Visual"/> to <see cref="Visual.Children"/> and dims opacity when <see cref="Property.IsReadOnly"/> is true.
+    /// - If the new editor implements <see cref="IValueable"/>, sets <c>CanChangeValue</c> and forwards <c>ValueChanged</c> to <see cref="Property"/> Value.<br/>
+    /// - Adds the editor <see cref="Visual"/> to <see cref="Visual.Children"/> and dims opacity when <see cref="Property"/> is read-only.
     /// </remarks>
     protected virtual void AddEditor(object? editor)
     {

@@ -1,5 +1,6 @@
 ﻿namespace Wice.Interop;
 
+/// <exclude />
 public static partial class WiceCommons
 {
     public static LRESULT SendMessageW(HWND hWnd, uint Msg, WPARAM wParam) => SendMessageW(hWnd, Msg, wParam, LPARAM.Null);

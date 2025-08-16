@@ -23,38 +23,9 @@ public sealed class PropertyGridPropertyOptionsAttribute : Attribute
     /// <summary>
     /// Gets or sets an optional editor factory type used to create/update the editor for this property.
     /// </summary>
-    /// <remarks>
-    /// Requirements:
-    /// - Must have a public parameterless constructor (instantiated via <see cref="Activator.CreateInstance(Type)"/>).<br/>
-    /// - Must implement <see cref="IEditorCreator{T}"/> for the grid's selected object type <typeparamref name="T"/> at runtime.<br/>
-    /// Trimming/AOT:
-    /// - Annotated with <see cref="DynamicallyAccessedMembersAttribute"/> to preserve the public parameterless constructor.
-    /// </remarks>
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
     public Type? EditorType { get; set; }
 
-    /// <summary>
-    /// Creates an editor instance for the supplied value visual using a custom creator when available,
-    /// or falls back to the default editor.
-    /// </summary>
-    /// <typeparam name="T">
-    /// The selected object type for the owning <see cref="PropertyGrid{T}"/>.
-    /// Annotated to preserve public properties for trimming/AOT.
-    /// </typeparam>
-    /// <param name="value">The property value visual requesting an editor.</param>
-    /// <returns>
-    /// The created editor instance (custom or default). Never returns <see langword="null"/>; default editors are used as fallback.
-    /// </returns>
-    /// <exception cref="WiceException">
-    /// Thrown when <see cref="EditorType"/> is set but the created instance does not implement <see cref="IEditorCreator{T}"/> (error code "0024").
-    /// </exception>
-    /// <remarks>
-    /// Behavior:
-    /// - Try to reuse a per-value creator by casting <c>value.Property.Value</c> to <see cref="IEditorCreator{T}"/>.<br/>
-    /// - If not available and <see cref="EditorType"/> is provided, instantiate it and cast to <see cref="IEditorCreator{T}"/>.<br/>
-    /// - If a creator is present, call <see cref="IEditorCreator{T}.CreateEditor(PropertyValueVisual{T})"/>; if it returns <see langword="null"/>, fallback applies.<br/>
-    /// - Fallback: return <see cref="PropertyValueVisual{T}.CreateDefaultEditor()"/>.
-    /// </remarks>
     internal object? CreateEditor<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyValueVisual<T> value)
     {
         var creator = value.Property.Value as IEditorCreator<T>;

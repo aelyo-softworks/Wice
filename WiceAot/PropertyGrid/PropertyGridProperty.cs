@@ -20,8 +20,7 @@
 public partial class PropertyGridProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : BaseObject, IComparable, IComparable<PropertyGridProperty<T>>
 {
     /// <summary>
-    /// Controls whether this property applies changes to the underlying object as the user edits
-    /// (<see cref="true"/>), or defers to an explicit commit action (<see cref="false"/>).
+    /// Controls whether this property applies changes to the underlying object as the user edits.
     /// </summary>
     public static VisualProperty LiveSyncProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty<T>), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
 
@@ -43,7 +42,7 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGridProperty<T>), nameof(Value), VisualPropertyInvalidateModes.Measure, null);
 
     /// <summary>
-    /// The CLR property name (same as <see cref="PropertyInfo.Name"/>).
+    /// The CLR property name.
     /// </summary>
     public static VisualProperty NameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty<T>), nameof(Name), VisualPropertyInvalidateModes.Render, null);
 

@@ -25,10 +25,6 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
     /// <summary>
     /// Gets or sets the stored value for this dynamic property.
     /// </summary>
-    /// <remarks>
-    /// Consumers should prefer <see cref="GetValueFromProperty{T}(PropertyGridProperty{T}, string, T?)"/> to retrieve
-    /// this value with conversion and defaulting.
-    /// </remarks>
     public object? Value { get; set; }
 
     /// <summary>
