@@ -43,7 +43,7 @@ public interface IPropertyOwner
     /// Implementations should honor <see cref="BaseObjectSetOptions.DontTestValuesForEquality"/> and related options when deciding
     /// whether to raise change notifications.
     /// </remarks>
-    bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions? options = null);
+    bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null);
 
     /// <summary>
     /// Gets the current effective value of the specified property.

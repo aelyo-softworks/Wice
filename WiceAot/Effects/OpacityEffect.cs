@@ -1,16 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-/// <summary>
-/// Direct2D CLSID for the built-in Opacity effect (Framework build).
-/// </summary>
-[Guid(D2D1Constants.CLSID_D2D1OpacityString)]
-#else
-/// <summary>
-/// Direct2D CLSID for the built-in Opacity effect (.NET/Core build).
-/// </summary>
-[Guid(Constants.CLSID_D2D1OpacityString)]
-#endif
 /// <summary>
 /// Applies a uniform opacity factor to the effect's primary <see cref="EffectWithSource.Source"/>.
 /// </summary>
@@ -20,6 +9,11 @@
 /// - Exposes a single parameter (<see cref="Opacity"/>), mapped at effect parameter index 0.
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1OpacityString)]
+#else
+[Guid(Constants.CLSID_D2D1OpacityString)]
+#endif
 public partial class OpacityEffect : EffectWithSource
 {
     /// <summary>

@@ -1,22 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-/// <summary>
-/// CLSID mapping for the Direct2D Vignette effect on .NET Framework.
-/// </summary>
-/// <remarks>
-/// The attribute is conditionally compiled to use the D2D1 constant set on .NET Framework.
-/// </remarks>
-[Guid(D2D1Constants.CLSID_D2D1VignetteString)]
-#else
-/// <summary>
-/// CLSID mapping for the Direct2D Vignette effect on modern .NET.
-/// </summary>
-/// <remarks>
-/// The attribute is conditionally compiled to use the local constant set on .NET 6+/.NET 9.
-/// </remarks>
-[Guid(Constants.CLSID_D2D1VignetteString)]
-#endif
 /// <summary>
 /// Wraps the Direct2D Vignette effect.
 /// </summary>
@@ -29,6 +12,11 @@
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
 /// <seealso cref="EffectProperty"/>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1VignetteString)]
+#else
+[Guid(Constants.CLSID_D2D1VignetteString)]
+#endif
 public partial class VignetteEffect : EffectWithSource
 {
     /// <summary>

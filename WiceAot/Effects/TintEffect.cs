@@ -1,12 +1,7 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-[Guid(D2D1Constants.CLSID_D2D1TintString)]
-#else
-[Guid(Constants.CLSID_D2D1TintString)]
-#endif
 /// <summary>
-/// Direct2D/Win2D Tint effect wrapper.
+/// Direct2D Tint effect wrapper.
 /// Applies a color tint to the input source and optionally clamps the output to [0,1].
 /// </summary>
 /// <remarks>
@@ -17,6 +12,11 @@
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
 /// <seealso cref="EffectProperty"/>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1TintString)]
+#else
+[Guid(Constants.CLSID_D2D1TintString)]
+#endif
 public partial class TintEffect : EffectWithSource
 {
     /// <summary>

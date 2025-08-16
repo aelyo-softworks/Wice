@@ -1,16 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-/// <summary>
-/// Direct2D effect CLSID for the SpotSpecular effect when targeting .NET Framework.
-/// </summary>
-[Guid(D2D1Constants.CLSID_D2D1SpotSpecularString)]
-#else
-/// <summary>
-/// Direct2D effect CLSID for the SpotSpecular effect when targeting .NET (Core/5+/9).
-/// </summary>
-[Guid(Constants.CLSID_D2D1SpotSpecularString)]
-#endif
 /// <summary>
 /// Represents the Direct2D SpotSpecular lighting effect.
 /// </summary>
@@ -21,6 +10,11 @@
 /// - Numeric setters clamp values to documented ranges to match D2D semantics.
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1SpotSpecularString)]
+#else
+[Guid(Constants.CLSID_D2D1SpotSpecularString)]
+#endif
 public partial class SpotSpecularEffect : EffectWithSource
 {
     /// <summary>

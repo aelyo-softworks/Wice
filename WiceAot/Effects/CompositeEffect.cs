@@ -1,12 +1,7 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-[Guid(D2D1Constants.CLSID_D2D1CompositeString)]
-#else
-[Guid(Constants.CLSID_D2D1CompositeString)]
-#endif
 /// <summary>
-/// Represents the Direct2D/Win2D "Composite" effect, which combines multiple input sources
+/// Represents the Direct2D "Composite" effect, which combines multiple input sources
 /// using a specified <see cref="D2D1_COMPOSITE_MODE"/> (e.g., SourceOver, Multiply, etc.).
 /// </summary>
 /// <remarks>
@@ -15,6 +10,11 @@
 ///   as indicated by the constructor passing <c>int.MaxValue</c> to the base type.
 /// - The CLSID is provided via <see cref="GuidAttribute"/> and switches between framework and .NET targets.
 /// </remarks>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1CompositeString)]
+#else
+[Guid(Constants.CLSID_D2D1CompositeString)]
+#endif
 public partial class CompositeEffect : Effect
 {
     /// <summary>

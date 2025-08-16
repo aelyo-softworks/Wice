@@ -10,11 +10,6 @@
 /// - For inputs in [0, 1], outputs are also in [0, 1].
 /// - Inputs outside [0, 1] are not clamped and are simply raised to the 5th power.
 /// </remarks>
-/// <example>
-/// var easing = new QuinticEase();
-/// float t = 0.6f;
-/// float progress = easing.Ease(t); // 0.6^5 = 0.07776
-/// </example>
 /// <seealso cref="IEasingFunction"/>
 public class QuinticEase : IEasingFunction
 {

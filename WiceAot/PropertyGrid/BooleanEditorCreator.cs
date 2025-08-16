@@ -23,15 +23,28 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
         ArgumentNullException.ThrowIfNull(value);
 
         var toggle = new ToggleSwitch { HorizontalAlignment = Alignment.Near };
+        toggle.CopyStyleFrom(value.Property.Source.Grid);
 
         if (value.Property.Name != null)
         {
             var visuals = value.Property.Source.Grid.GetVisuals(value.Property.Name);
-            if (visuals?.Text is TextBox tb && tb.FontSize.HasValue)
+            if (visuals?.Text is TextBox tb)
             {
-                toggle.AutoSize = false;
-                toggle.Height = tb.FontSize.Value;
-                toggle.Width = tb.FontSize.Value * 2; // Approximate width for toggle switch
+                if (tb.FontSize.HasValue)
+                {
+                    toggle.AutoSize = false;
+                    toggle.Height = tb.FontSize.Value;
+                    toggle.Width = tb.FontSize.Value * 2; // Approximate width for toggle switch
+                }
+
+                if (((IPropertyOwner)tb).TryGetPropertyValue(TextBox.ForegroundBrushProperty, out var foreground) &&
+                    foreground is SolidColorBrush color)
+                {
+                    toggle.DoWhenAttachedToComposition(() =>
+                    {
+                        toggle.OffPathBrush = toggle.Compositor!.CreateColorBrush(color.Color.ToColor());
+                    });
+                }
             }
         }
 

@@ -5,12 +5,9 @@
 /// </summary>
 /// <remarks>
 /// Messages produced or passed to this exception are expected to begin with a prefix and numeric code
-/// in the form "WICE####: <message>". The numeric portion can be extracted using <see cref="GetCode(string)"/>
+/// in the form "WICE####: <message/>". The numeric portion can be extracted using <see cref="GetCode(string)"/>
 /// or via the <see cref="Code"/> property.
 /// </remarks>
-/// <example>
-/// throw new WiceException("0002: Operation failed.");
-/// </example>
 [Serializable]
 public class WiceException : Exception
 {

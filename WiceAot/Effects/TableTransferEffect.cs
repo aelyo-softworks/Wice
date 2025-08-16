@@ -1,16 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-/// <summary>
-/// Direct2D effect CLSID for the TableTransfer effect (Framework build).
-/// </summary>
-[Guid(D2D1Constants.CLSID_D2D1TableTransferString)]
-#else
-/// <summary>
-/// Direct2D effect CLSID for the TableTransfer effect (.NET build).
-/// </summary>
-[Guid(Constants.CLSID_D2D1TableTransferString)]
-#endif
 /// <summary>
 /// Applies per-channel lookup table transfer curves to the RGBA components of the source.
 /// </summary>
@@ -21,6 +10,11 @@
 /// - Default tables map the identity function [0, 1].
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1TableTransferString)]
+#else
+[Guid(Constants.CLSID_D2D1TableTransferString)]
+#endif
 public partial class TableTransferEffect : EffectWithSource
 {
     /// <summary>

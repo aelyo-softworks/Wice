@@ -1,18 +1,7 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
 /// <summary>
-/// CLSID for the Direct2D Composite effect on .NET Framework.
-/// </summary>
-[Guid(D2D1Constants.CLSID_D2D1CompositeString)]
-#else
-/// <summary>
-/// CLSID for the Direct2D Composite effect on .NET (Core/5+).
-/// </summary>
-[Guid(Constants.CLSID_D2D1CompositeString)]
-#endif
-/// <summary>
-/// Direct2D/Win2D composite effect node that blends two input sources using a configurable mode.
+/// Direct2D composite effect node that blends two input sources using a configurable mode.
 /// </summary>
 /// <remarks>
 /// - This type maps to the native D2D1 Composite effect (CLSID_D2D1Composite).
@@ -23,6 +12,11 @@
 /// </remarks>
 /// <seealso cref="Effect"/>
 /// <seealso cref="IGraphicsEffectSource"/>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1CompositeString)]
+#else
+[Guid(Constants.CLSID_D2D1CompositeString)]
+#endif
 public partial class CompositeStepEffect : Effect
 {
     /// <summary>

@@ -9,10 +9,6 @@
 /// - The editor creation strategy via a custom editor factory type (<see cref="EditorType"/>).
 /// If no custom editor creator is supplied or it produces <see langword="null"/>, the grid falls back to the default editor.
 /// </remarks>
-/// <example>
-/// [PropertyGridPropertyOptions(SortOrder = 10, EditorType = typeof(MyStringEditorCreator))]
-/// public string Name { get; set; }
-/// </example>
 [AttributeUsage(AttributeTargets.Property)]
 public sealed class PropertyGridPropertyOptionsAttribute : Attribute
 {

@@ -1,8 +1,7 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
 /// <summary>
-/// Wraps the D2D/Win2D built-in "RgbToHue" effect (CLSID <see cref="D2D1Constants.CLSID_D2D1RgbToHueString"/>),
+/// Wraps the D2D built-in "RgbToHue" effect,
 /// converting an RGB input into a hue-based color space.
 /// </summary>
 /// <remarks>
@@ -12,19 +11,9 @@
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
 /// <seealso cref="D2D1_RGBTOHUE_OUTPUT_COLOR_SPACE"/>
+#if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1RgbToHueString)]
 #else
-/// <summary>
-/// Wraps the D2D/Win2D built-in "RgbToHue" effect (CLSID <see cref="Constants.CLSID_D2D1RgbToHueString"/>),
-/// converting an RGB input into a hue-based color space.
-/// </summary>
-/// <remarks>
-/// - Inherits from <see cref="EffectWithSource"/> and therefore requires at least one input source.
-/// - Exposes a single parameter at effect property index 0 (<see cref="OutputColorSpace"/>).
-/// - The parameter mapping uses <see cref="GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_DIRECT"/>.
-/// </remarks>
-/// <seealso cref="EffectWithSource"/>
-/// <seealso cref="D2D1_RGBTOHUE_OUTPUT_COLOR_SPACE"/>
 [Guid(Constants.CLSID_D2D1RgbToHueString)]
 #endif
 public partial class RgbToHueEffect : EffectWithSource

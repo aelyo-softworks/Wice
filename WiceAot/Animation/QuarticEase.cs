@@ -22,16 +22,5 @@ public class QuarticEase : IEasingFunction
     /// <returns>
     /// The eased progress value f(t) = t^4. This function does not clamp the input.
     /// </returns>
-    /// <example>
-    /// <code language="csharp">
-    /// IEasingFunction ease = new QuarticEase();
-    /// for (int i = 0; i <= 10; i++)
-    /// {
-    ///     float t = i / 10f;          // normalized time [0..1]
-    ///     float progress = ease.Ease(t);
-    ///     // Use 'progress' to drive an animation curve
-    /// }
-    /// </code>
-    /// </example>
     public float Ease(float normalizedTime) => normalizedTime * normalizedTime * normalizedTime * normalizedTime;
 }

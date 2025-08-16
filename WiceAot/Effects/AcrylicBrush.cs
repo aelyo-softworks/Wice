@@ -11,28 +11,18 @@ namespace Wice.Effects;
 /// </summary>
 /// <remarks>
 /// - Supports two rendering paths:
-///   1) Windows Acrylic (HostBackdrop) blur when <paramref name="useWindowsAcrylic"/> is true.
-///   2) Manual Gaussian blur on Backdrop when <paramref name="useWindowsAcrylic"/> is false.
+///   1) Windows Acrylic (HostBackdrop) blur when "useWindowsAcrylic" is true.
+///   2) Manual Gaussian blur on Backdrop when "useWindowsAcrylic" is false.
 /// - Supports a legacy composition graph for pre-19H1 systems lacking luminosity blend behavior.
 /// - Encodes parameters into the CompositionObject.Comment to enable state recovery (e.g., <see cref="GetTintColor"/>).
 /// </remarks>
 public static class AcrylicBrush
 {
-    // Exclusion color applied in the legacy graph to mimic Acrylic's exclusion layer.
     private static readonly D3DCOLORVALUE _exclusionColor = D3DCOLORVALUE.FromArgb(26, 255, 255, 255);
-    // Color saturation applied to the blurred backdrop to enhance vibrancy.
     private const float _saturation = 1.25f;
-    // Gaussian blur radius (standard deviation) used when not relying on the OS acrylic blur.
     private const float _blurRadius = 30f;
-    // Opacity of the noise layer added on top of the tint for subtle texture.
     private const float _noiseOpacity = 0.02f;
 
-    /// <summary>
-    /// Creates the legacy acrylic graph that blends a noise/tint stack using an exclusion layer.
-    /// </summary>
-    /// <param name="blurredSource">The blurred backdrop source.</param>
-    /// <param name="tintColorEffect">The flood effect representing the tint color.</param>
-    /// <returns>The composed effect source representing the legacy acrylic output (without noise yet).</returns>
     private static IGraphicsEffectSource CombineNoiseWithTintEffectLegacy(IGraphicsEffectSource blurredSource, IGraphicsEffectSource tintColorEffect)
     {
         var saturationEffect = new SaturationEffect
@@ -63,14 +53,6 @@ public static class AcrylicBrush
         return compositeEffect;
     }
 
-    /// <summary>
-    /// Creates the 19H1+ acrylic graph that incorporates luminosity/color blending for better Acrylic fidelity.
-    /// </summary>
-    /// <param name="blurredSource">The blurred backdrop source.</param>
-    /// <param name="tintColorEffect">Flood effect for the tint color.</param>
-    /// <param name="initialLuminosityColor">Initial luminosity color computed from the tint.</param>
-    /// <param name="animatedProperties">A list to which animated property names will be added.</param>
-    /// <returns>A source representing the modern acrylic output (without noise yet).</returns>
     private static IGraphicsEffectSource CombineNoiseWithTintEffectLuminosity(
         IGraphicsEffectSource blurredSource,
         IGraphicsEffectSource tintColorEffect,
@@ -105,11 +87,6 @@ public static class AcrylicBrush
         return colorBlendEffect;
     }
 
-    /// <summary>
-    /// Computes an opacity modifier for the tint based on its HSV value to maintain readability contrast.
-    /// </summary>
-    /// <param name="tintColor">The base tint color.</param>
-    /// <returns>An opacity multiplier in [0, 1]. Returns 1.0 on pre-19H1 systems.</returns>
     private static float GetTintOpacityModifier(D3DCOLORVALUE tintColor)
     {
 #if NETFRAMEWORK
@@ -159,13 +136,6 @@ public static class AcrylicBrush
         return opacityModifier;
     }
 
-    /// <summary>
-    /// Computes the effective tint color by applying opacity and version-appropriate modifiers.
-    /// </summary>
-    /// <param name="tintColor">The base tint color.</param>
-    /// <param name="tintOpacity">The user-provided tint opacity.</param>
-    /// <param name="tintLuminosityOpacity">Optional explicit luminosity opacity; if provided, disables modifier logic.</param>
-    /// <returns>The effective tint color including alpha premultiplication.</returns>
     private static D3DCOLORVALUE GetEffectiveTintColor(D3DCOLORVALUE tintColor, float tintOpacity, float? tintLuminosityOpacity)
     {
         if (tintLuminosityOpacity.HasValue)
@@ -181,25 +151,12 @@ public static class AcrylicBrush
         return tintColor;
     }
 
-    /// <summary>
-    /// Computes the effective luminosity color from the tint color and opacities.
-    /// </summary>
-    /// <param name="tintColor">Base tint color.</param>
-    /// <param name="tintOpacity">Tint opacity.</param>
-    /// <param name="tintLuminosityOpacity">Optional luminosity opacity overriding the derived value.</param>
-    /// <returns>A color used to control the luminosity stage of the graph.</returns>
     private static D3DCOLORVALUE GetEffectiveLuminosityColor(D3DCOLORVALUE tintColor, float tintOpacity, float? tintLuminosityOpacity)
     {
         tintColor.a *= tintOpacity;
         return GetLuminosityColor(tintColor, tintLuminosityOpacity);
     }
 
-    /// <summary>
-    /// Derives a luminosity color from a tint color, optionally applying an explicit opacity.
-    /// </summary>
-    /// <param name="tintColor">Base tint color with alpha already applied.</param>
-    /// <param name="tintLuminosityOpacity">Optional explicit opacity for the luminosity color.</param>
-    /// <returns>A color representing the luminosity contribution.</returns>
     private static D3DCOLORVALUE GetLuminosityColor(D3DCOLORVALUE tintColor, float? tintLuminosityOpacity)
     {
         if (tintLuminosityOpacity.HasValue)
@@ -223,14 +180,6 @@ public static class AcrylicBrush
         return color;
     }
 
-    /// <summary>
-    /// Creates a surface brush containing a tiled noise texture from an embedded PNG resource.
-    /// </summary>
-    /// <param name="device">Composition graphics device used to allocate the drawing surface.</param>
-    /// <returns>A surface brush configured to wrap the noise texture.</returns>
-    /// <exception cref="WiceException">
-    /// Thrown if the noise embedded resource cannot be found (code "0025").
-    /// </exception>
     private static CompositionSurfaceBrush CreateNoiseBrush(CompositionGraphicsDevice device)
     {
         Wice.Utilities.ExceptionExtensions.ThrowIfNull(device, nameof(device));
@@ -339,15 +288,6 @@ public static class AcrylicBrush
         return null;
     }
 
-    /// <summary>
-    /// Internal helper that creates a brush from the effect factory and wires the backdrop source.
-    /// </summary>
-    /// <param name="compositor">The compositor used to create brushes and effects.</param>
-    /// <param name="initialTintColor">Initial tint color.</param>
-    /// <param name="initialLuminosityColor">Initial luminosity color.</param>
-    /// <param name="useLegacyEffect">Whether to force the legacy graph.</param>
-    /// <param name="useWindowsAcrylic">Whether to use HostBackdrop (true) or Backdrop with Gaussian blur (false).</param>
-    /// <returns>The initialized CompositionEffectBrush.</returns>
     private static CompositionEffectBrush CreateAcrylicBrushWorker(
         Compositor compositor,
         D3DCOLORVALUE initialTintColor,
@@ -375,15 +315,6 @@ public static class AcrylicBrush
         return acrylicBrush;
     }
 
-    /// <summary>
-    /// Builds the Acrylic composition effect graph and returns a factory supporting animated properties.
-    /// </summary>
-    /// <param name="compositor">Compositor used for effect creation.</param>
-    /// <param name="initialTintColor">Initial tint color.</param>
-    /// <param name="initialLuminosityColor">Initial luminosity color (19H1+ path).</param>
-    /// <param name="useLegacyEffect">Forces legacy graph if true, or when 19H1+ not available.</param>
-    /// <param name="useWindowsAcrylic">Selects HostBackdrop path vs Backdrop with Gaussian blur.</param>
-    /// <returns>A CompositionEffectFactory with animatable color properties (TintColor and optionally LuminosityColor).</returns>
     private static CompositionEffectFactory CreateAcrylicBrushCompositionEffectFactory(
                 Compositor compositor,
                 D3DCOLORVALUE initialTintColor,

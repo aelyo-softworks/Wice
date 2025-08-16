@@ -62,17 +62,6 @@ public class BounceEase : IEasingFunction
     /// - Uses a logarithm in the bounciness base to determine the current bounce segment.
     /// - Computes a symmetric parabolic arc over the segment, scaled by a decaying amplitude.
     /// </remarks>
-    /// <example>
-    /// <code language="csharp">
-    /// var ease = new BounceEase { Bounces = 3, Bounciness = 2.0f };
-    /// for (int i = 0; i <= 10; i++)
-    /// {
-    ///     float t = i / 10f;
-    ///     float y = ease.Ease(t);
-    ///     // Use y to drive an animation curve.
-    /// }
-    /// </code>
-    /// </example>
     public float Ease(float normalizedTime)
     {
         var bounces = Math.Max(0, Bounces);

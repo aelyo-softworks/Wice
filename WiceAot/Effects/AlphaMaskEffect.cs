@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 /// <summary>
-/// Wraps the Direct2D/Win2D AlphaMask effect (D2D1_ALPHA_MASK).
+/// Wraps the Direct2D AlphaMask effect (D2D1_ALPHA_MASK).
 /// Uses the alpha channel of the <see cref="AlphaMask"/> input (index 1)
 /// to mask the primary <see cref="EffectWithSource.Source"/> input (index 0).
 /// </summary>
@@ -10,15 +10,6 @@
 /// - Index 0: <see cref="EffectWithSource.Source"/> (the content to be masked).
 /// - Index 1: <see cref="AlphaMask"/> (the mask whose alpha channel is applied).
 /// Typical usage chains this effect between two other effects or images:
-/// <example>
-/// <code>
-/// var effect = new AlphaMaskEffect
-/// {
-///     Source = imageToBeMasked,
-///     AlphaMask = maskSource
-/// };
-/// </code>
-/// </example>
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
 /// <seealso cref="IGraphicsEffectSource"/>

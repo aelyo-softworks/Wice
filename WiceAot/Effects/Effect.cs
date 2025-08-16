@@ -1,35 +1,20 @@
 ﻿namespace Wice.Effects;
 
+/// <summary>
+/// Represents an abstract base class for effects that can be applied to graphics.
+/// </summary>
+/// <remarks>This class provides a framework for creating custom effects by managing sources, properties, and
+/// interop with Direct2D. It implements <see cref="IGraphicsEffect"/>, <see cref="IGraphicsEffectSource"/>, and <see
+/// cref="IGraphicsEffectD2D1Interop"/>. Derived classes can define specific effect behaviors and properties.</remarks>
+/// <param name="sourcesCount">The number of effect sources.</param>
 #if !NETFRAMEWORK
 [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
 #endif
-/// <summary>
-/// Base class for custom Win2D/Direct2D effects.
-/// Implements <see cref="IGraphicsEffect"/> and <see cref="IGraphicsEffectD2D1Interop"/> to expose effect
-/// metadata (name, properties, sources) and allow Direct2D to query values at render time.
-/// </summary>
-/// <remarks>
-/// - Effect properties are discovered via reflection and mapped through <see cref="EffectProperty"/> descriptors
-///   registered on the effect type using <see cref="BaseObjectProperty"/> infrastructure.
-/// - Property values are marshaled to WinRT <c>IPropertyValue</c> using <see cref="IPropertyValueStatics"/> helpers.
-/// - Sources are tracked in a list up to <see cref="MaximumSourcesCount"/> (or unbounded if set to <c>int.MaxValue</c>).
-/// - The <see cref="Name"/> must never be <see langword="null"/> to satisfy <see cref="IGraphicsEffectD2D1Interop"/>.
-/// </remarks>
 public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraphicsEffect, IGraphicsEffectSource, IGraphicsEffectD2D1Interop
 {
-    /// <summary>
-    /// Cache of reflected, ordered property definitions per effect type.
-    /// </summary>
     private static readonly ConcurrentDictionary<Type, List<PropDef>> _properties = new();
 
-    /// <summary>
-    /// Backing store for effect sources (can contain <see langword="null"/> entries).
-    /// </summary>
     private readonly List<IGraphicsEffectSource?> _sources = [];
-
-    /// <summary>
-    /// Lazy activation factory for creating WinRT <c>IPropertyValue</c> instances.
-    /// </summary>
     private readonly Lazy<IComObject<IPropertyValueStatics>> _statics = new(() =>
 #if NETFRAMEWORK
         new ComObject<IPropertyValueStatics>(WinRTUtilities.GetActivationFactory<IPropertyValueStatics>("Windows.Foundation.PropertyValue"))!
@@ -38,9 +23,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
 #endif
     );
 
-    /// <summary>
-    /// Backing field for <see cref="Name"/> to ensure non-null semantics.
-    /// </summary>
     private string? _name;
 
     /// <summary>
@@ -140,27 +122,11 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         }
     }
 
-    /// <summary>
-    /// Internal definition of a mapped effect property (order, mapping semantics, and reflection info).
-    /// </summary>
     private sealed class PropDef(PropertyInfo property, int index, GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
     {
-        /// <summary>
-        /// Gets the reflected CLR property.
-        /// </summary>
         public PropertyInfo Property => property;
-
-        /// <summary>
-        /// Gets the property index in the effect (used by D2D property queries).
-        /// </summary>
         public int Index => index;
-
-        /// <summary>
-        /// Gets the D2D property mapping semantics for this property.
-        /// </summary>
         public GRAPHICS_EFFECT_PROPERTY_MAPPING Mapping => mapping;
-
-        /// <inheritdoc/>
         public override string ToString() => "#" + Index + " " + Property?.Name;
 
         /// <summary>
@@ -280,11 +246,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         }
     }
 
-    /// <summary>
-    /// Retrieves and caches property definitions for the given effect <paramref name="type"/>.
-    /// </summary>
-    /// <param name="type">The concrete effect type to inspect for public readable properties.</param>
-    /// <returns>Ordered list of property definitions used by D2D.</returns>
     private static List<PropDef> GetPropDefs(
 #if !NETFRAMEWORK
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] 

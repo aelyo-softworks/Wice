@@ -1,16 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-/// <summary>
-/// D2D SpotDiffuse effect CLSID for .NET Framework builds.
-/// </summary>
-[Guid(D2D1Constants.CLSID_D2D1SpotDiffuseString)]
-#else
-/// <summary>
-/// D2D SpotDiffuse effect CLSID for modern .NET builds.
-/// </summary>
-[Guid(Constants.CLSID_D2D1SpotDiffuseString)]
-#endif
 /// <summary>
 /// Wraps the Direct2D SpotDiffuse effect, exposing all effect parameters as strongly-typed properties.
 /// </summary>
@@ -21,6 +10,11 @@
 /// - Some properties specify mapping hints (eg. radians-to-degrees, color-to-vector3) to match the native ABI.
 /// - This effect requires a source (see <see cref="EffectWithSource.Source"/>).
 /// </remarks>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1SpotDiffuseString)]
+#else
+[Guid(Constants.CLSID_D2D1SpotDiffuseString)]
+#endif
 public partial class SpotDiffuseEffect : EffectWithSource
 {
     /// <summary>

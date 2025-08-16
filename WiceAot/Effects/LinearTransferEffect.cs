@@ -1,5 +1,14 @@
 ﻿namespace Wice.Effects;
 
+/// <summary>
+/// Represents an effect that applies a linear transfer function to the red, green, blue, and alpha channels of an
+/// image.
+/// </summary>
+/// <remarks>The <see cref="LinearTransferEffect"/> allows you to independently adjust the slope and y-intercept
+/// of the transfer function for each color channel (red, green, blue) and the alpha channel. You can also disable the
+/// transfer function for specific channels and clamp the output values to ensure they remain within the valid range. 
+/// This effect is commonly used for color correction, channel-specific adjustments, or applying custom linear
+/// transformations to image data.</remarks>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1LinearTransferString)]
 #else
@@ -7,20 +16,83 @@
 #endif
 public partial class LinearTransferEffect : EffectWithSource
 {
+    /// <summary>
+    /// Gets the dependency property that represents the Y-intercept value for the red channel in an effect.
+    /// </summary>
     public static EffectProperty RedYInterceptProperty { get; }
+
+    /// <summary>
+    /// Gets the effect property that controls the red slope adjustment in the effect.
+    /// </summary>
+    /// <remarks>The red slope adjustment affects how the red channel is scaled in the effect's output.  This
+    /// property is typically used in scenarios where fine-tuning of color balance or intensity is required.</remarks>
     public static EffectProperty RedSlopeProperty { get; }
+
+    /// <summary>
+    /// Gets the property that determines whether the red channel is disabled in the effect.
+    /// </summary>
     public static EffectProperty RedDisableProperty { get; }
+
+    /// <summary>
+    /// Gets the effect property that represents the Y-intercept value for the green channel.
+    /// </summary>
     public static EffectProperty GreenYInterceptProperty { get; }
+
+    /// <summary>
+    /// Gets the effect property that controls the green slope adjustment in the color grading process.
+    /// </summary>
     public static EffectProperty GreenSlopeProperty { get; }
+
+    /// <summary>
+    /// Gets the static property representing the effect configuration for disabling the green channel.
+    /// </summary>
     public static EffectProperty GreenDisableProperty { get; }
+
+    /// <summary>
+    /// Gets the static property that represents the blue Y-intercept value for an effect.
+    /// </summary>
     public static EffectProperty BlueYInterceptProperty { get; }
+
+    /// <summary>
+    /// Gets the effect property that controls the slope of the blue channel in the effect.
+    /// </summary>
     public static EffectProperty BlueSlopeProperty { get; }
+
+    /// <summary>
+    /// Gets the static property that represents the ability to disable the blue effect in the associated effect system.
+    /// </summary>
     public static EffectProperty BlueDisableProperty { get; }
+
+    /// <summary>
+    /// Gets the effect property that represents the Y-intercept of the alpha channel.
+    /// </summary>
+    /// <remarks>This property is typically used in scenarios where adjustments to the alpha channel's linear
+    /// transformation are required. The Y-intercept determines the offset applied to the alpha channel during such
+    /// transformations.</remarks>
     public static EffectProperty AlphaYInterceptProperty { get; }
+
+    /// <summary>
+    /// Gets the effect property that represents the alpha slope value.
+    /// </summary>
     public static EffectProperty AlphaSlopeProperty { get; }
+
+    /// <summary>
+    /// Gets the effect property that determines whether alpha blending is disabled.
+    /// </summary>
     public static EffectProperty AlphaDisableProperty { get; }
+
+    /// <summary>
+    /// Gets the property that determines whether the effect output is clamped to a specific range.
+    /// </summary>
     public static EffectProperty ClampOutputProperty { get; }
 
+    /// <summary>
+    /// Initializes static properties for the <see cref="LinearTransferEffect"/> class.
+    /// </summary>
+    /// <remarks>This static constructor sets up the effect properties for the <see
+    /// cref="LinearTransferEffect"/> class, including properties for red, green, blue, and alpha channel adjustments,
+    /// as well as an option to clamp the output. Each property is initialized with a default value and a unique index
+    /// for internal identification.</remarks>
     static LinearTransferEffect()
     {
         RedYInterceptProperty = EffectProperty.Add(typeof(LinearTransferEffect), nameof(RedYIntercept), 0, 0f);
@@ -38,17 +110,74 @@ public partial class LinearTransferEffect : EffectWithSource
         ClampOutputProperty = EffectProperty.Add(typeof(LinearTransferEffect), nameof(ClampOutput), 12, false);
     }
 
+    /// <summary>
+    /// Gets or sets the Y-intercept value for the red channel in a linear transformation.
+    /// </summary>
     public float RedYIntercept { get => (float)GetPropertyValue(RedYInterceptProperty)!; set => SetPropertyValue(RedYInterceptProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the slope value for the red channel.
+    /// </summary>
+    /// <remarks>This property is typically used in scenarios where color adjustments or transformations are
+    /// required, such as image processing or graphics rendering.</remarks>
     public float RedSlope { get => (float)GetPropertyValue(RedSlopeProperty)!; set => SetPropertyValue(RedSlopeProperty, value); }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the red component is disabled.
+    /// </summary>
     public bool RedDisable { get => (bool)GetPropertyValue(RedDisableProperty)!; set => SetPropertyValue(RedDisableProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the Y-intercept value for the green channel in a color adjustment operation.
+    /// </summary>
     public float GreenYIntercept { get => (float)GetPropertyValue(GreenYInterceptProperty)!; set => SetPropertyValue(GreenYInterceptProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the slope of the green channel in the color adjustment process.
+    /// </summary>
+    /// <remarks>The value should typically be within a valid range for the specific color adjustment context.
+    /// Setting this property adjusts the green channel's contribution to the overall color processing.</remarks>
     public float GreenSlope { get => (float)GetPropertyValue(GreenSlopeProperty)!; set => SetPropertyValue(GreenSlopeProperty, value); }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the green functionality is disabled.
+    /// </summary>
     public bool GreenDisable { get => (bool)GetPropertyValue(GreenDisableProperty)!; set => SetPropertyValue(GreenDisableProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the Y-intercept value for the blue component in a linear transformation.
+    /// </summary>
     public float BlueYIntercept { get => (float)GetPropertyValue(BlueYInterceptProperty)!; set => SetPropertyValue(BlueYInterceptProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the slope value for the blue channel.
+    /// </summary>
     public float BlueSlope { get => (float)GetPropertyValue(BlueSlopeProperty)!; set => SetPropertyValue(BlueSlopeProperty, value); }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the blue feature is disabled.
+    /// </summary>
     public bool BlueDisable { get => (bool)GetPropertyValue(BlueDisableProperty)!; set => SetPropertyValue(BlueDisableProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the Y-intercept value for the alpha calculation.
+    /// </summary>
     public float AlphaYIntercept { get => (float)GetPropertyValue(AlphaYInterceptProperty)!; set => SetPropertyValue(AlphaYInterceptProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the slope of the alpha channel adjustment.
+    /// </summary>
+    /// <remarks>This property is typically used to control the behavior of alpha blending or transparency
+    /// adjustments. Ensure the value is within a valid range for the intended operation.</remarks>
     public float AlphaSlope { get => (float)GetPropertyValue(AlphaSlopeProperty)!; set => SetPropertyValue(AlphaSlopeProperty, value); }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the alpha channel is disabled.
+    /// </summary>
     public bool AlphaDisable { get => (bool)GetPropertyValue(AlphaDisableProperty)!; set => SetPropertyValue(AlphaDisableProperty, value); }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the output should be clamped to a predefined range.
+    /// </summary>
     public bool ClampOutput { get => (bool)GetPropertyValue(ClampOutputProperty)!; set => SetPropertyValue(ClampOutputProperty, value); }
 }

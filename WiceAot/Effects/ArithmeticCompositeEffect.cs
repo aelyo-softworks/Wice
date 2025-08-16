@@ -1,10 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-[Guid(D2D1Constants.CLSID_D2D1ArithmeticCompositeString)]
-#else
-[Guid(Constants.CLSID_D2D1ArithmeticCompositeString)]
-#endif
 /// <summary>
 /// Direct2D ArithmeticComposite effect wrapper that blends two input sources using an arithmetic expression.
 /// </summary>
@@ -16,6 +11,11 @@
 /// - When <see cref="ClampOutput"/> is true, the result is clamped to the [0, 1] range per channel.
 /// - The CLSID is provided via the <see cref="GuidAttribute"/> above for D2D interop.
 /// </remarks>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1ArithmeticCompositeString)]
+#else
+[Guid(Constants.CLSID_D2D1ArithmeticCompositeString)]
+#endif
 public partial class ArithmeticCompositeEffect : EffectWithTwoSources
 {
     /// <summary>

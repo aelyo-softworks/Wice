@@ -1,10 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-[Guid(D2D1Constants.CLSID_D2D1MorphologyString)]
-#else
-[Guid(Constants.CLSID_D2D1MorphologyString)]
-#endif
 /// <summary>
 /// Direct2D Morphology effect wrapper.
 /// </summary>
@@ -16,6 +11,11 @@
 ///   - Index 2: <see cref="Height"/> (mapping: DIRECT)
 /// - The effect requires at least one source (enforced by <see cref="EffectWithSource"/>).
 /// </remarks>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1MorphologyString)]
+#else
+[Guid(Constants.CLSID_D2D1MorphologyString)]
+#endif
 public partial class MorphologyEffect : EffectWithSource
 {
     /// <summary>

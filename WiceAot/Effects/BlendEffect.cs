@@ -1,16 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-/// <summary>
-/// CLSID for the native Direct2D Blend effect when targeting .NET Framework.
-/// </summary>
-[Guid(D2D1Constants.CLSID_D2D1BlendString)]
-#else
-/// <summary>
-/// CLSID for the native Direct2D Blend effect when targeting .NET.
-/// </summary>
-[Guid(Constants.CLSID_D2D1BlendString)]
-#endif
 /// <summary>
 /// Managed wrapper for the Direct2D Blend effect.
 /// </summary>
@@ -22,6 +11,11 @@
 /// - Properties are surfaced to D2D via <see cref="EffectProperty"/> descriptors on the type.
 /// </remarks>
 /// <seealso cref="Effect"/>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1BlendString)]
+#else
+[Guid(Constants.CLSID_D2D1BlendString)]
+#endif
 public partial class BlendEffect : Effect
 {
     /// <summary>

@@ -1,16 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-/// <summary>
-/// Direct2D Atlas effect (CLSID <see cref="D2D1Constants.CLSID_D2D1AtlasString"/>).
-/// </summary>
-[Guid(D2D1Constants.CLSID_D2D1AtlasString)]
-#else
-/// <summary>
-/// Direct2D Atlas effect (CLSID <see cref="Constants.CLSID_D2D1AtlasString"/>).
-/// </summary>
-[Guid(Constants.CLSID_D2D1AtlasString)]
-#endif
 /// <summary>
 /// Wraps the D2D Atlas effect, which crops the primary input to a rectangle and defines
 /// an additional padding rectangle used to avoid sampling artifacts at the edges.
@@ -22,6 +11,11 @@
 ///   (Left, Top, Right, Bottom).
 /// - Default values are effectively "unbounded" (MinValue..MaxValue), so the source is unchanged until set.
 /// </remarks>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1AtlasString)]
+#else
+[Guid(Constants.CLSID_D2D1AtlasString)]
+#endif
 public partial class AtlasEffect : EffectWithSource
 {
     /// <summary>

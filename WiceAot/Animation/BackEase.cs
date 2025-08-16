@@ -14,14 +14,6 @@
 /// Negative amplitude values are treated as <c>0</c>. The function may overshoot/undershoot
 /// for certain amplitude values by design.
 /// </remarks>
-/// <example>
-/// Example usage:
-/// <code language="csharp">
-/// IEasingFunction easing = new BackEase { Amplitude = 1.2f };
-/// float t = 0.5f; // normalized time in [0, 1]
-/// float eased = easing.Ease(t);
-/// </code>
-/// </example>
 public class BackEase : IEasingFunction
 {
     /// <summary>

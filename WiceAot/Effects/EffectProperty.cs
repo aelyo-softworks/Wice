@@ -113,8 +113,7 @@ public class EffectProperty : VisualProperty
     public static EffectProperty Add(Type declaringType, string name, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Type type, int index, GRAPHICS_EFFECT_PROPERTY_MAPPING mapping = GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_DIRECT, object? defaultValue = default, VisualPropertyInvalidateModes mode = VisualPropertyInvalidateModes.Render, ConvertDelegate? converter = null) => Add(new EffectProperty(declaringType, name, type, index, mapping, defaultValue, mode, converter));
 
     /// <summary>
-    /// Registers a new <see cref="EffectProperty"/> for <paramref name="declaringType"/> using <typeparamref name="T"/> as the value type,
-    /// defaulting <paramref name="mapping"/> to DIRECT.
+    /// Registers a new <see cref="EffectProperty"/> for <paramref name="declaringType"/> using <typeparamref name="T"/> as the value type.
     /// </summary>
     /// <typeparam name="T">CLR type stored by the property.</typeparam>
     /// <param name="declaringType">Type declaring the property.</param>

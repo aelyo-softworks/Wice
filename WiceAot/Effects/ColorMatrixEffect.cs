@@ -1,4 +1,5 @@
 ﻿namespace Wice.Effects;
+
 /// <summary>
 /// Wraps the Direct2D D2D1 ColorMatrix effect, exposing a single input (<see cref="EffectWithSource.Source"/>)
 /// and three configurable properties: <see cref="ColorMatrix"/>, <see cref="AlphaMode"/>, and

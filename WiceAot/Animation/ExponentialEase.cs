@@ -5,19 +5,6 @@
 /// Maps t in [0,1] to y = (e^(k·t) - 1) / (e^k - 1), where k is <see cref="Exponent"/>.
 /// If k == 0, the mapping is linear (y = t).
 /// </summary>
-/// <remarks>
-/// - Behavior:
-///   - k > 0: ease-in (starts slow, accelerates).
-///   - k < 0: ease-out (starts fast, decelerates).
-///   - k = 0: linear.
-/// - Input/Output:
-///   - Intended domain for <c>normalizedTime</c> is [0, 1]; values outside are extrapolated.
-///   - Output commonly lies in [0, 1] for inputs in [0, 1].
-/// - Numerical considerations:
-///   - Very large |k| can cause overflow or precision loss in <see cref="Math.Exp(double)"/>.
-/// - Threading:
-///   - The type is stateless except for the settable <see cref="Exponent"/> and is not synchronized.
-/// </remarks>
 /// <seealso cref="IEasingFunction"/>
 public class ExponentialEase : IEasingFunction
 {

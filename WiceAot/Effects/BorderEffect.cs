@@ -1,22 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-/// <summary>
-/// Direct2D Border effect CLSID for .NET Framework builds.
-/// </summary>
-/// <remarks>
-/// Applied by <see cref="BorderEffect"/> for interop with D2D/Win2D.
-/// </remarks>
-[Guid(D2D1Constants.CLSID_D2D1BorderString)]
-#else
-/// <summary>
-/// Direct2D Border effect CLSID for modern .NET builds.
-/// </summary>
-/// <remarks>
-/// Applied by <see cref="BorderEffect"/> for interop with D2D/Win2D.
-/// </remarks>
-[Guid(Constants.CLSID_D2D1BorderString)]
-#endif
 /// <summary>
 /// Direct2D Border effect wrapper.
 /// </summary>
@@ -28,6 +11,11 @@
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
 /// <seealso cref="D2D1_BORDER_EDGE_MODE"/>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1BorderString)]
+#else
+[Guid(Constants.CLSID_D2D1BorderString)]
+#endif
 public partial class BorderEffect : EffectWithSource
 {
     /// <summary>

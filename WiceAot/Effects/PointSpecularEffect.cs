@@ -1,16 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-/// <summary>
-/// CLSID attribute binding this effect to the native D2D PointSpecular implementation on .NET Framework.
-/// </summary>
-[Guid(D2D1Constants.CLSID_D2D1PointSpecularString)]
-#else
-/// <summary>
-/// CLSID attribute binding this effect to the native D2D PointSpecular implementation on modern .NET.
-/// </summary>
-[Guid(Constants.CLSID_D2D1PointSpecularString)]
-#endif
 /// <summary>
 /// Wraps the Direct2D PointSpecular lighting effect (D2D1_POINTSPECULAR).
 /// </summary>
@@ -21,6 +10,11 @@
 /// - Property indices map to the D2D effect property bag in the same order as the native API:
 ///   0: LightPosition, 1: SpecularExponent, 2: SpecularConstant, 3: SurfaceScale, 4: Color, 5: KernelUnitLength, 6: ScaleMode.
 /// </remarks>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1PointSpecularString)]
+#else
+[Guid(Constants.CLSID_D2D1PointSpecularString)]
+#endif
 public partial class PointSpecularEffect : EffectWithSource
 {
     /// <summary>

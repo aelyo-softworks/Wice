@@ -1,10 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-[Guid(D2D1Constants.CLSID_D2D1TurbulenceString)]
-#else
-[Guid(Constants.CLSID_D2D1TurbulenceString)]
-#endif
 /// <summary>
 /// Wraps the built-in Direct2D Turbulence effect (CLSID_D2D1Turbulence).
 /// Produces procedural fractal noise (Perlin-based) that can be used to synthesize
@@ -17,6 +12,11 @@
 ///   0: Offset, 1: Size, 2: BaseFrequency, 3: NumOctaves, 4: Seed, 5: Noise, 6: Stitchable.
 /// - Default values follow the D2D defaults unless otherwise noted.
 /// </remarks>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1TurbulenceString)]
+#else
+[Guid(Constants.CLSID_D2D1TurbulenceString)]
+#endif
 public partial class TurbulenceEffect : Effect
 {
     /// <summary>

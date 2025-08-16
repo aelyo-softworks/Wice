@@ -11,18 +11,6 @@
 /// <param name="name">
 /// The category name this configuration applies to. Categories with the same name share the same options.
 /// </param>
-/// <example>
-/// // Configure a category at the type level
-/// [PropertyGridCategoryOptions("Appearance", IsExpanded = true, SortOrder = 0)]
-/// public sealed class ButtonOptions { }
-///
-/// // Configure a category for a specific property
-/// public sealed class Settings
-/// {
-///     [PropertyGridCategoryOptions("Advanced", IsExpanded = false, SortOrder = 20)]
-///     public int RetryCount { get; set; }
-/// }
-/// </example>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct, AllowMultiple = true)]
 public sealed class PropertyGridCategoryOptionsAttribute(string name) : Attribute
 {

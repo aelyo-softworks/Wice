@@ -51,4 +51,11 @@ public class BaseObjectSetOptions
     /// </summary>
     /// <value>Defaults to <see langword="false"/> unless explicitly set by the caller.</value>
     public virtual bool ForceRaiseOnErrorsChanged { get; set; }
+
+    /// <summary>
+    /// When <see langword="true"/>, requests that the the target object value be changed
+    /// only if the source object defines it explicitly.
+    /// </summary>
+    /// <value>Defaults to <see langword="true"/> unless explicitly set by the caller.</value>
+    public virtual bool OnlyIfExistsInSource { get; set; } = true;
 }

@@ -16,13 +16,6 @@
 /// - This scheduler is typically used from a UI thread and is not intended to run tasks inline
 ///   (see <see cref="TryExecuteTaskInline(Task, bool)"/>).
 /// </remarks>
-/// <example>
-/// var scheduler = new ApplicationScheduler { DequeueTimeout = 0 };
-/// var factory = new TaskFactory(scheduler);
-/// factory.StartNew(() => /* work on UI thread */);
-/// // Inside message loop:
-/// // while (scheduler.GetMessage(out var msg, hwnd, 0, 0)) { Translate/DispatchMessage(ref msg); }
-/// </example>
 public partial class ApplicationScheduler : TaskScheduler, IDisposable
 {
     private const int StopIndex = 0;

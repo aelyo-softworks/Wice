@@ -1,12 +1,7 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-[Guid(D2D1Constants.CLSID_D2D1DirectionalBlurString)]
-#else
-[Guid(Constants.CLSID_D2D1DirectionalBlurString)]
-#endif
 /// <summary>
-/// Direct2D Directional Blur effect (D2D1DirectionalBlur).
+/// Direct2D Directional Blur effect.
 /// </summary>
 /// <remarks>
 /// - Requires at least one input source (see <see cref="EffectWithSource.Source"/>).
@@ -17,6 +12,11 @@
 ///   3: <see cref="BorderMode"/> (<see cref="D2D1_BORDER_MODE"/>).
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1DirectionalBlurString)]
+#else
+[Guid(Constants.CLSID_D2D1DirectionalBlurString)]
+#endif
 public partial class DirectionalBlurEffect : EffectWithSource
 {
     /// <summary>

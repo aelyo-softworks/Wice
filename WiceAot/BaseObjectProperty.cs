@@ -253,44 +253,69 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     /// <param name="value">The value to set.</param>
     /// <param name="options">Optional set behavior flags.</param>
     /// <returns><see langword="true"/> if the stored value changed (subject to <paramref name="options"/>).</returns>
-    public virtual bool SetValue(BaseObject target, object value, BaseObjectSetOptions? options = null)
+    public virtual bool SetValue(BaseObject target, object? value, BaseObjectSetOptions? options = null)
     {
         ExceptionExtensions.ThrowIfNull(target, nameof(target));
         return ((IPropertyOwner)target).SetPropertyValue(this, value, options);
     }
 
     /// <summary>
-    /// Gets the effective value for this property on the specified <paramref name="target"/>.
+    /// Copy the effective value for this property from the specified <paramref name="source"/> to the specified <paramref name="target"/>.
     /// </summary>
+    /// <param name="source">The source object.</param>
     /// <param name="target">The target object.</param>
-    /// <returns>The stored value or, if unset, the converted <see cref="DefaultValue"/>.</returns>
-    public virtual object? GetValue(BaseObject target)
+    /// <param name="options">Optional set behavior flags.</param>
+    /// <returns><see langword="true"/> if the value was copied and/or changed (subject to <paramref name="options"/>).</returns>
+    public virtual bool CopyValue(BaseObject source, BaseObject target, BaseObjectSetOptions? options = null)
     {
+        ExceptionExtensions.ThrowIfNull(source, nameof(source));
         ExceptionExtensions.ThrowIfNull(target, nameof(target));
-        return ((IPropertyOwner)target).GetPropertyValue(this);
+        if (source.Equals(target))
+            return false;
+
+        if (options == null || options.OnlyIfExistsInSource)
+        {
+            if (!TryGetPropertyValue(source, out var value))
+                return false;
+
+            return SetValue(target, value, options);
+        }
+
+        return SetValue(target, GetValue(source), options);
     }
 
     /// <summary>
-    /// Attempts to get the explicitly stored value for this property on <paramref name="target"/>.
+    /// Gets the effective value for this property on the specified <paramref name="source"/>.
     /// </summary>
-    /// <param name="target">The target object.</param>
+    /// <param name="source">The target object.</param>
+    /// <returns>The stored value or, if unset, the converted <see cref="DefaultValue"/>.</returns>
+    public virtual object? GetValue(BaseObject source)
+    {
+        ExceptionExtensions.ThrowIfNull(source, nameof(source));
+        return ((IPropertyOwner)source).GetPropertyValue(this);
+    }
+
+    /// <summary>
+    /// Attempts to get the explicitly stored value for this property on <paramref name="source"/>.
+    /// </summary>
+    /// <param name="source">The source object.</param>
     /// <param name="value">When this method returns, contains the stored value if present.</param>
     /// <returns><see langword="true"/> if an explicit value is present; otherwise, <see langword="false"/>.</returns>
-    public virtual bool TryGetPropertyValue(BaseObject target, out object? value)
+    public virtual bool TryGetPropertyValue(BaseObject source, out object? value)
     {
-        ExceptionExtensions.ThrowIfNull(target, nameof(target));
-        return ((IPropertyOwner)target).TryGetPropertyValue(this, out value);
+        ExceptionExtensions.ThrowIfNull(source, nameof(source));
+        return ((IPropertyOwner)source).TryGetPropertyValue(this, out value);
     }
 
     /// <summary>
-    /// Determines whether this property has an explicitly set value on <paramref name="target"/>.
+    /// Determines whether this property has an explicitly set value on <paramref name="source"/>.
     /// </summary>
-    /// <param name="target">The target object.</param>
+    /// <param name="source">The target object.</param>
     /// <returns><see langword="true"/> if explicitly set; otherwise, <see langword="false"/>.</returns>
-    public virtual bool IsPropertyValueSet(BaseObject target)
+    public virtual bool IsPropertyValueSet(BaseObject source)
     {
-        ExceptionExtensions.ThrowIfNull(target, nameof(target));
-        return ((IPropertyOwner)target).IsPropertyValueSet(this);
+        ExceptionExtensions.ThrowIfNull(source, nameof(source));
+        return ((IPropertyOwner)source).IsPropertyValueSet(this);
     }
 
     /// <summary>

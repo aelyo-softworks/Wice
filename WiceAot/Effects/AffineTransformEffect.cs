@@ -1,15 +1,10 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-[Guid(D2D1Constants.CLSID_D2D12DAffineTransformString)]
-#else
-[Guid(Constants.CLSID_D2D12DAffineTransformString)]
-#endif
 /// <summary>
 /// Direct2D 2D affine transform effect.
 /// </summary>
 /// <remarks>
-/// - Wraps the built-in D2D/Win2D 2D affine transform (scale/rotate/skew/translate) effect.
+/// - Wraps the built-in D2D 2D affine transform (scale/rotate/skew/translate) effect.
 /// - Inherits from <see cref="EffectWithSource"/> and therefore requires at least one input source.
 /// - Properties are exposed to D2D using stable parameter indices as defined by the static
 ///   <see cref="EffectProperty"/> descriptors below.
@@ -18,6 +13,11 @@
 /// <seealso cref="EffectWithSource"/>
 /// <seealso cref="IGraphicsEffect"/>
 /// <seealso cref="IGraphicsEffectSource"/>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D12DAffineTransformString)]
+#else
+[Guid(Constants.CLSID_D2D12DAffineTransformString)]
+#endif
 public partial class AffineTransformEffect : EffectWithSource
 {
     /// <summary>

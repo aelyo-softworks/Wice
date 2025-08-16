@@ -14,19 +14,6 @@
 /// <param name="x">Window-relative X coordinate at the time the pointer enters.</param>
 /// <param name="y">Window-relative Y coordinate at the time the pointer enters.</param>
 /// <param name="flags">Bitwise combination of <see cref="POINTER_MESSAGE_FLAGS"/> describing the pointer state.</param>
-/// <example>
-/// Typical usage in an event handler:
-/// <code>
-/// void OnPointerEnter(object sender, PointerEnterEventArgs e)
-/// {
-///     // Convert to a specific visual's coordinate space if needed
-///     // var pt = e.GetPosition(myVisual);
-///
-///     // Inspect flags/state from the base type
-///     // if (e.IsInRange && e.IsPrimary) { /* ... */ }
-/// }
-/// </code>
-/// </example>
 /// <seealso cref="PointerUpdateEventArgs"/>
 /// <seealso cref="PointerPositionEventArgs"/>
 /// <seealso cref="POINTER_MESSAGE_FLAGS"/>

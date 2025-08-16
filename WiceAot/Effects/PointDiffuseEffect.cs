@@ -1,12 +1,7 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-[Guid(D2D1Constants.CLSID_D2D1PointDiffuseString)]
-#else
-[Guid(Constants.CLSID_D2D1PointDiffuseString)]
-#endif
 /// <summary>
-/// Direct2D/Win2D PointDiffuse lighting effect.
+/// Direct2D PointDiffuse lighting effect.
 /// </summary>
 /// <remarks>
 /// - Exposes a single input <see cref="EffectWithSource.Source"/> to be lit using a point light.
@@ -14,6 +9,11 @@
 /// - Defaults follow the D2D1 PointDiffuse effect defaults unless otherwise specified.
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1PointDiffuseString)]
+#else
+[Guid(Constants.CLSID_D2D1PointDiffuseString)]
+#endif
 public partial class PointDiffuseEffect : EffectWithSource
 {
     /// <summary>

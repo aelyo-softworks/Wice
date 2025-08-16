@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 /// <summary>
-/// Direct2D/Win2D Sepia effect wrapper with a single input source.
+/// Direct2D Sepia effect wrapper with a single input source.
 /// Exposes two effect properties:
 /// - <see cref="Intensity"/> (index 0): sepia intensity in [0,1], default 0.5.
 /// - <see cref="AlphaMode"/> (index 1): alpha mode hint, default <see cref="D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_PREMULTIPLIED"/>.

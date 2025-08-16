@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 /// <summary>
-/// Direct2D/Win2D chroma key (green-screen) effect.
+/// Direct2D chroma key (green-screen) effect.
 /// </summary>
 /// <remarks>
 /// Wraps the native D2D1 ChromaKey effect (CLSID_D2D1ChromaKey) and exposes its parameters as typed properties:

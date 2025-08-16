@@ -1,12 +1,7 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-[Guid(D2D1Constants.CLSID_D2D1CropString)]
-#else
-[Guid(Constants.CLSID_D2D1CropString)]
-#endif
 /// <summary>
-/// Direct2D/Win2D Crop effect wrapper.
+/// Direct2D Crop effect wrapper.
 /// </summary>
 /// <remarks>
 /// - Requires a source (<see cref="EffectWithSource.Source"/>) and crops it to a rectangle in device-independent pixels (DIPs).
@@ -15,6 +10,11 @@
 ///   - <see cref="Rect"/>: crop rectangle (Left, Top, Right, Bottom), mapped as a Vector4.
 ///   - <see cref="BorderMode"/>: sampling behavior at the edge of the crop.
 /// </remarks>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1CropString)]
+#else
+[Guid(Constants.CLSID_D2D1CropString)]
+#endif
 public partial class CropEffect : EffectWithSource
 {
     /// <summary>

@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 /// <summary>
-/// Direct2D/Win2D Temperature and Tint effect wrapper.
+/// Direct2D Temperature and Tint effect wrapper.
 /// </summary>
 /// <remarks>
 /// - Exposes two parameters mapped by index:
@@ -11,14 +11,8 @@
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
 #if NETFRAMEWORK
-/// <summary>
-/// D2D/Win2D CLSID for the Temperature/Tint effect (Framework target).
-/// </summary>
 [Guid(D2D1Constants.CLSID_D2D1TemperatureTintString)]
 #else
-/// <summary>
-/// D2D/Win2D CLSID for the Temperature/Tint effect (.NET target).
-/// </summary>
 [Guid(Constants.CLSID_D2D1TemperatureTintString)]
 #endif
 public partial class TemperatureTintEffect : EffectWithSource

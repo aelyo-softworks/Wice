@@ -173,6 +173,15 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
     [Category(CategoryRender)]
     public CompositionBrush OffPathBrush { get => (CompositionBrush)GetPropertyValue(OffPathBrushProperty)!; set => SetPropertyValue(OffPathBrushProperty, value); }
 
+    internal void CopyStyleFrom(BaseObject baseObject, BaseObjectSetOptions? options = null)
+    {
+        ExceptionExtensions.ThrowIfNull(baseObject, nameof(baseObject));
+        OnButtonBrushProperty.CopyValue(baseObject, this, options);
+        OffButtonBrushProperty.CopyValue(baseObject, this, options);
+        OnPathBrushProperty.CopyValue(baseObject, this, options);
+        OffPathBrushProperty.CopyValue(baseObject, this, options);
+    }
+
     /// <summary>
     /// Toggles <see cref="Value"/> when the control is clicked.
     /// </summary>

@@ -1,13 +1,14 @@
 ﻿namespace Wice.Effects;
 
+/// <summary>
 /// Cross-fades between <see cref="EffectWithTwoSources.Source1"/> and <see cref="EffectWithTwoSources.Source2"/>.
-/// </summary>
 /// <remarks>
 /// - This wraps the D2D1 CrossFade effect (CLSID_D2D1CrossFade).
 /// - Exposes a single parameter <see cref="Weight"/> mapped at effect index 0.
 /// - Inherits from <see cref="EffectWithTwoSources"/>, providing two input slots.
 /// </remarks>
 /// <seealso cref="EffectWithTwoSources"/>
+/// </summary>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1CrossFadeString)]
 #else

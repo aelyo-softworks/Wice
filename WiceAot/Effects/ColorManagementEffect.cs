@@ -6,7 +6,7 @@
 /// </summary>
 /// <remarks>
 /// Properties are exposed via strongly-typed accessors and registered through <see cref="EffectProperty"/> descriptors
-/// to support D2D/Win2D interop. Property indices map as follows:
+/// to support D2D interop. Property indices map as follows:
 /// 0 = <see cref="SourceColorContext"/>,
 /// 1 = <see cref="SourceRenderingIntent"/>,
 /// 2 = <see cref="DestinationColorContext"/>,

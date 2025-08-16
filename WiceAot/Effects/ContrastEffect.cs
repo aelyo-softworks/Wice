@@ -1,19 +1,20 @@
 ﻿namespace Wice.Effects;
 
+/// <summary>
+/// Represents an effect that adjusts the contrast of an input image.
+/// </summary>
+/// <remarks>The <see cref="ContrastEffect"/> allows you to modify the contrast of an image by applying a contrast
+/// adjustment factor. The effect provides two configurable parameters: <list type="bullet"> <item> <description><see
+/// cref="Contrast"/>: Adjusts the contrast level. Positive values increase contrast, negative values decrease it, and 0
+/// applies no adjustment.</description> </item> <item> <description><see cref="ClampInput"/>: Determines whether the
+/// input is clamped to the [0, 1] range before applying the contrast adjustment.</description> </item> </list> This
+/// effect is typically used in image processing pipelines to enhance or reduce the contrast of visual
+/// content.</remarks>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1ContrastString)]
 #else
 [Guid(Constants.CLSID_D2D1ContrastString)]
 #endif
-/// <summary>
-/// Wraps the Direct2D/Win2D Contrast effect, exposing its parameters as CLR properties.
-/// </summary>
-/// <remarks>
-/// - The effect requires at least one input source (see <see cref="EffectWithSource"/> and <see cref="Source"/>).
-/// - The class is attributed with the effect CLSID for D2D interop using <see cref="GuidAttribute"/> (conditional for .NET Framework).
-/// - Effect properties are registered through <see cref="EffectProperty"/> and mapped by index for D2D queries.
-/// </remarks>
-/// <seealso cref="EffectWithSource"/>
 public partial class ContrastEffect : EffectWithSource
 {
     /// <summary>

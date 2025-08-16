@@ -21,12 +21,6 @@ public static class ExceptionExtensions
     /// On .NET Framework targets, <paramref name="paramName"/> is checked using a traditional null check.
     /// On .NET (5+) targets, <see cref="System.ArgumentNullException.ThrowIfNull(object?)"/> is used for the <paramref name="paramName"/> validation.
     /// </remarks>
-    /// <example>
-    /// <code language="csharp">
-    /// object? value = null;
-    /// value.ThrowIfNull(nameof(value)); // throws ArgumentNullException("value")
-    /// </code>
-    /// </example>
     public static void ThrowIfNull(this object? obj, string paramName)
     {
 #if NETFRAMEWORK

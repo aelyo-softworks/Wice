@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 /// <summary>
-/// Direct2D/Win2D Sharpen effect wrapper.
+/// Direct2D Sharpen effect wrapper.
 /// </summary>
 /// <remarks>
 /// - Requires at least one input <see cref="IGraphicsEffectSource"/> (see <see cref="EffectWithSource.Source"/>).

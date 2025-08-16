@@ -9,10 +9,6 @@
 /// - A sprite shape is then created via <see cref="CreateShape"/> and added to the owning <see cref="Shape.CompositionVisual"/>.
 /// - In DEBUG builds, composition comments are set to <see cref="Visual.Name"/> for diagnostics.
 /// </remarks>
-/// <example>
-/// Typical implementers override <see cref="CreateGeometry"/> to return a geometry sized to the
-/// current arranged rect and optionally override <see cref="CreateShape"/> to customize the shape.
-/// </example>
 public abstract class SingleShape : Shape
 {
     /// <summary>

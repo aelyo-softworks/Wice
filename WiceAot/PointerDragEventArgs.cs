@@ -46,17 +46,5 @@ public class PointerDragEventArgs : PointerUpdateEventArgs
     /// The drag state contains the drag start coordinates and current deltas. It can be used to implement
     /// behaviors such as moving visuals, resizing, or drawing selection rectangles as the pointer moves.
     /// </remarks>
-    /// <example>
-    /// For example, inside a visual's drag handler:
-    /// <code>
-    /// protected override void OnPointerDrag(object? sender, PointerDragEventArgs e)
-    /// {
-    ///     // Apply translation based on current drag delta
-    ///     var dx = e.State.DeltaX;
-    ///     var dy = e.State.DeltaY;
-    ///     RenderOffset += new System.Numerics.Vector3(dx, dy, 0);
-    /// }
-    /// </code>
-    /// </example>
     public DragState State { get; }
 }

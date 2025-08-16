@@ -1,16 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
-/// <summary>
-/// Direct2D CLSID for the ConvolveMatrix effect (Framework).
-/// </summary>
-[Guid(D2D1Constants.CLSID_D2D1ConvolveMatrixString)]
-#else
-/// <summary>
-/// Direct2D CLSID for the ConvolveMatrix effect (.NET).
-/// </summary>
-[Guid(Constants.CLSID_D2D1ConvolveMatrixString)]
-#endif
 /// <summary>
 /// Wraps the Direct2D ConvolveMatrix effect (CLSID_D2D1ConvolveMatrix).
 /// </summary>
@@ -26,6 +15,11 @@
 /// Border sampling is controlled by <see cref="BorderMode"/> and output clamping by <see cref="ClampOutput"/>.
 /// </remarks>
 /// <seealso href="https://learn.microsoft.com/windows/win32/direct2d/convolvematrix-effect">ConvolveMatrix effect (Direct2D)</seealso>
+#if NETFRAMEWORK
+[Guid(D2D1Constants.CLSID_D2D1ConvolveMatrixString)]
+#else
+[Guid(Constants.CLSID_D2D1ConvolveMatrixString)]
+#endif
 public partial class ConvolveMatrixEffect : EffectWithSource
 {
     /// <summary>

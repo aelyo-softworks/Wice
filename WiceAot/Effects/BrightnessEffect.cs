@@ -1,6 +1,5 @@
 ﻿namespace Wice.Effects;
 
-#if NETFRAMEWORK
 /// <summary>
 /// Wraps the built-in Direct2D Brightness effect (CLSID_D2D1Brightness) for use in effect graphs.
 /// </summary>
@@ -13,20 +12,9 @@
 /// </remarks>
 /// <seealso cref="EffectWithSource"/>
 /// <seealso cref="EffectProperty"/>
+#if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1BrightnessString)]
 #else
-/// <summary>
-/// Wraps the built-in Direct2D Brightness effect (CLSID_D2D1Brightness) for use in effect graphs.
-/// </summary>
-/// <remarks>
-/// - Remaps input luminance using configurable black and white points to control perceived brightness.
-/// - Exposes two parameters:
-///   - <see cref="BlackPoint"/> (index 1): lower bound of the input range [0, 1].
-///   - <see cref="WhitePoint"/> (index 0): upper bound of the input range [0, 1].
-/// - Values are provided as <c>D2D_VECTOR_2F</c>, matching the underlying D2D signature.
-/// </remarks>
-/// <seealso cref="EffectWithSource"/>
-/// <seealso cref="EffectProperty"/>
 [Guid(Constants.CLSID_D2D1BrightnessString)]
 #endif
 public partial class BrightnessEffect : EffectWithSource
@@ -67,16 +55,6 @@ public partial class BrightnessEffect : EffectWithSource
     /// - Default: <c>(1.0, 1.0)</c>.
     /// - Typically, <see cref="BlackPoint"/> should be less than <see cref="WhitePoint"/> component-wise.
     /// </remarks>
-    /// <example>
-    /// <code>
-    /// var effect = new BrightnessEffect
-    /// {
-    ///     WhitePoint = new D2D_VECTOR_2F(0.9f, 0.9f),
-    ///     BlackPoint = new D2D_VECTOR_2F(0.1f, 0.1f)
-    /// };
-    /// effect.Source = someImage;
-    /// </code>
-    /// </example>
     public D2D_VECTOR_2F WhitePoint
     {
         get => (D2D_VECTOR_2F)GetPropertyValue(WhitePointProperty)!;

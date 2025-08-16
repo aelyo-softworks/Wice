@@ -1,7 +1,7 @@
 ﻿namespace Wice.Effects;
 
 /// <summary>
-/// Represents the Direct2D/Win2D Saturation effect.
+/// Represents the Direct2D Saturation effect.
 /// </summary>
 /// <remarks>
 /// - This effect expects at least one <see cref="IGraphicsEffectSource"/> input (via <see cref="EffectWithSource.Source"/>).<br/>
