@@ -28,7 +28,7 @@ internal class Program
                 }
             }
 
-            void newWindow()
+            static void newWindow()
             {
                 var win = new TestWindow { Title = "Wice AOT" };
                 //WindowsUtilities.AllocConsole();

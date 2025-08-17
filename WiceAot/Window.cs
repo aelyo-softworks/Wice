@@ -3095,7 +3095,19 @@ public partial class Window : Canvas, ITitleBarParent
         }
         catch (Exception e)
         {
-            Application.AddError(e);
+            if (Application.ShowFatalErrorsOnUnhandledException)
+            {
+                var current = Application.Current;
+                Application.AddError(e, false);
+                if (Application.ShowFatalError(hwnd))
+                {
+                    current?.Exit();
+                }
+            }
+            else
+            {
+                Application.AddError(e);
+            }
             return LRESULT.Null;
         }
     }

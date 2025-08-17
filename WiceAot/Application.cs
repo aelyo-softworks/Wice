@@ -312,7 +312,7 @@ public partial class Application : IDisposable
     }
 
     /// <summary>
-    /// Initiates application exit by raising <see cref="ApplicationExit"/> and posting WM_QUIT.
+    /// Initiates application exit by raising <see cref="ApplicationExit"/>.
     /// </summary>
     /// <remarks>Must be called from the application's main thread.</remarks>
     public virtual void Exit()
@@ -322,7 +322,9 @@ public partial class Application : IDisposable
 
         CheckRunningAsMainThread();
         OnApplicationExit(this, EventArgs.Empty);
-        WiceCommons.PostQuitMessage(0);
+
+        // we don't use PostQuitMessage because it prevents any other windows from showing (like messagebox, taskdialog, etc.)
+        WiceCommons.PostMessageW(HWND.Null, WM_HOSTQUIT, WPARAM.Null, LPARAM.Null);
     }
 
     /// <summary>
@@ -458,8 +460,6 @@ public partial class Application : IDisposable
     /// <exception cref="WiceException">Thrown when no current application exists ("0031").</exception>
     public static ResourceManager CurrentResourceManager => Current?.ResourceManager ?? throw new WiceException("0031: Resource Manager is not available at this time.");
 
-    //public static Theme CurrentTheme => CurrentResourceManager.Theme ?? throw new WiceException("0035: Theme is not available at this time.");
-
     /// <summary>
     /// Gets or sets a value indicating whether to enable the DXGI debug layer when available.
     /// </summary>
@@ -483,6 +483,18 @@ public partial class Application : IDisposable
     /// </summary>
     /// <remarks>Default is <see langword="true"/>.</remarks>
     public static bool ExitAllOnLastWindowRemoved { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether fatal error messages should be displayed when an unhandled exception
+    /// occurs.
+    /// </summary>
+    public static bool ShowFatalErrorsOnUnhandledException { get; set; } = !Debugger.IsAttached;
+
+    /// <summary>
+    /// Gets or sets a delegate that displays a fatal error message for a specified window handle.
+    /// </summary>
+    /// <remarks>This property allows customization of how fatal errors are displayed in the application.</remarks>
+    public static Func<HWND, bool>? ShowFatalErrorFunc { get; set; }
 
     static Application()
     {
@@ -514,7 +526,7 @@ public partial class Application : IDisposable
     }
 
     /// <summary>
-    /// Requests all applications to exit by posting WM_QUIT to their threads and raising <see cref="AllApplicationsExit"/>.
+    /// Requests all applications to exit raises <see cref="AllApplicationsExit"/>.
     /// </summary>
     public static void AllExit()
     {
@@ -526,27 +538,51 @@ public partial class Application : IDisposable
         {
             // call from one thread
             kv.Value.OnApplicationExit(kv.Value, EventArgs.Empty);
-            WiceCommons.PostThreadMessageW(kv.Value.ThreadId, MessageDecoder.WM_QUIT, 0, 0);
+
+            WiceCommons.PostThreadMessageW(kv.Value.ThreadId, WM_HOSTQUIT, 0, 0);
         }
 
         AllApplicationsExit?.Invoke(null, EventArgs.Empty);
     }
 
     /// <summary>
-    /// Gets a value indicating whether any fatal errors have been recorded.
+    /// Gets a value indicating whether any fatal errors have been recorded but not shown.
     /// </summary>
     public static bool HasErrors => _errors.Count > 0;
 
     /// <summary>
-    /// Adds a fatal <paramref name="error"/> to the global error list and posts <see cref="WM_HOSTQUIT"/>.
+    /// Retrieves the list of errors that have been recorded.
     /// </summary>
-    /// <param name="error">The exception to record.</param>
-    /// <param name="methodName">The calling method name (automatically supplied by the compiler).</param>
-    /// <remarks>
-    /// Duplicate errors (by string representation) are ignored. This does not post WM_QUIT to avoid
-    /// preventing UI from displaying dialogs.
-    /// </remarks>
-    public static void AddError(Exception error, [CallerMemberName] string? methodName = null)
+    /// <remarks>This method is thread-safe. If <paramref name="clear"/> is set to <see langword="true"/>, 
+    /// the internal error list will be cleared after the errors are retrieved.</remarks>
+    /// <param name="clear">A value indicating whether to clear the error list after retrieval. <see langword="true"/> to clear the list;
+    /// otherwise, <see langword="false"/>.</param>
+    /// <returns>A read-only list of <see cref="Exception"/> objects representing the recorded errors. The list will be empty if
+    /// no errors have been recorded.</returns>
+    public static IReadOnlyList<Exception> GetErrors(bool clear = false)
+    {
+        lock (_errorsLock)
+        {
+            var errors = _errors.ToArray();
+            if (clear)
+            {
+                _errors.Clear();
+            }
+            return errors;
+        }
+    }
+
+    /// <summary>
+    /// Adds an error to the internal error collection and optionally initiates a quit operation.
+    /// </summary>
+    /// <remarks>If the specified error already exists (by same exact text) in the internal error collection, it will not be added
+    /// again.  When <paramref name="quit"/> is <see langword="true"/>, a quit operation is initiated by posting  a
+    /// message to the main thread.</remarks>
+    /// <param name="error">The exception to add. Must not be <see langword="null"/>.</param>
+    /// <param name="quit">A value indicating whether to initiate a quit operation after adding the error. If <see langword="true"/>, a
+    /// quit operation is triggered; otherwise, it is not.</param>
+    /// <param name="methodName">The name of the calling method. This parameter is automatically populated by the compiler and is optional.</param>
+    public static void AddError(Exception error, bool quit = true, [CallerMemberName] string? methodName = null)
     {
         if (error == null)
             return;
@@ -555,27 +591,47 @@ public partial class Application : IDisposable
         {
             var ts = error.ToString();
             if (_errors.Any(e => e.ToString() == ts))
+            {
+                handleQuit();
                 return;
+            }
 
             Trace("ERROR[" + methodName + "]:" + error);
             _errors.Add(error);
         }
+        handleQuit();
 
-        // we don't use PostQuitMessage because it prevents any other windows from showing (like messagebox, taskdialog, etc.)
-        WiceCommons.PostMessageW(HWND.Null, WM_HOSTQUIT, WPARAM.Null, LPARAM.Null);
+        void handleQuit()
+        {
+            if (!quit)
+                return;
+
+            // we don't use PostQuitMessage because it prevents any other windows from showing (like messagebox, taskdialog, etc.)
+            WiceCommons.PostMessageW(HWND.Null, WM_HOSTQUIT, WPARAM.Null, LPARAM.Null);
+        }
     }
 
     /// <summary>
-    /// Displays a fatal error dialog summarizing all recorded errors, if any.
+    /// Displays a fatal error dialog to the user if there are any recorded fatal errors.
     /// </summary>
-    /// <param name="hwnd">An owner window handle for the dialog, or <see cref="HWND.Null"/>.</param>
-    public static void ShowFatalError(HWND hwnd)
+    /// <remarks>This method checks for any recorded fatal errors and displays them in a dialog box.  If
+    /// multiple errors are present, they are aggregated and displayed together. Once the dialog is acknowledged, the
+    /// recorded errors are cleared to prevent them from being shown again. If such a dialog is already being shown, this method will return <see
+    /// langword="false"/> without displaying another dialog.</remarks>
+    /// <param name="hwnd">The handle to the parent window for the dialog.</param>
+    /// <returns><see langword="true"/> if the dialog was successfully shown and acknowledged by the user;  otherwise, <see
+    /// langword="false"/> if no errors were present or the dialog could not be or was not displayed.</returns>
+    public static bool ShowFatalError(HWND hwnd)
     {
+        var func = ShowFatalErrorFunc;
+        if (func != null)
+            return func(hwnd);
+
         if (_errors.Count == 0)
-            return;
+            return false;
 
         if (IsFatalErrorShowing)
-            return;
+            return false;
 
         var errors = _errors.ToArray();
         IsFatalErrorShowing = true;
@@ -619,7 +675,18 @@ public partial class Application : IDisposable
                 td.Content = sb.ToString();
             }
 
-            td.Show(hwnd);
+            // note if something goes wrong (dialog wasn't show), Show will possibly return cancel (TaskDialogIndirect won't fail).
+            var result = td.Show(hwnd);
+#if NETFRAMEWORK
+            var shown = result != DialogResult.Cancel;
+#else
+            var shown = result != MESSAGEBOX_RESULT.IDCANCEL;
+#endif
+            if (shown)
+            {
+                _errors.Clear(); // clear errors to prevent showing them again
+            }
+            return shown;
         }
         finally
         {
@@ -660,9 +727,13 @@ public partial class Application : IDisposable
     /// </returns>
     public static string GetTitle(HWND hwnd)
     {
-        var text = NativeWindow.GetWindowText(hwnd).Nullify();
-        if (text != null)
-            return text;
+        string? text;
+        if (hwnd != 0)
+        {
+            text = NativeWindow.GetWindowText(hwnd).Nullify();
+            if (text != null)
+                return text;
+        }
 
         text = Assembly.GetEntryAssembly().GetTitle().Nullify();
         if (text != null)
@@ -679,18 +750,25 @@ public partial class Application : IDisposable
     {
         if (e.ExceptionObject is Exception error)
         {
-            AddError(error);
-            var allWindows = AllWindows;
-            if (allWindows.Count > 0)
+            if (ShowFatalErrorsOnUnhandledException)
             {
-                // show error in the first window
-                var win = allWindows[0].NativeIfCreated?.Handle;
-                ShowFatalError(win.GetValueOrDefault());
+                AddError(error, false);
+                var allWindows = AllWindows;
+                if (allWindows.Count > 0)
+                {
+                    // show error in the first window
+                    var win = allWindows[0].NativeIfCreated?.Handle;
+                    ShowFatalError(win.GetValueOrDefault());
+                }
+                else
+                {
+                    // no windows, show error in the current thread
+                    ShowFatalError(HWND.Null);
+                }
             }
             else
             {
-                // no windows, show error in the current thread
-                ShowFatalError(HWND.Null);
+                AddError(error);
             }
         }
     }
