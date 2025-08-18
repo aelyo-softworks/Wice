@@ -20,10 +20,7 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
     /// </remarks>
     public event EventHandler<ValueEventArgs<bool>>? IsSelectedChanged;
 
-    // Backing field for IsSelected.
     private bool _isSelected;
-
-    // Lazy evaluation of whether the bit value contains multiple bits.
     private readonly Lazy<bool> _isMultiValued;
 
     /// <summary>
@@ -93,7 +90,6 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
         }
     }
 
-    /// <inheritdoc />
     bool ISelectable.RaiseIsSelectedChanged { get => RaiseIsSelectedChanged; set => RaiseIsSelectedChanged = value; }
 
     /// <summary>
@@ -122,10 +118,6 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
     /// </summary>
     public bool IsMultiValued => _isMultiValued.Value;
 
-    /// <summary>
-    /// Determines whether <see cref="UInt64BitValue"/> has multiple bits set.
-    /// </summary>
-    /// <returns><see langword="true"/> if multiple bits are set; otherwise, <see langword="false"/>.</returns>
     private bool GetIsMultiValued()
     {
         var ul = UInt64BitValue;
@@ -146,24 +138,9 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
         return false;
     }
 
-    /// <summary>
-    /// Changing the value is not supported for this type.
-    /// </summary>
     bool IValueable.CanChangeValue { get => false; set => throw new NotSupportedException(); }
-
-    /// <summary>
-    /// Changing the value is not supported for this type and always returns false.
-    /// </summary>
     bool IValueable.TrySetValue(object? value) => false;
-
-    /// <summary>
-    /// Gets the underlying <see cref="Value"/> for <see cref="IValueable.Value"/>.
-    /// </summary>
     object IValueable.Value => Value;
-
-    /// <summary>
-    /// Subscribing to value changes is not supported for this type.
-    /// </summary>
     event EventHandler<ValueEventArgs> IValueable.ValueChanged { add { throw new NotSupportedException(); } remove { throw new NotSupportedException(); } }
 
     /// <summary>

@@ -71,6 +71,29 @@ public static class CompositionUtilities
     }
 
     /// <summary>
+    /// Calculates the cumulative offset of the specified visual relative to the root visual.
+    /// </summary>
+    /// <remarks>This method traverses the visual tree from the specified visual to the root, summing the <see
+    /// cref="Windows.UI.Composition.Visual.Offset"/>  values of each visual in the hierarchy. The result represents the
+    /// total offset of the visual relative to the root visual.</remarks>
+    /// <param name="visual">The visual for which to calculate the root-relative offset. Cannot be <see langword="null"/>.</param>
+    /// <returns>A <see cref="Vector3"/> representing the total offset of the visual relative to the root visual.  If the visual
+    /// has no parent, the offset is equal to its own offset.</returns>
+    public static Vector3 GetRootOffset(this Windows.UI.Composition.Visual visual)
+    {
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
+
+        var offset = Vector3.Zero;
+        var currentVisual = visual;
+        while (currentVisual != null)
+        {
+            offset += currentVisual.Offset;
+            currentVisual = currentVisual.Parent;
+        }
+        return offset;
+    }
+
+    /// <summary>
     /// Produces a short, human-readable description of a brush for tracing or logging.
     /// </summary>
     /// <param name="brush">The brush to describe. May be <c>null</c>.</param>

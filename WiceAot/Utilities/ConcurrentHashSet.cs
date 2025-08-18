@@ -112,14 +112,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     {
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConcurrentHashSet{T}"/> with full control over lock growth and comparer.
-    /// </summary>
-    /// <param name="concurrencyLevel">The estimated number of concurrent writers. Must be at least 1.</param>
-    /// <param name="capacity">The initial number of buckets. Must be non-negative.</param>
-    /// <param name="growLockArray">When <c>true</c>, the internal lock array may grow during table expansion.</param>
-    /// <param name="comparer">The equality comparer to use, or <c>null</c> to use <see cref="EqualityComparer{T}.Default"/>.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1 or <paramref name="capacity"/> is negative.</exception>
     private ConcurrentHashSet(int concurrencyLevel, int capacity, bool growLockArray, IEqualityComparer<T>? comparer)
     {
 #if NETFRAMEWORK
@@ -324,29 +316,10 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
         }
     }
 
-    /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-    /// <inheritdoc />
     bool ICollection<T>.Remove(T item) => TryRemove(item);
-
-    /// <inheritdoc />
     void ICollection<T>.Add(T item) => Add(item);
-
-    /// <inheritdoc />
     bool ICollection<T>.IsReadOnly => false;
-
-    /// <summary>
-    /// Copies the elements of the set to an array, starting at a particular array index.
-    /// </summary>
-    /// <param name="array">The one-dimensional array that is the destination of the elements copied from the set.</param>
-    /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="array"/> is <c>null</c>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex"/> is less than 0.</exception>
-    /// <exception cref="ArgumentException">The number of elements in the set is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination array.</exception>
-    /// <remarks>
-    /// Acquires all internal locks to copy a consistent set of items at a point in time.
-    /// </remarks>
     void ICollection<T>.CopyTo(T[] array, int arrayIndex)
     {
         ExceptionExtensions.ThrowIfNull(array, nameof(array));
@@ -377,11 +350,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
         }
     }
 
-    /// <summary>
-    /// Computes a hash code for the given item using the configured comparer.
-    /// </summary>
-    /// <param name="item">The item to hash. May be <c>null</c>.</param>
-    /// <returns>The hash code, or 0 if <paramref name="item"/> is <c>null</c>.</returns>
     private int GetHashCode(T? item)
     {
         if (item is null)
@@ -390,10 +358,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
         return _comparer.GetHashCode(item);
     }
 
-    /// <summary>
-    /// Initializes the set with items from a collection without acquiring per-item locks (used during construction).
-    /// </summary>
-    /// <param name="collection">The source collection.</param>
     private void InitializeFromCollection(IEnumerable<T> collection)
     {
         foreach (var item in collection)
@@ -407,13 +371,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
         }
     }
 
-    /// <summary>
-    /// Core insertion routine. Adds an item if absent and may trigger a resize based on per-lock budgets.
-    /// </summary>
-    /// <param name="item">The item to add.</param>
-    /// <param name="hashcode">The precomputed hash code for the item.</param>
-    /// <param name="acquireLock">Whether to acquire the relevant lock before inserting.</param>
-    /// <returns><c>true</c> if inserted; <c>false</c> if already present.</returns>
     private bool AddInternal(T item, int hashcode, bool acquireLock)
     {
         while (true)
@@ -470,28 +427,18 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
         }
     }
 
-    /// <summary>
-    /// Computes the target bucket index for a hash code.
-    /// </summary>
     private static int GetBucket(int hashcode, int bucketCount)
     {
         var bucketNo = (hashcode & 0x7fffffff) % bucketCount;
         return bucketNo;
     }
 
-    /// <summary>
-    /// Computes the target bucket and lock indices for a hash code.
-    /// </summary>
     private static void GetBucketAndLockNo(int hashcode, out int bucketNo, out int lockNo, int bucketCount, int lockCount)
     {
         bucketNo = (hashcode & 0x7fffffff) % bucketCount;
         lockNo = bucketNo % lockCount;
     }
 
-    /// <summary>
-    /// Grows the underlying bucket table when the per-lock budget is exceeded.
-    /// </summary>
-    /// <param name="tables">The current tables snapshot to grow from.</param>
     private void GrowTable(Tables tables)
     {
         const int maxArrayLength = 0X7FEFFFFF;
@@ -591,18 +538,12 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
         }
     }
 
-    /// <summary>
-    /// Acquires all internal locks in a consistent order.
-    /// </summary>
     private void AcquireAllLocks(ref int locksAcquired)
     {
         AcquireLocks(0, 1, ref locksAcquired);
         AcquireLocks(1, _tables.Locks.Length, ref locksAcquired);
     }
 
-    /// <summary>
-    /// Acquires a range of internal locks.
-    /// </summary>
     private void AcquireLocks(int fromInclusive, int toExclusive, ref int locksAcquired)
     {
         var locks = _tables.Locks;
@@ -623,9 +564,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
         }
     }
 
-    /// <summary>
-    /// Releases a range of internal locks.
-    /// </summary>
     private void ReleaseLocks(int fromInclusive, int toExclusive)
     {
         for (var i = fromInclusive; i < toExclusive; i++)
@@ -634,9 +572,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
         }
     }
 
-    /// <summary>
-    /// Copies items into the specified array starting at the provided index. Assumes all locks are held by the caller.
-    /// </summary>
     private void CopyToItems(T[] array, int index)
     {
         var buckets = _tables.Buckets;
@@ -650,9 +585,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
         }
     }
 
-    /// <summary>
-    /// Groups the underlying tables used by the set.
-    /// </summary>
     private sealed class Tables(Node[] buckets, object[] locks, int[] countPerLock)
     {
         /// <summary>The bucket array containing linked lists of nodes.</summary>
@@ -663,9 +595,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
         public volatile int[] CountPerLock = countPerLock;
     }
 
-    /// <summary>
-    /// Represents one entry in a bucket's singly-linked list.
-    /// </summary>
     private sealed class Node(T item, int hashcode, Node next)
     {
         /// <summary>The stored item.</summary>

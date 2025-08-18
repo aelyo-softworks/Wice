@@ -160,14 +160,8 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
     /// </summary>
     public IEnumerator<T> GetEnumerator() => _table.Keys.GetEnumerator();
 
-    /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    /// <summary>
-    /// Represents a node stored at a quadrant, linking items in a circular singly linked list.
-    /// </summary>
-    /// <param name="node">The stored item.</param>
-    /// <param name="bounds">The stored item's bounds.</param>
     internal class QuadNode(T node, D2D_RECT_F bounds)
     {
         /// <summary>The bounds associated with <see cref="Node"/>.</summary>
@@ -183,32 +177,17 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
         public override string ToString() => Node + " => " + Bounds;
     }
 
-    /// <summary>
-    /// Represents a quadrant in the quadtree. Quadrants are created lazily as needed
-    /// and can hold items locally and/or have child quadrants.
-    /// </summary>
-    /// <param name="quadTree">The owning quadtree.</param>
-    /// <param name="parent">The parent quadrant, or <see langword="null"/> for the root.</param>
-    /// <param name="bounds">The quadrant bounds.</param>
     internal class Quadrant(IQuadTree<T> quadTree, Quadrant? parent, D2D_RECT_F bounds)
     {
-        /// <summary>Gets or sets the parent quadrant (or <see langword="null"/> for the root).</summary>
         public Quadrant? Parent = parent;
-
-        /// <summary>Gets or sets the bounds of this quadrant.</summary>
         public D2D_RECT_F Bounds = bounds;
-
         private QuadNode? _nodes;
         private readonly IQuadTree<T> _quadTree = quadTree;
-
         private Quadrant? _topLeft;
         private Quadrant? _topRight;
         private Quadrant? _bottomLeft;
         private Quadrant? _bottomRight;
 
-        /// <summary>
-        /// Enumerates the nodes stored directly in this quadrant (not including children).
-        /// </summary>
         public IEnumerable<QuadNode> Nodes
         {
             get
@@ -228,9 +207,6 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
             }
         }
 
-        /// <summary>
-        /// Enumerates the nodes stored in this quadrant and recursively in all child quadrants.
-        /// </summary>
         public IEnumerable<QuadNode> AllNodes
         {
             get
@@ -274,14 +250,6 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
             }
         }
 
-        /// <summary>
-        /// Inserts an item into this quadrant or into one of its children if the bounds
-        /// fully fit within a child quadrant; otherwise stores it locally.
-        /// </summary>
-        /// <param name="node">The item to insert.</param>
-        /// <param name="bounds">The item bounds.</param>
-        /// <returns>The quadrant that directly stores the item.</returns>
-        /// <exception cref="ArgumentException">Thrown if <paramref name="bounds"/> is empty.</exception>
         public Quadrant Insert(T node, D2D_RECT_F bounds)
         {
             if (bounds.IsEmpty)
@@ -345,12 +313,6 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
             return this;
         }
 
-        /// <summary>
-        /// Enumerates nodes that intersect with the specified <paramref name="bounds"/> within this quadrant
-        /// and its children.
-        /// </summary>
-        /// <param name="bounds">The query bounds.</param>
-        /// <returns>An enumerable of intersecting <see cref="QuadNode"/> instances.</returns>
         public IEnumerable<QuadNode> GetIntersectingNodes(D2D_RECT_F bounds)
         {
             var w = Bounds.Width / 2;
@@ -399,13 +361,6 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
             }
         }
 
-        /// <summary>
-        /// Iterates over the circular node list starting after <paramref name="last"/>, yielding those
-        /// whose bounds intersect with <paramref name="bounds"/>.
-        /// </summary>
-        /// <param name="last">The last node in the circular list (anchor), or <see langword="null"/>.</param>
-        /// <param name="bounds">The query bounds.</param>
-        /// <returns>An enumerable of intersecting nodes.</returns>
         private static IEnumerable<QuadNode> GetIntersectingNodes(QuadNode? last, D2D_RECT_F bounds)
         {
             if (last != null)
@@ -426,11 +381,6 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
             }
         }
 
-        /// <summary>
-        /// Removes the specified <paramref name="node"/> from this quadrant's local node list.
-        /// </summary>
-        /// <param name="node">The item to remove.</param>
-        /// <returns><see langword="true"/> if the node was found and removed; otherwise, <see langword="false"/>.</returns>
         public bool RemoveNode(T node)
         {
             var rc = false;

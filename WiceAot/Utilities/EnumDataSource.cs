@@ -15,10 +15,6 @@
 /// <seealso cref="DataSource"/>
 public partial class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
 {
-    /// <summary>
-    /// Initializes a new instance wrapping the provided sequence of <see cref="EnumBitValue"/>.
-    /// </summary>
-    /// <param name="values">The sequence of enum items to expose.</param>
     private EnumDataSource(IEnumerable<EnumBitValue> values)
         : base(values)
     {
@@ -29,7 +25,6 @@ public partial class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
     /// </summary>
     public new IEnumerable<EnumBitValue> Source => (IEnumerable<EnumBitValue>)base.Source!;
 
-    /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <summary>
@@ -111,21 +106,7 @@ public partial class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
         return new EnumDataSource(GetValues(type, value));
     }
 
-    /// <summary>
-    /// Enumerates all visible enum members for the given <paramref name="type"/> and materializes them as <see cref="EnumBitValue"/>.
-    /// </summary>
-    /// <param name="type">An enum <see cref="Type"/>. Its public static fields are inspected.</param>
-    /// <returns>
-    /// A sequence of <see cref="EnumBitValue"/> instances in declaration order (excluding special-name members and those with
-    /// <see cref="System.ComponentModel.BrowsableAttribute.Browsable"/> set to <c>false</c>).
-    /// </returns>
-    /// <remarks>
-    /// - <see cref="EnumBitValue.DisplayName"/> uses <see cref="System.ComponentModel.DescriptionAttribute"/> when present,
-    ///   otherwise it is derived by <c>Conversions.Decamelize</c>.
-    /// - <see cref="EnumBitValue.BitValue"/> is set to the raw enum value; <see cref="EnumBitValue.Value"/> remains the same construction value.
-    /// </remarks>
-    private static IEnumerable<EnumBitValue> GetEnumValues(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type)
+    private static IEnumerable<EnumBitValue> GetEnumValues([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type)
     {
         foreach (var field in type.GetFields(BindingFlags.Public | BindingFlags.Static).Where(f => !f.IsSpecialName))
         {
@@ -144,14 +125,8 @@ public partial class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
         }
     }
 
-    /// <summary>
-    /// Produces <see cref="EnumBitValue"/> items for a regular (non-flags) enum and marks as selected the item equal to <paramref name="value"/>.
-    /// </summary>
-    /// <param name="type">An enum <see cref="Type"/>.</param>
-    /// <param name="value">The enum value to compare against. May be <c>null</c> to select none.</param>
-    private static IEnumerable<EnumBitValue> GetValues(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type,
-        object? value)
+
+    private static IEnumerable<EnumBitValue> GetValues([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type, object? value)
     {
         foreach (var ev in GetEnumValues(type))
         {
@@ -160,19 +135,7 @@ public partial class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
         }
     }
 
-    /// <summary>
-    /// Produces <see cref="EnumBitValue"/> items for a [Flags] enum and marks as selected each item whose bit is set in <paramref name="value"/>.
-    /// </summary>
-    /// <param name="type">A flags enum <see cref="Type"/>.</param>
-    /// <param name="value">The enum value used to extract set bits. When <c>null</c>, yields nothing.</param>
-    /// <remarks>
-    /// - Zero-valued entries are skipped from selection evaluation (still yielded).
-    /// - Assumes a simple enum definition (no duplicated values and no predefined combined values).
-    /// - Bit checks are performed using <c>Conversions.EnumToUInt64</c> and <see cref="EnumBitValue.UInt64BitValue"/>.
-    /// </remarks>
-    private static IEnumerable<EnumBitValue> GetFlagsValues(
-        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type,
-        object? value)
+    private static IEnumerable<EnumBitValue> GetFlagsValues([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields)] Type type, object? value)
     {
         if (value == null)
             yield break;

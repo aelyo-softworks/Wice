@@ -21,38 +21,12 @@ public static partial class ShellUtilities
 {
 #if NETFRAMEWORK
 
-    /// <summary>
-    /// Wraps the Win32 <c>SHParseDisplayName</c> function.
-    /// Parses a display name (e.g., a file system path) into a PIDL.
-    /// </summary>
-    /// <param name="pszName">The display name to parse (e.g., a file path).</param>
-    /// <param name="pbc">Optional bind context to control parsing; can be <see langword="null"/>.</param>
-    /// <param name="ppidl">On success, receives an absolute PIDL. Caller must free with <see cref="Marshal.FreeCoTaskMem(nint)"/>.</param>
-    /// <param name="sfgaoIn">Attribute flags to query; can be 0.</param>
-    /// <param name="psfgaoOut">On success, receives attributes for the parsed item.</param>
-    /// <returns>Standard <see cref="HRESULT"/> indicating success or failure.</returns>
     [DllImport("shell32", CharSet = CharSet.Unicode)]
     private static extern HRESULT SHParseDisplayName(string pszName, IBindCtx pbc, out IntPtr ppidl, uint sfgaoIn, out uint psfgaoOut);
 
-    /// <summary>
-    /// Wraps the Win32 <c>SHGetFolderLocation</c> function.
-    /// Retrieves the PIDL of a special folder (e.g., Desktop).
-    /// </summary>
-    /// <param name="hwnd">Reserved; typically <see cref="IntPtr.Zero"/>.</param>
-    /// <param name="csidl">The CSIDL of the special folder (e.g., 0 for Desktop).</param>
-    /// <param name="hToken">An access token for another user; typically <see cref="IntPtr.Zero"/>.</param>
-    /// <param name="dwReserved">Reserved; must be 0.</param>
-    /// <param name="ppidl">On success, receives the folder PIDL. Caller must free with <see cref="Marshal.FreeCoTaskMem(nint)"/>.</param>
-    /// <returns>Standard <see cref="HRESULT"/> indicating success or failure.</returns>
     [DllImport("shell32")]
     private static extern HRESULT SHGetFolderLocation(IntPtr hwnd, uint csidl, IntPtr hToken, int dwReserved, out IntPtr ppidl);
 
-    /// <summary>
-    /// Wraps the Win32 <c>CreateBindCtx</c> function, creating a bind context for moniker operations.
-    /// </summary>
-    /// <param name="reserved">Must be 0.</param>
-    /// <param name="ppbc">On success, receives the created <see cref="IBindCtx"/>.</param>
-    /// <returns>Standard <see cref="HRESULT"/> indicating success or failure.</returns>
     [DllImport("ole32")]
     private static extern HRESULT CreateBindCtx(int reserved, out IBindCtx ppbc);
 
@@ -73,7 +47,6 @@ public static partial class ShellUtilities
     /// Creates a Windows Shell <see cref="IDataObject"/> that represents the specified file system items.
     /// </summary>
     /// <param name="filePaths">File system paths to include in the data object. If <see langword="null"/> or empty, an empty shell data object is created (supports only SetData with fRelease = true).</param>
-    /// <param name="owned">Kept for API symmetry with the .NET implementation but ignored on .NET Framework.</param>
     /// <returns>
     /// An <see cref="IComObject{T}"/> for <see cref="IDataObject"/> that callers can use for drag-and-drop or clipboard scenarios.
     /// </returns>
@@ -83,39 +56,37 @@ public static partial class ShellUtilities
     /// - Allocated PIDLs are released with <see cref="Marshal.FreeCoTaskMem(nint)"/> in a finally block.
     /// - All native calls are HRESULT-checked via <c>ThrowOnError()</c>.
     /// </remarks>
-    public static IComObject<IDataObject> CreateDataObject(IEnumerable<string> filePaths = null, bool owned = true)
+    public static IComObject<IDataObject> CreateDataObject(IEnumerable<string> filePaths = null)
     {
         if (filePaths == null || !filePaths.Any())
         {
-            // note this data object only supports SetData(..., ..., true); (fRelease argument set to true)
+            // note this data object only supports SetData(..., ..., true);
             SHCreateDataObject(IntPtr.Zero, 0, null, null, typeof(IDataObject).GUID, out var obj).ThrowOnError();
             return new ComObject<IDataObject>((IDataObject)obj);
         }
 
         CreateBindCtx(0, out var ctxUnk).ThrowOnError();
-        using (var ctx = new ComObject<IBindCtx>(ctxUnk))
+        using var ctx = new ComObject<IBindCtx>(ctxUnk);
+        var pidls = new List<IntPtr>();
+
+        const int CSIDL_DESKTOP = 0;
+        SHGetFolderLocation(IntPtr.Zero, CSIDL_DESKTOP, IntPtr.Zero, 0, out var folderPidl).ThrowOnError();
+        pidls.Add(folderPidl);
+        try
         {
-            var pidls = new List<IntPtr>();
-
-            const int CSIDL_DESKTOP = 0;
-            SHGetFolderLocation(IntPtr.Zero, CSIDL_DESKTOP, IntPtr.Zero, 0, out var folderPidl).ThrowOnError();
-            pidls.Add(folderPidl);
-            try
+            foreach (var filePath in filePaths)
             {
-                foreach (var filePath in filePaths)
-                {
-                    SHParseDisplayName(filePath, ctx.Object, out var pidl, 0, out _).ThrowOnError();
-                    pidls.Add(pidl);
-                }
+                SHParseDisplayName(filePath, ctx.Object, out var pidl, 0, out _).ThrowOnError();
+                pidls.Add(pidl);
+            }
 
-                var arr = pidls.Skip(1).ToArray();
-                SHCreateDataObject(folderPidl, arr.Length, arr, null, typeof(IDataObject).GUID, out var obj).ThrowOnError();
-                return new ComObject<IDataObject>((IDataObject)obj);
-            }
-            finally
-            {
-                pidls.ForEach(Marshal.FreeCoTaskMem);
-            }
+            var arr = pidls.Skip(1).ToArray();
+            SHCreateDataObject(folderPidl, arr.Length, arr, null, typeof(IDataObject).GUID, out var obj).ThrowOnError();
+            return new ComObject<IDataObject>((IDataObject)obj);
+        }
+        finally
+        {
+            pidls.ForEach(Marshal.FreeCoTaskMem);
         }
     }
 

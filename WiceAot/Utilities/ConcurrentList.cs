@@ -41,7 +41,8 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="collection">The collection whose elements are copied to the new list.</param>
     public ConcurrentList(IEnumerable<T> collection)
     {
-        List = new List<T>(collection);
+        ExceptionExtensions.ThrowIfNull(collection, nameof(collection));
+        List = [.. collection];
     }
 
     /// <summary>

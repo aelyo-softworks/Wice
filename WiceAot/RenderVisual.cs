@@ -173,8 +173,18 @@ public abstract class RenderVisual : Visual
     /// </summary>
     /// <param name="creationOptions">Optional surface creation options (e.g., pixel format).</param>
     /// <param name="rect">Optional drawing rectangle. If null, the full visual rect is used.</param>
-    protected virtual void RenderD2DSurface(SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
+    protected virtual void RenderD2DSurface(SurfaceCreationOptions? creationOptions = null, RECT? rect = null) => RenderD2DSurface(RenderCore, creationOptions, rect);
+
+    /// <summary>
+    /// Draws the content on a Direct2D surface associated with the underlying <see cref="SpriteVisual"/>.
+    /// Applies an extra translation transform when the composition surface size is clamped.
+    /// </summary>
+    /// <param name="action">The action to perform on the render context. This should contain the actual drawing logic.</param>
+    /// <param name="creationOptions">Optional surface creation options (e.g., pixel format).</param>
+    /// <param name="rect">Optional drawing rectangle. If null, the full visual rect is used.</param>
+    protected virtual void RenderD2DSurface(Action<RenderContext> action, SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
     {
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (CompositionVisual is not SpriteVisual visual)
             return;
 
@@ -197,7 +207,7 @@ public abstract class RenderVisual : Visual
             }
 
             Parent?.BeforeRenderChildCore(rc, this);
-            RenderCore(rc);
+            action(rc);
             Parent?.AfterRenderChildCore(rc, this);
 
             if (TransformMaxed && _widthMaxed.HasValue && _heightMaxed.HasValue)

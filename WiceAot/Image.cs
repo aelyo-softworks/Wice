@@ -293,6 +293,7 @@ public partial class Image : RenderVisual, IDisposable
             var bmp = _bitmap;
             if (bmp == null && Source != null)
             {
+                // note Direct Composition authorizes use to save the bitmap and reuse it although the D2D device context is new
                 LastBitmapError = context.DeviceContext.Object.CreateBitmapFromWicBitmap(Source.Object, IntPtr.Zero, out ID2D1Bitmap bitmap);
                 if (LastBitmapError.IsError)
                 {

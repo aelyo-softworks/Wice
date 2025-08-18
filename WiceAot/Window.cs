@@ -142,6 +142,9 @@ public partial class Window : Canvas, ITitleBarParent
     [Category(CategoryRender)]
     public ContainerVisual? FrameVisual { get; private set; }
 
+    [Browsable(false)]
+    public virtual bool UseTopCompositionVisualTree => false;
+
     protected virtual string ClassName => GetType().FullName!;
     protected virtual WNDCLASS_STYLES ClassStyles => WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW | WNDCLASS_STYLES.CS_DBLCLKS;
     protected virtual HBRUSH BackgroundBrush { get; } // GET_STOCK_OBJECT_FLAGS.STOCK_BRUSH_WINDOW; // default is white, we use transparent
@@ -877,7 +880,7 @@ public partial class Window : Canvas, ITitleBarParent
         return _native.Value.Destroy();
     }
 
-    public virtual Task RunTaskOnMainThread(Action action, bool startNew = false)
+    public virtual Task RunTaskOnMainThread(Action action, bool startNew = false, TaskCreationOptions options = TaskCreationOptions.None, CancellationToken cancellationToken = default)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!startNew && IsRunningAsMainThread)
@@ -886,7 +889,26 @@ public partial class Window : Canvas, ITitleBarParent
             return Task.CompletedTask;
         }
 
-        return Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, _scheduler);
+        return Task.Factory.StartNew(action, cancellationToken, options, _scheduler);
+    }
+
+    public virtual async Task<T> RunTaskOnMainThread<T>(Func<T> action, bool startNew = false, TaskCreationOptions options = TaskCreationOptions.None, CancellationToken cancellationToken = default)
+    {
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
+        if (!startNew && IsRunningAsMainThread)
+            return action();
+
+        return await Task.Factory.StartNew(action, default, options, _scheduler);
+    }
+
+    public virtual Task<T> RunTaskOnMainThread<T>(Func<Task<T>> action, bool startNew = false, TaskCreationOptions options = TaskCreationOptions.None, CancellationToken cancellationToken = default)
+    {
+        ExceptionExtensions.ThrowIfNull(action, nameof(action));
+        if (!startNew && IsRunningAsMainThread)
+            return action();
+
+        var task = Task.Factory.StartNew(action, default, options, _scheduler);
+        return task.Unwrap();
     }
 
     protected virtual void ClipFrame()
@@ -1221,7 +1243,7 @@ public partial class Window : Canvas, ITitleBarParent
         return new ComObject<ID2D1Device1>((ID2D1Device1)dev);
     }
 
-    protected virtual CompositionGraphicsDevice CreateCompositionDevice()
+    public virtual CompositionGraphicsDevice CreateCompositionDevice()
     {
         using var interop = CompositorController.Compositor.AsComObject<ICompositorInterop>();
         var d2d1 = _d2D1Device.Value;
@@ -1271,9 +1293,8 @@ public partial class Window : Canvas, ITitleBarParent
         controller.CommitNeeded += OnCompositorControllerCommitNeeded;
 
 #if NETFRAMEWORK
-
         var interop = controller.Compositor.ComCast<ICompositorDesktopInterop>();
-        interop.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
+        interop.CreateDesktopWindowTarget(Native.Handle, UseTopCompositionVisualTree, out var target).ThrowOnError();
         _compositionTarget = new ComObject<ICompositionTarget>((ICompositionTarget)target);
         CompositionVisual = CreateWindowVisual(controller.Compositor);
         if (CompositionVisual == null)
@@ -1288,7 +1309,7 @@ public partial class Window : Canvas, ITitleBarParent
 
 #else
         using var interop = controller.Compositor.AsComObject<ICompositorDesktopInterop>();
-        interop.Object.CreateDesktopWindowTarget(Native.Handle, true, out var target).ThrowOnError();
+        interop.Object.CreateDesktopWindowTarget(Native.Handle, UseTopCompositionVisualTree, out var target).ThrowOnError();
         _compositionTarget = WinRT.MarshalInspectable<CompositionTarget>.FromAbi(target);
         CompositionVisual = CreateWindowVisual(controller.Compositor);
         if (CompositionVisual == null)
@@ -2971,7 +2992,7 @@ public partial class Window : Canvas, ITitleBarParent
 
         if (visual is IModalVisual modal)
         {
-            RunTaskOnMainThread(() => visual.Focus(), true);
+            _ = RunTaskOnMainThread(Focus, true);
         }
     }
 

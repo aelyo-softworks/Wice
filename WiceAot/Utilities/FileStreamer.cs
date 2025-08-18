@@ -43,10 +43,5 @@ public class FileStreamer : IReadStreamer
     /// - This implementation never returns <see langword="null"/>.
     /// </remarks>
     /// <returns>A readable <see cref="System.IO.Stream"/> for the file.</returns>
-    /// <exception cref="System.IO.FileNotFoundException">The file specified by <see cref="FilePath"/> does not exist.</exception>
-    /// <exception cref="System.UnauthorizedAccessException">The caller does not have the required permission.</exception>
-    /// <exception cref="System.IO.DirectoryNotFoundException">The specified path is invalid.</exception>
-    /// <exception cref="System.IO.IOException">An I/O error occurred while opening the file.</exception>
-    /// <exception cref="System.NotSupportedException">The <see cref="FilePath"/> is in an invalid format.</exception>
     public virtual Stream GetReadStream() => new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 }

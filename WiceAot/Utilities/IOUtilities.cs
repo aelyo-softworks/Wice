@@ -351,14 +351,8 @@ public static partial class IOUtilities
     }
 
 #if !NETFRAMEWORK
-    /// <summary>
-    /// HRESULT for "module not found" on Windows (0x8007007E).
-    /// </summary>
     private const uint ERROR_MOD_NOT_FOUND = 0x8007007E;
 
-    /// <summary>
-    /// Tracks native DLLs that were already attempted/loaded, caching their result <see cref="HRESULT"/>.
-    /// </summary>
     private static readonly ConcurrentDictionary<string, HRESULT> _initialized = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
@@ -392,12 +386,6 @@ public static partial class IOUtilities
         return hr;
     }
 
-    /// <summary>
-    /// Internal worker that tries to load a native DLL from embedded resources or known disk locations.
-    /// </summary>
-    /// <param name="nativeDllName">The base name of the native DLL without extension.</param>
-    /// <param name="assembly">Optional assembly whose embedded resources might contain the DLL.</param>
-    /// <returns>An <see cref="HRESULT"/> indicating success (<c>S_OK</c>) or the last Win32 error on failure.</returns>
     private static HRESULT EnsureNativeDllLoaded(string nativeDllName, Assembly? assembly)
     {
         HMODULE h;
@@ -433,11 +421,6 @@ public static partial class IOUtilities
         return Marshal.GetHRForLastWin32Error();
     }
 
-    /// <summary>
-    /// Enumerates likely disk locations where a native DLL might be located for the current process and architecture.
-    /// </summary>
-    /// <param name="nativeDllName">The base name of the native DLL without extension.</param>
-    /// <returns>Possible absolute file paths where the DLL may reside.</returns>
     private static IEnumerable<string> GetPossiblePaths(string nativeDllName)
     {
         if (Environment.ProcessPath == null)
@@ -466,18 +449,6 @@ public static partial class IOUtilities
         }
     }
 
-    /// <summary>
-    /// Attempts to extract a native DLL from an assembly's embedded resources to a temporary, architecture-appropriate location.
-    /// </summary>
-    /// <param name="assembly">The assembly to probe for embedded resources.</param>
-    /// <param name="nativeDllName">The base name of the native DLL without extension.</param>
-    /// <returns>
-    /// The full path to the extracted DLL on disk if found and written; otherwise, null.
-    /// </returns>
-    /// <remarks>
-    /// Prefers resources specific to the current process architecture, falling back to architecture-agnostic resources.
-    /// A stable temporary location is used based on a hash of the assembly identity and resource name.
-    /// </remarks>
     private static string? GetDllPathFromAssemblyResources(Assembly assembly, string nativeDllName)
     {
         var arch = RuntimeInformation.ProcessArchitecture.ToString();

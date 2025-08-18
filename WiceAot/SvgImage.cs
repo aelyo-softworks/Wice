@@ -41,10 +41,8 @@ public partial class SvgImage : RenderVisual, IDisposable
 
     private bool _disposedValue;
 #if NETFRAMEWORK
-    // Buffered copy of the SVG bytes stored in unmanaged memory (Framework-friendly implementation).
     private DirectN.UnmanagedMemoryStream _documentBuffer;
 #else
-    // Buffered copy of the SVG bytes stored in unmanaged memory (.NET-friendly implementation).
     private DirectN.Extensions.Utilities.UnmanagedMemoryStream? _documentBuffer;
 #endif
     private bool _bufferStream;

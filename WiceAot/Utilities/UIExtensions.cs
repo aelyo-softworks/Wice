@@ -945,7 +945,7 @@ public static class UIExtensions
     /// <summary>
     /// Scales all coordinates of a <see cref="D2D_RECT_F"/> from <paramref name="oldDpi"/> to <paramref name="newDpi"/>.
     /// </summary>
-    public static D2D_RECT_F DpiScale(D2D_RECT_F value, uint oldDpi, uint newDpi) => new D2D_RECT_F(
+    public static D2D_RECT_F DpiScale(D2D_RECT_F value, uint oldDpi, uint newDpi) => new(
         DpiScale(value.left, oldDpi, newDpi),
         DpiScale(value.top, oldDpi, newDpi),
         DpiScale(value.right, oldDpi, newDpi),

@@ -61,27 +61,7 @@ public partial class GeometrySource2D : IGeometrySource2D, Windows.Graphics.IGeo
         return UniqueKey == other.UniqueKey;
     }
 
-    /// <summary>
-    /// Attempts to obtain a geometry using the provided factory.
-    /// </summary>
-    /// <param name="factory">The Direct2D factory that can be used to create or retrieve the geometry.</param>
-    /// <param name="value">When this method returns, contains the geometry if successful.</param>
-    /// <returns>HRESULT indicating success or failure.</returns>
-    /// <remarks>
-    /// Not implemented in this type; callers should prefer <see cref="Windows.Graphics.IGeometrySource2DInterop.GetGeometry(out ID2D1Geometry)"/>.
-    /// </remarks>
     HRESULT Windows.Graphics.IGeometrySource2DInterop.TryGetGeometryUsingFactory(ID2D1Factory factory, out ID2D1Geometry value) => throw new NotImplementedException();
-
-    /// <summary>
-    /// Retrieves the current geometry instance for interop consumers.
-    /// </summary>
-    /// <param name="value">When this method returns, contains the current <see cref="ID2D1Geometry"/> if available.</param>
-    /// <returns>
-    /// S_OK when <see cref="Geometry"/> is not null and is returned in <paramref name="value"/>; otherwise E_FAIL.
-    /// </returns>
-    /// <remarks>
-    /// This method does not create a new geometry; it only exposes the existing <see cref="Geometry"/> reference.
-    /// </remarks>
     HRESULT Windows.Graphics.IGeometrySource2DInterop.GetGeometry(out ID2D1Geometry value)
     {
         value = Geometry!;
