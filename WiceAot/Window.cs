@@ -3107,7 +3107,7 @@ public partial class Window : Canvas, ITitleBarParent
 
     private static LRESULT SafeWindowProc(HWND hwnd, uint msg, WPARAM wParam, LPARAM lParam)
     {
-        if (Debugger.IsAttached)
+        if (Application.IsDebuggerAttached)
             return WindowProc(hwnd, msg, wParam, lParam);
 
         try
@@ -3120,6 +3120,24 @@ public partial class Window : Canvas, ITitleBarParent
             {
                 var current = Application.Current;
                 Application.AddError(e, false);
+
+                if (msg == MessageDecoder.WM_DESTROY ||
+                    msg == MessageDecoder.WM_NCDESTROY ||
+                    msg == MessageDecoder.WM_CREATE ||
+                    msg == MessageDecoder.WM_CLOSE ||
+                    msg == MessageDecoder.WM_QUIT)
+                {
+                    var mainHwnd = Process.GetCurrentProcess().MainWindowHandle;
+                    if (mainHwnd != IntPtr.Zero && mainHwnd != hwnd.Value)
+                    {
+                        hwnd.Value = mainHwnd;
+                    }
+                    else
+                    {
+                        hwnd.Value = 0;
+                    }
+                }
+
                 if (Application.ShowFatalError(hwnd))
                 {
                     current?.Exit();

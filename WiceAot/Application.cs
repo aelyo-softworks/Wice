@@ -491,6 +491,13 @@ public partial class Application : IDisposable
     public static bool ShowFatalErrorsOnUnhandledException { get; set; } = !Debugger.IsAttached;
 
     /// <summary>
+    /// Gets or sets a value indicating whether a debugger is currently attached to the process.
+    /// Wice will use this value instead of using Debugger.IsAttached.
+    /// </summary>
+    /// <remarks>This property reflects the state of the debugger at initialization time but can be changed.</remarks>
+    public static bool IsDebuggerAttached { get; set; } = Debugger.IsAttached;
+
+    /// <summary>
     /// Gets or sets a delegate that displays a fatal error message for a specified window handle.
     /// </summary>
     /// <remarks>This property allows customization of how fatal errors are displayed in the application.</remarks>
@@ -623,6 +630,11 @@ public partial class Application : IDisposable
     /// langword="false"/> if no errors were present or the dialog could not be or was not displayed.</returns>
     public static bool ShowFatalError(HWND hwnd)
     {
+        if (hwnd != 0 && !WiceCommons.IsWindow(hwnd))
+        {
+            hwnd.Value = 0;
+        }
+
         var func = ShowFatalErrorFunc;
         if (func != null)
             return func(hwnd);

@@ -706,7 +706,7 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         if (e is MouseEventArgs)
         {
 #if DEBUG
-            if (!Debugger.IsAttached)
+            if (Application.IsDebuggerAttached)
 #endif
             {
                 if (Window == null)

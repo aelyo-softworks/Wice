@@ -5,7 +5,7 @@ static class Program
     [STAThread] // Wice doesn't require this but it's needed for Drag&Drop operations
     static void Main()
     {
-        if (Debugger.IsAttached)
+        if (Application.IsDebuggerAttached)
         {
             newWindow();
         }

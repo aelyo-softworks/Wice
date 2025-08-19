@@ -4,23 +4,19 @@ class Program
 {
     static void Main()
     {
-        if (Debugger.IsAttached)
+        if (Application.IsDebuggerAttached)
         {
-            using (var dw = new Application())
-            {
-                newWindow();
-                dw.Run();
-            }
+            using var dw = new Application();
+            newWindow();
+            dw.Run();
         }
         else
         {
             try
             {
-                using (var dw = new Application())
-                {
-                    newWindow();
-                    dw.Run();
-                }
+                using var dw = new Application();
+                newWindow();
+                dw.Run();
             }
             catch (Exception e)
             {

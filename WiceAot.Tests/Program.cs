@@ -7,7 +7,7 @@ internal class Program
     {
         WindowSynchronizationContext.WithContext(() => // ensure we have a UI-thread bound synchronization context for async calls
         {
-            if (Debugger.IsAttached)
+            if (Application.IsDebuggerAttached)
             {
                 using var dw = new Application();
                 newWindow();

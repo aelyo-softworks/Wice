@@ -210,6 +210,9 @@ public static partial class WiceCommons
     public static extern HWND WindowFromPoint(POINT Point);
 
     [DllImport("user32")]
+    public static extern BOOL IsWindow(HWND hWnd);
+
+    [DllImport("user32")]
     public static extern HWND CreateWindowExW(WINDOW_EX_STYLE dwExStyle, PWSTR lpClassName, PWSTR lpWindowName, WINDOW_STYLE dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, nint /* optional void* */ lpParam);
 
     [DllImport("user32")]
@@ -502,6 +505,7 @@ public static partial class WiceCommons
     public static BOOL SetWindowTextW(HWND hWnd, PWSTR lpString) => Functions.SetWindowTextW(hWnd, lpString);
     public static uint GetWindowThreadProcessId(HWND hWnd, nint lpdwProcessId) => Functions.GetWindowThreadProcessId(hWnd, lpdwProcessId);
     public static BOOL IsWindowEnabled(HWND hWnd) => Functions.IsWindowEnabled(hWnd);
+    public static BOOL IsWindow(HWND hWnd) => Functions.IsWindow(hWnd);
     public static BOOL IsWindowVisible(HWND hWnd) => Functions.IsWindowVisible(hWnd);
     public static BOOL EnableWindow(HWND hWnd, BOOL bEnable) => Functions.EnableWindow(hWnd, bEnable);
     public static uint GetDpiFromDpiAwarenessContext(DPI_AWARENESS_CONTEXT value) => Functions.GetDpiFromDpiAwarenessContext(value);
