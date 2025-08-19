@@ -100,6 +100,31 @@ public class RenderContext
         }
     }
 
+    /// <summary>
+    /// Creates a temporary <see cref="RenderContext"/> for the specified device context and invokes the given action.
+    /// The <see cref="DeviceContext"/> on the wrapper is invalidated after the action completes.
+    /// </summary>
+    /// <typeparam name="T">The type of the value returned by the function.</typeparam>
+    /// <param name="deviceContext">The Direct2D device context to wrap.</param>
+    /// <param name="func">The action to execute with the created <see cref="RenderContext"/>.</param>
+    /// <param name="creationOptions">Optional surface creation options.</param>
+    /// <param name="rect">Optional surface rectangle.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="deviceContext"/> or <paramref name="func"/> is null.</exception>
+    public static T WithRenderContext<T>(IComObject<ID2D1DeviceContext> deviceContext, Func<RenderContext, T> func, SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
+    {
+        ExceptionExtensions.ThrowIfNull(deviceContext, nameof(deviceContext));
+        ExceptionExtensions.ThrowIfNull(func, nameof(func));
+        var rc = new RenderContext(deviceContext, creationOptions, rect);
+        try
+        {
+            return func(rc);
+        }
+        finally
+        {
+            rc.DeviceContext = null!;
+        }
+    }
+
 #if !NETFRAMEWORK
     /// <summary>
     /// Creates a solid color brush for the given color.
