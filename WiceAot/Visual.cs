@@ -3070,6 +3070,7 @@ public partial class Visual : BaseObject
 #if DEBUG
         if (DesiredSize.IsInvalid)
         {
+            // possible cause: the parent visual's MeasureCore method has been overloaded but doesn't call base.MeasureCore
             Application.Trace("Visual '" + Name + "' of type '" + GetType().FullName + "' cannot be arranged as it was not measured.");
         }
 #endif

@@ -65,7 +65,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="DirectN" Version="1.17.3" />
-		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.26100.4654" />
+		<PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.26100.4948" />
 		<PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
 	</ItemGroup>
 
