@@ -29,7 +29,7 @@ class Program
         {
             var win = new TestWindow { Title = "Wice" };
             //WindowsUtilities.AllocConsole();
-            win.ResizeClient(800, 600);
+            win.ResizeClient(700, 600);
             win.Center();
             win.Show();
             win.SetForeground();

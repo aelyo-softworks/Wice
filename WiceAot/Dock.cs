@@ -68,10 +68,6 @@ public partial class Dock : Visual
         return (DockType)properties.GetPropertyValue(DockTypeProperty)!;
     }
 
-    /// <summary>
-    /// Holds the last arranged child during the current layout pass.
-    /// Used to apply <see cref="LastChildFill"/> behavior.
-    /// </summary>
     internal Visual? _lastChild;
 
     /// <summary>
@@ -257,8 +253,10 @@ public partial class Dock : Visual
                         {
                             rc.left = Math.Max(rc.left, left);
                         }
-
-                        rc.Width = childSize.width;
+                        else
+                        {
+                            rc.Width = childSize.width;
+                        }
 
                         setDocked(docked, child);
                         lastRight = child;
@@ -280,8 +278,10 @@ public partial class Dock : Visual
                         {
                             rc.top = Math.Max(rc.top, top);
                         }
-
-                        rc.Height = childSize.height;
+                        else
+                        {
+                            rc.Height = childSize.height;
+                        }
 
                         setDocked(docked, child);
                         lastBottom = child;
@@ -320,7 +320,6 @@ public partial class Dock : Visual
             setDocked(docked, _lastChild);
         }
 
-        // Establish neighbor relationships between the current child and the last docked ones per side.
         void setDocked(Docked docked, Visual c)
         {
             if (lastLeft != null)
@@ -349,21 +348,13 @@ public partial class Dock : Visual
         }
     }
 
-    /// <summary>
-    /// Neighbor map for a single child produced during the last arrange pass.
-    /// </summary>
     private sealed class Docked
     {
-        /// <summary>Neighbor to the left of this visual (most recently docked on the left side).</summary>
         public Visual? Left;
-        /// <summary>Neighbor to the right of this visual (most recently docked on the right side).</summary>
         public Visual? Right;
-        /// <summary>Neighbor above this visual (most recently docked on the top side).</summary>
         public Visual? Top;
-        /// <summary>Neighbor below this visual (most recently docked on the bottom side).</summary>
         public Visual? Bottom;
 
-        /// <inheritdoc />
         public override string ToString() => "L:" + Left + " T:" + Top + " R:" + Right + " B:" + Bottom;
     }
 }

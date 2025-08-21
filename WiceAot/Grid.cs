@@ -39,15 +39,6 @@ public partial class Grid : Visual
     /// </summary>
     public static VisualProperty ColumnSpanProperty { get; } = VisualProperty.Add(typeof(Grid), "ColumnSpan", VisualPropertyInvalidateModes.Measure, 1, convert: ValidateSpan);
 
-    /// <summary>
-    /// Controls whether the grid measures to content on width/height or uses available size.
-    /// </summary>
-    public static VisualProperty MeasureToContentProperty { get; } = VisualProperty.Add(typeof(Grid), nameof(Canvas), VisualPropertyInvalidateModes.Measure, DimensionOptions.Manual);
-
-    /// <summary>
-    /// Validates row/column indices (must be non-negative).
-    /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">When value is negative.</exception>
     private static object? ValidateRowCol(BaseObject obj, object? value)
     {
         var i = (int)value!;
@@ -57,10 +48,6 @@ public partial class Grid : Visual
         return i;
     }
 
-    /// <summary>
-    /// Validates spans (must be greater than zero).
-    /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">When value is zero or negative.</exception>
     private static object? ValidateSpan(BaseObject obj, object? value)
     {
         var i = (int)value!;
@@ -89,12 +76,6 @@ public partial class Grid : Visual
     }
 
     /// <summary>
-    /// Gets or sets how the grid measures itself relative to its content on width and height.
-    /// </summary>
-    [Category(CategoryLayout)]
-    public DimensionOptions MeasureToContent { get => (DimensionOptions)GetPropertyValue(MeasureToContentProperty)!; set => SetPropertyValue(MeasureToContentProperty, value); }
-
-    /// <summary>
     /// Gets the collection of row definitions for this grid.
     /// </summary>
     [Category(CategoryLayout)]
@@ -106,17 +87,10 @@ public partial class Grid : Visual
     [Category(CategoryLayout)]
     public BaseObjectCollection<GridColumn> Columns { get; }
 
-    /// <summary>
-    /// Row definition collection that keeps child row indices consistent on structural changes.
-    /// </summary>
     private sealed partial class RowCollection(Grid grid) : BaseObjectCollection<GridRow>
     {
         private readonly Grid _grid = grid;
 
-        /// <summary>
-        /// Removes a row at index and shifts child row indices that are after the removed index.
-        /// Ensures at least one row remains.
-        /// </summary>
         protected override void ProtectedRemoveAt(int index)
         {
             foreach (var child in _grid.Children)
@@ -138,16 +112,12 @@ public partial class Grid : Visual
             }
         }
 
-        /// <inheritdoc/>
         protected override void ProtectedAdd(GridRow item, bool checkMaxChildrenCount)
         {
             base.ProtectedAdd(item, checkMaxChildrenCount);
             item.Parent = _grid;
         }
 
-        /// <summary>
-        /// Inserts a row and shifts child row indices at or after the inserted index.
-        /// </summary>
         protected override void ProtectedInsert(int index, GridRow item)
         {
             base.ProtectedInsert(index, item);
@@ -163,17 +133,10 @@ public partial class Grid : Visual
         }
     }
 
-    /// <summary>
-    /// Column definition collection that keeps child column indices consistent on structural changes.
-    /// </summary>
     private sealed partial class ColumnCollection(Grid grid) : BaseObjectCollection<GridColumn>
     {
         private readonly Grid _grid = grid;
 
-        /// <summary>
-        /// Removes a column at index and shifts child column indices that are after the removed index.
-        /// Ensures at least one column remains.
-        /// </summary>
         protected override void ProtectedRemoveAt(int index)
         {
             foreach (var child in _grid.Children)
@@ -195,16 +158,12 @@ public partial class Grid : Visual
             }
         }
 
-        /// <inheritdoc/>
         protected override void ProtectedAdd(GridColumn item, bool checkMaxChildrenCount)
         {
             base.ProtectedAdd(item, checkMaxChildrenCount);
             item.Parent = _grid;
         }
 
-        /// <summary>
-        /// Inserts a column and shifts child column indices at or after the inserted index.
-        /// </summary>
         protected override void ProtectedInsert(int index, GridColumn item)
         {
             base.ProtectedInsert(index, item);
@@ -351,23 +310,8 @@ public partial class Grid : Visual
     /// </summary>
     /// <param name="constraint">Available size including margin.</param>
     /// <returns>Desired size excluding margin.</returns>
-    /// <remarks>
-    /// Honors <see cref="MeasureToContent"/>; computes auto/defined/star sizes; reduces artificially large autos
-    /// when children present only unset sizes with Stretch; and aggregates width/height by summing dimension desired sizes.
-    /// </remarks>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
-        var sizeToContent = MeasureToContent;
-        if (!sizeToContent.HasFlag(DimensionOptions.Width) && constraint.width.IsSet())
-        {
-            constraint.width = float.PositiveInfinity;
-        }
-
-        if (!sizeToContent.HasFlag(DimensionOptions.Height) && constraint.height.IsSet())
-        {
-            constraint.height = float.PositiveInfinity;
-        }
-
         // reset all
         foreach (var col in Columns)
         {
@@ -568,9 +512,6 @@ public partial class Grid : Visual
 #if !NETFRAMEWORK
     [MemberNotNull(nameof(_childrenByDimensions))]
 #endif
-    /// <summary>
-    /// Builds the internal lookup from dimensions (rows/columns) to the children that occupy them.
-    /// </summary>
     private void InitializeDimensionsChildren()
     {
         _childrenByDimensions = [];
@@ -602,12 +543,6 @@ public partial class Grid : Visual
         }
     }
 
-    /// <summary>
-    /// Measures star-sized rows and columns.
-    /// When the grid has explicit size constraints (or a constrained measure), distributes remaining space proportionally by star weights.
-    /// Otherwise normalizes star dimensions to the maximum desired size across their children.
-    /// </summary>
-    /// <param name="constraint">The available size used to compute proportional star sizes when applicable.</param>
     private void MeasureStarDimensions(D2D_SIZE_F constraint)
     {
         if (_childrenByDimensions == null)
@@ -844,14 +779,6 @@ public partial class Grid : Visual
         _childrenByDimensions = null;
     }
 
-    /// <summary>
-    /// Computes a child rectangle aligned within a parent size according to the specified alignments.
-    /// </summary>
-    /// <param name="parentSize">The total size of the parent area.</param>
-    /// <param name="horizontalAlignment">Horizontal alignment of the child within the area.</param>
-    /// <param name="verticalAlignment">Vertical alignment of the child within the area.</param>
-    /// <param name="childRect">The child rectangle to adjust.</param>
-    /// <returns>Adjusted child rectangle.</returns>
     private static D2D_RECT_F GetRect(D2D_SIZE_F parentSize, Alignment horizontalAlignment, Alignment verticalAlignment, D2D_RECT_F childRect)
     {
         switch (horizontalAlignment)
@@ -887,9 +814,6 @@ public partial class Grid : Visual
         return childRect;
     }
 
-    /// <summary>
-    /// Gets the column at the clamped index.
-    /// </summary>
     private GridColumn GetColumn(int index)
     {
         index = Math.Min(index, Columns.Count - 1);
@@ -897,9 +821,6 @@ public partial class Grid : Visual
         return Columns[index];
     }
 
-    /// <summary>
-    /// Gets the row at the clamped index.
-    /// </summary>
     private GridRow GetRow(int index)
     {
         index = Math.Min(index, Rows.Count - 1);
@@ -907,10 +828,6 @@ public partial class Grid : Visual
         return Rows[index];
     }
 
-    /// <summary>
-    /// Internal helper describing the cell set occupied by a child (index, span, first/last row/column).
-    /// Provides utilities to compute aggregate sizes and enumerate affected dimensions.
-    /// </summary>
     private sealed class GridSet
     {
         public int ColIndex;
@@ -924,10 +841,6 @@ public partial class Grid : Visual
         public GridColumn? LastCol;
         public GridRow? LastRow;
 
-        /// <summary>
-        /// Computes the maximum width occupied by this set considering fixed and star columns.
-        /// Returns null if any auto-sized column is included.
-        /// </summary>
         public float? GetMaxWidth(Grid grid, float totalColStars, float widthForStars)
         {
             var max = 0f;
@@ -954,10 +867,6 @@ public partial class Grid : Visual
             return max;
         }
 
-        /// <summary>
-        /// Computes the maximum height occupied by this set considering fixed and star rows.
-        /// Returns null if any auto-sized row is included.
-        /// </summary>
         public float? GetMaxHeight(Grid grid, float totalRowStars, float heightForStars)
         {
             var max = 0f;
@@ -984,9 +893,6 @@ public partial class Grid : Visual
             return max;
         }
 
-        /// <summary>
-        /// Returns the sum of defined column sizes for the spanned range, or null if any is not fixed.
-        /// </summary>
         public float? GetDefinedColSize(Grid grid)
         {
             var sum = 0f;
@@ -1000,10 +906,6 @@ public partial class Grid : Visual
             return sum;
         }
 
-        /// <summary>
-        /// Gets the sum of defined row sizes outside of the spanned rows.
-        /// Used to reduce the available height when measuring children.
-        /// </summary>
         public float GetOutDefinedRowSize(Grid grid)
         {
             var sum = 0f;
@@ -1021,10 +923,6 @@ public partial class Grid : Visual
             return sum;
         }
 
-        /// <summary>
-        /// Gets the sum of defined column sizes outside of the spanned columns.
-        /// Used to reduce the available width when measuring children.
-        /// </summary>
         public float GetOutDefinedColSize(Grid grid)
         {
             var sum = 0f;
@@ -1042,9 +940,6 @@ public partial class Grid : Visual
             return sum;
         }
 
-        /// <summary>
-        /// Returns the sum of defined row sizes for the spanned range, or null if any is not fixed.
-        /// </summary>
         public float? GetDefinedRowSize(Grid grid)
         {
             var sum = 0f;
@@ -1058,9 +953,6 @@ public partial class Grid : Visual
             return sum;
         }
 
-        /// <summary>
-        /// Enumerates columns in the spanned range.
-        /// </summary>
         public IEnumerable<GridColumn> GetCols(Grid grid)
         {
             for (var i = ColIndex; i <= LastColIndex; i++)
@@ -1069,9 +961,6 @@ public partial class Grid : Visual
             }
         }
 
-        /// <summary>
-        /// Enumerates rows in the spanned range.
-        /// </summary>
         public IEnumerable<GridRow> GetRows(Grid grid)
         {
             for (var i = RowIndex; i <= LastRowIndex; i++)
@@ -1082,10 +971,6 @@ public partial class Grid : Visual
 
         public override string ToString() => "C: " + ColIndex + (LastColIndex > ColIndex ? "-" + LastColIndex : null) + ",R: " + RowIndex + (LastRowIndex > RowIndex ? "-" + LastRowIndex : null);
 
-        /// <summary>
-        /// Creates a <see cref="GridSet"/> for a child visual by resolving indices, clamping to the grid bounds,
-        /// and normalizing spans (including the <see cref="int.MaxValue"/> "to the end" semantics).
-        /// </summary>
         public static GridSet Get(Grid grid, Visual visual)
         {
             var gs = new GridSet

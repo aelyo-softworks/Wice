@@ -17,10 +17,6 @@
 /// </remarks>
 public partial class HeaderedContent : Stack, IOneChildParent, IDisposable
 {
-    /// <summary>
-    /// Reusable storyboard driving the height animation of <see cref="Viewer"/>.
-    /// Created lazily when a <see cref="Window"/> is available.
-    /// </summary>
     private TimerStoryboard? _sb;
 
     /// <summary>

@@ -58,7 +58,9 @@ public class TestWindow : Window
         //AddRtbVertical();
         //AddRtbRtfFile();
         //AddRtbHtml();
-        AddScrollableRtbRtfFile();
+        //AddScrollableRtbRtfFile();
+
+        AddTextBar();
 
         //AddSvg();
         //DrawCurve();
@@ -138,6 +140,100 @@ public class TestWindow : Window
         //        }, true);
         //    }
         //};
+    }
+
+    public void AddTextBar()
+    {
+        var dock = new Dock { LastChildFill = false, AllowOverlap = false };
+        //dock.HorizontalAlignment = Alignment.Center;
+        Children.Add(dock);
+
+        var left = new Stack();
+        left.DoWhenAttachedToComposition(() =>
+        {
+            left.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+        });
+        left.Width = 100;
+        dock.Children.Add(left);
+
+        var t0 = new TextBox
+        {
+            Text = "T0 This is a left text box",
+            VerticalAlignment = Alignment.Center,
+            //HorizontalAlignment = Alignment.Near,
+            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10),
+        };
+
+        var separator0 = new Border
+        {
+            Width = 2,
+            Height = 20,
+        };
+
+        var t1 = new TextBox
+        {
+            Text = "T1 This is a text box",
+            VerticalAlignment = Alignment.Center,
+            //HorizontalAlignment = Alignment.Near,
+            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10),
+        };
+
+        var separator1 = new Border
+        {
+            Width = 2,
+            Height = 20,
+        };
+
+        var t2 = new TextBox
+        {
+            Text = "T2 This is another text box",
+            VerticalAlignment = Alignment.Center,
+            //HorizontalAlignment = Alignment.Far,
+            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10),
+        };
+
+        var separator2 = new Border
+        {
+            Width = 2,
+            Height = 20,
+        };
+
+        var t3 = new TextBox
+        {
+            Text = "T3 This is a third text box",
+            VerticalAlignment = Alignment.Center,
+            //HorizontalAlignment = Alignment.Stretch,
+            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10),
+        };
+
+        Dock.SetDockType(left, DockType.Left);
+        Dock.SetDockType(t0, DockType.Right);
+        Dock.SetDockType(t1, DockType.Right);
+        Dock.SetDockType(t2, DockType.Right);
+        Dock.SetDockType(t3, DockType.Right);
+
+        dock.Children.Add(t0);
+        //dock.Children.Add(separator0);
+        dock.Children.Add(t1);
+        //dock.Children.Add(separator1);
+        dock.Children.Add(t2);
+        //dock.Children.Add(separator2);
+        dock.Children.Add(t3);
+
+        separator0.DoWhenAttachedToParent(() =>
+        {
+            separator0.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+        });
+
+        separator1.DoWhenAttachedToParent(() =>
+        {
+            separator1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+        });
+
+        separator2.DoWhenAttachedToParent(() =>
+        {
+            separator2.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+        });
     }
 
     private Timer? _timer;

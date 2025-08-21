@@ -75,8 +75,8 @@ public partial class Wrap : Visual
 
         var childConstraint = new D2D_SIZE_F(itemWidthSet ? itemWidth : constraint.width, itemHeightSet ? itemHeight : constraint.height);
 
-        var children = VisibleChildren.ToArray();
-        foreach (var child in children.Where(c => c.Parent != null))
+        var children = VisibleChildren.Where(c => c.Parent != null).ToArray();
+        foreach (var child in children)
         {
             child.Measure(childConstraint);
             var childSize = child.DesiredSize;
@@ -190,27 +190,10 @@ public partial class Wrap : Visual
 
     private struct UVSize(Orientation orientation)
     {
-        /// <summary>
-        /// Primary axis size (Width for Horizontal, Height for Vertical).
-        /// </summary>
         public float U = 0;
-
-        /// <summary>
-        /// Secondary axis size (Height for Horizontal, Width for Vertical).
-        /// </summary>
         public float V = 0;
-
-        /// <summary>
-        /// Orientation used to map U/V to Width/Height.
-        /// </summary>
         public Orientation Orientation = orientation;
 
-        /// <summary>
-        /// Initializes a new instance with specified width/height which are mapped to U/V according to the orientation.
-        /// </summary>
-        /// <param name="orientation">Orientation used for mapping.</param>
-        /// <param name="width">Logical width.</param>
-        /// <param name="height">Logical height.</param>
         public UVSize(Orientation orientation, float width, float height)
             : this(orientation)
         {
@@ -218,14 +201,7 @@ public partial class Wrap : Visual
             Height = height;
         }
 
-        /// <summary>
-        /// Logical width; maps to U when Horizontal, V when Vertical.
-        /// </summary>
         public float Width { readonly get => Orientation == Orientation.Horizontal ? U : V; set { if (Orientation == Orientation.Horizontal) U = value; else V = value; } }
-
-        /// <summary>
-        /// Logical height; maps to V when Horizontal, U when Vertical.
-        /// </summary>
         public float Height { readonly get => Orientation == Orientation.Horizontal ? V : U; set { if (Orientation == Orientation.Horizontal) V = value; else U = value; } }
     }
 }

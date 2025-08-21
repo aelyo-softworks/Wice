@@ -67,11 +67,6 @@ public partial class Image : RenderVisual, IDisposable
     public event EventHandler<EventArgs>? BitmapError;
 
     private bool _disposedValue;
-
-    /// <summary>
-    /// Cached Direct2D bitmap created lazily from <see cref="Source"/> on first render.
-    /// Disposed when <see cref="Source"/> changes or <see cref="Dispose"/> is called.
-    /// </summary>
     private IComObject<ID2D1Bitmap>? _bitmap;
 
     /// <summary>
