@@ -11,24 +11,9 @@
 /// </remarks>
 public partial class FastTextBox : TextBox
 {
-    /// <summary>
-    /// Backing container handling text storage, parsing and metrics.
-    /// </summary>
     private TextContainer _container;
-
-    /// <summary>
-    /// Cached DirectWrite layout for the currently rendered viewport lines. Disposed and recreated on invalidation.
-    /// </summary>
     private IComObject<IDWriteTextLayout>? _layout;
-
-    /// <summary>
-    /// Zero-based index of the first line currently at the top of the viewport.
-    /// </summary>
     private int _currentLineNumber;
-
-    /// <summary>
-    /// The actual text span currently represented by <see cref="_layout"/> (covers the viewport lines).
-    /// </summary>
     private string? _renderedText;
 
     /// <summary>
@@ -78,6 +63,12 @@ public partial class FastTextBox : TextBox
     /// </summary>
     [Category(CategoryLive)]
     public virtual bool LoadingWasCancelled { get; protected set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the text has been fully or partially parsed and is ready for measuring, arranging or rendering.
+    /// </summary>
+    [Category(CategoryLive)]
+    public bool IsReady { get; protected set; }
 
     /// <summary>
     /// True while deferred parsing continues on a background thread.
@@ -145,22 +136,6 @@ public partial class FastTextBox : TextBox
     }
 
     /// <summary>
-    /// Always throws for <see cref="true"/>. This control does not accept focus.
-    /// </summary>
-    [Category(CategoryBehavior)]
-    public override bool IsFocusable
-    {
-        get => base.IsFocusable;
-        set
-        {
-            if (value)
-                throw new NotSupportedException();
-
-            base.IsFocusable = value;
-        }
-    }
-
-    /// <summary>
     /// Always throws for <see cref="true"/>. The control is always enabled internally.
     /// </summary>
     [Category(CategoryBehavior)]
@@ -218,11 +193,9 @@ public partial class FastTextBox : TextBox
     /// </summary>
     protected virtual void OnLoaded(object sender, LoadEventArgs e) => Loaded?.Invoke(this, e);
 
-    /// <summary>
-    /// Internal helper that raises <see cref="Loaded"/> then requests a re-measure.
-    /// </summary>
     private void OnLoaded(LoadEventArgs e)
     {
+        IsReady = true;
         OnLoaded(this, e);
         Invalidate(VisualPropertyInvalidateModes.Measure);
     }
@@ -348,34 +321,37 @@ public partial class FastTextBox : TextBox
         return _layout;
     }
 
-    /// <summary>
-    /// Replaces the current text, resets the parsing container, and invalidates measure.
-    /// </summary>
-    /// <param name="text">New text.</param>
     private void SetText(string text)
     {
         if (_container.Text == text)
             return;
 
+        IsReady = false;
         Interlocked.Exchange(ref _container, new TextContainer(this, text));
         Invalidate(VisualPropertyInvalidateModes.Measure);
     }
 
     /// <summary>
-    /// Internal text state and parsing engine.
+    /// Renders the visual element within the specified rendering context.
     /// </summary>
-    /// <remarks>
-    /// Responsibilities:
-    /// - Stores raw text and produces a <see cref="Line"/> array according to wrapping and constraints.
-    /// - Estimates character width/line height for fast splitting and size estimation.
-    /// - Supports deferred/background parsing and batches <see cref="FastTextBox.Loading"/> notifications.
-    /// - Thread-safe appends to the intermediate lines list using a private lock.
-    /// </remarks>
+    /// <remarks>This method is called during the rendering process and ensures that the visual element is
+    /// properly rendered. If the element is not loaded, the rendering process is invalidated and no further rendering
+    /// occurs.</remarks>
+    /// <param name="context">The rendering context that provides the necessary information and resources for rendering.</param>
+    protected internal override void RenderCore(RenderContext context)
+    {
+        var ready = IsReady;
+        if (!ready)
+        {
+            Invalidate(VisualPropertyInvalidateModes.Render);
+            return;
+        }
+
+        base.RenderCore(context);
+    }
+
     private sealed class TextContainer(FastTextBox visual, string? text)
     {
-        /// <summary>
-        /// Sentinel char used when peeking beyond the end of the string.
-        /// </summary>
         public const char NotUnicode = '\uFFFF';
 
         private D2D_SIZE_F _parsedConstraint;
@@ -383,39 +359,13 @@ public partial class FastTextBox : TextBox
         private readonly Lock _lock = new();
         private bool _wasParsingDeffered;
 
-        /// <summary>
-        /// Owning <see cref="FastTextBox"/>.
-        /// </summary>
         public FastTextBox Visual = visual;
-
-        /// <summary>
-        /// Raw text content.
-        /// </summary>
         public string Text = text ?? string.Empty;
-
-        /// <summary>
-        /// Parsed lines. Null when in fallback mode or during initial parsing.
-        /// </summary>
         public Line[]? Lines;
-
-        /// <summary>
-        /// Non-null while background parsing is in progress.
-        /// </summary>
         public Task? LoadingLines;
-
-        /// <summary>
-        /// Estimated (charWidth, lineHeight) computed from a sample layout.
-        /// </summary>
         public D2D_SIZE_F ParsedMetrics;
-
-        /// <summary>
-        /// Wrapping mode used during parsing.
-        /// </summary>
         public DWRITE_WORD_WRAPPING ParsedWrapping;
 
-        /// <summary>
-        /// Computes/estimates average character width and line height using a sample sentence and the current text format.
-        /// </summary>
         private D2D_SIZE_F ComputeMetrics()
         {
             const string sample = "The quick brown fox jumps over the lazy dog";
@@ -429,18 +379,6 @@ public partial class FastTextBox : TextBox
 #endif
         }
 
-        /// <summary>
-        /// Ensures lines are parsed for the given constraint and returns the estimated size.
-        /// </summary>
-        /// <param name="constraint">Measure constraint (width used for wrapping decisions).</param>
-        /// <param name="refresh">True to ignore the cached constraint and reparse.</param>
-        /// <returns>Estimated size for the full content (or 0 when in fallback mode).</returns>
-        /// <remarks>
-        /// - When <see cref="LoadingLines"/> is non-null, returns the last computed size (parsing continues in the background).
-        /// - Switches to fallback mode when the line count is below <see cref="FastTextBox.FallbackLineCountThreshold"/>.
-        /// - Starts background parsing once line count reaches <see cref="FastTextBox.DeferredParsingLineCountThreshold"/>.
-        /// - Raises <see cref="FastTextBox.Loading"/> periodically and <see cref="FastTextBox.Loaded"/> when complete.
-        /// </remarks>
         public D2D_SIZE_F EnsureLinesParsed(D2D_SIZE_F constraint, bool refresh = false)
         {
             if (LoadingLines != null)
@@ -635,17 +573,8 @@ public partial class FastTextBox : TextBox
             return _parsedSize;
         }
 
-        /// <summary>
-        /// Returns the raw text.
-        /// </summary>
         public override string ToString() => Text;
 
-        /// <summary>
-        /// Gets a contiguous text slice spanning from <paramref name="firstLineIndex"/> to <paramref name="lastLineIndex"/> inclusive.
-        /// </summary>
-        /// <param name="firstLineIndex">First line (0-based).</param>
-        /// <param name="lastLineIndex">Last line (0-based); if beyond the last line, returns to end of text.</param>
-        /// <returns>The substring covering those lines, or null when lines are not available.</returns>
         public string? GetText(int firstLineIndex, int lastLineIndex)
         {
             if (Lines == null)
