@@ -83,9 +83,6 @@ public partial class FocusVisual : Border
         return true;
     }
 
-    /// <summary>
-    /// Arranges this visual relative to its parent (assumed to be a <see cref="Window"/>/<see cref="Canvas"/>).
-    /// </summary>
     private void ArrangeWithParent()
     {
         if (DesiredSize.IsInvalid)

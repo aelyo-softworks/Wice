@@ -210,9 +210,6 @@ public partial class PopupWindow : Window
         return true;
     }
 
-    /// <summary>
-    /// Removes event subscriptions from the current <see cref="PlacementTarget"/> to stop following updates.
-    /// </summary>
     private void UnfollowTarget()
     {
         var target = PlacementTarget;
@@ -229,10 +226,6 @@ public partial class PopupWindow : Window
         });
     }
 
-    /// <summary>
-    /// Adds event subscriptions to the current <see cref="PlacementTarget"/> so the popup invalidates and repositions
-    /// when the target is arranged or its window moves.
-    /// </summary>
     private void FollowTarget()
     {
         var target = PlacementTarget;
@@ -249,14 +242,7 @@ public partial class PopupWindow : Window
         });
     }
 
-    /// <summary>
-    /// Invalidates the popup for re-render on target arrange.
-    /// </summary>
     private void OnTargetArranged(object? sender, EventArgs e) => Invalidate(VisualPropertyInvalidateModes.Render, new InvalidateReason(GetType()));
-
-    /// <summary>
-    /// Invalidates the popup for re-render on target window movement.
-    /// </summary>
     private void OnTargetWindowMoved(object? sender, EventArgs e) => Invalidate(VisualPropertyInvalidateModes.Render, new InvalidateReason(GetType()));
 
     /// <summary>

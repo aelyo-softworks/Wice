@@ -25,9 +25,6 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     /// </summary>
     public static WNDPROC DefWindowProc { get; } = GetDefWindowProc();
 
-    /// <summary>
-    /// Resolves the default window procedure address and wraps it in a managed delegate.
-    /// </summary>
     private static WNDPROC GetDefWindowProc() => Marshal.GetDelegateForFunctionPointer<WNDPROC>(WiceCommons.GetProcAddress(WiceCommons.GetModuleHandleW(PWSTR.From("user32.dll")), PSTR.From("DefWindowProcW")));
 
     /// <summary>
@@ -59,10 +56,6 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     private bool _isDropTarget;
     private IDataObject? _currentDataObject;
 
-    /// <summary>
-    /// Initializes a new instance bound to an existing HWND.
-    /// </summary>
-    /// <param name="handle">The native window handle.</param>
     private NativeWindow(HWND handle)
     {
         Handle = handle;
@@ -797,9 +790,6 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return WiceCommons.ImmSetCandidateWindow(ctx, form.Value);
     });
 
-    /// <summary>
-    /// Raises the DragDrop event with the specified args.
-    /// </summary>
     private void OnDragDrop(DragDropEventArgs e) => DragDrop?.Invoke(this, e);
 
     /// <inheritdoc />

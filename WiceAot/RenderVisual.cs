@@ -21,16 +21,7 @@ public abstract class RenderVisual : Visual
     /// </summary>
     public static VisualProperty BackgroundColorProperty { get; } = VisualProperty.Add<D3DCOLORVALUE?>(typeof(RenderVisual), nameof(BackgroundColor), VisualPropertyInvalidateModes.Render);
 
-    /// <summary>
-    /// When the composition visual is clamped due to maximum bitmap limits, holds the X translation (in composition space)
-    /// to apply on the D2D device context so that the final output aligns with the intended render offset.
-    /// </summary>
     private float? _widthMaxed;
-
-    /// <summary>
-    /// When the composition visual is clamped due to maximum bitmap limits, holds the Y translation (in composition space)
-    /// to apply on the D2D device context so that the final output aligns with the intended render offset.
-    /// </summary>
     private float? _heightMaxed;
 
     /// <summary>
@@ -96,11 +87,6 @@ public abstract class RenderVisual : Visual
     [Category(CategoryRender)]
     public D3DCOLORVALUE? AscendantsBackgroundColor => GetAscendantsBackgroundColor(this);
 
-    /// <summary>
-    /// Walks up the visual tree to resolve a background color.
-    /// </summary>
-    /// <param name="visual">The starting visual.</param>
-    /// <returns>The first background color found, or null.</returns>
     private static D3DCOLORVALUE? GetAscendantsBackgroundColor(Visual? visual)
     {
         if (visual == null)

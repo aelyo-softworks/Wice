@@ -12,16 +12,9 @@
 /// </remarks>
 public partial class RichTextBox : RenderVisual, IDisposable
 {
-    // Tracks whether managed resources have been disposed.
     private bool _disposedValue;
-
-    // Maximum constraints given to the host when measuring to avoid host misbehavior with smaller sentinel values.
     private D2D_SIZE_F _maxConstraintSize = new(ushort.MaxValue, ushort.MaxValue);
-
-    // Natural size computation mode for the text host.
     private TXTNATURALSIZE _naturalSize = TXTNATURALSIZE.TXTNS_FITTOCONTENT2;
-
-    // Scale factor applied around the host to scale text independently from the font size.
     private float _zoomFactor = 1;
 
     /// <summary>
@@ -702,11 +695,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
         return size;
     }
 
-    /// <summary>
-    /// Computes the host rectangle inside <paramref name="finalRect"/> by removing padding.
-    /// </summary>
-    /// <param name="finalRect">The final arranged rectangle including padding.</param>
-    /// <returns>A Win32 <see cref="RECT"/> to activate the host with.</returns>
     private RECT GetRect(D2D_RECT_F finalRect)
     {
         var padding = Padding;
@@ -795,9 +783,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
         host.Draw(context.DeviceContext.Object, rc, urc);
     }
 
-    /// <summary>
-    /// Gets the viewer parent when hosted inside a <see cref="ScrollViewer"/> chain.
-    /// </summary>
     private IViewerParent? GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;
 
     /// <summary>

@@ -476,7 +476,7 @@ public partial class Application : IDisposable
     /// <summary>
     /// Gets a value indicating whether a fatal error dialog is currently being shown.
     /// </summary>
-    public static bool IsFatalErrorShowing { get; private set; }
+    public static bool IsFatalErrorShowing { get; protected set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to exit all applications when the last non-background window is removed.
@@ -580,6 +580,22 @@ public partial class Application : IDisposable
     }
 
     /// <summary>
+    /// Clears all errors from the internal error collection.
+    /// </summary>
+    /// <remarks>This method removes all entries from the error collection and returns the number of errors
+    /// that were cleared. It is thread-safe and ensures that the operation is performed atomically.</remarks>
+    /// <returns>The number of errors that were cleared from the collection.</returns>
+    public static int ClearErrors()
+    {
+        lock (_errorsLock)
+        {
+            var count = _errors.Count;
+            _errors.Clear();
+            return count;
+        }
+    }
+
+    /// <summary>
     /// Adds an error to the internal error collection and optionally initiates a quit operation.
     /// </summary>
     /// <remarks>If the specified error already exists (by same exact text) in the internal error collection, it will not be added
@@ -619,25 +635,34 @@ public partial class Application : IDisposable
     }
 
     /// <summary>
-    /// Displays a fatal error dialog to the user if there are any recorded fatal errors.
+    /// Displays a fatal error dialog to the user, allowing customization of the dialog's appearance and behavior.
     /// </summary>
-    /// <remarks>This method checks for any recorded fatal errors and displays them in a dialog box.  If
-    /// multiple errors are present, they are aggregated and displayed together. Once the dialog is acknowledged, the
-    /// recorded errors are cleared to prevent them from being shown again. If such a dialog is already being shown, this method will return <see
-    /// langword="false"/> without displaying another dialog.</remarks>
-    /// <param name="hwnd">The handle to the parent window for the dialog.</param>
-    /// <returns><see langword="true"/> if the dialog was successfully shown and acknowledged by the user;  otherwise, <see
-    /// langword="false"/> if no errors were present or the dialog could not be or was not displayed.</returns>
-    public static bool ShowFatalError(HWND hwnd)
+    /// <remarks>This method displays a modal dialog summarizing one or more fatal errors. If a custom error
+    /// handling function is provided and <paramref name="callCustomFunc"/> is <see langword="true"/>, the function is
+    /// invoked before the dialog is shown. The dialog can be customized using the <paramref name="configureOptions"/>
+    /// parameter, which allows modification of the dialog's content, behavior, and post-display actions.  If no errors
+    /// are present or a fatal error dialog is already being displayed, the method returns <see
+    /// langword="false"/>.</remarks>
+    /// <param name="hwnd">The handle to the parent window for the dialog. If the handle is invalid, it will be reset to 0.</param>
+    /// <param name="configureOptions">An optional delegate to configure the <see cref="ShowFatalErrorOptions"/> used to customize the dialog. If <see
+    /// langword="null"/>, default options are used.</param>
+    /// <param name="callCustomFunc">A value indicating whether to invoke a custom error handling function, if one is defined. If <see
+    /// langword="true"/>, the custom function is called before displaying the dialog.</param>
+    /// <returns><see langword="true"/> if the dialog was successfully shown and the user interacted with it; otherwise, <see
+    /// langword="false"/>.</returns>
+    public static bool ShowFatalError(HWND hwnd, Action<ShowFatalErrorOptions>? configureOptions = null, bool callCustomFunc = true)
     {
         if (hwnd != 0 && !WiceCommons.IsWindow(hwnd))
         {
             hwnd.Value = 0;
         }
 
-        var func = ShowFatalErrorFunc;
-        if (func != null)
-            return func(hwnd);
+        if (callCustomFunc)
+        {
+            var func = ShowFatalErrorFunc;
+            if (func != null)
+                return func(hwnd);
+        }
 
         if (_errors.Count == 0)
             return false;
@@ -687,14 +712,25 @@ public partial class Application : IDisposable
                 td.Content = sb.ToString();
             }
 
+            var options = new ShowFatalErrorOptions(errors, td, hwnd);
+            if (configureOptions != null)
+            {
+                configureOptions(options);
+                if (!options.ShowDialog)
+                    return false;
+            }
+
             // note if something goes wrong (dialog wasn't show), Show will possibly return cancel (TaskDialogIndirect won't fail).
             var result = td.Show(hwnd);
+
+            options.ShownFunc?.Invoke(options, result);
+
 #if NETFRAMEWORK
             var shown = result != DialogResult.Cancel;
 #else
             var shown = result != MESSAGEBOX_RESULT.IDCANCEL;
 #endif
-            if (shown)
+            if (shown && options.ClearErrorsOnShown)
             {
                 _errors.Clear(); // clear errors to prevent showing them again
             }
@@ -704,6 +740,56 @@ public partial class Application : IDisposable
         {
             IsFatalErrorShowing = false;
         }
+    }
+
+    /// <summary>
+    /// Represents the options for displaying a fatal error dialog, including the errors to display, the dialog
+    /// configuration, and the parent window handle.
+    /// </summary>
+    /// <remarks>This class encapsulates the necessary information for configuring and displaying a fatal
+    /// error dialog. It includes the list of errors to be shown, the task dialog instance for customization, and the
+    /// parent window handle to ensure the dialog is displayed in the correct context.</remarks>
+    /// <param name="dialog">The task dialog instance that will be used to display the fatal error message.</param>
+    /// <param name="errors">The list of errors to be displayed in the fatal error dialog.</param>
+    /// <param name="hwnd">The handle to the parent window for the dialog.</param>
+    public class ShowFatalErrorOptions(IReadOnlyList<Exception> errors, TaskDialog dialog, HWND hwnd)
+    {
+        /// <summary>
+        /// Gets the list of errors to be displayed in the fatal error dialog.
+        /// </summary>
+        public IReadOnlyList<Exception> Errors { get; } = errors;
+
+        /// <summary>
+        /// Gets the task dialog instance that will be used to display the fatal error message.
+        /// </summary>
+        public TaskDialog Dialog { get; } = dialog;
+
+        /// <summary>
+        /// Gets the handle to the parent window for the dialog.
+        /// </summary>
+        public HWND Hwnd { get; } = hwnd;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the dialog should be displayed.
+        /// </summary>
+        public bool ShowDialog { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether errors should be cleared after the dialog has been shown.
+        /// </summary>
+        public virtual bool ClearErrorsOnShown { get; set; } = true;
+
+#if NETFRAMEWORK
+        /// <summary>
+        /// Gets or sets the action to be invoked when a dialog is shown.
+        /// </summary>
+        public virtual Action<ShowFatalErrorOptions, DialogResult>? ShownFunc { get; set; }
+#else
+        /// <summary>
+        /// Gets or sets the action to be invoked when a dialog is shown.
+        /// </summary>
+        public virtual Action<ShowFatalErrorOptions, MESSAGEBOX_RESULT>? ShownFunc { get; set; }
+#endif
     }
 
     /// <summary>

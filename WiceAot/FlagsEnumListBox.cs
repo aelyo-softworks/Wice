@@ -26,7 +26,6 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, EnumListBox.IB
     /// </summary>
     public event EventHandler<ValueEventArgs>? ValueChanged;
 
-    // Reentrancy guard used when toggling item selection from within UpdateItemSelection.
     private bool _in;
 
     /// <summary>
@@ -144,10 +143,6 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, EnumListBox.IB
         return base.UpdateItemSelection(visual, select);
     }
 
-    /// <summary>
-    /// Computes the combined 64-bit bitmask from the currently selected items.
-    /// </summary>
-    /// <returns>The aggregated unsigned 64-bit value representing selected flags.</returns>
     private ulong GetUint64Value()
     {
         ulong value = 0;

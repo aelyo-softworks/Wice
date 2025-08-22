@@ -21,13 +21,6 @@ public partial class Path : SingleShape
     /// </remarks>
     public static VisualProperty GeometrySource2DProperty { get; } = VisualProperty.Add<IGeometrySource2D>(typeof(Path), nameof(GeometrySource2D), VisualPropertyInvalidateModes.Render, convert: SetGeo);
 
-    /// <summary>
-    /// Conversion hook invoked when <see cref="GeometrySource2D"/> is set.
-    /// Updates <see cref="CompositionPathGeometry.Path"/> on the current <see cref="Geometry"/> instance.
-    /// </summary>
-    /// <param name="obj">The target <see cref="Path"/> instance.</param>
-    /// <param name="value">The new <see cref="IGeometrySource2D"/> value or <c>null</c>.</param>
-    /// <returns>The value to store for the property (unmodified).</returns>
     private static object? SetGeo(BaseObject obj, object? value)
     {
         var path = (Path)obj;

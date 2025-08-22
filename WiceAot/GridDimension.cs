@@ -41,10 +41,6 @@ public abstract class GridDimension : BaseObject
     /// </summary>
     public static BaseObjectProperty DefaultAlignmentProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(DefaultAlignment), typeof(Alignment?), null, null, null, null);
 
-    /// <summary>
-    /// Validates <see cref="Stars"/> values (must be finite and not negative).
-    /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">When value is not finite or negative.</exception>
     private static object? ValidateStars(BaseObject obj, object? value)
     {
         var f = (float)value!;
@@ -54,11 +50,6 @@ public abstract class GridDimension : BaseObject
         return f;
     }
 
-    /// <summary>
-    /// Validates <see cref="Size"/> values (must be NaN for Auto, or a non-negative finite value).
-    /// Infinity is rejected.
-    /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">When value is infinite or negative.</exception>
     private static object? ValidateSize(BaseObject obj, object? value)
     {
         var f = (float)value!;
@@ -68,10 +59,6 @@ public abstract class GridDimension : BaseObject
         return f;
     }
 
-    /// <summary>
-    /// Validates <see cref="MinSize"/> and <see cref="MaxSize"/> (must be finite and not negative).
-    /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">When value is not finite or negative.</exception>
     private static object? ValidateMinMaxSize(BaseObject obj, object? value)
     {
         var f = (float)value!;

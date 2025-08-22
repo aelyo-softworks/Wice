@@ -246,13 +246,6 @@ public partial class Dialog : Popup
         }
     }
 
-    /// <summary>
-    /// Plays the close (fade-out) animation on the dialog visual.
-    /// </summary>
-    /// <remarks>
-    /// Uses <see cref="Theme.DialogCloseAnimationDuration"/> and an ease-in cubic function.
-    /// No-op when the compositor or the composition visual is unavailable.
-    /// </remarks>
     private void AnimateRemove()
     {
         if (Compositor == null || CompositionVisual == null)
@@ -344,13 +337,6 @@ public partial class Dialog : Popup
         AnimateShow();
     }
 
-    /// <summary>
-    /// Plays the open (fade-in) animation once after the dialog's composition visual has a non-zero size.
-    /// </summary>
-    /// <remarks>
-    /// Uses <see cref="Theme.DialogOpenAnimationDuration"/> and an ease-in cubic function. Suspends opacity updates
-    /// during the animation batch to avoid interference from render passes.
-    /// </remarks>
     private void AnimateShow()
     {
         // show only once (resizing window causes a reshow)

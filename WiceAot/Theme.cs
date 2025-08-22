@@ -36,7 +36,6 @@ public class Theme
         }
     }
 
-    // Backing fields for nullable/string properties and opt-in scaled values.
     private string? _symbolFontName;
     private string? _legacySymbolFontName;
     private string? _defaultFontFamilyName;
@@ -66,14 +65,6 @@ public class Theme
         _window = window;
     }
 
-    /// <summary>
-    /// Initializes a theme with system-based defaults.
-    /// </summary>
-    /// <remarks>
-    /// - Tooltip timings are derived from <see cref="ToolTipInitialTime"/>.
-    /// - <see cref="DialogBoxButtonFontSize"/> is initialized from <see cref="DefaultFontSize"/>.
-    /// - <see cref="ListBoxHoverColor"/> defaults to <see cref="SelectedColor"/>.
-    /// </remarks>
     private Theme()
     {
         ToolTipVisibleTime = ToolTipInitialTime * 10;

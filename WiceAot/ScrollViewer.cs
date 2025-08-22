@@ -393,20 +393,12 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         });
     }
 
-    /// <summary>
-    /// Updates <see cref="VerticalOffset"/> while dragging the vertical thumb by translating
-    /// delta movement to content offset using <see cref="VerticalRatio"/>.
-    /// </summary>
     private void OnVerticalScrollBarThumbDragDelta(object? sender, DragEventArgs e)
     {
         var ratio = VerticalRatio;
         VerticalOffset = _verticalOffsetStart + ratio * e.State.DeltaY;
     }
 
-    /// <summary>
-    /// Updates <see cref="HorizontalOffset"/> while dragging the horizontal thumb by translating
-    /// delta movement to content offset using <see cref="HorizontalRatio"/>.
-    /// </summary>
     private void OnHorizontalScrollBarThumbDragDelta(object? sender, DragEventArgs e)
     {
         var ratio = HorizontalRatio;
@@ -449,10 +441,6 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         return true;
     }
 
-    /// <summary>
-    /// Recomputes scrollbar visibility, sizes, and layout-dependent state after the viewer is arranged.
-    /// Updates <see cref="VerticalMaxOffset"/>, <see cref="HorizontalMaxOffset"/>, and clamps current offsets.
-    /// </summary>
     private void OnViewerArranged(object? sender, EventArgs e)
     {
         var child = Child;

@@ -109,9 +109,7 @@ public partial class MessageBox : DialogBox
         }
     }
 
-    /// <summary>
-    /// Private text host used as the message body inside the dialog content.
-    /// </summary>
+    // Private text host used as the message body inside the dialog content.
     private sealed partial class MessageTextBox : TextBox
     {
     }

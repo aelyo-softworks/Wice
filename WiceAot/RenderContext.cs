@@ -11,12 +11,6 @@
 /// </remarks>
 public class RenderContext
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RenderContext"/> class.
-    /// </summary>
-    /// <param name="deviceContext">The Direct2D device context to operate on.</param>
-    /// <param name="creationOptions">Optional surface creation options that may influence rendering behavior.</param>
-    /// <param name="rect">Optional surface rectangle describing the target render area.</param>
     private RenderContext(IComObject<ID2D1DeviceContext> deviceContext, SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
     {
         DeviceContext = deviceContext;

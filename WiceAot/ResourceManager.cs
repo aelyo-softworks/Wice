@@ -14,16 +14,8 @@
 /// </remarks>
 public partial class ResourceManager
 {
-    /// <summary>
-    /// Application-level cache of resources keyed by a deterministic string.
-    /// </summary>
     private readonly ConcurrentDictionary<string, Resource> _resources = new(StringComparer.OrdinalIgnoreCase);
-
-    /// <summary>
-    /// Map of window-specific resource containers.
-    /// </summary>
     private readonly ConcurrentDictionary<Window, WindowResources> _windowsResources = new();
-    //private Theme _theme;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResourceManager"/> class bound to an <see cref="Application"/>.
@@ -97,40 +89,20 @@ public partial class ResourceManager
     }
 #endif
 
-    /// <summary>
-    /// Domain partition used to scope and generate keys for the resource cache.
-    /// </summary>
     private enum Domain
     {
-        /// <summary>Undefined domain (invalid for keys).</summary>
         Undefined,
-        /// <summary>Direct2D stroke styles.</summary>
         StrokeStyle,
-        /// <summary>WIC bitmap sources (file/stream/memory).</summary>
         WICBitmapSource,
-        /// <summary>Scroll bar button geometries.</summary>
         ScrollBarButtonGeometry,
-        /// <summary>DirectWrite text layouts.</summary>
         TextLayout,
-        /// <summary>DirectWrite text formats.</summary>
         TextFormat,
-        /// <summary>Title bar button geometries.</summary>
         TitleBarButtonTypeGeometry,
-        /// <summary>DirectWrite typographies.</summary>
         Typography,
-        /// <summary>Check button geometries.</summary>
         CheckButtonGeometry,
-        /// <summary>Toggle switch geometries.</summary>
         ToggleSwitchGeometry,
     }
 
-    /// <summary>
-    /// Builds a canonical cache key for a given domain and name.
-    /// </summary>
-    /// <param name="domain">The resource domain.</param>
-    /// <param name="name">The name or parameter string for the resource.</param>
-    /// <returns>A key composed of the name and the domain discriminator.</returns>
-    /// <exception cref="ArgumentException">If <paramref name="domain"/> is <see cref="Domain.Undefined"/>.</exception>
     private static string GetKey(Domain domain, string name)
     {
         if (domain == Domain.Undefined)
@@ -139,16 +111,6 @@ public partial class ResourceManager
         return name + "\0" + (int)domain;
     }
 
-    /// <summary>
-    /// Gets a cached resource by key without creating it if missing.
-    /// </summary>
-    /// <typeparam name="T">The expected resource type.</typeparam>
-    /// <param name="window">An optional window scope; if provided, uses the window cache.</param>
-    /// <param name="domain">The resource domain.</param>
-    /// <param name="name">The resource name/parameters.</param>
-    /// <param name="defaultValue">Value to return when not found.</param>
-    /// <param name="propertiesUseConversions">If true, uses conversion to cast the stored object to <typeparamref name="T"/>.</param>
-    /// <returns>The cached value if present; otherwise <paramref name="defaultValue"/>.</returns>
     private T? Get<T>(Window? window, Domain domain, string name, T? defaultValue = default, bool propertiesUseConversions = false)
     {
         var resources = window != null ? _windowsResources[window]._resources : _resources;
@@ -162,16 +124,6 @@ public partial class ResourceManager
         return (T)resource.Object!;
     }
 
-    /// <summary>
-    /// Gets a cached resource by key or creates and caches it using the provided factory.
-    /// </summary>
-    /// <typeparam name="T">The resource type.</typeparam>
-    /// <param name="window">An optional window scope; if provided, uses the window cache.</param>
-    /// <param name="domain">The resource domain.</param>
-    /// <param name="name">The resource name/parameters.</param>
-    /// <param name="factory">Optional factory invoked when the resource is absent.</param>
-    /// <param name="propertiesUseConversions">If true, uses conversion to cast the stored object to <typeparamref name="T"/>.</param>
-    /// <returns>The cached or created resource.</returns>
     private T? Get<T>(Window? window, Domain domain, string name, Func<T>? factory = null, bool propertiesUseConversions = false)
     {
         if (factory == null)
@@ -594,16 +546,6 @@ public partial class ResourceManager
         return CreateTextLayout<IDWriteTextLayout>(format.Object, text, textLength, maxWidth, maxHeight);
     }
 
-    /// <summary>
-    /// Creates a DirectWrite text layout of the specified type.
-    /// </summary>
-    /// <typeparam name="T">The text layout interface type.</typeparam>
-    /// <param name="format">The text format.</param>
-    /// <param name="text">The text to layout.</param>
-    /// <param name="textLength">Optional explicit text length; non-positive uses <c>text.Length</c>.</param>
-    /// <param name="maxWidth">The layout maximum width; <see cref="float.MaxValue"/> means unconstrained.</param>
-    /// <param name="maxHeight">The layout maximum height; <see cref="float.MaxValue"/> means unconstrained.</param>
-    /// <returns>A COM wrapper for the created text layout.</returns>
     private ComObject<T> CreateTextLayout<T>(
         IDWriteTextFormat format,
         string text,
@@ -894,10 +836,6 @@ public partial class ResourceManager
         while (true);
     }
 
-    /// <summary>
-    /// Adds a window-scoped resource container if not already present.
-    /// </summary>
-    /// <param name="window">The window to register.</param>
     internal void AddWindow(Window window)
     {
         if (_windowsResources.ContainsKey(window))
@@ -907,100 +845,41 @@ public partial class ResourceManager
         res = _windowsResources.AddOrUpdate(window, res, (o, k) => k);
     }
 
-    /// <summary>
-    /// Removes a window by disposing its pending render disposables.
-    /// </summary>
-    /// <param name="window">The window to remove.</param>
     internal void RemoveWindow(Window window) => DisposeRenderDisposables(window);
 
-    /// <summary>
-    /// Provides a cache key for instances that are stored in dictionaries keyed by content.
-    /// </summary>
     private interface IKeyable
     {
-        /// <summary>
-        /// Gets the key identifying the instance for caching purposes.
-        /// </summary>
         string Key { get; }
     }
 
-    /// <summary>
-    /// A COM object wrapper that carries a deterministic cache key.
-    /// </summary>
-    /// <typeparam name="T">The wrapped COM interface type.</typeparam>
     private sealed partial class KeyComObject<T>(T comObject, string key) : ComObject<T>(comObject!), IKeyable
     {
-        /// <inheritdoc />
         public string Key { get; } = key;
     }
 
-    /// <summary>
-    /// Base abstraction for objects that can be disposed via the render disposable queue.
-    /// </summary>
     private interface IBaseDisposable
     {
-        /// <summary>
-        /// Forces disposal bypassing any override that defers disposal.
-        /// </summary>
         void BaseDispose();
     }
 
-    /// <summary>
-    /// A COM object wrapper that defers disposal by enqueuing itself into the window's render disposable list.
-    /// </summary>
-    /// <typeparam name="T">The wrapped COM interface type.</typeparam>
     private sealed partial class RenderComObject<T>(ResourceManager mgr, Window window, T comObject) : ComObject<T>(comObject!), IBaseDisposable
     {
-        /// <summary>
-        /// Overrides disposal to defer actual release until the render disposal pass.
-        /// </summary>
-        /// <param name="disposing">True if disposing; ignored.</param>
         protected override void Dispose(bool disposing) => mgr._windowsResources[window]._renderDisposables.Add(this);
-
-        /// <summary>
-        /// Performs the real disposal by invoking the base class implementation.
-        /// </summary>
         public void BaseDispose() => base.Dispose(true);
     }
 
-    /// <summary>
-    /// Wraps a standard <see cref="IDisposable"/> to participate in the render disposable queue.
-    /// </summary>
     private sealed class RenderDisposable(IDisposable disposable) : IBaseDisposable
     {
-        /// <inheritdoc />
         public void BaseDispose() => disposable.Dispose();
-
-        /// <inheritdoc />
         public override string ToString() => disposable?.ToString() ?? string.Empty;
     }
 
-    /// <summary>
-    /// Holds window-scoped resources and deferred render disposables.
-    /// </summary>
     private sealed class WindowResources(Window window)
     {
-        /// <summary>
-        /// The owning window.
-        /// </summary>
         public Window Window = window;
-
-        /// <summary>
-        /// A bag of deferred disposables to be released during the render disposal pass.
-        /// </summary>
         public readonly ConcurrentBag<IBaseDisposable> _renderDisposables = [];
-
-        /// <summary>
-        /// Window-level resource cache keyed by deterministic strings.
-        /// </summary>
         public readonly ConcurrentDictionary<string, Resource> _resources = new(StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>
-        /// Disposes all cached resources and clears the cache.
-        /// </summary>
-        /// <remarks>
-        /// Note: a race condition is possible if resources are being accessed concurrently.
-        /// </remarks>
         public void DisposeResources()
         {
             foreach (var kv in _resources.ToArray())
@@ -1012,37 +891,17 @@ public partial class ResourceManager
         }
     }
 
-    /// <summary>
-    /// Represents a cached resource entry with last-access timestamp and stored object.
-    /// </summary>
     private sealed partial class Resource : IDisposable
     {
-        /// <summary>
-        /// Initializes a new resource entry and sets <see cref="LastAccess"/> to now.
-        /// </summary>
         public Resource()
         {
             LastAccess = DateTime.Now;
         }
 
-        /// <summary>
-        /// Last time the resource was accessed.
-        /// </summary>
         public DateTime LastAccess;
-
-        /// <summary>
-        /// The cached resource object (may be a COM wrapper or any <see cref="IDisposable"/>).
-        /// </summary>
         public object? Object;
 
-        /// <summary>
-        /// Disposes the underlying object if it implements <see cref="IDisposable"/>.
-        /// </summary>
-        public void Dispose() =>
-            //Application.Trace("Dispose " + Object + " " + LastAccess + " Elapsed: " + (DateTime.Now - LastAccess).ToString());
-            ((IDisposable?)Object)?.Dispose();
-
-        /// <inheritdoc />
+        public void Dispose() => ((IDisposable?)Object)?.Dispose();
         public override string ToString() => LastAccess + " " + Object?.ToString();
     }
 }

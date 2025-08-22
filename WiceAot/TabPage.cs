@@ -37,14 +37,7 @@ public partial class TabPage : BaseObject
     /// </summary>
     public static VisualProperty DataProperty { get; } = VisualProperty.Add<object>(typeof(TabPage), nameof(Data), VisualPropertyInvalidateModes.Measure);
 
-    /// <summary>
-    /// Static changed handler that dispatches to the instance-level <see cref="ContentChanged(Visual?, Visual?)"/>.
-    /// </summary>
     private static void ContentChanged(BaseObject obj, object? newValue, object? oldValue) => ((TabPage)obj).ContentChanged((Visual?)newValue, (Visual?)oldValue);
-
-    /// <summary>
-    /// Static changed handler that dispatches to the instance-level <see cref="IsSelectableChanged(bool)"/>.
-    /// </summary>
     private static void IsSelectableChanged(BaseObject obj, object? newValue, object? oldValue) => ((TabPage)obj).IsSelectableChanged((bool)newValue!);
 
     /// <summary>

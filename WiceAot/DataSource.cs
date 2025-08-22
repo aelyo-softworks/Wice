@@ -66,14 +66,7 @@ public class DataSource
         MemberName = memberName;
     }
 
-    /// <summary>
-    /// Forwards <see cref="INotifyPropertyChanged.PropertyChanged"/> from the source to <see cref="OnSourcePropertyChanged(PropertyChangedEventArgs)"/>.
-    /// </summary>
     private void OnSourcePropertyChanged(object? sender, PropertyChangedEventArgs e) => OnSourcePropertyChanged(e);
-
-    /// <summary>
-    /// Forwards <see cref="INotifyCollectionChanged.CollectionChanged"/> from the source to <see cref="OnSourceCollectionChanged(NotifyCollectionChangedEventArgs)"/>.
-    /// </summary>
     private void OnSourceCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => OnSourceCollectionChanged(e);
 
     /// <summary>

@@ -60,8 +60,7 @@ public partial class ApplicationWithScheduler : Application
     /// with <see cref="Scheduler"/> as the target scheduler.
     /// </remarks>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="action"/> is null.</exception>
-    public virtual Task RunTaskOnMainThread(Action action, bool startNew = false
-    )
+    public virtual Task RunTaskOnMainThread(Action action, bool startNew = false)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (!startNew && IsRunningAsMainThread)

@@ -33,9 +33,6 @@ public partial class DockSplitter : Visual
     /// </summary>
     public event EventHandler? Cancel;
 
-    /// <summary>
-    /// Gets the parent dock hosting this splitter, if any.
-    /// </summary>
     private Dock? ParentDock => Parent as Dock;
 
     /// <summary>

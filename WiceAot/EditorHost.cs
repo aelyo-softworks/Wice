@@ -126,11 +126,6 @@ public partial class EditorHost : HeaderedContent
     /// <param name="e">Event args.</param>
     protected virtual void OnDialogClosed(object? sender, EventArgs e) => DialogClosed?.Invoke(sender, e);
 
-    /// <summary>
-    /// Handles window mouse button down to close the dialog when clicking outside both the host and the dialog.
-    /// </summary>
-    /// <param name="sender">The window raising the event.</param>
-    /// <param name="e">Mouse event data.</param>
     private void OnWindowMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         var dlg = Dialog;
