@@ -30,8 +30,9 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
+        AddLogVisual();
         //ShowTabs();
-        AddScrollableRtbRtfFile();
+        //AddScrollableRtbRtfFile();
         //ChoosePdfView();
         //ShowBrowser();
         //LoadSvg();
@@ -71,34 +72,89 @@ internal partial class TestWindow : Window
         }, null, 0, 1000);
     }
 
-    protected override void OnPositionChanging(object? sender, DirectN.Extensions.Utilities.ValueEventArgs<WINDOWPOS> e)
+    public void AddLogVisual()
     {
-        base.OnPositionChanging(sender, e);
-        var flags = e.Value.flags & ~(SET_WINDOW_POS_FLAGS)0xFFFF8000; // undoc'ed
-        if (flags.HasFlag(SET_WINDOW_POS_FLAGS.SWP_NOSIZE) && flags.HasFlag(SET_WINDOW_POS_FLAGS.SWP_NOMOVE))
-            return;
-
-        var pos = e.Value;
-
-        // uncomment to set position to 0,0 always
-        //e.Cancel = true;
-        //pos.x = 0;
-        e.Value = pos;
-
-        Application.Trace("Wice AOT Position: " + pos.x + ", " + pos.y + " - Size: " + pos.cx + ", " + pos.cy + " flags:" + flags);
-
-        var title = "Wice AOT";
-        if (!flags.HasFlag(SET_WINDOW_POS_FLAGS.SWP_NOMOVE))
+        var sv = new ScrollViewer { Margin = D2D_RECT_F.Thickness(10, 10, 10, 10) };
+        var log = new LogVisual
         {
-            title += " - Position: " + pos.x + ", " + pos.y;
-        }
+            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10),
+            VerticalAlignment = Alignment.Near,
+            BackgroundColor = D3DCOLORVALUE.Transparent,
+            ForegroundColor = D3DCOLORVALUE.Black
+        };
+        sv.Viewer.Child = log;
+        Children.Add(sv);
 
-        if (pos.cx >= 0 || pos.cy >= 0)
+        _ = RunTaskOnMainThread(() => Title = "Press PAUSE to pause/resume logging", true);
+        var stoppedEvent = new AutoResetEvent(false);
+        KeyDown += (s, e) =>
         {
-            title += " - Size: " + pos.cx + ", " + pos.cy;
-        }
-        Title = title;
+            if (e.Key == VIRTUAL_KEY.VK_PAUSE)
+            {
+                // toggle pause/resume
+                stoppedEvent.Set();
+            }
+        };
+
+        Task.Run(() =>
+        {
+            var lines = File.ReadAllLines(@"Resources\assommoir.txt");
+            var rnd = new Random();
+            var sw = Stopwatch.StartNew();
+            for (var i = 0; i < lines.Length; i++)
+            {
+                var line = $"{sw.Elapsed.TotalSeconds,12} - #{i,10} {lines[i]}";
+                log.Append(line);
+
+                // not necessarily needed in general, but here we want to see the last "log" line,
+                // so we ask ScrollViewer to scroll to the end, no need to wait
+                _ = RunTaskOnMainThread(() => sv.VerticalOffset = sv.VerticalMaxOffset);
+
+                // simulate some fast work on this thread
+                // note 1 ms won't probably be honored as it depends
+                // on Windows system timer resolution.
+                // usually, it's more around 16ms
+                Thread.Sleep(1);
+                // or for example Thread.Sleep(rnd.Next(20, 200));
+
+                // quick check for stop request
+                if (stoppedEvent.WaitOne(0))
+                {
+                    // wait for resume request
+                    stoppedEvent.WaitOne();
+                }
+            }
+        });
     }
+
+    //protected override void OnPositionChanging(object? sender, DirectN.Extensions.Utilities.ValueEventArgs<WINDOWPOS> e)
+    //{
+    //    base.OnPositionChanging(sender, e);
+    //    var flags = e.Value.flags & ~(SET_WINDOW_POS_FLAGS)0xFFFF8000; // undoc'ed
+    //    if (flags.HasFlag(SET_WINDOW_POS_FLAGS.SWP_NOSIZE) && flags.HasFlag(SET_WINDOW_POS_FLAGS.SWP_NOMOVE))
+    //        return;
+
+    //    var pos = e.Value;
+
+    //    // uncomment to set position to 0,0 always
+    //    //e.Cancel = true;
+    //    //pos.x = 0;
+    //    e.Value = pos;
+
+    //    Application.Trace("Wice AOT Position: " + pos.x + ", " + pos.y + " - Size: " + pos.cx + ", " + pos.cy + " flags:" + flags);
+
+    //    var title = "Wice AOT";
+    //    if (!flags.HasFlag(SET_WINDOW_POS_FLAGS.SWP_NOMOVE))
+    //    {
+    //        title += " - Position: " + pos.x + ", " + pos.y;
+    //    }
+
+    //    if (pos.cx >= 0 || pos.cy >= 0)
+    //    {
+    //        title += " - Size: " + pos.cx + ", " + pos.cy;
+    //    }
+    //    Title = title;
+    //}
 
     public void LoadSvg()
     {
