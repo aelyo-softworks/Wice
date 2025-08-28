@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Windows.UI.Composition;
+﻿using Windows.UI.Composition;
 
 namespace WiceAot.Tests;
 
@@ -18,7 +17,6 @@ public class FastLogVisual : RenderVisual, IDisposable
     // cached information
     private IComObject<ID2D1Brush>? _textColor;
     private IComObject<IDWriteTextFormat>? _textFormat;
-    private readonly StringBuilder _sb = new();
     private bool _disposedValue;
     private float _lineHeight;
 
@@ -100,17 +98,17 @@ public class FastLogVisual : RenderVisual, IDisposable
         var lastEntry = Math.Max(0, Math.Min(_lines.Count - 1, ((offset + ar.Height) / lineHeight).CeilingI()));
 
         // build the text to layout, only composed of the visible lines
-        // reuse the stringbuilder to avoid allocations
-        _sb.Clear();
+        // this is slightly better than a stringbuilder (less allocation)
+        var s = string.Empty;
         for (var i = firstEntry; i <= lastEntry; i++)
         {
-            _sb.AppendLine(_lines[i]);
+            s += _lines[i] + Environment.NewLine;
         }
 
         // just render text, in this "log" case, it's faster and simpler to just draw text directly, w/o coputing a layout
         _textColor ??= context.CreateSolidColorBrush(ForegroundColor);
         _textFormat ??= GetFormat();
-        context.DeviceContext.DrawText(_sb.ToString(), _textFormat, ar, _textColor, D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+        context.DeviceContext.DrawText(s, _textFormat, ar, _textColor, D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
     }
 
     // text format definition is determined here
