@@ -17,6 +17,7 @@ public class FastLogVisual : RenderVisual, IDisposable
 
     // cached information
     private IComObject<ID2D1Brush>? _textColor;
+    private IComObject<IDWriteTextFormat>? _textFormat;
     private readonly StringBuilder _sb = new();
     private bool _disposedValue;
     private float _lineHeight;
@@ -40,6 +41,7 @@ public class FastLogVisual : RenderVisual, IDisposable
         {
             if (disposing)
             {
+                _textFormat?.Dispose();
                 _textColor?.Dispose();
             }
 
@@ -52,16 +54,18 @@ public class FastLogVisual : RenderVisual, IDisposable
         if (!base.SetPropertyValue(property, value, options))
             return false;
 
+        // reset caches
         if (property == FontFamilyNameProperty || property == FontFamilyNameProperty)
         {
-            // reset line height cache
             _lineHeight = 0;
+            var textFormat = _textFormat;
+            _textFormat = null;
+            textFormat?.Dispose();
             return true;
         }
 
         if (property == ForegroundColorProperty)
         {
-            // reset text color cache
             var textColor = _textColor;
             _textColor = null;
             textColor?.Dispose();
@@ -105,7 +109,8 @@ public class FastLogVisual : RenderVisual, IDisposable
 
         // just render text, in this "log" case, it's faster and simpler to just draw text directly, w/o coputing a layout
         _textColor ??= context.CreateSolidColorBrush(ForegroundColor);
-        context.DeviceContext.DrawText(_sb.ToString(), GetFormat(), ar, _textColor, D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
+        _textFormat ??= GetFormat();
+        context.DeviceContext.DrawText(_sb.ToString(), _textFormat, ar, _textColor, D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT);
     }
 
     // text format definition is determined here
@@ -130,7 +135,8 @@ public class FastLogVisual : RenderVisual, IDisposable
     {
         if (_lineHeight == 0)
         {
-            using var layout = Application.CurrentResourceManager.CreateTextLayout(GetFormat(), string.Empty);
+            _textFormat ??= GetFormat();
+            using var layout = Application.CurrentResourceManager.CreateTextLayout(_textFormat, string.Empty);
             var metrics = layout.GetMetrics1();
             _lineHeight = metrics.Base.height / metrics.Base.lineCount;
         }

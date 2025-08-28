@@ -162,7 +162,7 @@ internal partial class TestWindow : Window
         {
             // requesting higher timer resolution for this thread
             // note going too low will impact Desktop Window Manager too much (GPU usage, etc.) depending on harware
-            _ = DirectN.Functions.timeBeginPeriod(5);
+            _ = DirectN.Functions.timeBeginPeriod(1);
             try
             {
                 var lines = File.ReadAllLines(@"Resources\assommoir.txt");
@@ -177,7 +177,7 @@ internal partial class TestWindow : Window
                     Thread.Sleep(1); // will give around 5ms depending on timeBeginPeriod call
 
                     // quick check for stop request
-                    if (stoppedEvent.WaitOne(0))
+                    if (stoppedEvent.WaitOne(3))
                     {
                         // wait for resume request
                         stoppedEvent.WaitOne();
@@ -188,7 +188,7 @@ internal partial class TestWindow : Window
             finally
             {
                 stoppedEvent.Dispose();
-                _ = DirectN.Functions.timeEndPeriod(5);
+                _ = DirectN.Functions.timeEndPeriod(1);
             }
         });
     }
