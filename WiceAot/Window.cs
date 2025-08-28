@@ -961,12 +961,16 @@ public partial class Window : Canvas, ITitleBarParent
 
     protected virtual LRESULT WindowProc(uint msg, WPARAM wParam, LPARAM lParam, out bool handled)
     {
-        var e = new WindowMessageEventArgs(Handle, msg, wParam, lParam);
-        OnWindowMessage(this, e);
-        if (e.Handled)
+        var windowMessage = WindowMessage;
+        if (windowMessage != null)
         {
-            handled = true;
-            return e.Result;
+            var e = new WindowMessageEventArgs(Handle, msg, wParam, lParam);
+            OnWindowMessage(this, e);
+            if (e.Handled)
+            {
+                handled = true;
+                return e.Result;
+            }
         }
 
         handled = false;
@@ -1850,7 +1854,10 @@ public partial class Window : Canvas, ITitleBarParent
         KeyValuePair<Visual, InvalidateMode>[] invalidations;
         lock (_lock)
         {
-            invalidations = [.. _invalidations];
+#pragma warning disable IDE0305 // Simplify collection initialization
+            // no, we want to use ConcurrentDictionary.ToArray(), not Linq's ToArray()
+            invalidations = _invalidations.ToArray();
+#pragma warning restore IDE0305 // Simplify collection initialization
             _invalidations.Clear();
             _renderQueued = 0;
         }

@@ -637,13 +637,13 @@ public partial class Visual : BaseObject
     /// Gets the set of composition properties temporarily suspended from being updated by <see cref="Render"/>.
     /// </summary>
     [Category(CategoryLive)]
-    public CompositionUpdateParts SuspendedCompositionParts { get; private set; }
+    public CompositionUpdateParts SuspendedCompositionParts { get; protected set; }
 
     /// <summary>
     /// Gets the underlying composition visual associated with this visual when attached to a window.
     /// </summary>
     [Category(CategoryRender)]
-    public ContainerVisual? CompositionVisual { get; internal set; }
+    public ContainerVisual? CompositionVisual { get; protected set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this visual can accept a drop.

@@ -30,7 +30,8 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
-        AddLogVisual();
+        //AddLogVisual();
+        AddFastLogVisual();
         //ShowTabs();
         //AddScrollableRtbRtfFile();
         //ChoosePdfView();
@@ -99,7 +100,6 @@ internal partial class TestWindow : Window
         Task.Run(() =>
         {
             var lines = File.ReadAllLines(@"Resources\assommoir.txt");
-            var rnd = new Random();
             var sw = Stopwatch.StartNew();
             for (var i = 0; i < lines.Length; i++)
             {
@@ -123,6 +123,72 @@ internal partial class TestWindow : Window
                     // wait for resume request
                     stoppedEvent.WaitOne();
                 }
+            }
+            _ = RunTaskOnMainThread(() => sv.VerticalOffset = sv.VerticalMaxOffset);
+            stoppedEvent.Dispose();
+        });
+    }
+
+    public void AddFastLogVisual()
+    {
+        var sv = new ScrollViewer { Margin = D2D_RECT_F.Thickness(10, 10, 10, 10) };
+        var log = new FastLogVisual
+        {
+            Margin = D2D_RECT_F.Thickness(10, 10, 10, 10),
+            VerticalAlignment = Alignment.Near,
+            BackgroundColor = D3DCOLORVALUE.Transparent,
+            ForegroundColor = D3DCOLORVALUE.Black
+        };
+        sv.Viewer.Child = log;
+        Children.Add(sv);
+
+        _ = RunTaskOnMainThread(() => Title = "Press PAUSE to pause/resume logging", true);
+        var stoppedEvent = new AutoResetEvent(false);
+        KeyDown += (s, e) =>
+        {
+            if (e.Key == VIRTUAL_KEY.VK_PAUSE)
+            {
+                // toggle pause/resume
+                stoppedEvent.Set();
+            }
+            else if (e.Key == VIRTUAL_KEY.VK_F11)
+            {
+                GC.Collect();
+                Application.Trace("GC Collected");
+            }
+        };
+
+        Task.Run(() =>
+        {
+            // requesting higher timer resolution for this thread
+            // note going too low will impact Desktop Window Manager too much (GPU usage, etc.) depending on harware
+            _ = DirectN.Functions.timeBeginPeriod(5);
+            try
+            {
+                var lines = File.ReadAllLines(@"Resources\assommoir.txt");
+                var sw = Stopwatch.StartNew();
+                for (var i = 0; i < lines.Length; i++)
+                {
+                    var line = $"{sw.Elapsed.TotalSeconds,12} - #{i,10} {lines[i]}";
+                    log.Append(line);
+
+                    _ = RunTaskOnMainThread(() => sv.VerticalOffset = sv.VerticalMaxOffset);
+
+                    Thread.Sleep(1); // will give around 5ms depending on timeBeginPeriod call
+
+                    // quick check for stop request
+                    if (stoppedEvent.WaitOne(0))
+                    {
+                        // wait for resume request
+                        stoppedEvent.WaitOne();
+                    }
+                }
+                _ = RunTaskOnMainThread(() => sv.VerticalOffset = sv.VerticalMaxOffset);
+            }
+            finally
+            {
+                stoppedEvent.Dispose();
+                _ = DirectN.Functions.timeEndPeriod(5);
             }
         });
     }

@@ -193,19 +193,20 @@ public partial class Application : IDisposable
     /// On first initialization (MSG.hwnd == 0) in STA, registers all windows for drag and drop.
     /// When multiple applications exist, messages destined for other windows are skipped.
     /// </remarks>
-    protected virtual bool HandleMessage(MSG msg)
+    protected virtual bool HandleMessage(in MSG msg)
     {
         if (IsDisposed)
             return false;
 
-        if (_applications?.Count > 1 && msg.hwnd != IntPtr.Zero)
+        var hwnd = msg.hwnd;
+        if (_applications?.Count > 1 && hwnd != IntPtr.Zero)
         {
-            var window = Windows.FirstOrDefault(w => w.Handle.Equals(msg.hwnd));
+            var window = Windows.FirstOrDefault(w => w.Handle.Equals(hwnd));
             if (window != null && window.ManagedThreadId != MainThreadId)
             {
                 // that may be normal if we have multiple applications running since we don't filter messages in GetMessageW
 #if DEBUG
-                Trace($"Message [{MessageDecoder.Decode(msg)}] was received for unhandled window '{window}' ({msg.hwnd}).");
+                Trace($"Message [{MessageDecoder.Decode(msg)}] was received for unhandled window '{window}' ({hwnd}).");
 #endif
                 return true; // not our window, skip it
             }
@@ -220,7 +221,7 @@ public partial class Application : IDisposable
         }
 
         // call this just at init time
-        if (msg.hwnd == IntPtr.Zero)
+        if (hwnd == IntPtr.Zero)
         {
             if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
             {
