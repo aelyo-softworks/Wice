@@ -174,10 +174,10 @@ internal partial class TestWindow : Window
 
                     _ = RunTaskOnMainThread(() => sv.VerticalOffset = sv.VerticalMaxOffset);
 
-                    Thread.Sleep(1); // will give around 5ms depending on timeBeginPeriod call
+                    Thread.Sleep(5); // will give around 5ms depending on timeBeginPeriod call
 
                     // quick check for stop request
-                    if (stoppedEvent.WaitOne(3))
+                    if (stoppedEvent.WaitOne(0))
                     {
                         // wait for resume request
                         stoppedEvent.WaitOne();
