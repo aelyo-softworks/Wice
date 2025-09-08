@@ -50,7 +50,7 @@ public partial class HomePage : Page
         using var mis = new ManagedIStream(stream);
         ComObject.WithComInstanceOfType<IStream>(mis, unk =>
         {
-            var v = new Variant(unk);
+            var v = new Variant(unk, VARENUM.VT_UNKNOWN);
             _richTextBox.Document!.Object.Open(v.Detach(), 0, (int)DXC_CP.DXC_CP_UTF16);
 
             sv.Viewer.Child = _richTextBox;

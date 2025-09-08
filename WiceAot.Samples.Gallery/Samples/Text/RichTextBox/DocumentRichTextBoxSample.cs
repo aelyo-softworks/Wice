@@ -21,8 +21,8 @@ public partial class DocumentRichTextBoxSample : Sample
 
 #if NETFRAMEWORK  // remove from display
         dynamic doc = rtb.Document;  // remove from display
-         // remove from display
-        // load text from this assembly's resources  // remove from display
+                                     // remove from display
+                                     // load text from this assembly's resources  // remove from display
         using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Wice.Samples.Gallery.Resources.wice.rtf"))  // remove from display
         { // remove from display
             // we must force wrap it as IUnknown because for some reason, if it's in an outside assembly (DirectN.dll here) // remove from display
@@ -39,7 +39,7 @@ public partial class DocumentRichTextBoxSample : Sample
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Wice.Samples.Gallery.Resources.wice.rtf")!;
         using var mis = new ManagedIStream(stream);
         var unk = ComObject.ComWrappers.GetOrCreateComInterfaceForObject(mis, CreateComInterfaceFlags.None);
-        using var v = new Variant(unk);
+        using var v = new Variant(unk, VARENUM.VT_UNKNOWN);
         rtb.Document!.Object.Open(v.Detached, 0, CP_UNICODE);
 #endif // remove from display
     }
