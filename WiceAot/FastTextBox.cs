@@ -235,6 +235,7 @@ public partial class FastTextBox : TextBox
         if (HasFallback)
             return base.MeasureCore(constraint);
 
+        Invalidate(VisualPropertyInvalidateModes.Render);
         return size;
     }
 

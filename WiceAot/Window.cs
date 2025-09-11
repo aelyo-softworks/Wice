@@ -222,6 +222,9 @@ public partial class Window : Canvas, ITitleBarParent
     public RECT WindowRect => NativeIfCreated?.WindowRect ?? new();
 
     [Category(CategoryLayout)]
+    public RECT ExtendedFrameBounds => NativeIfCreated?.ExtendedFrameBounds ?? new();
+
+    [Category(CategoryLayout)]
     public RECT ClientRect => NativeIfCreated?.ClientRect ?? new();
 
     [Browsable(false)]
@@ -3269,15 +3272,18 @@ public partial class Window : Canvas, ITitleBarParent
                 {
                     if (wParam.Value.ToUInt32() != 0)
                     {
-                        // should we do this?
-                        //if (NativeWindow.IsZoomed(hwnd))
-                        //{
-                        //    var monitor = win.GetMonitor();
-                        //    if (monitor != null)
-                        //    {
-                        //        Marshal.StructureToPtr(monitor.WorkingArea, lParam, false);
-                        //    }
-                        //}
+                        if (win.IsZoomed)
+                        {
+                            var monitor = win.GetMonitor();
+                            if (monitor != null)
+                            {
+                                unsafe
+                                {
+                                    // this is a NCCALCSIZE_PARAMS but we only need the first RECT
+                                    *(RECT*)lParam.Value = monitor.WorkingArea;
+                                }
+                            }
+                        }
 
                         ret = LRESULT.Null;
                         callDef = false;
