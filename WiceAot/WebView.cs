@@ -740,9 +740,9 @@ public partial class WebView : Border, IDisposable
 
                 _webView2.Object.add_DocumentTitleChanged(new CoreWebView2DocumentTitleChangedEventHandler((sender, args) =>
                 {
-                    var title = PWSTR.Null;
-                    sender.get_DocumentTitle(ref title);
+                    sender.get_DocumentTitle(out var title);
                     OnDocumentTitleChanged(this, title.ToString());
+                    Marshal.FreeCoTaskMem(title.Value);
                 }), ref _documentTitleChanged);
 
                 _webView2.Object.add_NewWindowRequested(new CoreWebView2NewWindowRequestedEventHandler((sender, args) =>

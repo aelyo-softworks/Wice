@@ -31,11 +31,11 @@ internal partial class TestWindow : Window
         //AddUniformGridSysColors();
 
         //AddLogVisual();
-        AddFastLogVisual();
+        //AddFastLogVisual();
         //ShowTabs();
         //AddScrollableRtbRtfFile();
         //ChoosePdfView();
-        //ShowBrowser();
+        ShowBrowser();
         //LoadSvg();
         //Show64bppImageStream();
         //ShowWebView();
@@ -412,9 +412,9 @@ internal partial class TestWindow : Window
 
             if (e != null)
             {
-                var uri = PWSTR.Null;
-                e.get_Uri(ref uri).ThrowOnError();
+                e.get_Uri(out var uri).ThrowOnError();
                 page.Header.Text.Text = uri.ToString() ?? string.Empty;
+                Marshal.FreeCoTaskMem(uri.Value);
             }
             else
             {
