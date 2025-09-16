@@ -38,7 +38,7 @@ public partial class DocumentRichTextBoxSample : Sample
         // load text from this assembly's resources
         using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Wice.Samples.Gallery.Resources.wice.rtf")!;
         using var mis = new ManagedIStream(stream);
-        var unk = ComObject.ComWrappers.GetOrCreateComInterfaceForObject(mis, CreateComInterfaceFlags.None);
+        var unk = ComObject.ComWrappers.GetOrCreateComInterfaceForObject(mis, CreateComInterfaceFlags.None); // does AddRef, Variant will release
         using var v = new Variant(unk, VARENUM.VT_UNKNOWN);
         rtb.Document!.Object.Open(v.Detached, 0, CP_UNICODE);
 #endif // remove from display

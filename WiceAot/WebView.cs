@@ -1003,12 +1003,11 @@ public partial class WebView : Border, IDisposable
         /// </summary>
         public void Dispose()
         {
-            Environment?.Dispose();
-            Environment = null;
             WebViewInitializationResult = null;
             WebViewVersion = null;
             ErrorMessage = null;
             Initialized = false;
+            Interlocked.Exchange(ref Environment, null)?.Dispose();
         }
 
         /// <summary>

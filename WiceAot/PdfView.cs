@@ -78,7 +78,6 @@ public partial class PdfView : RenderVisual, IDisposable
     private PdfDocument? _pdfDocument;
     private PdfPage? _pdfPage;
     private ComObject<IPdfRendererNative>? _pdfRendererNative;
-    private bool _disposedValue;
 
     /// <summary>
     /// Gets or sets a filesystem path to a PDF file. Setting this triggers a reload.
@@ -421,25 +420,18 @@ public partial class PdfView : RenderVisual, IDisposable
     /// <param name="disposing">true if called from <see cref="Dispose()"/>; false if from finalizer.</param>
     protected virtual void Dispose(bool disposing)
     {
-        if (!_disposedValue)
+        if (disposing)
         {
-            if (disposing)
+            // dispose managed state (managed objects)
+            Interlocked.Exchange(ref _pdfPage, null)?.Dispose();
+            var doc = Interlocked.Exchange(ref _pdfDocument, null);
+            if (doc != null)
             {
-                // dispose managed state (managed objects)
-                Interlocked.Exchange(ref _pdfRendererNative, null)?.Dispose();
-                Interlocked.Exchange(ref _pdfPage, null)?.Dispose();
-                var doc = Interlocked.Exchange(ref _pdfDocument, null);
-                if (doc != null)
-                {
-                    OnDocumentDisposed(this, EventArgs.Empty);
-                }
-                CurrentPage = 0;
-                LoadError = null;
+                OnDocumentDisposed(this, EventArgs.Empty);
             }
-
-            // free unmanaged resources (unmanaged objects) and override finalizer
-            // set large fields to null
-            _disposedValue = true;
+            CurrentPage = 0;
+            LoadError = null;
+            Interlocked.Exchange(ref _pdfRendererNative, null)?.Dispose();
         }
     }
 

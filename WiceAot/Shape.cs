@@ -8,7 +8,7 @@
 /// or by the geometry of the underlying composition shapes. This type proxies common stroke and fill settings
 /// to all <see cref="CompositionSpriteShape"/> instances contained in its <see cref="ShapeVisual"/>.
 /// </remarks>
-public partial class Shape : Visual
+public abstract partial class Shape : Visual
 {
     /// <summary>
     /// Dynamic property descriptor for <see cref="StrokeBrush"/>.

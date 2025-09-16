@@ -50,6 +50,7 @@ public partial class HomePage : Page
         using var mis = new ManagedIStream(stream);
         ComObject.WithComInstanceOfType<IStream>(mis, unk =>
         {
+            Marshal.AddRef(unk); // we must addref because Variant will release
             var v = new Variant(unk, VARENUM.VT_UNKNOWN);
             _richTextBox.Document!.Object.Open(v.Detach(), 0, (int)DXC_CP.DXC_CP_UTF16);
 

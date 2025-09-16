@@ -9,8 +9,10 @@
 /// - A sprite shape is then created via <see cref="CreateShape"/> and added to the owning <see cref="Shape.CompositionVisual"/>.
 /// - In DEBUG builds, composition comments are set to <see cref="Visual.Name"/> for diagnostics.
 /// </remarks>
-public abstract class SingleShape : Shape
+public abstract class SingleShape : Shape, IDisposable
 {
+    private bool _disposedValue;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="SingleShape"/> class.
     /// </summary>
@@ -92,4 +94,20 @@ public abstract class SingleShape : Shape
         CompositionVisual.Shapes.Add(Shape);
         base.OnAttachedToComposition(sender, e);
     }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                Shape?.Dispose();
+                Geometry?.Dispose();
+            }
+
+            _disposedValue = true;
+        }
+    }
+
+    public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 }
