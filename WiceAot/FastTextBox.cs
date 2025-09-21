@@ -3,12 +3,6 @@
 /// <summary>
 /// Read-only text box optimized for large content.
 /// </summary>
-/// <remarks>
-/// - For small inputs (line count below <see cref="FallbackLineCountThreshold"/>), falls back to base <see cref="TextBox"/> behavior.
-/// - For large inputs (line count reaching <see cref="DeferredParsingLineCountThreshold"/>), continues parsing on a background thread.
-/// - Renders a windowed (viewport) subset of the text using a custom DirectWrite layout to reduce memory and layout cost.
-/// - Disables editing and focus by design.
-/// </remarks>
 public partial class FastTextBox : TextBox
 {
     private TextContainer _container;
@@ -154,18 +148,12 @@ public partial class FastTextBox : TextBox
     /// <summary>
     /// Line count threshold below which the control falls back to base <see cref="TextBox"/> rendering.
     /// </summary>
-    /// <remarks>
-    /// Default is 5000 lines. Must be non-negative.
-    /// </remarks>
     [Category(CategoryBehavior)]
     public virtual int FallbackLineCountThreshold { get; set; } = 5000; // for less than 5000 lines, we fallback to base TextBox
 
     /// <summary>
     /// Line count threshold at which parsing is continued on a background thread.
     /// </summary>
-    /// <remarks>
-    /// Default is 10000 lines. Must be greater than <see cref="FallbackLineCountThreshold"/>.
-    /// </remarks>
     [Category(CategoryBehavior)]
     public virtual int DeferredParsingLineCountThreshold { get; set; } = 10000; // for more than 10000 lines, we continue parsing the text in a background thread
 
@@ -174,7 +162,6 @@ public partial class FastTextBox : TextBox
     /// </summary>
     /// <param name="index">Zero-based line index.</param>
     /// <returns>The line descriptor.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">When lines are unavailable or <paramref name="index"/> is out of range.</exception>
     public virtual Line GetLine(int index)
     {
         if (_container.Lines == null || index < 0 || index >= _container.Lines.Length)
@@ -213,7 +200,6 @@ public partial class FastTextBox : TextBox
     /// <summary>
     /// Validates threshold properties for correctness.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">When thresholds are invalid.</exception>
     protected virtual void ValidateProperties()
     {
         if (FallbackLineCountThreshold < 0)
@@ -264,7 +250,6 @@ public partial class FastTextBox : TextBox
     /// </summary>
     /// <param name="throwIfNull">True to throw when layout is null/invalid.</param>
     /// <returns>The current layout or null.</returns>
-    /// <exception cref="WiceException">When layout is unavailable and <paramref name="throwIfNull"/> is true.</exception>
     protected override IComObject<IDWriteTextLayout>? CheckLayout(bool throwIfNull)
     {
         var layout = _layout;
@@ -280,10 +265,6 @@ public partial class FastTextBox : TextBox
     /// <param name="maxWidth">Max layout width.</param>
     /// <param name="maxHeight">Max layout height (text extent); will be clamped to the visible window height.</param>
     /// <returns>The layout for the current viewport, or base layout when in fallback.</returns>
-    /// <remarks>
-    /// This method progressively expands the range of lines from <see cref="_currentLineNumber"/> downward until the layout height fills the viewport
-    /// or the end of the text is reached, disposing intermediate layouts to minimize memory usage.
-    /// </remarks>
     protected override IComObject<IDWriteTextLayout>? GetLayout(float maxWidth, float maxHeight)
     {
         if (HasFallback)
@@ -335,9 +316,6 @@ public partial class FastTextBox : TextBox
     /// <summary>
     /// Renders the visual element within the specified rendering context.
     /// </summary>
-    /// <remarks>This method is called during the rendering process and ensures that the visual element is
-    /// properly rendered. If the element is not loaded, the rendering process is invalidated and no further rendering
-    /// occurs.</remarks>
     /// <param name="context">The rendering context that provides the necessary information and resources for rendering.</param>
     protected internal override void RenderCore(RenderContext context)
     {

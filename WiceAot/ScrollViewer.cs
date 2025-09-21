@@ -4,18 +4,6 @@
 /// A scrollable container that hosts a single child inside a <see cref="Viewer"/> and manages
 /// vertical and horizontal scrolling via embedded <see cref="ScrollBar"/>s.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - Supports two modes (<see cref="ScrollViewerMode"/>):
-///   - <see cref="ScrollViewerMode.Dock"/>: scrollbars are docked, affecting layout.
-///   - <see cref="ScrollViewerMode.Overlay"/>: scrollbars are overlaid using <see cref="Canvas"/> behavior.
-/// - Visibility of scrollbars is controlled by <see cref="VerticalScrollBarVisibility"/> and
-///   <see cref="HorizontalScrollBarVisibility"/>; when set to Auto, visibility tracks content vs viewport size.
-/// - Scrolling is applied by manipulating <see cref="Viewer.ChildOffsetTop"/> and <see cref="Viewer.ChildOffsetLeft"/>
-///   relative to the arranged child rectangle.
-/// - Mouse wheel, scrollbar buttons, and thumb dragging update the <see cref="VerticalOffset"/> and
-///   <see cref="HorizontalOffset"/> properties which are clamped to their respective max offsets.
-/// </remarks>
 public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDisposable
 {
     // values from https://github.com/wine-mirror/wine/blob/master/dlls/user32/scroll.c
@@ -74,12 +62,6 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
     /// <summary>
     /// Initializes a new instance of the <see cref="ScrollViewer"/> class.
     /// </summary>
-    /// <remarks>
-    /// Creates vertical and horizontal scrollbars, wires their events (small/large increments and thumb drag),
-    /// and creates the inner <see cref="Viewer"/> that hosts the single child. The viewer is added last to ensure
-    /// scrollbars render above it.
-    /// </remarks>
-    /// <exception cref="InvalidOperationException">Thrown when a scrollbar or the viewer cannot be created.</exception>
     public ScrollViewer()
     {
         VerticalScrollBar = CreateVerticalScrollBar();

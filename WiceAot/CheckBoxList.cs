@@ -4,13 +4,6 @@
 /// A <see cref="StateButtonListBox"/> that prepends a <see cref="CheckBox"/> to each item
 /// and keeps the item's selection synchronized with the checkbox value.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - <see cref="CreateStateButton(DataBindContext)"/>: creates a per-item <see cref="CheckBox"/> and toggles the item's selection on click.
-/// - <see cref="UpdateItemSelection(ItemVisual, bool?)"/>: propagates selection changes to the embedded <see cref="CheckBox"/>.
-/// </remarks>
-/// <seealso cref="StateButtonListBox"/>
-/// <seealso cref="CheckBox"/>
 public partial class CheckBoxList : StateButtonListBox
 {
     /// <summary>
@@ -18,7 +11,6 @@ public partial class CheckBoxList : StateButtonListBox
     /// </summary>
     /// <param name="context">The data-bind context for the current item.</param>
     /// <returns>A configured, non-null <see cref="CheckBox"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="context"/> is null.</exception>
     protected override StateButton CreateStateButton(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
@@ -44,7 +36,6 @@ public partial class CheckBoxList : StateButtonListBox
     /// - null to only refresh brushes/visual state without changing selection.
     /// </param>
     /// <returns>True when the selection state changed; otherwise false.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="visual"/> is null.</exception>
     public override bool UpdateItemSelection(ItemVisual visual, bool? select)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));

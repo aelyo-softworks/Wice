@@ -4,17 +4,6 @@
 /// Wraps the Direct2D Color Management effect (CLSID_D2D1ColorManagement).
 /// Converts pixels between color spaces and optionally changes alpha interpretation.
 /// </summary>
-/// <remarks>
-/// Properties are exposed via strongly-typed accessors and registered through <see cref="EffectProperty"/> descriptors
-/// to support D2D interop. Property indices map as follows:
-/// 0 = <see cref="SourceColorContext"/>,
-/// 1 = <see cref="SourceRenderingIntent"/>,
-/// 2 = <see cref="DestinationColorContext"/>,
-/// 3 = <see cref="DestinationRenderingIntent"/>,
-/// 4 = <see cref="AlphaMode"/>,
-/// 5 = <see cref="Quality"/>.
-/// </remarks>
-/// <seealso cref="EffectWithSource"/>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1ColorManagementString)]
 #else

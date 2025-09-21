@@ -5,16 +5,6 @@
 /// Toggles the visibility of the content area by animating the <see cref="Viewer"/>'s height when
 /// the header selection changes.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - Hosts exactly two children: <see cref="Header"/> and <see cref="Viewer"/> (in that order).
-/// - The single logical content is exposed as <see cref="Child"/> and is forwarded to <see cref="Viewer.Child"/>.
-/// - When <see cref="Header.IsSelected"/> changes, the control animates <see cref="Viewer.Height"/> from/to 0
-///   using a <see cref="TimerStoryboard"/> and a <see cref="SinglePropertyAnimation"/> with the current theme's
-///   <c>SelectedAnimationDuration</c>.
-/// - The expansion height is <see cref="OpenHeight"/> when provided; otherwise the measured
-///   <see cref="Visual.DesiredSize"/> of the content (height).
-/// </remarks>
 public partial class HeaderedContent : Stack, IOneChildParent, IDisposable
 {
     private TimerStoryboard? _sb;
@@ -22,13 +12,6 @@ public partial class HeaderedContent : Stack, IOneChildParent, IDisposable
     /// <summary>
     /// Initializes a new instance of <see cref="HeaderedContent"/>.
     /// </summary>
-    /// <remarks>
-    /// - Creates the <see cref="Header"/> via <see cref="CreateHeader"/> and adds it to <see cref="Visual.Children"/>.
-    /// - Subscribes to <c>Header.IsSelectedChanged</c> to animate content open/close.
-    /// - Creates the <see cref="Viewer"/> via <see cref="CreateViewer"/> (default height = 0) and adds it to children.
-    /// - In DEBUG builds, assigns <see cref="BaseObject.Name"/> defaults for easier diagnostics.
-    /// </remarks>
-    /// <exception cref="InvalidOperationException">Thrown when header or viewer creation returns null.</exception>
     public HeaderedContent()
     {
         Header = CreateHeader();
@@ -96,19 +79,6 @@ public partial class HeaderedContent : Stack, IOneChildParent, IDisposable
     /// Handles the header selection change by animating the content area open/closed.
     /// </summary>
     /// <param name="value">True to open (expand to target height); false to close (collapse to 0).</param>
-    /// <remarks>
-    /// Algorithm:
-    /// 1) If <see cref="Child"/> is null, do nothing.
-    /// 2) Determine target size:
-    ///    - Use <see cref="OpenHeight"/> when set and valid; else use <c>Child.DesiredSize.height</c>.
-    /// 3) Prepare storyboard:
-    ///    - Create a <see cref="TimerStoryboard"/> once per <see cref="Window"/>; otherwise stop and clear existing children.
-    /// 4) Compute from/to:
-    ///    - From uses current <see cref="Viewer.Height"/> when set, otherwise defaults to 0 (opening) or target size (closing).
-    ///    - To is 0 for closing, or the target size for opening.
-    /// 5) Create a <see cref="SinglePropertyAnimation"/> targeting <see cref="Visual.Height"/> with the theme duration.
-    /// 6) Add to storyboard and start.
-    /// </remarks>
     protected virtual void OnHeaderIsSelectedChanged(bool value)
     {
         var child = Child;

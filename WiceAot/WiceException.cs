@@ -3,20 +3,12 @@
 /// <summary>
 /// Represents a domain-specific exception for Wice UI operations.
 /// </summary>
-/// <remarks>
-/// Messages produced or passed to this exception are expected to begin with a prefix and numeric code
-/// in the form "WICE####: <message/>". The numeric portion can be extracted using <see cref="GetCode(string)"/>
-/// or via the <see cref="Code"/> property.
-/// </remarks>
 [Serializable]
 public class WiceException : Exception
 {
     /// <summary>
     /// The textual prefix applied to all Wice exception messages (e.g., "WICE0001: ...").
     /// </summary>
-    /// <remarks>
-    /// Combined with a four-digit code and a colon, for example: <c>WICE0001: UI exception.</c>
-    /// </remarks>
     public const string Prefix = "WICE";
 
     /// <summary>
@@ -58,9 +50,6 @@ public class WiceException : Exception
     /// Initializes a new instance of the <see cref="WiceException"/> class that wraps an inner exception.
     /// </summary>
     /// <param name="innerException">The exception that is the cause of the current exception.</param>
-    /// <remarks>
-    /// The base <see cref="Exception.Message"/> may be a framework-provided default when a null message is supplied.
-    /// </remarks>
     public WiceException(Exception innerException)
         : base(null, innerException)
     {

@@ -7,10 +7,6 @@
 /// - Optional aspect ratio preservation when fitting/stretching the child.
 /// - Manual panning offsets (<see cref="ChildOffsetLeft"/>/<see cref="ChildOffsetTop"/>).
 /// </summary>
-/// <remarks>
-/// Typical usage is to view content that may need to preserve proportions (images, media) or be freely panned
-/// when one or both axes are unconstrained.
-/// </remarks>
 public partial class Viewer : Visual, IOneChildParent
 {
     /// <summary>

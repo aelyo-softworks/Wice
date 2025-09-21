@@ -7,10 +7,6 @@
 /// - Auto: <see cref="Size"/> is <see cref="float.NaN"/> (length is determined by children).
 /// - Star: <see cref="Stars"/> &gt; 0 (proportional sizing relative to other star dimensions).
 /// </summary>
-/// <remarks>
-/// Runtime layout values (<see cref="DesiredSize"/>, <see cref="FinalStartPosition"/>, <see cref="FinalEndPosition"/>, <see cref="FinalSize"/>)
-/// are computed during measure/arrange by <see cref="Grid"/> and are not intended to be set by callers.
-/// </remarks>
 public abstract class GridDimension : BaseObject
 {
     private float? _desiredSize;
@@ -130,9 +126,6 @@ public abstract class GridDimension : BaseObject
     /// Gets or sets the star factor for proportional sizing (like WPF's GridLength star).
     /// A value of 0 disables star sizing. When set, <see cref="Size"/> is reset to 0.
     /// </summary>
-    /// <remarks>
-    /// All star-sized dimensions share the remaining space proportionally to their <see cref="Stars"/> values.
-    /// </remarks>
     [Category(Visual.CategoryBehavior)]
     public float Stars { get => (float)GetPropertyValue(StarsProperty)!; set => SetPropertyValue(StarsProperty, value); }
 
@@ -140,9 +133,6 @@ public abstract class GridDimension : BaseObject
     /// Gets or sets the fixed size (width for columns, height for rows).
     /// Use <see cref="float.NaN"/> for Auto (stretch by content). When set, <see cref="Stars"/> is reset to 0.
     /// </summary>
-    /// <remarks>
-    /// A non-NaN, finite value forces a fixed size. <see cref="float.NaN"/> enables Auto sizing.
-    /// </remarks>
     [Category(Visual.CategoryBehavior)]
     public float Size { get => (float)GetPropertyValue(SizeProperty)!; set => SetPropertyValue(SizeProperty, value); }
 
@@ -173,9 +163,6 @@ public abstract class GridDimension : BaseObject
     /// <summary>
     /// Gets the internally computed desired size for the dimension, clamped to <see cref="MinSize"/> and <see cref="MaxSize"/>.
     /// </summary>
-    /// <remarks>
-    /// This value is computed during measure passes and not intended to be set by consumers.
-    /// </remarks>
     [Category(Visual.CategoryBehavior)]
     public float? DesiredSize
     {
@@ -245,10 +232,6 @@ public abstract class GridDimension : BaseObject
     /// <param name="value">The new value.</param>
     /// <param name="options">Optional set options.</param>
     /// <returns>true if the stored value changed; otherwise false.</returns>
-    /// <remarks>
-    /// When <see cref="Stars"/> is set, <see cref="Size"/> is set to 0. When <see cref="Size"/> is set, <see cref="Stars"/> becomes 0.
-    /// The parent <see cref="Grid"/> (if any) receives a Measure invalidation.
-    /// </remarks>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))

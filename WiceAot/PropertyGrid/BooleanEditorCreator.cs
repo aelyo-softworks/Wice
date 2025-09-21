@@ -17,7 +17,6 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <returns>
     /// A <see cref="ToggleSwitch"/> initialized from the underlying boolean property when available.
     /// </returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is null.</exception>
     public object? CreateEditor(PropertyValueVisual<T> value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -61,7 +60,6 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <param name="value">The property value visual that owns the editor.</param>
     /// <param name="editor">The current editor instance.</param>
     /// <returns>The same editor instance that was provided.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is null.</exception>
     public object? UpdateEditor(PropertyValueVisual<T> value, object? editor)
     {
         ArgumentNullException.ThrowIfNull(value);

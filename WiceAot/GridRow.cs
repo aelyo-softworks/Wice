@@ -64,9 +64,6 @@ public partial class GridRow : GridDimension
     /// <summary>
     /// Enumerates all cell visuals that are positioned in this row of the parent <see cref="Grid"/>.
     /// </summary>
-    /// <remarks>
-    /// Enumeration yields no items when the row is not attached to a grid or its index is invalid.
-    /// </remarks>
     [Browsable(false)]
     public IEnumerable<Visual> Cells
     {

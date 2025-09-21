@@ -3,10 +3,6 @@
 /// <summary>
 /// Represents a mutable set of text formatting options (backed by DirectWrite concepts).
 /// </summary>
-/// <remarks>
-/// Implements <see cref="ITextFormat"/> and provides helpers to build deterministic cache keys
-/// for sharing/reusing text-format resources across renderers/layouts.
-/// </remarks>
 public class TextFormat : ITextFormat
 {
     /// <summary>

@@ -4,9 +4,6 @@
 /// Flags that indicate which parts of a composition visual require updating.
 /// Combine values with bitwise operations to represent multiple changes.
 /// </summary>
-/// <remarks>
-/// This enum is marked with <see cref="System.FlagsAttribute"/>.
-/// </remarks>
 [Flags]
 public enum CompositionUpdateParts
 {

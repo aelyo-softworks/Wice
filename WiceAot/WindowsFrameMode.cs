@@ -3,11 +3,6 @@
 /// <summary>
 /// Specifies how a window's non-client frame (title bar, borders, and system chrome) is handled on Windows.
 /// </summary>
-/// <remarks>
-/// - Standard: Use the OS-provided frame and title bar without custom drawing.
-/// - Merged: Extend the frame into the client area to allow custom chrome while preserving system interactions (e.g., hit testing, snapping).
-/// - None: Create a borderless window; the application must implement moving, resizing, hit testing, and all chrome rendering.
-/// </remarks>
 public enum WindowsFrameMode
 {
     /// <summary>

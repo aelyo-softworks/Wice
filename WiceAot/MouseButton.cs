@@ -3,10 +3,6 @@
 /// <summary>
 /// Identifies the mouse button involved in a pointer or mouse input event.
 /// </summary>
-/// <remarks>
-/// X1 and X2 typically correspond to auxiliary buttons found on some mice,
-/// often mapped to "Back" and "Forward" actions in browsers and applications.
-/// </remarks>
 public enum MouseButton
 {
     /// <summary>

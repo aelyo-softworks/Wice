@@ -3,12 +3,6 @@
 /// <summary>
 /// A button that cycles through predefined logical states and exposes the current state via <see cref="Value"/>.
 /// </summary>
-/// <remarks>
-/// - States are provided via <see cref="AddState(StateButtonState)"/> before the control is attached to the UI tree.
-/// - Clicking the button advances to the next state (wrapping) when multiple states are present.
-/// - When <see cref="AutoSize"/> is enabled, the button sizes itself to the current window theme's box size.
-/// - The <see cref="Value"/> property change triggers creation of state-specific visual content.
-/// </remarks>
 public partial class StateButton : ButtonBase, IValueable, ISelectable
 {
     /// <summary>
@@ -114,8 +108,6 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
     /// Adds a new <paramref name="state"/> to the button. Must be called before the button is attached to the UI tree.
     /// </summary>
     /// <param name="state">The state to add.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="state"/> is null.</exception>
-    /// <exception cref="WiceException">Thrown when attempting to add after the button is attached to the UI tree.</exception>
     public virtual void AddState(StateButtonState state)
     {
         ExceptionExtensions.ThrowIfNull(state, nameof(state));

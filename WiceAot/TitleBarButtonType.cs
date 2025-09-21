@@ -3,9 +3,6 @@
 /// <summary>
 /// Represents the type of a standard window title bar button.
 /// </summary>
-/// <remarks>
-/// Use to identify a caption button such as Close, Minimize, Maximize, or Restore.
-/// </remarks>
 public enum TitleBarButtonType
 {
     /// <summary>

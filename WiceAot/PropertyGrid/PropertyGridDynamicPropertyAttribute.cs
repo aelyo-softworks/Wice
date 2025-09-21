@@ -4,13 +4,6 @@
 /// Defines a named, dynamic metadata entry that can be attached multiple times to a target
 /// (typically a property) and consumed by the <c>PropertyGrid</c> infrastructure.
 /// </summary>
-/// <remarks>
-/// - Multiple instances are allowed per target (<see cref="AttributeUsageAttribute.AllowMultiple"/> is true).
-/// - Each instance is identified by <see cref="Name"/>; <see cref="TypeId"/> is overridden to return <see cref="Name"/>
-///   so multiple attributes can coexist and be looked up by name.
-/// - <see cref="Value"/> stores the payload as <see cref="object"/>; use the static helper methods to read and convert
-///   values safely from a <see cref="PropertyGridProperty{T}"/>.
-/// </remarks>
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
 public sealed class PropertyGridDynamicPropertyAttribute : Attribute
 {
@@ -30,27 +23,16 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
     /// <summary>
     /// Gets or sets the logical name (key) of this dynamic property.
     /// </summary>
-    /// <remarks>
-    /// Name comparisons performed by this type are case-insensitive.
-    /// </remarks>
     public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the expected CLR type of <see cref="Value"/> for tooling/conversion hints.
     /// </summary>
-    /// <remarks>
-    /// This property is informational; callers should still attempt conversion at read time.
-    /// Defaults to <see cref="object"/>.
-    /// </remarks>
     public Type? Type { get; set; }
 
     /// <summary>
     /// Gets the unique identifier for this attribute instance used by the attribute system.
     /// </summary>
-    /// <remarks>
-    /// Overridden to return <see cref="Name"/> (or an empty string) to allow multiple attributes of this type
-    /// to be applied and disambiguated by name.
-    /// </remarks>
     public override object TypeId => Name ?? string.Empty;
 
     /// <summary>
@@ -66,7 +48,6 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
     /// The nullified string (typically converts empty/whitespace to <see langword="null"/>) when present and a string;
     /// otherwise <see langword="null"/>.
     /// </returns>
-    /// <exception cref="ArgumentNullException"><paramref name="property"/> is <see langword="null"/>.</exception>
     public static string? GetNullifiedValueFromProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyGridProperty<T> property, string name)
     {
         var att = FromProperty(property, name);
@@ -90,7 +71,6 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
     /// <param name="name">The dynamic property name (case-insensitive).</param>
     /// <param name="defaultValue">The value to return when the attribute is missing or conversion fails.</param>
     /// <returns>The converted value when available; otherwise <paramref name="defaultValue"/>.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="property"/> is <see langword="null"/>.</exception>
     public static T? GetValueFromProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyGridProperty<T> property, string name, T? defaultValue = default)
     {
         var att = FromProperty(property, name);
@@ -114,7 +94,6 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
     /// <param name="property">The property wrapper whose reflected member is searched.</param>
     /// <param name="name">The dynamic property name to look up (case-insensitive).</param>
     /// <returns>The matching attribute instance, or <see langword="null"/> if not found.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="property"/> is <see langword="null"/>.</exception>
     public static PropertyGridDynamicPropertyAttribute? FromProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyGridProperty<T> property, string name)
     {
         ArgumentNullException.ThrowIfNull(property);

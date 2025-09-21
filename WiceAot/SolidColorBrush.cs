@@ -3,11 +3,6 @@
 /// <summary>
 /// A <see cref="Brush"/> that renders using a single, immutable <see cref="D3DCOLORVALUE"/>.
 /// </summary>
-/// <remarks>
-/// This brush materializes as a Direct2D <c>ID2D1SolidColorBrush</c> via
-/// <see cref="RenderContext.CreateSolidColorBrush(D3DCOLORVALUE?)"/> when used in a rendering pass.
-/// Two <see cref="SolidColorBrush"/> instances are considered equal if their <see cref="Color"/> values are equal.
-/// </remarks>
 /// <param name="color">The color used by this solid color brush.</param>
 public class SolidColorBrush(D3DCOLORVALUE color) : Brush
 {
@@ -23,9 +18,6 @@ public class SolidColorBrush(D3DCOLORVALUE color) : Brush
     /// <returns>
     /// An <see cref="IComObject{T}"/> wrapping an <c>ID2D1Brush</c> compatible with the supplied context.
     /// </returns>
-    /// <remarks>
-    /// The created brush is a Direct2D solid color brush that uses <see cref="Color"/>.
-    /// </remarks>
     protected internal override IComObject<ID2D1Brush> GetBrush(RenderContext context) => context.CreateSolidColorBrush(Color);
 
     /// <inheritdoc />

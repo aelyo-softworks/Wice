@@ -22,10 +22,6 @@ public class Theme
     /// <summary>
     /// Gets or sets the global default theme used by windows and visuals that do not specify a custom instance.
     /// </summary>
-    /// <remarks>
-    /// Setting this property to <see langword="null"/> throws <see cref="ArgumentNullException"/>.
-    /// Consumers can assign a derived <see cref="Theme"/> to customize application-wide look and DPI scaling.
-    /// </remarks>
     public static Theme Default
     {
         get => _default;
@@ -47,17 +43,12 @@ public class Theme
     /// <summary>
     /// Raised when the effective DPI for this theme changes.
     /// </summary>
-    /// <remarks>
-    /// This event is fired by <see cref="Initialize(NativeWindow)"/> and <see cref="Update()"/> when the window
-    /// DPI changes to a different value. The sender is this <see cref="Theme"/> instance.
-    /// </remarks>
     public event EventHandler<ThemeDpiEventArgs>? DpiChanged;
 
     /// <summary>
     /// Creates a theme instance bound to a specific <see cref="Window"/> for DPI updates.
     /// </summary>
     /// <param name="window">The owning window. Must not be null.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="window"/> is null.</exception>
     public Theme(Window window)
         : this()
     {
@@ -351,7 +342,6 @@ public class Theme
     /// <summary>
     /// Gets or sets the initial delay for showing tooltips, derived from the system double-click time.
     /// </summary>
-    /// <remarks>See https://docs.microsoft.com/windows/win32/controls/ttm-setdelaytime#remarks.</remarks>
     public virtual uint ToolTipInitialTime { get; set; } = WiceCommons.GetDoubleClickTime(); // https://docs.microsoft.com/en-us/windows/win32/controls/ttm-setdelaytime#remarks
 
     /// <summary>
@@ -445,7 +435,6 @@ public class Theme
     /// <returns>
     /// True if the DPI changed and scaling was applied; otherwise false (including when DPI awareness is UNWARE).
     /// </returns>
-    /// <exception cref="InvalidOperationException">When this theme is not bound to a <see cref="Window"/>.</exception>
     protected virtual internal bool Initialize(NativeWindow native)
     {
         ExceptionExtensions.ThrowIfNull(native, nameof(native));
@@ -473,7 +462,6 @@ public class Theme
     /// Updates the theme for a potential DPI change using the bound <see cref="Window"/>.
     /// </summary>
     /// <returns>True when DPI changed and an update was applied; otherwise false.</returns>
-    /// <exception cref="InvalidOperationException">When this theme is not bound to a <see cref="Window"/>.</exception>
     protected virtual internal bool Update()
     {
         if (_window == null)
@@ -508,12 +496,6 @@ public class Theme
     /// </summary>
     /// <param name="oldDpi">The previous DPI value.</param>
     /// <param name="newDpi">The new DPI value.</param>
-    /// <remarks>
-    /// - Defaults (<see cref="DefaultDefaultFontSize"/>, <see cref="DefaultDefaultSplitterSize"/>) are always scaled.
-    /// - Explicit overrides (<see cref="_defaultFontSize"/>, <see cref="_defaultRichTextFontSize"/>, <see cref="_defaultSplitterSize"/>)
-    ///   are scaled only when they are set (&gt; 0).
-    /// - Other layout/visual metrics are updated proportionally.
-    /// </remarks>
     protected virtual void UpdateDpi(uint oldDpi, uint newDpi)
     {
         DefaultDefaultFontSize = UIExtensions.DpiScale(DefaultDefaultFontSize, oldDpi, newDpi);

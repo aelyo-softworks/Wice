@@ -12,16 +12,6 @@
 /// <param name="to">The ending <see cref="Vector2"/> value.</param>
 /// <param name="easingFunction">The easing function used to transform normalized time to eased progress.</param>
 /// <param name="easingMode">The easing mode applied when evaluating <paramref name="easingFunction"/>.</param>
-/// <remarks>
-/// Behavior:
-/// - If <see cref="From"/> equals <see cref="To"/>, the final value is set immediately and the animation stops.
-/// - If no <see cref="Storyboard"/> is available, the final value is set and the animation stops.
-/// - Otherwise, the value is interpolated each tick based on elapsed time over <see cref="Animation.Duration"/>.
-/// </remarks>
-/// <seealso cref="PropertyAnimation"/>
-/// <seealso cref="Storyboard"/>
-/// <seealso cref="IEasingFunction"/>
-/// <seealso cref="EasingMode"/>
 public partial class Vector2PropertyAnimation(PropertyAnimationArguments arguments, Vector2 from, Vector2 to, IEasingFunction? easingFunction = null, EasingMode easingMode = EasingMode.In) : PropertyAnimation(arguments)
 {
     /// <summary>
@@ -57,10 +47,6 @@ public partial class Vector2PropertyAnimation(PropertyAnimationArguments argumen
     /// - <see cref="AnimationResult.Set"/> to apply the interpolated value for this tick and continue running.<br/>
     /// - <see cref="AnimationResult.Continue"/> is not used by this implementation.
     /// </returns>
-    /// <remarks>
-    /// - Uses <see cref="Storyboard.Watch"/> to obtain elapsed ticks and compares against <see cref="Animation.Duration"/>.<br/>
-    /// - Interpolates linearly on the vector, scaled by the eased progress value produced from the normalized time.
-    /// </remarks>
     protected override AnimationResult TryGetValue(out object value)
     {
         // special "set" case

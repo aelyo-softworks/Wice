@@ -3,11 +3,6 @@
 /// <summary>
 /// Defines a contract for objects that expose a single child <see cref="Visual"/> as their content.
 /// </summary>
-/// <remarks>
-/// Implementers typically act as content hosts in the visual tree and are responsible for measuring,
-/// arranging, and/or rendering the contained <see cref="Content"/> visual.
-/// </remarks>
-/// <seealso cref="Visual"/>
 public interface IContentParent
 {
     /// <summary>

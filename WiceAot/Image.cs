@@ -4,14 +4,6 @@
 /// Renders a WIC bitmap source into the visual using Direct2D. Supports stretching, alignment,
 /// interpolation, an optional source crop rectangle, and configurable source opacity.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - Lazily creates and caches an <see cref="ID2D1Bitmap"/> from <see cref="Source"/> on first render.
-/// - Disposes the cached bitmap when <see cref="Source"/> changes or when <see cref="Dispose"/> is called.
-/// - Raises <see cref="BitmapCreated"/>, <see cref="BitmapDisposed"/>, and <see cref="BitmapError"/> as appropriate.
-/// - Measures according to the natural image size scaled by <see cref="Stretch"/> and <see cref="StretchDirection"/>.
-/// - Draws using <see cref="InterpolationMode"/>, <see cref="SourceOpacity"/>, and optional <see cref="SourceRectangle"/> crop.
-/// </remarks>
 public partial class Image : RenderVisual, IDisposable
 {
     /// <summary>

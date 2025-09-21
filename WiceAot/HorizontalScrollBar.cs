@@ -3,26 +3,11 @@
 /// <summary>
 /// Horizontal scrollbar implementation of <see cref="ScrollBar"/>.
 /// </summary>
-/// <remarks>
-/// Responsibilities:
-/// - Docked at the bottom; positioned using <see cref="Canvas.SetLeft(Visual, float)"/> and <see cref="Canvas.SetBottom(Visual, float)"/>.
-/// - Sizes itself and its parts (buttons, thumb) from the current theme using DPI-aware metrics.
-/// - In overlay mode (<see cref="ScrollBar.IsOverlay"/>), adjusts the thumb height on hover to reveal an empty border for visual clarity.
-/// - Subscribes to <see cref="Window.ThemeDpiEvent"/> to update its height when DPI/theme metrics change.
-/// </remarks>
 public partial class HorizontalScrollBar : ScrollBar
 {
     /// <summary>
     /// Initializes a new <see cref="HorizontalScrollBar"/> docked at the bottom.
     /// </summary>
-    /// <remarks>
-    /// Initialization details:
-    /// - Docked bottom via <see cref="Dock.SetDockType(Visual, DockType)"/> and placed at (left=0, bottom=0) on the <see cref="Canvas"/>.
-    /// - Height obtained from <c>GetWindowTheme().GetHorizontalScrollBarHeight</c> using <c>WiceCommons.USER_DEFAULT_SCREEN_DPI</c>.
-    /// - Small arrow buttons are squared by setting their <c>Width</c> equal to <see cref="Visual.Height"/>.
-    /// - Large decrease/increase segments are docked left/right respectively.
-    /// - <see cref="Thumb"/> height is initialized to the scrollbar height (may be adjusted in overlay mode during rendering).
-    /// </remarks>
     public HorizontalScrollBar()
     {
         Canvas.SetLeft(this, 0);
@@ -72,13 +57,6 @@ public partial class HorizontalScrollBar : ScrollBar
     /// </summary>
     /// <param name="sender">Render source.</param>
     /// <param name="e">Event args.</param>
-    /// <remarks>
-    /// Overlay mode:
-    /// - When hovered, slightly reduces the thumb height to keep a small empty border at the bottom.
-    /// - When not hovered, uses the theme overlay size for the thumb height.
-    /// Standard mode:
-    /// - Thumb height equals the scrollbar height.
-    /// </remarks>
     protected override void OnRendered(object? sender, EventArgs e)
     {
         base.OnRendered(sender, e);

@@ -4,13 +4,6 @@
 /// Defines a contract for objects that can store and retrieve values for
 /// <see cref="BaseObjectProperty"/> descriptors.
 /// </summary>
-/// <remarks>
-/// Implementations typically back these calls with an internal property bag and may perform
-/// conversion using <see cref="BaseObjectProperty.ConvertToTargetType(object?)"/> as needed.
-/// In this codebase, <see cref="BaseObject"/> is a canonical implementation.
-/// </remarks>
-/// <seealso cref="BaseObject"/>
-/// <seealso cref="BaseObjectProperty"/>
 public interface IPropertyOwner
 {
     /// <summary>
@@ -39,10 +32,6 @@ public interface IPropertyOwner
     /// <returns>
     /// <see langword="true"/> if the stored value changed as a result of this call (subject to <paramref name="options"/>); otherwise, <see langword="false"/>.
     /// </returns>
-    /// <remarks>
-    /// Implementations should honor <see cref="BaseObjectSetOptions.DontTestValuesForEquality"/> and related options when deciding
-    /// whether to raise change notifications.
-    /// </remarks>
     bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null);
 
     /// <summary>
@@ -53,10 +42,6 @@ public interface IPropertyOwner
     /// The effective value for the property. If no explicit value is set, this is typically the converted
     /// <see cref="BaseObjectProperty.DefaultValue"/> (which may be <see langword="null"/>).
     /// </returns>
-    /// <remarks>
-    /// Unlike <see cref="TryGetPropertyValue(BaseObjectProperty, out object?)"/>, this method may throw if the property
-    /// is not supported by the owner, depending on the implementation.
-    /// </remarks>
     object? GetPropertyValue(BaseObjectProperty property);
 
     /// <summary>

@@ -9,14 +9,6 @@ namespace Wice.Utilities;
 /// Provides APIs to create an <see cref="IDataObject"/> that represents one or more shell items (e.g., file system paths),
 /// using Win32 shell APIs. This type supports both .NET Framework 4.7.2 and .NET 9 via conditional compilation.
 /// </summary>
-/// <remarks>
-/// Implementation notes:
-/// - Converts file paths to PIDLs via <c>SHParseDisplayName</c>.
-/// - Uses <c>SHGetFolderLocation</c> to obtain the Desktop folder PIDL as the parent.
-/// - Creates the shell data object via <c>SHCreateDataObject</c>.
-/// - All PIDLs allocated by the shell are released with <c>Marshal.FreeCoTaskMem</c>.
-/// - Failures are surfaced by calling <c>ThrowOnError()</c> on returned <see cref="HRESULT"/> values.
-/// </remarks>
 public static partial class ShellUtilities
 {
 #if NETFRAMEWORK
@@ -50,12 +42,6 @@ public static partial class ShellUtilities
     /// <returns>
     /// An <see cref="IComObject{T}"/> for <see cref="IDataObject"/> that callers can use for drag-and-drop or clipboard scenarios.
     /// </returns>
-    /// <remarks>
-    /// Implementation details:
-    /// - Uses <c>CreateBindCtx</c>, <c>SHGetFolderLocation</c> (Desktop), and <c>SHParseDisplayName</c> to build PIDLs.
-    /// - Allocated PIDLs are released with <see cref="Marshal.FreeCoTaskMem(nint)"/> in a finally block.
-    /// - All native calls are HRESULT-checked via <c>ThrowOnError()</c>.
-    /// </remarks>
     public static IComObject<IDataObject> CreateDataObject(IEnumerable<string> filePaths = null)
     {
         if (filePaths == null || !filePaths.Any())
@@ -130,12 +116,6 @@ public static partial class ShellUtilities
     /// <returns>
     /// A <c>DataObject</c> that wraps a shell <see cref="IDataObject"/> suitable for drag-and-drop or clipboard scenarios.
     /// </returns>
-    /// <remarks>
-    /// Implementation details:
-    /// - Uses <c>Functions.CreateBindCtx</c>, <c>SHGetFolderLocation</c> (Desktop), and <c>SHParseDisplayName</c> to build PIDLs.
-    /// - Allocated PIDLs are released with <see cref="Marshal.FreeCoTaskMem(nint)"/> in a finally block.
-    /// - All native calls are HRESULT-checked via <c>ThrowOnError()</c>.
-    /// </remarks>
     [SupportedOSPlatform("windows6.0.6000")]
     public static DataObject CreateDataObject(IEnumerable<string>? filePaths = null, bool owned = true)
     {

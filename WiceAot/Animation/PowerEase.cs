@@ -2,15 +2,6 @@
 
 /// Easing function that raises the normalized time to a specified non-negative power.
 /// </summary>
-/// <remarks>
-/// - Produces a monotonic mapping for non-negative <see cref="Power"/> values.
-/// - <see cref="Power"/> is clamped to be non-negative at evaluation time (negative values behave as 0).
-/// - Common cases:
-///   • Power = 1 → linear easing (identity).
-///   • Power = 2 → quadratic ease-in (default).
-///   • Power = 0 → constant 1 for all inputs, including 0 (since Math.Pow(0, 0) = 1).
-/// Input is typically within [0, 1] and the output will also be within [0, 1] for non-negative powers.
-/// </remarks>
 public class PowerEase : IEasingFunction
 {
     /// <summary>

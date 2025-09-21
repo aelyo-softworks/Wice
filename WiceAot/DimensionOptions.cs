@@ -4,12 +4,6 @@
 /// Specifies which dimensions of an element are automatically sized.
 /// This enumeration supports bitwise combination of its member values.
 /// </summary>
-/// <remarks>
-/// - Manual: No automatic sizing is applied; both width and height are set manually.
-/// - Width: Width is automatically sized; height is set manually.
-/// - Height: Height is automatically sized; width is set manually.
-/// - WidthAndHeight: Both dimensions are automatically sized; equivalent to Width | Height.
-/// </remarks>
 [Flags]
 public enum DimensionOptions
 {

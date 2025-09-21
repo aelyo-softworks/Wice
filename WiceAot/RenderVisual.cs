@@ -5,14 +5,6 @@
 /// Adds background clearing, optional transparent fallback, and handles extremely large surfaces
 /// by clamping the composition bitmap size and applying a device-context transform when needed.
 /// </summary>
-/// <remarks>
-/// Key responsibilities:
-/// - Exposes <see cref="BackgroundColor"/> plus ancestor background discovery via <see cref="AscendantsBackgroundColor"/>.
-/// - Bridges composition brush assignment to <see cref="BackgroundColor"/> when a <see cref="CompositionColorBrush"/> is set.
-/// - Performs a Direct2D draw pass via <see cref="RenderD2DSurface(SurfaceCreationOptions?, RECT?)"/> during <see cref="Render"/>.
-/// - Clamps visual size to the maximum supported D2D bitmap size and compensates using a transform translation,
-///   tracked by <see cref="CompositionWidthMaxed"/>/<see cref="CompositionHeightMaxed"/>.
-/// </remarks>
 public abstract class RenderVisual : Visual
 {
     /// <summary>
@@ -116,7 +108,6 @@ public abstract class RenderVisual : Visual
     /// <param name="value">The new value.</param>
     /// <param name="options">Optional set options.</param>
     /// <returns>true if the stored value changed; otherwise, false.</returns>
-    /// <exception cref="NotSupportedException">Thrown when attempting to set <see cref="RenderBrush"/> with a non-color brush.</exception>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (property == RenderBrushProperty)
@@ -214,7 +205,6 @@ public abstract class RenderVisual : Visual
     /// <see cref="FallbackToTransparentBackground"/> is true. Does nothing if neither condition is met.
     /// </summary>
     /// <param name="context">The active render context.</param>
-    /// <exception cref="InvalidOperationException">Thrown when the render context has no device context.</exception>
     protected virtual void RenderBackgroundCore(RenderContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
@@ -238,7 +228,6 @@ public abstract class RenderVisual : Visual
     /// applied on the D2D device context during rendering.
     /// </summary>
     /// <param name="visual">The target composition visual.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="visual"/> is null.</exception>
     protected override void SetCompositionVisualSizeAndOffset(ContainerVisual visual)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));

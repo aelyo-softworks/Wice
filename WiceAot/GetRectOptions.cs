@@ -4,9 +4,6 @@
 /// Bitwise flags that control how a rectangle should be sized relative to its parent.
 /// Combine values using bitwise OR to achieve the desired behavior.
 /// </summary>
-/// <remarks>
-/// Default equals <see cref="StretchWidthToParent"/> | <see cref="StretchHeightToParent"/>.
-/// </remarks>
 [Flags]
 public enum GetRectOptions
 {

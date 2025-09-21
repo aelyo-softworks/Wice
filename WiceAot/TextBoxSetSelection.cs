@@ -3,12 +3,6 @@
 /// <summary>
 /// Describes how to move or extend the caret/selection within a text box.
 /// </summary>
-/// <remarks>
-/// - "Cluster" refers to a Unicode grapheme cluster (a user-perceived character).
-/// - "Absolute" positions are typically used for pointing-device interactions and indicate
-///   the leading or trailing edge of the grapheme cluster at a specific point.
-/// - Consumers can interpret these values either to move the caret or to extend the current selection.
-/// </remarks>
 public enum TextBoxSetSelection
 {
     /// <summary>

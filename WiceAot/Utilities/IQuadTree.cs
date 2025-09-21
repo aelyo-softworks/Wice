@@ -12,9 +12,5 @@ public interface IQuadTree<T> : IEnumerable<T> where T : notnull
     /// <summary>
     /// Gets the equality comparer used by the quadtree to compare items of type <typeparamref name="T"/>.
     /// </summary>
-    /// <remarks>
-    /// Implementations can use this comparer to determine item equality for operations
-    /// such as insertion, removal, or lookups where equality semantics are required.
-    /// </remarks>
     IEqualityComparer<T> EqualityComparer { get; }
 }

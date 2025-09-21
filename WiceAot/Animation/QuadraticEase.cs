@@ -4,12 +4,6 @@
 /// Represents a quadratic easing function (commonly known as EaseInQuad) that accelerates
 /// from zero velocity using the function f(t) = t².
 /// </summary>
-/// <remarks>
-/// - Input is expected to be a normalized time value in [0, 1].<br/>
-/// - For inputs in [0, 1], outputs are also within [0, 1].<br/>
-/// - The mapping is continuous and strictly increasing on [0, 1].<br/>
-/// - No clamping is performed; values outside [0, 1] will be squared as-is.
-/// </remarks>
 public class QuadraticEase : IEasingFunction
 {
     /// <summary>

@@ -4,12 +4,6 @@
 /// Describes how a visual (e.g., popup, tooltip, adornment) should be positioned
 /// relative to a target visual's bounding rectangle or the mouse cursor.
 /// </summary>
-/// <remarks>
-/// - "Inner" modes place the element inside the target's bounds.
-/// - "Outer" modes place the element just outside the target's bounds; unless offsets are applied,
-///   these may be clipped for visuals that cannot render outside the window.
-/// - <see cref="Relative"/> is equivalent to an "InnerTopLeft" placement.
-/// </remarks>
 public enum PlacementMode
 {
     /// <summary>

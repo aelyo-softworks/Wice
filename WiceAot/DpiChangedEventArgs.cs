@@ -9,9 +9,6 @@
 /// <param name="suggestedRect">
 /// The system-recommended new window rectangle in screen coordinates that preserves the window's physical size at the new DPI.
 /// </param>
-/// <remarks>
-/// Set <c>Handled</c> to <c>true</c> to indicate that the DPI change has been handled and that default processing should not adjust the window.
-/// </remarks>
 public class DpiChangedEventArgs(D2D_SIZE_U newDpi, RECT suggestedRect)
     : HandledEventArgs
 {

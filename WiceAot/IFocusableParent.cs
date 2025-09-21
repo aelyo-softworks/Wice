@@ -5,13 +5,6 @@
 /// and provide customization hints for how a focus cue (focus adorners/visual)
 /// should be rendered around it.
 /// </summary>
-/// <remarks>
-/// Implementations typically use <see cref="FocusableVisual"/> to redirect focus to a child
-/// that can actually receive input, while still letting the parent participate in focus
-/// management. <see cref="FocusVisualShapeType"/> and <see cref="FocusOffset"/> provide
-/// optional theming hints for rendering focus indicators.
-/// </remarks>
-/// <seealso cref="Visual"/>
 public interface IFocusableParent
 {
     /// <summary>
@@ -27,12 +20,6 @@ public interface IFocusableParent
     /// <summary>
     /// Gets the CLR <see cref="Type"/> of a shape/visual used to render the focus cue.
     /// </summary>
-    /// <remarks>
-    /// The specified type is expected to provide a public parameterless constructor so it can
-    /// be instantiated by the framework at runtime.
-    /// The <see cref="DynamicallyAccessedMembersAttribute"/> ensures the constructor is preserved
-    /// when trimming/AOT is enabled.
-    /// </remarks>
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
     /// <value>

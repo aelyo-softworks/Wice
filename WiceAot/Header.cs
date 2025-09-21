@@ -5,18 +5,6 @@
 /// Provides a toggleable selection via a chevron button (animated rotation) or direct mouse click,
 /// integrates with access keys, and updates styles based on enabled/disabled and theme/DPI changes.
 /// </summary>
-/// <remarks>
-/// Layout:
-/// - Hosts a selection indicator (<see cref="Selection"/>) at the left edge when <see cref="IsSelected"/> is true.
-/// - Contains a docking panel (<see cref="Panel"/>) that arranges icon, text, selected button, and optional close button.
-/// Interaction:
-/// - Clicking the header toggles selection when <see cref="AutoSelect"/> is true.
-/// - The selected button animates a chevron and toggles state; access keys can invoke it when focused.
-/// - Optional close button raises <see cref="CloseButtonClick"/>; visibility is managed externally.
-/// Rendering:
-/// - When selected and <see cref="SelectedBrush"/> is set, it is applied to the composition visual.
-/// The control participates fully in the layout/render pipeline of <see cref="Visual"/>.
-/// </remarks>
 public partial class Header : Canvas, IAccessKeyParent, ISelectable
 {
     /// <summary>
@@ -52,12 +40,6 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
     /// <summary>
     /// Initializes a new instance of <see cref="Header"/> and constructs its visual tree.
     /// </summary>
-    /// <remarks>
-    /// - Creates a selection border, a dock panel, an icon, a selected button with a chevron text,
-    ///   a text box, and an optional close button.
-    /// - Wires up animations, tooltips, and input handlers.
-    /// - Defers some composition-dependent configuration via <see cref="Visual.DoWhenAttachedToComposition(Action, VisualDoOptions)"/>.
-    /// </remarks>
     public Header()
     {
         RaiseIsSelectedChanged = true;
@@ -289,12 +271,6 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
     }
 
     /// <inheritdoc/>
-    /// <remarks>
-    /// Special handling:
-    /// - <see cref="IsSelectedProperty"/>: when the selected button is visible, animates the chevron via a 180° rotation
-    ///   and toggles its glyph. Otherwise shows/hides the selection visual. Optionally raises <see cref="IsSelectedChanged"/>.
-    /// - <see cref="Visual.IsEnabledProperty"/>: synchronizes focusability and calls <see cref="UpdateStyle"/>.
-    /// </remarks>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -363,9 +339,6 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
     }
 
     /// <inheritdoc/>
-    /// <remarks>
-    /// When <see cref="IsSelected"/> is true and <see cref="SelectedBrush"/> is set, applies it to the composition visual.
-    /// </remarks>
     protected override void RenderBrushes()
     {
         base.RenderBrushes();
@@ -402,9 +375,6 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
     }
 
     /// <inheritdoc/>
-    /// <remarks>
-    /// When enabled, clicking the header triggers the selected button logic and may toggle selection if <see cref="AutoSelect"/> is true.
-    /// </remarks>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         if (!IsEnabled)
@@ -428,9 +398,6 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
     }
 
     /// <inheritdoc/>
-    /// <remarks>
-    /// Subscribes to theme/DPI events and applies initial theme sizing/margins.
-    /// </remarks>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -439,9 +406,6 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
     }
 
     /// <inheritdoc/>
-    /// <remarks>
-    /// Unsubscribes from theme/DPI events.
-    /// </remarks>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);

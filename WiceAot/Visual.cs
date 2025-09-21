@@ -5,32 +5,6 @@
 /// layout (Measure/Arrange), rendering/composition, input routing (pointer/keyboard),
 /// z-ordering, focus navigation, and parent/child relationships.
 /// </summary>
-/// <remarks>
-/// Key concepts:
-/// - Layout:
-///   - <see cref="Measure(D2D_SIZE_F)"/> computes <see cref="DesiredSize"/> (includes <see cref="Margin"/>).
-///   - <see cref="Arrange(D2D_RECT_F)"/> finalizes <see cref="ArrangedRect"/> and sets <see cref="RelativeRenderRect"/>.
-///   - <see cref="ComputeConstrainedSize(D2D_RECT_F)"/> and <see cref="ComputeConstrainedSizeWithoutMargin(D2D_RECT_F)"/>
-///     apply <see cref="Width"/>, <see cref="Height"/>, <see cref="MinWidth"/>, <see cref="MaxWidth"/>,
-///     <see cref="MinHeight"/>, <see cref="MaxHeight"/> and alignments.
-/// - Rendering/Composition:
-///   - Each visual owns a composition <see cref="CompositionVisual"/> (typically a <see cref="SpriteVisual"/>).
-///   - <see cref="Render()"/> updates composition state (size/offset, transforms, opacity, clip, shadow, brushes)
-///     and computes <see cref="AbsoluteRenderBounds"/> used for hit testing.
-///   - <see cref="RenderBrush"/> and <see cref="HoverRenderBrush"/> optionally animate color transitions.
-/// - Invalidation:
-///   - Property changes trigger layout/arrange/render invalidations via <see cref="VisualProperty"/>
-///     and <see cref="VisualPropertyInvalidateModes"/>; see <see cref="Invalidate(VisualPropertyInvalidateModes, InvalidateReason?)"/>.
-/// - Hierarchy:
-///   - <see cref="Parent"/>, <see cref="Children"/>, <see cref="AllParents"/>, and <see cref="AllChildren"/> manage tree structure.
-///   - <see cref="ZIndex"/> orders siblings; <see cref="ViewOrder"/> is a global index used for hit-testing.
-/// - Geometry:
-///   - <see cref="RelativeRenderRect"/> excludes <see cref="Margin"/>; <see cref="AbsoluteRenderRect"/> is parent-offset.
-///   - <see cref="InsetClipRect"/> describes active composition clips when applied.
-/// - Input:
-///   - Pointer and keyboard events bubble through the visual tree; see Pointer*, Mouse*, and Key* events.
-///   - Focus management is provided via <see cref="IsFocusable"/>, <see cref="Focus()"/>, and navigation helpers.
-/// </remarks>
 public partial class Visual : BaseObject
 {
     /// <summary>
@@ -1398,7 +1372,6 @@ public partial class Visual : BaseObject
     /// <returns>
     /// True when removed; false when not found; null when no parent.
     /// </returns>
-    /// <exception cref="InvalidOperationException">When called on a <see cref="Window"/>.</exception>
     public bool? Remove(bool deep = true)
     {
         if (this is Window)
@@ -1928,10 +1901,6 @@ public partial class Visual : BaseObject
     /// <returns>
     /// true if focus is acquired; false if rejected or superseded; null if the operation is deferred.
     /// </returns>
-    /// <remarks>
-    /// Only one visual can be focused at a time per window. The focus request may be superseded by
-    /// another request issued before rendering completes.
-    /// </remarks>
     public virtual bool? Focus()
     {
         _focusRequestedVisual = this;
@@ -2723,7 +2692,6 @@ public partial class Visual : BaseObject
     /// <param name="value">The new value.</param>
     /// <param name="options">Optional set options; when <see cref="VisualSetOptions.InvalidateModes"/> is provided, it overrides default invalidation modes.</param>
     /// <returns>true if the stored value changed; otherwise false.</returns>
-    /// <exception cref="WiceException">Thrown when called off the UI thread and the property invalidation requires UI access.</exception>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         ExceptionExtensions.ThrowIfNull(property, nameof(property));
@@ -2921,7 +2889,6 @@ public partial class Visual : BaseObject
     /// Inserts the current composition visual among siblings according to <see cref="ZIndex"/> ordering.
     /// Negative z-index first, then null, then positive (stable relative ordering).
     /// </summary>
-    /// <remarks>Updates the cached z-index to avoid redundant re-insertions.</remarks>
     protected virtual void InsertCompositionVisual()
     {
         var pcv = Parent?.CompositionVisual;
@@ -3050,7 +3017,6 @@ public partial class Visual : BaseObject
     /// Override to position children or compute internal layouts. Do not include margins.
     /// </summary>
     /// <param name="finalRect">Final rectangle available for content, without margin.</param>
-    /// <exception cref="ArgumentException">Thrown if <paramref name="finalRect"/> is not set.</exception>
     protected virtual void ArrangeCore(D2D_RECT_F finalRect) // does not include margin
     {
         if (finalRect.IsNotSet)
@@ -3064,7 +3030,6 @@ public partial class Visual : BaseObject
     /// then stores the arranged rectangle including margins. Raises <see cref="Arranged"/>.
     /// </summary>
     /// <param name="finalRect">Final rectangle allocated by the parent, including margin.</param>
-    /// <exception cref="ArgumentException">Thrown if <paramref name="finalRect"/> is not set.</exception>
     public void Arrange(D2D_RECT_F finalRect) // includes margin
     {
 #if DEBUG
@@ -3113,7 +3078,6 @@ public partial class Visual : BaseObject
     /// Raises <see cref="Measured"/>.
     /// </summary>
     /// <param name="constraint">Available size including margin.</param>
-    /// <exception cref="WiceException">Thrown if <see cref="MeasureCore(D2D_SIZE_F)"/> returns an invalid size.</exception>
     public void Measure(D2D_SIZE_F constraint) // includes margin
     {
         _lastMeasureSize = constraint;
@@ -3295,7 +3259,6 @@ public partial class Visual : BaseObject
     /// and <see cref="RenderOffset"/> unless those parts are suspended.
     /// </summary>
     /// <param name="visual">Target composition visual to configure.</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="visual"/> is null.</exception>
     protected virtual void SetCompositionVisualSizeAndOffset(ContainerVisual visual)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -3322,10 +3285,6 @@ public partial class Visual : BaseObject
     /// Applies layout and composition changes for this visual. This method must be called
     /// for all visuals (including those not visible) so that hit testing and transforms remain accurate.
     /// </summary>
-    /// <remarks>
-    /// Honors <see cref="SuspendedCompositionParts"/> to avoid touching specific composition properties
-    /// during batched updates.
-    /// </remarks>
     protected virtual void Render()
     {
         ResetState(InvalidateMode.Render);
@@ -3552,10 +3511,6 @@ public partial class Visual : BaseObject
     /// Supports SpriteVisual (Fill) and ShapeVisual (FillBrush for all shapes).
     /// </summary>
     /// <param name="brush">The brush to apply; null clears the brush where applicable.</param>
-    /// <exception cref="WiceException">
-    /// Thrown when the composition visual type does not accept the provided brush or when the compositor
-    /// is not associated with the current window.
-    /// </exception>
     protected virtual void SetCompositionBrush(CompositionBrush? brush)
     {
         var cv = CompositionVisual;

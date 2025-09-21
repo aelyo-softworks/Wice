@@ -3,8 +3,6 @@
 /// <summary>
 /// Represents an effect that fills the output with a solid color.
 /// </summary>
-/// <remarks>The <see cref="FloodEffect"/> is used to generate a uniform color output, which can be applied as a
-/// base or combined with other effects in a graphics pipeline.</remarks>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1FloodString)]
 #else
@@ -20,9 +18,6 @@ public partial class FloodEffect : Effect
     /// <summary>
     /// Initializes static members of the <see cref="FloodEffect"/> class.
     /// </summary>
-    /// <remarks>This static constructor sets up the <see cref="ColorProperty"/> for the <see
-    /// cref="FloodEffect"/> class, mapping the color property to a vector representation with a default value of black
-    /// (RGBA: 0, 0, 0, 1).</remarks>
     static FloodEffect()
     {
         ColorProperty = EffectProperty.Add(typeof(FloodEffect), nameof(Color), 0, GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_COLOR_TO_VECTOR4, new D2D_VECTOR_4F(0f, 0f, 0f, 1f));

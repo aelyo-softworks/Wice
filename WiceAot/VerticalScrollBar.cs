@@ -8,15 +8,6 @@
 /// - Propagates its <see cref="RenderBrush"/> to the corner for consistent styling.
 /// - Subscribes to window DPI updates to keep dimensions in sync.
 /// </summary>
-/// <remarks>
-/// Composition:
-/// - Children order matters: the corner must be the first child to reserve bottom-right space when both scrollbars are shown.
-/// Layout:
-/// - Small arrow buttons are square (height equals the scrollbar width).
-/// - The thumb width tracks the overall scrollbar width, with special handling in overlay mode.
-/// Overlay:
-/// - When overlaying, the horizontal scrollbar width is reduced by this scrollbar width so both fit the bottom row without overlap.
-/// </remarks>
 public partial class VerticalScrollBar : ScrollBar
 {
     /// <summary>
@@ -26,7 +17,6 @@ public partial class VerticalScrollBar : ScrollBar
     /// - Sizes itself using the theme's vertical scrollbar width for the default DPI.
     /// - Sets square sizes for small arrow buttons and aligns the thumb width to the bar width.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if the required corner visual cannot be created.</exception>
     public VerticalScrollBar()
     {
         Corner = CreateCorner();
@@ -53,12 +43,6 @@ public partial class VerticalScrollBar : ScrollBar
     /// <summary>
     /// Gets the bottom-right "corner" visual that fills the junction area when both scrollbars are visible.
     /// </summary>
-    /// <remarks>
-    /// - Height mirrors the horizontal scrollbar height.
-    /// - Width mirrors this vertical scrollbar width.
-    /// - Visibility tracks this scrollbar and the horizontal scrollbar visibility.
-    /// - Render brush is synchronized with the parent scrollbar.
-    /// </remarks>
     [Browsable(false)]
     public Visual Corner { get; }
 

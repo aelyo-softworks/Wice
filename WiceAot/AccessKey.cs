@@ -3,10 +3,6 @@
 /// <summary>
 /// Represents a keyboard access key (hotkey) made of a <see cref="VIRTUAL_KEY"/> and optional modifier flags.
 /// </summary>
-/// <remarks>
-/// Use <see cref="Matches(KeyEventArgs)"/> to test whether a key event corresponds to this access key.
-/// The textual representation produced by <see cref="ToString"/> lists modifiers in the order: SHIFT, ALT, then CTL.
-/// </remarks>
 public class AccessKey
 {
     /// <summary>
@@ -88,9 +84,6 @@ public class AccessKey
     /// <summary>
     /// Returns a human-readable string that describes this access key.
     /// </summary>
-    /// <remarks>
-    /// Modifiers are prefixed in the order: SHIFT, ALT, then CTL. For example: "CTL + ALT + SHIFT + VK_A".
-    /// </remarks>
     /// <returns>A string representation of the access key and its modifiers.</returns>
     public override string ToString()
     {

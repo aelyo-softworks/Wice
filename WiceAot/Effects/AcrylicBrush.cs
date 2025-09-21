@@ -9,13 +9,6 @@ namespace Wice.Effects;
 /// <summary>
 /// Builds a CompositionEffectBrush that emulates the Fluent Acrylic material.
 /// </summary>
-/// <remarks>
-/// - Supports two rendering paths:
-///   1) Windows Acrylic (HostBackdrop) blur when "useWindowsAcrylic" is true.
-///   2) Manual Gaussian blur on Backdrop when "useWindowsAcrylic" is false.
-/// - Supports a legacy composition graph for pre-19H1 systems lacking luminosity blend behavior.
-/// - Encodes parameters into the CompositionObject.Comment to enable state recovery (e.g., <see cref="GetTintColor"/>).
-/// </remarks>
 public static class AcrylicBrush
 {
     private static readonly D3DCOLORVALUE _exclusionColor = D3DCOLORVALUE.FromArgb(26, 255, 255, 255);
@@ -221,8 +214,6 @@ public static class AcrylicBrush
     /// When false, uses a manual Gaussian blur over Backdrop.
     /// </param>
     /// <returns>A configured CompositionEffectBrush ready to be set as a SpriteVisual brush.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="device"/> is null.</exception>
-    /// <exception cref="WiceException">Propagated if the noise resource cannot be created or found.</exception>
     public static CompositionEffectBrush CreateAcrylicBrush(
         CompositionGraphicsDevice device,
         D3DCOLORVALUE tintColor,

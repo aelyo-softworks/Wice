@@ -3,11 +3,6 @@
 /// <summary>
 /// Defines when a value change or user interaction should trigger an update or action.
 /// </summary>
-/// <remarks>
-/// <see cref="Default"/> and <see cref="ValueChanged"/> are equivalent in this implementation.
-/// Choose <see cref="LostFocus"/> or <see cref="LostFocusOrReturnPressed"/> to defer updates until
-/// the control loses focus or the user confirms with the Return/Enter key.
-/// </remarks>
 public enum EventTrigger
 {
     /// <summary>

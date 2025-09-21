@@ -4,12 +4,6 @@
 /// Represents the Wice application host for a single UI thread.
 /// Manages the message loop, window lifetime, resource management, and fatal error handling.
 /// </summary>
-/// <remarks>
-/// - Exactly one <see cref="Application"/> can exist per managed thread; attempting to create a second instance on the same thread throws.
-/// - The instance associated with a thread can be retrieved via <see cref="Current"/> or <see cref="GetApplication(int)"/>.
-/// - Use <see cref="Run"/> to process messages until the application exits, or <see cref="RunMessageLoop(System.Func{MSG, bool})"/> for a custom loop.
-/// - Fatal errors are collected with <see cref="AddError(Exception, string?)"/> and can be shown via <see cref="ShowFatalError(HWND)"/>.
-/// </remarks>
 public partial class Application : IDisposable
 {
     private bool _disposedValue;
@@ -17,18 +11,11 @@ public partial class Application : IDisposable
     /// <summary>
     /// Occurs when the application is exiting.
     /// </summary>
-    /// <remarks>
-    /// Raised by <see cref="Exit"/> (before posting WM_QUIT) and during <see cref="Dispose()"/>.
-    /// Handlers execute on the application's main thread.
-    /// </remarks>
     public event EventHandler? ApplicationExit;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Application"/> class on the current thread.
     /// </summary>
-    /// <exception cref="WiceException">
-    /// Thrown if applications can no longer be created ("0030") or if an application already exists on the current thread ("0006").
-    /// </exception>
     public Application()
     {
         var apps = _applications;
@@ -69,7 +56,6 @@ public partial class Application : IDisposable
     /// <summary>
     /// Gets or sets a value indicating whether the application should exit when all non-background windows are removed.
     /// </summary>
-    /// <remarks>Default is <see langword="true"/>.</remarks>
     public bool ExitOnLastWindowRemoved { get; set; } = true;
 
     /// <summary>
@@ -100,17 +86,11 @@ public partial class Application : IDisposable
     /// <summary>
     /// Gets a value indicating whether this application instance handles fatal errors (only on the first UI thread).
     /// </summary>
-    /// <remarks>
-    /// When <see langword="true"/>, <see cref="Run"/> will display a dialog for accumulated fatal errors.
-    /// </remarks>
     public virtual bool HandleErrors => MainThreadId == 1; // we handle errors only on the first UI thread
 
     /// <summary>
     /// Gets the collection of windows owned by this application on its main thread.
     /// </summary>
-    /// <remarks>
-    /// Includes both background and non-background windows created on <see cref="MainThreadId"/>.
-    /// </remarks>
     public IReadOnlyList<Window> Windows
     {
         get
@@ -153,7 +133,6 @@ public partial class Application : IDisposable
     /// <summary>
     /// Throws if the current call is not executing on the application's main thread.
     /// </summary>
-    /// <exception cref="WiceException">Thrown when invoked from a non-main thread ("0008").</exception>
     public void CheckRunningAsMainThread() { if (!IsRunningAsMainThread) throw new WiceException("0008: This method must be called on the render thread."); }
 
     /// <inheritdoc/>
@@ -189,10 +168,6 @@ public partial class Application : IDisposable
     /// <see langword="true"/> to continue processing the message loop; <see langword="false"/> to break the loop.
     /// Returns <see langword="false"/> for <see cref="WM_HOSTQUIT"/> or when disposed.
     /// </returns>
-    /// <remarks>
-    /// On first initialization (MSG.hwnd == 0) in STA, registers all windows for drag and drop.
-    /// When multiple applications exist, messages destined for other windows are skipped.
-    /// </remarks>
     protected virtual bool HandleMessage(in MSG msg)
     {
         if (IsDisposed)
@@ -240,9 +215,6 @@ public partial class Application : IDisposable
     /// <summary>
     /// Runs the standard message loop until a quit or host-quit message is received or an error occurs.
     /// </summary>
-    /// <remarks>
-    /// If <see cref="HandleErrors"/> is <see langword="true"/>, a fatal error dialog is shown when the loop exits and errors were collected.
-    /// </remarks>
     public virtual void Run()
     {
         if (_errors.Count == 0 || !HandleErrors)
@@ -272,8 +244,6 @@ public partial class Application : IDisposable
     /// <returns>
     /// An <see cref="ExitLoopReason"/> indicating why the loop exited.
     /// </returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="exitLoopFunc"/> is <see langword="null"/>.</exception>
-    /// <exception cref="WiceException">Thrown if called from a non-main thread.</exception>
     public virtual ExitLoopReason RunMessageLoop(Func<MSG, bool> exitLoopFunc)
     {
         ExceptionExtensions.ThrowIfNull(exitLoopFunc, nameof(exitLoopFunc));
@@ -315,7 +285,6 @@ public partial class Application : IDisposable
     /// <summary>
     /// Initiates application exit by raising <see cref="ApplicationExit"/>.
     /// </summary>
-    /// <remarks>Must be called from the application's main thread.</remarks>
     public virtual void Exit()
     {
         if (IsDisposed)
@@ -339,8 +308,6 @@ public partial class Application : IDisposable
     /// Creates the <see cref="ResourceManager"/> for this application.
     /// </summary>
     /// <returns>A new <see cref="ResourceManager"/> instance.</returns>
-    /// <exception cref="ObjectDisposedException">Thrown if the application is disposed.</exception>
-    /// <exception cref="WiceException">Thrown if called from a non-main thread.</exception>
     protected virtual ResourceManager CreateResourceManager()
     {
 #if NETFRAMEWORK
@@ -357,9 +324,6 @@ public partial class Application : IDisposable
     /// <summary>
     /// Releases resources used by the application.
     /// </summary>
-    /// <remarks>
-    /// Disposes the dispatcher queue controller, removes and destroys owned windows, and raises <see cref="ApplicationExit"/>.
-    /// </remarks>
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 
     /// <summary>
@@ -368,9 +332,6 @@ public partial class Application : IDisposable
     /// <param name="disposing">
     /// <see langword="true"/> to dispose managed resources; otherwise, <see langword="false"/>.
     /// </param>
-    /// <remarks>
-    /// Called once. Destroys windows, disposes the dispatcher controller, detaches from the application map, and raises <see cref="ApplicationExit"/>.
-    /// </remarks>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
@@ -458,15 +419,11 @@ public partial class Application : IDisposable
     /// <summary>
     /// Gets the current thread's <see cref="ResourceManager"/>.
     /// </summary>
-    /// <exception cref="WiceException">Thrown when no current application exists ("0031").</exception>
     public static ResourceManager CurrentResourceManager => Current?.ResourceManager ?? throw new WiceException("0031: Resource Manager is not available at this time.");
 
     /// <summary>
     /// Gets or sets a value indicating whether to enable the DXGI debug layer when available.
     /// </summary>
-    /// <remarks>
-    /// The getter also checks <see cref="DXGIFunctions.IsDebugLayerAvailable"/>. The setter forces enabling.
-    /// </remarks>
     public static bool UseDebugLayer { get => _useDebugLayer && DXGIFunctions.IsDebugLayerAvailable; set => _useDebugLayer = true; }
 
     /// <summary>
@@ -482,7 +439,6 @@ public partial class Application : IDisposable
     /// <summary>
     /// Gets or sets a value indicating whether to exit all applications when the last non-background window is removed.
     /// </summary>
-    /// <remarks>Default is <see langword="true"/>.</remarks>
     public static bool ExitAllOnLastWindowRemoved { get; set; } = true;
 
     /// <summary>
@@ -495,13 +451,11 @@ public partial class Application : IDisposable
     /// Gets or sets a value indicating whether a debugger is currently attached to the process.
     /// Wice will use this value instead of using Debugger.IsAttached.
     /// </summary>
-    /// <remarks>This property reflects the state of the debugger at initialization time but can be changed.</remarks>
     public static bool IsDebuggerAttached { get; set; } = Debugger.IsAttached;
 
     /// <summary>
     /// Gets or sets a delegate that displays a fatal error message for a specified window handle.
     /// </summary>
-    /// <remarks>This property allows customization of how fatal errors are displayed in the application.</remarks>
     public static Func<HWND, bool>? ShowFatalErrorFunc { get; set; }
 
     static Application()
@@ -561,8 +515,6 @@ public partial class Application : IDisposable
     /// <summary>
     /// Retrieves the list of errors that have been recorded.
     /// </summary>
-    /// <remarks>This method is thread-safe. If <paramref name="clear"/> is set to <see langword="true"/>, 
-    /// the internal error list will be cleared after the errors are retrieved.</remarks>
     /// <param name="clear">A value indicating whether to clear the error list after retrieval. <see langword="true"/> to clear the list;
     /// otherwise, <see langword="false"/>.</param>
     /// <returns>A read-only list of <see cref="Exception"/> objects representing the recorded errors. The list will be empty if
@@ -583,8 +535,6 @@ public partial class Application : IDisposable
     /// <summary>
     /// Clears all errors from the internal error collection.
     /// </summary>
-    /// <remarks>This method removes all entries from the error collection and returns the number of errors
-    /// that were cleared. It is thread-safe and ensures that the operation is performed atomically.</remarks>
     /// <returns>The number of errors that were cleared from the collection.</returns>
     public static int ClearErrors()
     {
@@ -599,9 +549,6 @@ public partial class Application : IDisposable
     /// <summary>
     /// Adds an error to the internal error collection and optionally initiates a quit operation.
     /// </summary>
-    /// <remarks>If the specified error already exists (by same exact text) in the internal error collection, it will not be added
-    /// again.  When <paramref name="quit"/> is <see langword="true"/>, a quit operation is initiated by posting  a
-    /// message to the main thread.</remarks>
     /// <param name="error">The exception to add. Must not be <see langword="null"/>.</param>
     /// <param name="quit">A value indicating whether to initiate a quit operation after adding the error. If <see langword="true"/>, a
     /// quit operation is triggered; otherwise, it is not.</param>
@@ -638,12 +585,6 @@ public partial class Application : IDisposable
     /// <summary>
     /// Displays a fatal error dialog to the user, allowing customization of the dialog's appearance and behavior.
     /// </summary>
-    /// <remarks>This method displays a modal dialog summarizing one or more fatal errors. If a custom error
-    /// handling function is provided and <paramref name="callCustomFunc"/> is <see langword="true"/>, the function is
-    /// invoked before the dialog is shown. The dialog can be customized using the <paramref name="configureOptions"/>
-    /// parameter, which allows modification of the dialog's content, behavior, and post-display actions.  If no errors
-    /// are present or a fatal error dialog is already being displayed, the method returns <see
-    /// langword="false"/>.</remarks>
     /// <param name="hwnd">The handle to the parent window for the dialog. If the handle is invalid, it will be reset to 0.</param>
     /// <param name="configureOptions">An optional delegate to configure the <see cref="ShowFatalErrorOptions"/> used to customize the dialog. If <see
     /// langword="null"/>, default options are used.</param>
@@ -747,9 +688,6 @@ public partial class Application : IDisposable
     /// Represents the options for displaying a fatal error dialog, including the errors to display, the dialog
     /// configuration, and the parent window handle.
     /// </summary>
-    /// <remarks>This class encapsulates the necessary information for configuring and displaying a fatal
-    /// error dialog. It includes the list of errors to be shown, the task dialog instance for customization, and the
-    /// parent window handle to ensure the dialog is displayed in the correct context.</remarks>
     /// <param name="dialog">The task dialog instance that will be used to display the fatal error message.</param>
     /// <param name="errors">The list of errors to be displayed in the fatal error dialog.</param>
     /// <param name="hwnd">The handle to the parent window for the dialog.</param>

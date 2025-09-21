@@ -4,12 +4,6 @@
 /// A lightweight caret visual that manages its own blinking and visibility without participating
 /// in the full parent invalidation pipeline. Intended to be hosted directly under a <see cref="Window"/> (Canvas).
 /// </summary>
-/// <remarks>
-/// - The caret disables key and pointer events to remain non-interactive.
-/// - Blinking is driven by a <see cref="WindowTimer"/> created when attached to a <see cref="Window"/>.
-/// - The render brush is initialized using the window theme caret color once attached to composition.
-/// - The caret z-index is set to <see cref="int.MaxValue"/> so it renders on top of other visuals.
-/// </remarks>
 public partial class Caret : Border, IDisposable
 {
     /// <summary>
@@ -202,7 +196,6 @@ public partial class Caret : Border, IDisposable
     /// </summary>
     /// <param name="sender">Sender.</param>
     /// <param name="e">Args.</param>
-    /// <exception cref="InvalidOperationException">Thrown when the parent is not a <see cref="Wice.Window"/>.</exception>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         if (Parent is not Wice.Window)

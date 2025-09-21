@@ -3,12 +3,6 @@
 /// <summary>
 /// Specifies the scope of UI invalidation for layout and rendering operations.
 /// </summary>
-/// <remarks>
-/// The numeric order of the values is meaningful and must not be changed:
-/// None (0) < Render (1) < Arrange (2) < Measure (3).
-/// Increasing values imply progressively broader/expensive invalidation,
-/// where Measure generally forces Measure -> Arrange -> Render.
-/// </remarks>
 public enum InvalidateMode
 {
     /// <summary>

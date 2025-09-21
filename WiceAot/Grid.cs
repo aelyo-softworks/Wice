@@ -5,18 +5,6 @@
 /// Supports Auto, Fixed, and Star sizing for both rows and columns and honors child alignments,
 /// spans, and explicit size constraints during measure and arrange passes.
 /// </summary>
-/// <remarks>
-/// Layout overview:
-/// - Measure:
-///   - Resets runtime dimension data, groups children by the rows/columns they occupy,
-///     and measures each child against computed constraints (accounting for fixed sizes and stars).
-///   - Auto-sized dimensions expand to the maximum desired size of their children.
-///   - Star-sized dimensions share remaining available space proportionally or normalize to a common max
-///     when absolute constraints are not available.
-/// - Arrange:
-///   - Computes final start positions for rows/columns (respecting padding per cell) and
-///     arranges each child according to its alignment within the spanned cell rectangle.
-/// </remarks>
 public partial class Grid : Visual
 {
     /// <summary>
@@ -212,8 +200,6 @@ public partial class Grid : Visual
     /// </summary>
     /// <param name="properties">The child.</param>
     /// <param name="columnIndex">Zero-based column index (must be non-negative).</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
-    /// <exception cref="ArgumentException">When <paramref name="columnIndex"/> is negative.</exception>
     public static void SetColumn(IPropertyOwner properties, int columnIndex)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -235,8 +221,6 @@ public partial class Grid : Visual
     /// <summary>
     /// Sets the column span for a child. Use <see cref="int.MaxValue"/> to span to the end.
     /// </summary>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
-    /// <exception cref="ArgumentException">When <paramref name="span"/> is less than 1.</exception>
     public static void SetColumnSpan(IPropertyOwner properties, int span)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -259,8 +243,6 @@ public partial class Grid : Visual
     /// <summary>
     /// Sets the row span for a child. Use <see cref="int.MaxValue"/> to span to the end.
     /// </summary>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
-    /// <exception cref="ArgumentException">When <paramref name="span"/> is less than 1.</exception>
     public static void SetRowSpan(IPropertyOwner properties, int span)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -285,8 +267,6 @@ public partial class Grid : Visual
     /// </summary>
     /// <param name="properties">The child.</param>
     /// <param name="rowIndex">Zero-based row index (must be non-negative).</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
-    /// <exception cref="ArgumentException">When <paramref name="rowIndex"/> is negative.</exception>
     public static void SetRow(IPropertyOwner properties, int rowIndex)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));

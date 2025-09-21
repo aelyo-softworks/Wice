@@ -5,22 +5,6 @@
 /// and a content host. The header strip hosts page headers (tabs) and the content host shows the
 /// currently selected page's content.
 /// </summary>
-/// <remarks>
-/// Structure:
-/// - <see cref="PagesHeader"/>: a horizontal <see cref="Stack"/> docked at the top that hosts page headers.
-/// - <see cref="PagesContent"/>: a <see cref="Canvas"/> docked at the bottom that hosts page contents at matching indices.
-/// - <see cref="LastChildFill"/> is enabled so the content area fills remaining space.
-///
-/// Behavior:
-/// - Adding/removing/replacing pages updates both the header strip and the content host.
-/// - Only one selectable page is kept selected at a time; removal ensures a selectable page remains selected when possible.
-/// - Page content visibility is tied to page header selection and the page's <c>IsSelectable</c> flag.
-/// - Hooks (<see cref="OnPageAdded(object, ValueEventArgs{TabPage})"/>, <see cref="OnPageRemoved(object, ValueEventArgs{TabPage})"/>,
-///   <see cref="OnSelectionChanged(object?, EventArgs)"/>) allow customization by derived classes.
-///
-/// Indexing:
-/// - Header and content collections keep items aligned by insertion/removal index so that header and content map 1:1.
-/// </remarks>
 public partial class Tabs : Dock
 {
     /// <summary>
@@ -44,9 +28,6 @@ public partial class Tabs : Dock
     /// Initializes a new instance of the <see cref="Tabs"/> control.
     /// Sets up the pages collection, header strip docked at the top, and content host docked at the bottom.
     /// </summary>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when <see cref="CreatePagesHeader"/> or <see cref="CreatePagesContent"/> returns null.
-    /// </exception>
     public Tabs()
     {
         LastChildFill = true;
@@ -249,7 +230,6 @@ public partial class Tabs : Dock
     /// <param name="page">The page owning the content.</param>
     /// <param name="index">The index at which the page was removed.</param>
     /// <param name="content">The content visual to remove.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="page"/> or <paramref name="content"/> is null.</exception>
     protected virtual void RemovePageContent(TabPage page, int index, Visual content)
     {
         ExceptionExtensions.ThrowIfNull(page, nameof(page));
@@ -269,7 +249,6 @@ public partial class Tabs : Dock
     /// <param name="page">The page owning the content.</param>
     /// <param name="index">Insertion index matching the header index.</param>
     /// <param name="content">The content visual to add.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="page"/> or <paramref name="content"/> is null.</exception>
     protected virtual void AddPageContent(TabPage page, int index, Visual content)
     {
         ExceptionExtensions.ThrowIfNull(page, nameof(page));
@@ -299,7 +278,6 @@ public partial class Tabs : Dock
     /// <param name="page">The page whose content changed.</param>
     /// <param name="newContent">The new content visual (optional).</param>
     /// <param name="oldContent">The old content visual (optional).</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="page"/> is null.</exception>
     protected internal void OnPageContentChanged(TabPage page, Visual? newContent, Visual? oldContent)
     {
         ExceptionExtensions.ThrowIfNull(page, nameof(page));
@@ -322,7 +300,6 @@ public partial class Tabs : Dock
     /// </summary>
     /// <param name="page">The page whose selectability changed.</param>
     /// <param name="newValue">The new selectability value.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="page"/> is null.</exception>
     protected internal void OnPageIsSelectableChanged(TabPage page, bool newValue)
 #pragma warning restore CA1822  // Mark members as static
     {

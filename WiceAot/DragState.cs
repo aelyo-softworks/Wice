@@ -3,13 +3,6 @@
 /// <summary>
 /// Describes the state of a mouse drag gesture for a <see cref="Visual"/>.
 /// </summary>
-/// <remarks>
-/// - Captures the window-relative start position and the pressed mouse button at the time the drag begins.
-/// - <see cref="DeltaX"/> and <see cref="DeltaY"/> are updated by the drag handling logic to represent the
-///   current displacement from the start position (typically current - start).
-/// - Instances are commonly created by <see cref="Visual.CreateDragState(MouseButtonEventArgs)"/> and used during
-///   drag operations such as moving or resizing visuals.
-/// </remarks>
 public class DragState
 {
     /// <summary>
@@ -17,12 +10,6 @@ public class DragState
     /// </summary>
     /// <param name="visual">The visual initiating the drag gesture.</param>
     /// <param name="e">The mouse button event that started the drag (window-relative coordinates).</param>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="visual"/> or <paramref name="e"/> is <see langword="null"/>.
-    /// </exception>
-    /// <remarks>
-    /// The constructor captures <see cref="StartX"/>, <see cref="StartY"/>, and <see cref="Button"/> from <paramref name="e"/>.
-    /// </remarks>
     public DragState(Visual visual, MouseButtonEventArgs e)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -50,17 +37,11 @@ public class DragState
     /// <summary>
     /// Gets or sets the current X delta from the start position.
     /// </summary>
-    /// <remarks>
-    /// Typically computed as <c>currentX - StartX</c> by the drag handling logic.
-    /// </remarks>
     public virtual int DeltaX { get; set; }
 
     /// <summary>
     /// Gets or sets the current Y delta from the start position.
     /// </summary>
-    /// <remarks>
-    /// Typically computed as <c>currentY - StartY</c> by the drag handling logic.
-    /// </remarks>
     public virtual int DeltaY { get; set; }
 
     /// <summary>

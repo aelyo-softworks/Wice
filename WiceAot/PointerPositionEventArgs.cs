@@ -6,10 +6,6 @@
 /// <param name="pointerId">The system-assigned identifier of the pointer that generated the event.</param>
 /// <param name="x">The X coordinate of the pointer in window coordinates.</param>
 /// <param name="y">The Y coordinate of the pointer in window coordinates.</param>
-/// <remarks>
-/// Use <see cref="GetPosition(Visual)"/> to convert the stored window-space coordinates to a visual-relative point,
-/// and <see cref="Hits(Visual)"/> for a fast hit-test against a visual's render size.
-/// </remarks>
 public abstract class PointerPositionEventArgs(uint pointerId, int x, int y) : PointerEventArgs(pointerId)
 {
     /// <summary>
@@ -30,9 +26,6 @@ public abstract class PointerPositionEventArgs(uint pointerId, int x, int y) : P
     /// <summary>
     /// Gets the visuals that were intersected during hit-testing for this event.
     /// </summary>
-    /// <remarks>
-    /// The collection is ordered by z-order (top-most first) and is populated by the window input pipeline.
-    /// </remarks>
     public IReadOnlyList<Visual> VisualsStack => _visualsStack;
 
     /// <summary>
@@ -40,7 +33,6 @@ public abstract class PointerPositionEventArgs(uint pointerId, int x, int y) : P
     /// </summary>
     /// <param name="visual">The visual to which the position should be transformed.</param>
     /// <returns>The pointer position relative to <paramref name="visual"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="visual"/> is null.</exception>
     public POINT GetPosition(Visual visual)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -52,11 +44,6 @@ public abstract class PointerPositionEventArgs(uint pointerId, int x, int y) : P
     /// </summary>
     /// <param name="visual">The visual to test against.</param>
     /// <returns>true if the pointer is within the visual's render size; otherwise, false.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="visual"/> is null.</exception>
-    /// <remarks>
-    /// This uses <see cref="Visual.RenderSize"/> and a point relative to the visual; it does not account for
-    /// complex composition transforms beyond what <see cref="GetPosition(Visual)"/> provides.
-    /// </remarks>
     public bool Hits(Visual visual)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));

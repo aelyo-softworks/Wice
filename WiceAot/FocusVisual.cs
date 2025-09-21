@@ -6,12 +6,6 @@
 /// Lives under the <see cref="Window"/> (a <see cref="Canvas"/>), avoids bubbling invalidations
 /// to the parent and performs its own local measure/arrange when its properties change.
 /// </summary>
-/// <remarks>
-/// - Non-interactive: disables key and pointer events.
-/// - Shape: uses a parent-provided <c>FocusVisualShapeType</c> when available, otherwise a <see cref="RoundedRectangle"/>.
-/// - Placement: computes position/size from the focused visual's absolute render rect with an optional offset from theme/parent.
-/// - Clipping: clips to the focused visual's parent clip during rendering.
-/// </remarks>
 public partial class FocusVisual : Border
 {
     /// <summary>
@@ -33,7 +27,6 @@ public partial class FocusVisual : Border
     /// </summary>
     /// <param name="sender">Event sender.</param>
     /// <param name="e">Event args.</param>
-    /// <exception cref="InvalidOperationException">Thrown when the parent is not a <see cref="Window"/>.</exception>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         if (Parent is null)
@@ -97,11 +90,6 @@ public partial class FocusVisual : Border
     /// Selects or creates the focus shape, disables its input, and positions/sizes this visual accordingly.
     /// </summary>
     /// <param name="newFocusedVisual">The newly focused visual (or its parent providing focus settings).</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="newFocusedVisual"/> is null.</exception>
-    /// <exception cref="ArgumentException">
-    /// Thrown when <paramref name="newFocusedVisual"/> is not effectively visible
-    /// or its absolute render rectangle is invalid.
-    /// </exception>
     protected virtual internal void OnUpdateFocus(Visual newFocusedVisual)
     {
         ExceptionExtensions.ThrowIfNull(newFocusedVisual, nameof(newFocusedVisual));

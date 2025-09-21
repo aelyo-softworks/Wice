@@ -4,11 +4,6 @@
 /// Represents a column definition in a <see cref="Grid"/>.
 /// Provides navigation to adjacent columns and enumerates all cells that belong to this column.
 /// </summary>
-/// <remarks>
-/// The column's position and neighbors are resolved through its <see cref="GridDimension.Parent"/> grid,
-/// using the parent's <c>Columns</c> collection. When the column is not attached to a grid,
-/// most navigation helpers return default values (e.g., <see cref="Index"/> is -1).
-/// </remarks>
 public partial class GridColumn : GridDimension
 {
     /// <summary>
@@ -67,10 +62,6 @@ public partial class GridColumn : GridDimension
     /// <summary>
     /// Enumerates all cell <see cref="Visual"/>s that are placed in this column across all rows of the parent grid.
     /// </summary>
-    /// <remarks>
-    /// When the column is not attached to a grid or its index is invalid, the enumeration is empty.
-    /// Internally forwards to <see cref="Grid.GetCells(int?, int?)"/> with the current column index.
-    /// </remarks>
     [Browsable(false)]
     public IEnumerable<Visual> Cells
     {

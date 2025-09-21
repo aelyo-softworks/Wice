@@ -28,14 +28,6 @@ public static partial class IOUtilities
     /// <param name="directoryPath">Destination directory where the resource should be extracted.</param>
     /// <param name="name">The full manifest resource name as present in the assembly.</param>
     /// <returns>The full path of the extracted file on disk.</returns>
-    /// <exception cref="WiceException">
-    /// Thrown if the resource stream cannot be found in the calling assembly.
-    /// </exception>
-    /// <remarks>
-    /// The output file name is a deterministic GUID computed from the assembly identity and resource name,
-    /// preserving the original extension to avoid name collisions across versions.
-    /// If the file already exists, it is reused.
-    /// </remarks>
     public static string ExtractAssemblyResource(string directoryPath, string name) => ExtractAssemblyResource(Assembly.GetCallingAssembly(), directoryPath, name);
 
     /// <summary>
@@ -45,13 +37,6 @@ public static partial class IOUtilities
     /// <param name="directoryPath">Destination directory where the resource should be extracted.</param>
     /// <param name="name">The full manifest resource name as present in the assembly.</param>
     /// <returns>The full path of the extracted file on disk.</returns>
-    /// <exception cref="WiceException">
-    /// Thrown if the resource stream cannot be found in the specified assembly.
-    /// </exception>
-    /// <remarks>
-    /// Extraction is performed within <see cref="WrapSharingViolations(System.Action, WrapSharingViolationsExceptionsCallback?, int, int)"/> to mitigate sharing violations
-    /// and ensures the destination directory exists via <see cref="FileEnsureDirectory(string)"/>.
-    /// </remarks>
     public static string ExtractAssemblyResource(Assembly assembly, string directoryPath, string name)
     {
         ExceptionExtensions.ThrowIfNull(name, nameof(name));
@@ -129,7 +114,6 @@ public static partial class IOUtilities
     /// <param name="unprotect">If true, removes <see cref="System.IO.FileAttributes.ReadOnly"/> from an existing destination file before deletion.</param>
     /// <param name="throwOnError">If true, exceptions are propagated; otherwise, returns false on failure.</param>
     /// <returns>True if the move succeeded; otherwise false when <paramref name="throwOnError"/> is false.</returns>
-    /// <exception cref="System.IO.IOException">Thrown when <paramref name="throwOnError"/> is true and I/O errors occur.</exception>
     public static bool FileMove(string source, string destination, bool unprotect = true, bool throwOnError = true)
     {
         ExceptionExtensions.ThrowIfNull(source, nameof(source));
@@ -162,7 +146,6 @@ public static partial class IOUtilities
     /// <param name="unprotect">If true, removes <see cref="System.IO.FileAttributes.ReadOnly"/> before deletion.</param>
     /// <param name="throwOnError">If true, exceptions are propagated; otherwise, returns false on failure.</param>
     /// <returns>True if the file existed and was deleted; false if it did not exist or deletion failed with <paramref name="throwOnError"/> set to false.</returns>
-    /// <exception cref="System.IO.IOException">Thrown when <paramref name="throwOnError"/> is true and I/O errors occur.</exception>
     public static bool FileDelete(string filePath, bool unprotect = true, bool throwOnError = true)
     {
         ExceptionExtensions.ThrowIfNull(filePath, nameof(filePath));
@@ -258,7 +241,6 @@ public static partial class IOUtilities
     /// <param name="exceptionsCallback">Optional callback invoked on each sharing violation; can influence waiting strategy.</param>
     /// <param name="maxRetryCount">Maximum number of attempts before the exception is rethrown.</param>
     /// <param name="waitTime">Delay in milliseconds between retries when waiting.</param>
-    /// <exception cref="System.IO.IOException">Rethrown when retries are exhausted or the exception is not a sharing violation.</exception>
     public static void WrapSharingViolations(Action action, WrapSharingViolationsExceptionsCallback? exceptionsCallback = null, int maxRetryCount = DefaultWrapSharingViolationsRetryCount, int waitTime = DefaultWrapSharingViolationsWaitTime)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
@@ -301,7 +283,6 @@ public static partial class IOUtilities
     /// <param name="maxRetryCount">Maximum number of attempts before the exception is rethrown.</param>
     /// <param name="waitTime">Delay in milliseconds between retries when waiting.</param>
     /// <returns>The value returned by <paramref name="func"/> when successful.</returns>
-    /// <exception cref="System.IO.IOException">Rethrown when retries are exhausted or the exception is not a sharing violation.</exception>
     public static T? WrapSharingViolations<T>(Func<T> func, WrapSharingViolationsExceptionsCallback? exceptionsCallback = null, int maxRetryCount = DefaultWrapSharingViolationsRetryCount, int waitTime = DefaultWrapSharingViolationsWaitTime)
     {
         ExceptionExtensions.ThrowIfNull(func, nameof(func));
@@ -340,9 +321,6 @@ public static partial class IOUtilities
     /// </summary>
     /// <param name="exception">The exception to inspect.</param>
     /// <returns>True if the exception is a sharing violation; otherwise, false.</returns>
-    /// <remarks>
-    /// This checks the HRESULT against 0x80070020 (ERROR_SHARING_VIOLATION).
-    /// </remarks>
     public static bool IsSharingViolation(IOException exception)
     {
         ExceptionExtensions.ThrowIfNull(exception, nameof(exception));
@@ -366,12 +344,6 @@ public static partial class IOUtilities
     /// If true, throws when loading fails or when the module was not found; otherwise, returns the failing <see cref="HRESULT"/>.
     /// </param>
     /// <returns>An <see cref="HRESULT"/> indicating success (<c>S_OK</c>) or failure.</returns>
-    /// <exception cref="System.Exception">
-    /// Thrown when <paramref name="throwOnError"/> is true and the module cannot be located, or <see cref="HRESULT.ThrowOnError(bool)"/> signals an error.
-    /// </exception>
-    /// <remarks>
-    /// This method caches results by <paramref name="nativeDllName"/> to avoid redundant loading work across calls.
-    /// </remarks>
     public static HRESULT EnsureNativeDllLoaded(string nativeDllName, Assembly? assembly = null, bool throwOnError = true)
     {
         if (!_initialized.TryGetValue(nativeDllName, out var hr))

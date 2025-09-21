@@ -5,26 +5,16 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     /// <summary>
     /// Gets the foreground brush used to draw the text.
     /// </summary>
-    /// <remarks>
-    /// Falls back to the theme's default TextBox foreground when not set.
-    /// Changing this property invalidates rendering.
-    /// </remarks>
     public static VisualProperty ForegroundBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(ForegroundBrush), VisualPropertyInvalidateModes.Render, Theme.Default.TextBoxForegroundColor);
 
     /// <summary>
     /// Gets the foreground brush used when the mouse is over the control.
     /// </summary>
-    /// <remarks>
-    /// When <see langword="null"/>, <see cref="ForegroundBrush"/> is used. Changing this property invalidates rendering.
-    /// </remarks>
     public static VisualProperty HoverForegroundBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(HoverForegroundBrush), VisualPropertyInvalidateModes.Render);
 
     /// <summary>
     /// Gets the brush used to draw the selection highlight.
     /// </summary>
-    /// <remarks>
-    /// When not specified, a contrast-aware color is computed from the foreground and background. Changing this property invalidates rendering.
-    /// </remarks>
     public static VisualProperty SelectionBrushProperty { get; } = VisualProperty.Add<Brush>(typeof(TextBox), nameof(SelectionBrush), VisualPropertyInvalidateModes.Render);
 
     /// <summary>
@@ -74,11 +64,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     /// <summary>
     /// Gets or sets the plain text content of the control.
     /// </summary>
-    /// <remarks>
-    /// When <see cref="PasswordCharacter"/> is set, the displayed layout uses a masked string,
-    /// but <see cref="Text"/> always contains the real value. Changing this value raises <see cref="TextChanged"/>
-    /// according to <see cref="RaiseTextChanged"/> and <see cref="TextChangedTrigger"/>.
-    /// </remarks>
     public static VisualProperty TextProperty { get; } = VisualProperty.Add<string>(typeof(TextBox), nameof(Text), VisualPropertyInvalidateModes.Measure, convert: ValidateNonNullString);
 
     /// <summary>Gets or sets the DirectWrite font collection used for layout.</summary>
@@ -120,10 +105,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     /// <summary>
     /// Gets or sets the optional password masking character.
     /// </summary>
-    /// <remarks>
-    /// When set, the layout uses a masked string of identical length for rendering and hit-testing,
-    /// while <see cref="Text"/> persists the actual content.
-    /// </remarks>
     public static VisualProperty PasswordCharProperty { get; } = VisualProperty.Add<char?>(typeof(TextBox), nameof(PasswordCharacter), VisualPropertyInvalidateModes.Measure);
 
     /// <summary>
@@ -826,10 +807,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     /// <summary>
     /// Builds or retrieves a cached DirectWrite text layout sized to <paramref name="maxWidth"/> x <paramref name="maxHeight"/>.
     /// </summary>
-    /// <remarks>
-    /// Applies advanced options such as last-line wrapping, optical alignment, vertical glyph orientation, font fallback and line spacing.
-    /// When password masking is enabled, the masked text is used for layout.
-    /// </remarks>
     protected virtual IComObject<IDWriteTextLayout>? GetLayout(float maxWidth, float maxHeight)
     {
 #if DEBUG

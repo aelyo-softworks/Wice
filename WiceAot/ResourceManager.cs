@@ -3,15 +3,6 @@
 /// <summary>
 /// Manages creation, caching, and lifetime of native rendering and text resources for a Wice <see cref="Application"/>.
 /// </summary>
-/// <remarks>
-/// - Caches are maintained at two levels: application-wide and per-window. Window-scoped caches allow resources
-///   tied to a specific window lifecycle to be reclaimed when the window is disposed.
-/// - Provides factories for Direct2D (<see cref="ID2D1Factory1"/>) and DirectWrite (<see cref="IDWriteFactory"/>),
-///   created once per <see cref="ResourceManager"/> instance.
-/// - Exposes helpers to create and cache frequently used resources such as <see cref="ID2D1StrokeStyle"/>,
-///   WIC bitmaps, <see cref="IDWriteTextFormat"/>, <see cref="IDWriteTextLayout"/>, and various path geometries.
-/// - Tracks render-time disposables to ensure deferred and safe cleanup at appropriate points in the render loop.
-/// </remarks>
 public partial class ResourceManager
 {
     private readonly ConcurrentDictionary<string, Resource> _resources = new(StringComparer.OrdinalIgnoreCase);
@@ -21,20 +12,15 @@ public partial class ResourceManager
     /// Initializes a new instance of the <see cref="ResourceManager"/> class bound to an <see cref="Application"/>.
     /// </summary>
     /// <param name="application">The owning application. Must not be null.</param>
-    /// <remarks>
-    /// Creates the backing Direct2D and DirectWrite factories. On .NET Framework, an isolated DWrite factory
-    /// is used to avoid cross-thread multi-application conflicts.
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">If <paramref name="application"/> is null.</exception>
     public ResourceManager(Application application)
     {
         ExceptionExtensions.ThrowIfNull(application, nameof(application));
         Application = application;
         D2DFactory = D2D1Functions.D2D1CreateFactory1();
 #if NETFRAMEWORK
-                // note sure why we need this on .NET framework...
-                // but it seems to fix the issue with multiple application (on multiple threads) sample
-                DWriteFactory = DWriteFunctions.DWriteCreateFactory(DWRITE_FACTORY_TYPE.DWRITE_FACTORY_TYPE_ISOLATED);
+        // note sure why we need this on .NET framework...
+        // but it seems to fix the issue with multiple application (on multiple threads) sample
+        DWriteFactory = DWriteFunctions.DWriteCreateFactory(DWRITE_FACTORY_TYPE.DWRITE_FACTORY_TYPE_ISOLATED);
 #else
         DWriteFactory = DWriteFunctions.DWriteCreateFactory();
 #endif
@@ -216,7 +202,7 @@ public partial class ResourceManager
             };
 
 #if NETFRAMEWORK
-                    D2DFactory.Object.CreateStrokeStyle(ref strokeProps, dashes, (dashes?.Length).GetValueOrDefault(), out var stroke).ThrowOnError();
+            D2DFactory.Object.CreateStrokeStyle(ref strokeProps, dashes, (dashes?.Length).GetValueOrDefault(), out var stroke).ThrowOnError();
 #else
             D2DFactory.Object.CreateStrokeStyle(strokeProps, dashes.AsPointer(), dashes.Length(), out var stroke).ThrowOnError();
 #endif
@@ -245,7 +231,6 @@ public partial class ResourceManager
     /// <param name="name">The resource name.</param>
     /// <param name="options">WIC decode options.</param>
     /// <returns>The cached or created WIC bitmap source.</returns>
-    /// <exception cref="WiceException">If the resource stream cannot be found.</exception>
     public virtual IComObject<IWICBitmapSource>? GetWicBitmapSource(Assembly assembly, string name, WICDecodeOptions options = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
         ExceptionExtensions.ThrowIfNull(assembly, nameof(assembly));
@@ -279,7 +264,6 @@ public partial class ResourceManager
     /// <param name="byteLength">Length of the buffer in bytes.</param>
     /// <param name="uniqueKey">A unique key used for caching.</param>
     /// <returns>The cached or created WIC bitmap source.</returns>
-    /// <exception cref="ArgumentException">If <paramref name="pointer"/> is zero.</exception>
     public virtual IComObject<IWICBitmapSource>? GetWicBitmapSource(nint pointer, long byteLength, string uniqueKey)
     {
         if (pointer == 0)
@@ -299,7 +283,6 @@ public partial class ResourceManager
     /// <param name="pointer">Pointer to the buffer.</param>
     /// <param name="uniqueKey">A unique key used for caching.</param>
     /// <returns>The cached or created WIC bitmap source.</returns>
-    /// <exception cref="ArgumentException">If <paramref name="pointer"/> is zero.</exception>
     public virtual IComObject<IWICBitmapSource>? GetWicBitmapSourceFromMemory(
         uint width,
         uint height,
@@ -480,7 +463,7 @@ public partial class ResourceManager
         var size = GetFontSize(theme, fontSize);
         var key = family + "\0" + size + "\0" + TextFormat.GetCacheKey(fonts);
 #if NETFRAMEWORK
-                DWriteFactory.Object.CreateTextFormat(family, fonts, fontWeight, fontStyle, fontStretch, size, string.Empty, out var format).ThrowOnError();
+        DWriteFactory.Object.CreateTextFormat(family, fonts, fontWeight, fontStyle, fontStretch, size, string.Empty, out var format).ThrowOnError();
 #else
         DWriteFactory.Object.CreateTextFormat(PWSTR.From(family), fonts, fontWeight, fontStyle, fontStretch, size, PWSTR.From(string.Empty), out var format).ThrowOnError();
 #endif
@@ -556,7 +539,7 @@ public partial class ResourceManager
     {
         textLength = textLength <= 0 ? text.Length : textLength;
 #if NETFRAMEWORK
-                DWriteFactory.Object.CreateTextLayout(text, (uint)textLength, format, maxWidth, maxHeight, out var layout).ThrowOnError();
+        DWriteFactory.Object.CreateTextLayout(text, (uint)textLength, format, maxWidth, maxHeight, out var layout).ThrowOnError();
 #else
         DWriteFactory.Object.CreateTextLayout(PWSTR.From(text), (uint)textLength, format, maxWidth, maxHeight, out var layout).ThrowOnError();
 #endif

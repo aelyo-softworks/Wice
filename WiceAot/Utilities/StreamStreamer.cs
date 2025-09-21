@@ -3,10 +3,6 @@
 /// <summary>
 /// Provides a simple <see cref="IReadStreamer"/> implementation that delegates stream acquisition to an event.
 /// </summary>
-/// <remarks>
-/// Subscribers to <see cref="GetRead"/> can supply the readable stream by setting <see cref="ValueEventArgs{T}.Value"/>.
-/// The caller of <see cref="GetReadStream"/> owns and must dispose the returned stream when finished. May return <see langword="null"/>.
-/// </remarks>
 public class StreamStreamer : IReadStreamer
 {
     /// <summary>
@@ -28,9 +24,6 @@ public class StreamStreamer : IReadStreamer
     /// <returns>
     /// A readable <see cref="System.IO.Stream"/> provided by an event handler, or <see langword="null"/> if none was supplied.
     /// </returns>
-    /// <remarks>
-    /// The caller owns the returned stream and is responsible for disposing it.
-    /// </remarks>
     public Stream? GetReadStream()
     {
         var e = new ValueEventArgs<Stream?>(null, isValueReadOnly: false);

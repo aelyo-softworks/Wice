@@ -4,15 +4,6 @@
 /// Animates a <c>Vector3</c>-typed <see cref="BaseObjectProperty"/> on a <see cref="BaseObject"/> over a given duration,
 /// optionally applying an easing function.
 /// </summary>
-/// <remarks>
-/// - On each storyboard tick, the animation linearly interpolates between <see cref="From"/> and <see cref="To"/> based on
-///   the elapsed time normalized to <c>[0,1]</c>.
-/// - When an <see cref="IEasingFunction"/> is provided, the normalized time is transformed before interpolation.
-///   This implementation calls <c>Ease(float)</c> on the function; if an overload or extension that accepts
-///   an <see cref="EasingMode"/> is available in the host project, it is used via the existing call site.
-/// - The animation stops immediately when the start and end values are equal or the duration has elapsed,
-///   instructing the caller to set the final value.
-/// </remarks>
 public partial class Vector3PropertyAnimation(
     PropertyAnimationArguments arguments,
     Vector3 from,
@@ -51,13 +42,6 @@ public partial class Vector3PropertyAnimation(
     /// - <see cref="AnimationResult.Stop"/> to set the final value and stop when the duration has elapsed or the start/end are equal.<br/>
     /// - <see cref="AnimationResult.Set"/> to set the interpolated value and continue running.
     /// </returns>
-    /// <remarks>
-    /// Behavior:
-    /// - If <see cref="From"/> equals <see cref="To"/>, the animation requests to set <see cref="To"/> and stop.
-    /// - If no <see cref="Storyboard"/> is available, the animation also requests to set <see cref="To"/> and stop.
-    /// - Otherwise, the method calculates normalized progress from the storyboard's elapsed ticks over the configured <see cref="Animation.Duration"/>.
-    ///   The progress is passed through <see cref="EasingFunction"/> (if present/supported) and used to interpolate the value.
-    /// </remarks>
     protected override AnimationResult TryGetValue(out object value)
     {
         // special "set" case

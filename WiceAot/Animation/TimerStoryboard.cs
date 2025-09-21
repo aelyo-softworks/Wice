@@ -3,14 +3,6 @@
 /// <summary>
 /// A <see cref="Storyboard"/> implementation that drives ticks using a <see cref="System.Threading.Timer"/>.
 /// </summary>
-/// <remarks>
-/// - Ticks occur on a ThreadPool thread, not on the UI thread. If child animations require UI-thread affinity,
-///   ensure they marshal to the UI thread as needed (e.g., via <see cref="Window.RequestRender"/> or equivalent).
-/// - Starting the storyboard via the parameterless <see cref="Start()"/> is not supported; use one of the
-///   overloads that accept a period.
-/// - Safe to call <see cref="Stop"/> and <see cref="Dispose()"/> multiple times; they no-op when already stopped/disposed.
-/// </remarks>
-/// <param name="window">The window associated with this storyboard.</param>
 public partial class TimerStoryboard(Window window) : Storyboard(window), IDisposable
 {
     private Timer? _timer;
@@ -22,7 +14,6 @@ public partial class TimerStoryboard(Window window) : Storyboard(window), IDispo
     /// Not supported. Use <see cref="Start(int, int?)"/> or <see cref="Start(TimeSpan, TimeSpan?)"/> to
     /// specify a tick period (and optionally a due time).
     /// </summary>
-    /// <exception cref="NotSupportedException">Always thrown.</exception>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public sealed override void Start() => throw new NotSupportedException();
 
@@ -36,9 +27,6 @@ public partial class TimerStoryboard(Window window) : Storyboard(window), IDispo
     /// Optional initial delay in milliseconds before the first tick. When <see langword="null"/>,
     /// the first tick occurs immediately after <see cref="Start(TimeSpan, TimeSpan?)"/> schedules the timer.
     /// </param>
-    /// <remarks>
-    /// Internally converts to <see cref="TimeSpan"/> and calls <see cref="Start(TimeSpan, TimeSpan?)"/>.
-    /// </remarks>
     public void Start(int period = _defaultPeriod, int? dueTime = null)
     {
         TimeSpan? ts;
@@ -61,11 +49,6 @@ public partial class TimerStoryboard(Window window) : Storyboard(window), IDispo
     /// <param name="dueTime">
     /// Optional initial delay before the first tick. Defaults to <see cref="TimeSpan.Zero"/> when <see langword="null"/>.
     /// </param>
-    /// <remarks>
-    /// - Stops any existing timer instance before starting.<br/>
-    /// - Calls <see cref="Storyboard.Start()"/> to reset internal state and optionally tick immediately depending on base behavior.<br/>
-    /// - Creates a <see cref="System.Threading.Timer"/> that invokes <see cref="OnTick()"/> on a ThreadPool thread.
-    /// </remarks>
     public virtual void Start(TimeSpan period, TimeSpan? dueTime = null)
     {
         Stop();
@@ -78,9 +61,6 @@ public partial class TimerStoryboard(Window window) : Storyboard(window), IDispo
     /// <summary>
     /// Stops the storyboard and disposes the underlying timer if active.
     /// </summary>
-    /// <remarks>
-    /// Safe to call multiple times.
-    /// </remarks>
     public override void Stop()
     {
         DisposeTimer();
@@ -93,9 +73,6 @@ public partial class TimerStoryboard(Window window) : Storyboard(window), IDispo
     /// <summary>
     /// Releases resources used by this instance.
     /// </summary>
-    /// <remarks>
-    /// Equivalent to calling <see cref="Dispose(bool)"/> with <see langword="true"/>.
-    /// </remarks>
     public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
 
     /// <summary>

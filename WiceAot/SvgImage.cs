@@ -4,14 +4,6 @@
 /// Renders an SVG image using a Direct2D device context, with optional buffering of the SVG stream to
 /// avoid re-fetching during repeated renders(e.g., when size changes).
 /// </summary>
-/// <remarks>
-/// - The control creates a fresh <see cref="ID2D1SvgDocument"/> at render time to avoid flickering when used
-///   with Direct Composition. Applying a D2D transform to an SVG in that context may cause flicker,
-///   so recreating the document with the target size is preferred.
-/// - When <see cref="BufferStream"/> is true (default), the SVG byte stream is copied once to unmanaged memory
-///   and reused across renders; when false, the stream is read every render.
-/// - Changing <see cref="Document"/> clears any existing buffer.
-/// </remarks>
 public partial class SvgImage : RenderVisual, IDisposable
 {
     /// <summary>
@@ -59,12 +51,6 @@ public partial class SvgImage : RenderVisual, IDisposable
     /// <summary>
     /// Gets or sets whether the SVG source stream should be buffered in unmanaged memory.
     /// </summary>
-    /// <remarks>
-    /// - When true, the stream is copied once into an unmanaged buffer and reused on each render,
-    ///   which avoids repeated stream acquisitions and can improve performance.
-    /// - When false, the SVG stream is read on each render.
-    /// - Toggling this property disposes any existing buffer.
-    /// </remarks>
     [Category(CategoryBehavior)]
     public bool BufferStream
     {
@@ -82,9 +68,6 @@ public partial class SvgImage : RenderVisual, IDisposable
     /// <summary>
     /// Gets or sets the <see cref="IReadStreamer"/> used to obtain the SVG data.
     /// </summary>
-    /// <remarks>
-    /// Setting this property triggers a measure pass and clears any buffered stream data.
-    /// </remarks>
     [Category(CategoryBehavior)]
     public IReadStreamer Document { get => (IReadStreamer)GetPropertyValue(DocumentProperty)!; set => SetPropertyValue(DocumentProperty, value); }
 
@@ -145,11 +128,6 @@ public partial class SvgImage : RenderVisual, IDisposable
     /// and draws it to the device context.
     /// </summary>
     /// <param name="context">The current render context (wrapping a D2D device context).</param>
-    /// <remarks>
-    /// Due to flickering in Direct Composition scenarios when applying device-context transforms to SVGs,
-    /// this method recreates the SVG document sized to the destination rect each render instead of relying
-    /// on transforms.
-    /// </remarks>
     protected internal override void RenderCore(RenderContext context)
     {
         base.RenderCore(context);

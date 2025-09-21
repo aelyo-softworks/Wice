@@ -16,7 +16,6 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     /// </summary>
     /// <param name="grid">The owning property grid.</param>
     /// <param name="value">The selected object instance whose properties will be exposed.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="grid"/> is null.</exception>
     public PropertyGridSource(PropertyGrid<T> grid, T? value)
     {
         ArgumentNullException.ThrowIfNull(grid);
@@ -93,7 +92,6 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     /// Refreshes the value of a single property by name from the underlying <see cref="Value"/>.
     /// </summary>
     /// <param name="name">The property name.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="name"/> is null.</exception>
     public virtual void UpdatePropertyValue(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
@@ -109,7 +107,6 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     /// </summary>
     /// <param name="name">The property name to look up.</param>
     /// <returns>The <see cref="PropertyGridProperty{T}"/> if found; otherwise, null.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="name"/> is null.</exception>
     public PropertyGridProperty<T>? GetProperty(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
@@ -217,7 +214,6 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     /// Raises change notifications for the specified property and all dependent computed flags.
     /// </summary>
     /// <param name="property">The changed property wrapper.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="property"/> is null.</exception>
     public virtual void OnPropertyChanged(PropertyGridProperty<T> property)
     {
         ArgumentNullException.ThrowIfNull(property);

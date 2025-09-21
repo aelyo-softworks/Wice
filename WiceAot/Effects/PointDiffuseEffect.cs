@@ -3,12 +3,6 @@
 /// <summary>
 /// Direct2D PointDiffuse lighting effect.
 /// </summary>
-/// <remarks>
-/// - Exposes a single input <see cref="EffectWithSource.Source"/> to be lit using a point light.
-/// - Properties are serialized to the D2D effect bag using the declared parameter indices (0..5).
-/// - Defaults follow the D2D1 PointDiffuse effect defaults unless otherwise specified.
-/// </remarks>
-/// <seealso cref="EffectWithSource"/>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1PointDiffuseString)]
 #else
@@ -54,48 +48,30 @@ public partial class PointDiffuseEffect : EffectWithSource
     /// <summary>
     /// Gets or sets the point light 3D position (X, Y, Z) in DIPs (Z in DIPs as well).
     /// </summary>
-    /// <remarks>
-    /// - Default is (0, 0, 0). Larger Z moves the light farther from the surface.
-    /// </remarks>
     public D2D_VECTOR_3F LightPosition { get => (D2D_VECTOR_3F)GetPropertyValue(LightPositionProperty)!; set => SetPropertyValue(LightPositionProperty, value); }
 
     /// <summary>
     /// Gets or sets the diffuse reflectance constant.
     /// </summary>
-    /// <remarks>
-    /// - Clamped to [0, 10000]. Default is 1.0. Higher values increase brightness.
-    /// </remarks>
     public float DiffuseConstant { get => (float)GetPropertyValue(DiffuseConstantProperty)!; set => SetPropertyValue(DiffuseConstantProperty, value.Clamp(0f, 10000f)); }
 
     /// <summary>
     /// Gets or sets the height-to-normal scale factor applied when deriving surface normals from the input.
     /// </summary>
-    /// <remarks>
-    /// - Clamped to [0, 10000]. Default is 1.0. Higher values exaggerate surface relief.
-    /// </remarks>
     public float SurfaceScale { get => (float)GetPropertyValue(SurfaceScaleProperty)!; set => SetPropertyValue(SurfaceScaleProperty, value.Clamp(0f, 10000f)); }
 
     /// <summary>
     /// Gets or sets the RGB color of the light as a 3-component vector.
     /// </summary>
-    /// <remarks>
-    /// - Default is (1, 1, 1) for white light. Values are typically in [0, 1].
-    /// </remarks>
     public D2D_VECTOR_3F Color { get => (D2D_VECTOR_3F)GetPropertyValue(ColorProperty)!; set => SetPropertyValue(ColorProperty, value); }
 
     /// <summary>
     /// Gets or sets the kernel unit length in DIPs for X and Y used when computing image gradients.
     /// </summary>
-    /// <remarks>
-    /// - Default is (1, 1). Larger values smooth the normal estimation.
-    /// </remarks>
     public D2D_VECTOR_2F KernelUnitLength { get => (D2D_VECTOR_2F)GetPropertyValue(KernelUnitLengthProperty)!; set => SetPropertyValue(KernelUnitLengthProperty, value); }
 
     /// <summary>
     /// Gets or sets the sampling mode used when reading the source.
     /// </summary>
-    /// <remarks>
-    /// - Default is <see cref="D2D1_POINTDIFFUSE_SCALE_MODE.D2D1_POINTDIFFUSE_SCALE_MODE_LINEAR"/>.
-    /// </remarks>
     public D2D1_POINTDIFFUSE_SCALE_MODE ScaleMode { get => (D2D1_POINTDIFFUSE_SCALE_MODE)GetPropertyValue(ScaleModeProperty)!; set => SetPropertyValue(ScaleModeProperty, value); }
 }

@@ -7,9 +7,6 @@
 /// <param name="pointerId">The system-assigned pointer identifier from the originating pointer message.</param>
 /// <param name="windowBeingActivated">The window handle (HWND) being activated as a result of the pointer action.</param>
 /// <param name="hitTest">The hit-test result indicating where the activation occurred within the non-client/client areas.</param>
-/// <remarks>
-/// This type extends <see cref="PointerEventArgs"/> with activation-specific context.
-/// </remarks>
 public class PointerActivateEventArgs(uint pointerId, HWND windowBeingActivated, HT hitTest)
     : PointerEventArgs(pointerId)
 {

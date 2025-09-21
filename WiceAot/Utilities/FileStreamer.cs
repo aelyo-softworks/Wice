@@ -4,19 +4,12 @@
 /// Provides a file-backed implementation of <see cref="IReadStreamer"/> that opens a read-only stream
 /// over the specified file path on each call.
 /// </summary>
-/// <remarks>
-/// - The returned stream is opened with <see cref="System.IO.FileShare.ReadWrite"/> to allow reading while
-///   other processes or threads may have the file open for writing.
-/// - This type only stores the file path and does not keep a file handle between calls.
-/// - The caller owns and must dispose the returned <see cref="System.IO.Stream"/>.
-/// </remarks>
 public class FileStreamer : IReadStreamer
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="FileStreamer"/> class.
     /// </summary>
     /// <param name="filePath">The relative or absolute path of the file to read.</param>
-    /// <exception cref="System.ArgumentNullException"><paramref name="filePath"/> is <see langword="null"/>.</exception>
     public FileStreamer(string filePath)
     {
         ExceptionExtensions.ThrowIfNull(filePath, nameof(filePath));
@@ -37,11 +30,6 @@ public class FileStreamer : IReadStreamer
     /// <summary>
     /// Opens a readable stream for the configured file.
     /// </summary>
-    /// <remarks>
-    /// - The stream is opened with <see cref="System.IO.FileAccess.Read"/> and <see cref="System.IO.FileShare.ReadWrite"/>.
-    /// - The caller is responsible for disposing the returned stream.
-    /// - This implementation never returns <see langword="null"/>.
-    /// </remarks>
     /// <returns>A readable <see cref="System.IO.Stream"/> for the file.</returns>
     public virtual Stream GetReadStream() => new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
 }

@@ -3,15 +3,6 @@
 /// <summary>
 /// A tri-state checkbox built on <see cref="StateButton"/> that cycles between false, true, and null.
 /// </summary>
-/// <remarks>
-/// - Default value is null.
-/// - Visuals are provided by state-specific factories:
-///   - false: <see cref="CheckBox.FalseVisual"/>
-///   - true: <see cref="CheckBox.TrueVisual"/>
-///   - null: <see cref="NullVisual"/>
-/// - Equality is handled via nullable-bool conversion on the incoming value.
-/// </remarks>
-/// <seealso cref="StateButton"/>
 public partial class NullableCheckBox : StateButton
 {
     /// <summary>
@@ -29,10 +20,6 @@ public partial class NullableCheckBox : StateButton
     /// <summary>
     /// Gets or sets the current tri-state value.
     /// </summary>
-    /// <remarks>
-    /// - null represents the indeterminate state and displays <see cref="NullVisual"/>.
-    /// - Setting the value updates the visual to the matching state and normalizes to the state's <see cref="StateButtonState.Value"/>.
-    /// </remarks>
     [Category(CategoryBehavior)]
     public new bool? Value { get => (bool?)base.Value; set => base.Value = value; }
 
@@ -75,10 +62,6 @@ public partial class NullableCheckBox : StateButton
     /// <summary>
     /// Visual for the indeterminate state: renders a stroked rectangle and an inner border using theme brushes.
     /// </summary>
-    /// <remarks>
-    /// - Uses the window theme to set the rectangle stroke (selected color) and the inner border fill (border color).
-    /// - Updates stroke thickness and border margin on Theme/DPI changes.
-    /// </remarks>
     public partial class NullVisual : Canvas
     {
         /// <summary>

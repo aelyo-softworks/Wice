@@ -3,11 +3,6 @@
 /// <summary>
 /// Defines a visual element that can participate in modal interactions.
 /// </summary>
-/// <remarks>
-/// A modal visual captures user interaction until it is dismissed, typically blocking
-/// interaction with other parts of the UI. Implementations should update
-/// <see cref="IsModal"/> to reflect their current state.
-/// </remarks>
 public interface IModalVisual
 {
     /// <summary>

@@ -3,9 +3,6 @@
 /// <summary>
 /// Specifies the type of drag-and-drop target event that occurred.
 /// </summary>
-/// <remarks>
-/// Use this to distinguish whether a drag operation has entered or left a drop target.
-/// </remarks>
 public enum DragDropTargetEventType
 {
     /// <summary>

@@ -5,21 +5,6 @@
 /// and <see cref="Contains(T)"/> operations with lock striping.
 /// </summary>
 /// <typeparam name="T">The type of elements stored in the set.</typeparam>
-/// <remarks>
-/// <para>
-/// This implementation stripes buckets across a set of locks to provide scalable concurrency. Each mutation acquires only
-/// the lock for the target bucket. Reads via <see cref="Contains(T)"/> are lock-free. The set grows automatically when
-/// its per-lock count exceeds an adaptive budget.
-/// </para>
-/// <para>
-/// Enumeration is weakly consistent: <see cref="GetEnumerator"/> does not acquire locks and may reflect items added or removed
-/// during enumeration. It never throws due to concurrent modifications, but it does not represent a snapshot.
-/// </para>
-/// <para>
-/// <see cref="IEqualityComparer{T}"/> is used for hashing and equality. If no comparer is provided, <see cref="EqualityComparer{T}.Default"/> is used.
-/// A <c>null</c> item (for reference or nullable value types) hashes to 0.
-/// </para>
-/// </remarks>
 public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
 {
     private const int _defaultCapacity = 31;
@@ -44,7 +29,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     /// </summary>
     /// <param name="concurrencyLevel">The estimated number of concurrent writers. Must be at least 1.</param>
     /// <param name="capacity">The initial number of buckets. Must be non-negative. Will be raised to <paramref name="concurrencyLevel"/> if smaller.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1 or <paramref name="capacity"/> is negative.</exception>
     public ConcurrentHashSet(int concurrencyLevel, int capacity)
         : this(concurrencyLevel, capacity, false, null)
     {
@@ -55,7 +39,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     /// using the default equality comparer.
     /// </summary>
     /// <param name="collection">The collection whose elements are copied to the new set.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <c>null</c>.</exception>
     public ConcurrentHashSet(IEnumerable<T> collection)
         : this(collection, null)
     {
@@ -76,7 +59,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     /// </summary>
     /// <param name="collection">The collection whose elements are copied to the new set.</param>
     /// <param name="comparer">The equality comparer to use for the set, or <c>null</c> for <see cref="EqualityComparer{T}.Default"/>.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <c>null</c>.</exception>
     public ConcurrentHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer)
         : this(comparer)
     {
@@ -91,8 +73,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     /// <param name="concurrencyLevel">The estimated number of concurrent writers. Must be at least 1.</param>
     /// <param name="collection">The collection whose elements are copied to the new set.</param>
     /// <param name="comparer">The equality comparer to use for the set.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <c>null</c>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1.</exception>
     public ConcurrentHashSet(int concurrencyLevel, IEnumerable<T> collection, IEqualityComparer<T> comparer)
         : this(concurrencyLevel, _defaultCapacity, false, comparer)
     {
@@ -106,7 +86,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     /// <param name="concurrencyLevel">The estimated number of concurrent writers. Must be at least 1.</param>
     /// <param name="capacity">The initial number of buckets. Must be non-negative. Will be raised to <paramref name="concurrencyLevel"/> if smaller.</param>
     /// <param name="comparer">The equality comparer to use for the set.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1 or <paramref name="capacity"/> is negative.</exception>
     public ConcurrentHashSet(int concurrencyLevel, int capacity, IEqualityComparer<T> comparer)
         : this(concurrencyLevel, capacity, false, comparer)
     {
@@ -147,9 +126,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     /// <summary>
     /// Gets the number of elements contained in the set.
     /// </summary>
-    /// <remarks>
-    /// Acquires all internal locks to compute the total count.
-    /// </remarks>
     public int Count
     {
         get
@@ -175,9 +151,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     /// <summary>
     /// Gets a value indicating whether the set contains no elements.
     /// </summary>
-    /// <remarks>
-    /// Acquires all internal locks to check per-lock counts.
-    /// </remarks>
     public bool IsEmpty
     {
         get
@@ -210,9 +183,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     /// <summary>
     /// Removes all items from the set.
     /// </summary>
-    /// <remarks>
-    /// Acquires all internal locks and replaces the bucket table. The lock array is preserved.
-    /// </remarks>
     public void Clear()
     {
         var locksAcquired = 0;
@@ -234,9 +204,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     /// </summary>
     /// <param name="item">The item to locate in the set.</param>
     /// <returns><c>true</c> if the item is found; otherwise, <c>false</c>.</returns>
-    /// <remarks>
-    /// This operation is lock-free and may observe concurrent updates.
-    /// </remarks>
     public bool Contains(T item)
     {
         var hashcode = GetHashCode(item);
@@ -298,9 +265,6 @@ public class ConcurrentHashSet<T> : IReadOnlyCollection<T>, ICollection<T>
     /// <summary>
     /// Returns an enumerator that iterates through the set.
     /// </summary>
-    /// <remarks>
-    /// Enumeration is weakly consistent and does not block concurrent writers. It may include items added or exclude items removed during enumeration.
-    /// </remarks>
     /// <returns>An enumerator over the items in the set.</returns>
     public IEnumerator<T> GetEnumerator()
     {

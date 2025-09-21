@@ -3,10 +3,6 @@
 /// <summary>
 /// Provides a mechanism to obtain a readable <see cref="System.IO.Stream"/> instance.
 /// </summary>
-/// <remarks>
-/// Implementations should return a stream that supports reading, or <see langword="null"/> when no data is available.
-/// Callers are responsible for disposing the returned stream when finished.
-/// </remarks>
 public interface IReadStreamer
 {
     /// <summary>

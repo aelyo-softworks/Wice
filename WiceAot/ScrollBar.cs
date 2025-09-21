@@ -12,12 +12,6 @@
 /// The concrete visuals are created by the abstract factory methods during construction.
 /// Handles overlay/standard styling and click routing to public events.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - Overlay mode (<see cref="IsOverlay"/>) hides the small arrow buttons, uses transparent track background and rounded thumb.
-/// - Standard mode shows all parts, uses theme background and square thumb.
-/// - Focus navigation order is set via <see cref="Visual.FocusIndex"/> (0..4 in creation order).
-/// </remarks>
 public abstract class ScrollBar : Dock
 {
     /// <summary>
@@ -51,7 +45,6 @@ public abstract class ScrollBar : Dock
     /// by invoking the abstract factory methods. Wires click handlers and adds
     /// parts to the <see cref="Visual.Children"/> collection.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when any required part factory returns null.</exception>
     protected ScrollBar()
     {
         HandlePointerEvents = true;

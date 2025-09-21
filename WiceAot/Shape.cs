@@ -3,91 +3,56 @@
 /// <summary>
 /// Base class for vector shapes rendered via Windows Composition.
 /// </summary>
-/// <remarks>
-/// A <see cref="Shape"/> has no intrinsic size (it does not override Measure); its size is defined by layout
-/// or by the geometry of the underlying composition shapes. This type proxies common stroke and fill settings
-/// to all <see cref="CompositionSpriteShape"/> instances contained in its <see cref="ShapeVisual"/>.
-/// </remarks>
 public abstract partial class Shape : Visual
 {
     /// <summary>
     /// Dynamic property descriptor for <see cref="StrokeBrush"/>.
     /// </summary>
-    /// <remarks>
-    /// Changing this property invalidates rendering.
-    /// </remarks>
     public static VisualProperty StrokeBrushProperty { get; } = VisualProperty.Add<CompositionBrush>(typeof(Shape), nameof(StrokeBrush), VisualPropertyInvalidateModes.Render);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="StrokeThickness"/>.
     /// </summary>
-    /// <remarks>
-    /// Changing this property invalidates measure because stroke contributes to arranged bounds.
-    /// </remarks>
     public static VisualProperty StrokeThicknessProperty { get; } = VisualProperty.Add<float>(typeof(Shape), nameof(StrokeThickness), VisualPropertyInvalidateModes.Measure);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="StrokeDashArray"/>.
     /// </summary>
-    /// <remarks>
-    /// Changing this property invalidates rendering.
-    /// </remarks>
     public static VisualProperty StrokeDashArrayProperty { get; } = VisualProperty.Add<float[]>(typeof(Shape), nameof(StrokeDashArray), VisualPropertyInvalidateModes.Render);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="StrokeStartCap"/>.
     /// </summary>
-    /// <remarks>
-    /// Changing this property invalidates rendering.
-    /// </remarks>
     public static VisualProperty StrokeStartCapProperty { get; } = VisualProperty.Add<CompositionStrokeCap>(typeof(Shape), nameof(StrokeStartCap), VisualPropertyInvalidateModes.Render);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="StrokeMiterLimit"/>.
     /// </summary>
-    /// <remarks>
-    /// Changing this property invalidates rendering. Default is <c>1.0</c>.
-    /// </remarks>
     public static VisualProperty StrokeMiterLimitProperty { get; } = VisualProperty.Add(typeof(Shape), nameof(StrokeMiterLimit), VisualPropertyInvalidateModes.Render, 1f);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="StrokeLineJoin"/>.
     /// </summary>
-    /// <remarks>
-    /// Changing this property invalidates rendering.
-    /// </remarks>
     public static VisualProperty StrokeLineJoinProperty { get; } = VisualProperty.Add<CompositionStrokeLineJoin>(typeof(Shape), nameof(StrokeLineJoin), VisualPropertyInvalidateModes.Render);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="StrokeEndCap"/>.
     /// </summary>
-    /// <remarks>
-    /// Changing this property invalidates rendering.
-    /// </remarks>
     public static VisualProperty StrokeEndCapProperty { get; } = VisualProperty.Add<CompositionStrokeCap>(typeof(Shape), nameof(StrokeEndCap), VisualPropertyInvalidateModes.Render);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="StrokeDashOffset"/>.
     /// </summary>
-    /// <remarks>
-    /// Changing this property invalidates rendering.
-    /// </remarks>
     public static VisualProperty StrokeDashOffsetProperty { get; } = VisualProperty.Add<float>(typeof(Shape), nameof(StrokeDashOffset), VisualPropertyInvalidateModes.Render);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="StrokeDashCap"/>.
     /// </summary>
-    /// <remarks>
-    /// Changing this property invalidates rendering.
-    /// </remarks>
     public static VisualProperty StrokeDashCapProperty { get; } = VisualProperty.Add<CompositionStrokeCap>(typeof(Shape), nameof(StrokeDashCap), VisualPropertyInvalidateModes.Render);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="IsStrokeNonScaling"/>.
     /// </summary>
-    /// <remarks>
-    /// Changing this property invalidates rendering.
-    /// </remarks>
     public static VisualProperty IsStrokeNonScalingProperty { get; } = VisualProperty.Add<bool>(typeof(Shape), nameof(IsStrokeNonScaling), VisualPropertyInvalidateModes.Render);
 
     /// <summary>
@@ -112,10 +77,6 @@ public abstract partial class Shape : Visual
     /// <summary>
     /// Gets or sets the fill brush applied to all sprite shapes in this <see cref="Shape"/>.
     /// </summary>
-    /// <remarks>
-    /// This maps to <c>CompositionSpriteShape.FillBrush</c>. It is an alias of <see cref="Visual.RenderBrush"/>
-    /// for consistency with the composition API.
-    /// </remarks>
     [Category(CategoryRender)]
     public CompositionBrush? FillBrush { get => RenderBrush; set => RenderBrush = value; }
 
@@ -186,7 +147,6 @@ public abstract partial class Shape : Visual
     /// <param name="value">The new value.</param>
     /// <param name="options">Optional set options.</param>
     /// <returns><see langword="true"/> if the stored value changed; otherwise <see langword="false"/>.</returns>
-    /// <exception cref="WiceException">Thrown when a UI-thread call is required and not on the UI thread.</exception>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -425,10 +385,6 @@ public abstract partial class Shape : Visual
     /// Applies the fill brush to all <see cref="CompositionSpriteShape"/> children of the <see cref="CompositionVisual"/>.
     /// </summary>
     /// <param name="brush">The brush to apply.</param>
-    /// <remarks>
-    /// If you get "The parameter is incorrect. Invalid argument to parameter value.Unsupported source brush type."
-    /// ensure you are using a brush created by the compositor associated with the owning <see cref="Window"/>.
-    /// </remarks>
     protected virtual void SetFillBrush(CompositionBrush? brush)
     {
         var shapeVisual = CompositionVisual;

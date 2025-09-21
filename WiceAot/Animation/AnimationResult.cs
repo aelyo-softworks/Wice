@@ -3,10 +3,6 @@
 /// <summary>
 /// Represents the outcome of processing a single animation step (tick).
 /// </summary>
-/// <remarks>
-/// This value is typically returned by animation evaluators to control if the animation
-/// should keep running, finish immediately, or just set a final value.
-/// </remarks>
 public enum AnimationResult
 {
     /// <summary>

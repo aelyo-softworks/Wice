@@ -17,9 +17,6 @@ public partial class CompositorControllerStoryboard(Window window) : Storyboard(
     /// <summary>
     /// Requests the storyboard driver loop to stop and delegates to the base implementation.
     /// </summary>
-    /// <remarks>
-    /// Sets a volatile flag observed by the background loop so it can exit gracefully.
-    /// </remarks>
     public override void Stop()
     {
         _stop = true;
@@ -62,9 +59,6 @@ public partial class CompositorControllerStoryboard(Window window) : Storyboard(
     /// <summary>
     /// Starts the storyboard by creating a background thread bound to the window's compositor controller.
     /// </summary>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when the owning <see cref="Window"/> has no <c>CompositorController</c>.
-    /// </exception>
     public override void Start()
     {
         var controller = Window?.CompositorController;

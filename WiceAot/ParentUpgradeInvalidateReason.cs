@@ -4,11 +4,6 @@
 /// An <see cref="InvalidateReason"/> indicating that a child's invalidation caused
 /// the parent to upgrade its invalidation scope/modes.
 /// </summary>
-/// <remarks>
-/// Captures the child <see cref="Type"/> that triggered the propagation, the initial parent
-/// <see cref="InvalidateMode"/> that was requested, and the resulting effective
-/// <see cref="VisualPropertyInvalidateModes"/> after the upgrade/propagation.
-/// </remarks>
 public class ParentUpgradeInvalidateReason
     : InvalidateReason
 {
@@ -24,7 +19,6 @@ public class ParentUpgradeInvalidateReason
     /// The effective visual property invalidation modes after propagation/upgrade (may include parent flags).
     /// </param>
     /// <param name="innerReason">An optional inner reason providing additional context.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="childType"/> is <c>null</c>.</exception>
     public ParentUpgradeInvalidateReason(Type type, Type childType, InvalidateMode initialModes, VisualPropertyInvalidateModes finalModes, InvalidateReason? innerReason = null)
         : base(type, innerReason)
     {

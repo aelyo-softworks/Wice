@@ -296,9 +296,6 @@ namespace ColorCode
         /// Loads the specified language.
         /// </summary>
         /// <param name="language">The language to load.</param>
-        /// <remarks>
-        /// If a language with the same identifier has already been loaded, the existing loaded language will be replaced by the new specified language.
-        /// </remarks>
         public static void Load(ILanguage language) => LanguageRepository.Load(language);
     }
 
@@ -3128,9 +3125,6 @@ namespace ColorCode
         /// <returns>
         /// A <see cref="string"/> that represents this instance.
         /// </returns>
-        /// <remarks>
-        /// Returns the scope name if specified, or String.Empty otherwise.
-        /// </remarks>
         public override string ToString() => ScopeName ?? string.Empty;
     }
 

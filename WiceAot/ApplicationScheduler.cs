@@ -4,18 +4,6 @@
 /// A custom TaskScheduler that integrates with the Win32 message loop to schedule and execute tasks
 /// on the thread processing window messages.
 /// </summary>
-/// <remarks>
-/// - Tasks are enqueued via <see cref="QueueTask(Task)"/> and are executed when the internal dequeue
-///   event is signaled (see <see cref="TriggerDequeue()"/>) or when <see cref="Dequeue(bool)"/> is called
-///   with <c>execute</c> set to <see langword="true"/>.
-/// - The scheduler waits alongside the thread's message queue by using <c>MsgWaitForMultipleObjectsEx</c>
-///   in <see cref="GetMessage(out MSG, HWND, uint, uint)"/>. When messages arrive, they are returned to the caller;
-///   when the dequeue event fires, pending tasks are drained and optionally executed.
-/// - Call <see cref="Dispose()"/> to stop the scheduler and release OS handles. If <see cref="DequeueOnDispose"/>
-///   is <see langword="true"/>, any remaining tasks are executed during disposal.
-/// - This scheduler is typically used from a UI thread and is not intended to run tasks inline
-///   (see <see cref="TryExecuteTaskInline(Task, bool)"/>).
-/// </remarks>
 public partial class ApplicationScheduler : TaskScheduler, IDisposable
 {
     private const int StopIndex = 0;
@@ -35,10 +23,6 @@ public partial class ApplicationScheduler : TaskScheduler, IDisposable
     /// <summary>
     /// Initializes a new instance of the <see cref="ApplicationScheduler"/> class.
     /// </summary>
-    /// <remarks>
-    /// Sets <see cref="WaitTimeout"/> to 1000 ms and initializes the native wait handles used by
-    /// the message loop integration (stop and dequeue events).
-    /// </remarks>
     public ApplicationScheduler()
     {
         WaitTimeout = 1000;
@@ -59,11 +43,6 @@ public partial class ApplicationScheduler : TaskScheduler, IDisposable
     /// <summary>
     /// Gets or sets the minimum time, in milliseconds, between consecutive dequeue triggers.
     /// </summary>
-    /// <remarks>
-    /// - If set to 0 or less, dequeue triggers are not throttled and are signaled immediately.
-    /// - If greater than 0, <see cref="TriggerDequeue()"/> only signals when at least this interval has elapsed
-    ///   since <see cref="LastDequeue"/>.
-    /// </remarks>
     public virtual int DequeueTimeout { get; set; }
 
     /// <summary>
@@ -80,9 +59,6 @@ public partial class ApplicationScheduler : TaskScheduler, IDisposable
     /// <summary>
     /// Returns an enumerable of the tasks currently scheduled to this scheduler.
     /// </summary>
-    /// <remarks>
-    /// Used by the debugger and the TPL infrastructure to enumerate scheduled tasks.
-    /// </remarks>
     protected override IEnumerable<Task>? GetScheduledTasks() => _tasks;
 
     /// <summary>
@@ -117,11 +93,6 @@ public partial class ApplicationScheduler : TaskScheduler, IDisposable
     ///   (e.g., <c>WM_QUIT</c> or <see cref="Application.WM_HOSTQUIT"/>).<br/>
     /// - In non-DEBUG builds, may return -1 (error) on wait failure.
     /// </returns>
-    /// <remarks>
-    /// - When input is available, the function removes one message via <c>PeekMessageW</c> and returns its status.<br/>
-    /// - When the internal dequeue event is signaled, pending tasks are dequeued and executed on the calling thread.<br/>
-    /// - When the stop event is signaled or the scheduler is disposed/invalid, a host-quit message is returned and the function stops.
-    /// </remarks>
     protected unsafe internal BOOL GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax)
     {
         if (_disposedValue || _stop.SafeWaitHandle.IsInvalid || _dequeue.SafeWaitHandle.IsInvalid)

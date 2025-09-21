@@ -9,21 +9,6 @@ namespace Wice;
 /// (CoreWebView2CompositionController). Handles environment lifecycle (shared or per-instance),
 /// composition rooting, input forwarding (mouse), navigation, and common events.
 /// </summary>
-/// <remarks>
-/// Usage:
-/// - Set <see cref="SourceUri"/> or <see cref="SourceString"/> to navigate.
-/// - By default, uses a shared WebView2 environment across instances; configure via <see cref="UseSharedEnvironment"/>.
-/// - Disposing the visual tears down the underlying controller and WebView when this is the last user
-///   (for shared, when reference count reaches zero).
-///
-/// Threading:
-/// - Environment creation requires STA. See error messaging when RPC_E_CHANGED_MODE occurs.
-/// - Most property sets require UI thread (see VisualProperty defaults).
-///
-/// Composition:
-/// - Renders into the visual's composition tree by assigning the composition root as the controller's RootVisualTarget.
-/// - Bounds are updated in <see cref="Render"/> to synchronize with arrange/render rect.
-/// </remarks>
 public partial class WebView : Border, IDisposable
 {
     /// <summary>
@@ -106,7 +91,6 @@ public partial class WebView : Border, IDisposable
     /// Gets or sets whether this instance uses the shared WebView2 environment or creates its own.
     /// Must be set before environment initialization.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if modified after the environment was created.</exception>
     public virtual bool UseSharedEnvironment
     {
         get => _useSharedEnvironment;
@@ -124,7 +108,6 @@ public partial class WebView : Border, IDisposable
     /// Gets or sets the browser executable folder for environment creation. Optional.
     /// Must be set before environment initialization.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if modified after the environment was created.</exception>
     public virtual string? BrowserExecutableFolder
     {
         get => _browserExecutableFolder;
@@ -142,7 +125,6 @@ public partial class WebView : Border, IDisposable
     /// Gets or sets the user data folder for environment creation. Optional.
     /// Must be set before environment initialization.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if modified after the environment was created.</exception>
     public virtual string? UserDataFolder
     {
         get => _userDataFolder;
@@ -160,7 +142,6 @@ public partial class WebView : Border, IDisposable
     /// Gets or sets the environment options to use while creating the WebView2 environment. Optional.
     /// Must be set before environment initialization.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown if modified after the environment was created.</exception>
     public virtual ICoreWebView2EnvironmentOptions? Options
     {
         get => _options;
@@ -223,7 +204,6 @@ public partial class WebView : Border, IDisposable
     /// <param name="vk">Pointer modifier flags.</param>
     /// <param name="button">The active mouse button, if any.</param>
     /// <returns>WebView2 virtual key flags.</returns>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected virtual COREWEBVIEW2_MOUSE_EVENT_VIRTUAL_KEYS GetKeys(POINTER_MOD vk, MouseButton? button)
     {
         CheckDisposed();
@@ -269,7 +249,6 @@ public partial class WebView : Border, IDisposable
     /// <summary>
     /// Forwards a double-click mouse event to WebView2.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseButtonDoubleClick(object? sender, MouseButtonEventArgs e)
     {
         CheckDisposed();
@@ -314,7 +293,6 @@ public partial class WebView : Border, IDisposable
     /// <summary>
     /// Forwards a mouse down event to WebView2 and starts mouse capture on this visual.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         CheckDisposed();
@@ -361,7 +339,6 @@ public partial class WebView : Border, IDisposable
     /// <summary>
     /// Forwards a mouse up event to WebView2 and releases mouse capture.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
         CheckDisposed();
@@ -408,7 +385,6 @@ public partial class WebView : Border, IDisposable
     /// <summary>
     /// Forwards mouse move/enter events to WebView2 (includes button state and X button data when captured).
     /// </summary>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseEnter(object? sender, MouseEventArgs e) => OnMouseMove(sender, e);
 
     /// <inheritdoc/>
@@ -441,7 +417,6 @@ public partial class WebView : Border, IDisposable
     /// <summary>
     /// Forwards a mouse leave event to WebView2.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseLeave(object? sender, MouseEventArgs e)
     {
         CheckDisposed();
@@ -455,7 +430,6 @@ public partial class WebView : Border, IDisposable
     /// <summary>
     /// Forwards a mouse wheel event to WebView2.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {
         CheckDisposed();
@@ -473,8 +447,6 @@ public partial class WebView : Border, IDisposable
     /// </summary>
     /// <param name="e">The pointer event arguments.</param>
     /// <returns>A COM wrapper for CoreWebView2 pointer info, or null if environment is not ready or rect invalid.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="e"/> is null.</exception>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected virtual IComObject<ICoreWebView2PointerInfo>? CreateInfo(PointerEventArgs e)
     {
         CheckDisposed();
@@ -523,11 +495,6 @@ public partial class WebView : Border, IDisposable
     /// <summary>
     /// Updates the composition root and controller bounds during the render pass.
     /// </summary>
-    /// <remarks>
-    /// - Ensures RootVisualTarget remains bound even if composition visuals are recreated.
-    /// - Updates controller bounds to the current absolute render rect (when valid).
-    /// </remarks>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected override void Render()
     {
         CheckDisposed();
@@ -566,7 +533,6 @@ public partial class WebView : Border, IDisposable
     /// Navigates the WebView2 to <see cref="SourceString"/> when set, then to <see cref="SourceUri"/>,
     /// or to "about:blank" if neither is provided.
     /// </summary>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     protected virtual async Task Navigate()
     {
         CheckDisposed();
@@ -598,10 +564,6 @@ public partial class WebView : Border, IDisposable
     /// Ensures the WebView2 environment is initialized (shared or per-instance).
     /// </summary>
     /// <returns>The environment, or null if initialization failed.</returns>
-    /// <remarks>
-    /// On initialization failure, a <see cref="TextBox"/> is injected as a child showing the error message when no child exists.
-    /// </remarks>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     public virtual IComObject<ICoreWebView2Environment3>? EnsureWebView2EnvironmentLoaded()
     {
         CheckDisposed();
@@ -670,7 +632,6 @@ public partial class WebView : Border, IDisposable
     /// Subsequent callers while creation is in-flight receive the same task instance.
     /// </summary>
     /// <returns>The created WebView2 instance, or null on failure.</returns>
-    /// <exception cref="ObjectDisposedException">When the control is disposed.</exception>
     public virtual Task<IComObject<ICoreWebView2>?> EnsureWebView2Loaded()
     {
         CheckDisposed();
@@ -945,11 +906,6 @@ public partial class WebView : Border, IDisposable
         /// <param name="browserExecutableFolder">Optional browser executable folder.</param>
         /// <param name="userDataFolder">Optional user data folder.</param>
         /// <param name="options">Optional environment options.</param>
-        /// <remarks>
-        /// - Populates <see cref="WebViewInitializationResult"/>, <see cref="WebViewEnvironmentInitializationResult"/>,
-        ///   <see cref="WebViewVersion"/>, and <see cref="ErrorMessage"/> accordingly.
-        /// - When the thread model is not STA, RPC_E_CHANGED_MODE is reported; guidance is appended to <see cref="ErrorMessage"/>.
-        /// </remarks>
         public void EnsureEnvironment(string? browserExecutableFolder, string? userDataFolder, ICoreWebView2EnvironmentOptions? options)
         {
             if (Initialized)
@@ -1015,7 +971,6 @@ public partial class WebView : Border, IDisposable
         /// </summary>
         /// <param name="info">The current info instance.</param>
         /// <param name="methodName">The caller name (auto-supplied).</param>
-        /// <exception cref="InvalidOperationException">When <paramref name="info"/> is initialized.</exception>
         public static void ThrowIfInitialized(WebViewInfo? info, [CallerMemberName] string? methodName = null)
         {
             if (info != null && info.Initialized)

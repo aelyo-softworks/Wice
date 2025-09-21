@@ -4,18 +4,6 @@
 /// Describes a dynamic property that can be stored on <see cref="BaseObject"/> instances,
 /// including metadata (name, type, defaults), conversion hooks, and change notification hooks.
 /// </summary>
-/// <remarks>
-/// - Instances are assigned a unique, monotonically increasing <see cref="Id"/> and registered
-///   in a global map for lookup by id or name.
-/// - Properties are tracked per declaring <see cref="Type"/> allowing override semantics across
-///   inheritance hierarchies (see <see cref="IsOverriden"/> and <see cref="GetFinal(Type, BaseObjectProperty)"/>).
-/// - Values for a property are stored per-object by implementations of <see cref="IPropertyOwner"/>
-///   (the canonical implementation is <see cref="BaseObject"/>).
-/// - Setting a value can involve conversion (<see cref="Convert"/> and <see cref="ConvertToTargetType(object?)"/>),
-///   veto via <see cref="Changing"/>, and post-change processing via <see cref="Changed"/>.
-/// </remarks>
-/// <seealso cref="BaseObject"/>
-/// <seealso cref="IPropertyOwner"/>
 public class BaseObjectProperty : IEquatable<BaseObjectProperty>
 {
     /// <summary>
@@ -77,9 +65,6 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     /// <param name="name">The property name.</param>
     /// <param name="type">A type assignable to the property's <see cref="DeclaringType"/>.</param>
     /// <returns>The matching property or <see langword="null"/> if not found.</returns>
-    /// <remarks>
-    /// Performs a linear scan of the global map; prefer per-type APIs when possible for performance.
-    /// </remarks>
     public static BaseObjectProperty? GetByName(string name, Type type)
     {
         ExceptionExtensions.ThrowIfNull(name, nameof(name));
@@ -187,7 +172,6 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     /// </summary>
     /// <param name="property">The property descriptor to add.</param>
     /// <returns>The same instance for chaining.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="property"/> is <see langword="null"/>.</exception>
     public static BaseObjectProperty Add(BaseObjectProperty property)
     {
         ExceptionExtensions.ThrowIfNull(property, nameof(property));
@@ -351,8 +335,6 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     /// <param name="changing">Optional veto hook invoked before storage.</param>
     /// <param name="changed">Optional callback invoked after storage.</param>
     /// <param name="options">Behavior flags that can influence setting on owners.</param>
-    /// <exception cref="ArgumentNullException">When any required argument is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException">When <paramref name="declaringType"/> does not derive from <see cref="BaseObject"/>.</exception>
     public BaseObjectProperty(
         Type declaringType,
         string name,
@@ -491,9 +473,6 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     /// <param name="value">The value to convert.</param>
     /// <param name="convertedValue">When this method returns, contains the converted value if successful.</param>
     /// <returns><see langword="true"/> if the conversion succeeded; otherwise, <see langword="false"/>.</returns>
-    /// <remarks>
-    /// Uses <c>Conversions.TryChangeType</c>/<c>Conversions.TryChangeObjectType</c> depending on the target framework.
-    /// </remarks>
     // TODO: add acrylic brush?
     public virtual bool TryConvertToTargetType(object? value, out object? convertedValue) =>
 #if NETFRAMEWORK
@@ -508,9 +487,6 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     /// </summary>
     /// <param name="value">The value to convert.</param>
     /// <returns>The converted value.</returns>
-    /// <remarks>
-    /// Uses <c>Conversions.ChangeType</c>/<c>Conversions.ChangeObjectType</c> depending on the target framework.
-    /// </remarks>
     public virtual object? ConvertToTargetType(object? value) =>
 #if NETFRAMEWORK
         Conversions.ChangeType(value, Type, ConvertedDefaultValue, CultureInfo.InvariantCulture);

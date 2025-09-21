@@ -6,14 +6,6 @@ namespace Wice;
 /// <summary>
 /// A visual that renders a PDF page using Windows.Data.Pdf and the native IPdfRenderer.
 /// </summary>
-/// <remarks>
-/// - Supports loading a document from a file path (<see cref="SourceFilePath"/>) or a managed <see cref="Stream"/> (<see cref="SourceStream"/>).
-/// - Optionally opens password-protected documents via <see cref="Password"/>.
-/// - Exposes <see cref="CurrentPage"/> to select the rendered page and reports <see cref="PagesCount"/>.
-/// - Rendering honors <see cref="Stretch"/> and <see cref="StretchDirection"/> and computes a destination rectangle accordingly.
-/// - Uses a lazily created native renderer bound to the window's D3D11 device.
-/// - Raises events for lifecycle: <see cref="DocumentLoaded"/>, <see cref="DocumentLoadError"/>, <see cref="DocumentDisposed"/>, and <see cref="PageChanged"/>.
-/// </remarks>
 public partial class PdfView : RenderVisual, IDisposable
 {
     /// <summary>
@@ -100,9 +92,6 @@ public partial class PdfView : RenderVisual, IDisposable
     /// <summary>
     /// Gets or sets the zero-based current page index to render.
     /// </summary>
-    /// <remarks>
-    /// The value must be within [0, <see cref="PagesCount"/>). The change is vetoed otherwise.
-    /// </remarks>
     [Category(CategoryLayout)]
     public virtual int CurrentPage { get => (int)GetPropertyValue(CurrentPageProperty)!; set => SetPropertyValue(CurrentPageProperty, value); }
 
@@ -204,12 +193,6 @@ public partial class PdfView : RenderVisual, IDisposable
     /// <summary>
     /// Asynchronously loads a PDF document from <see cref="SourceFilePath"/> or <see cref="SourceStream"/>.
     /// </summary>
-    /// <remarks>
-    /// - Resets any existing document/page and errors.<br/>
-    /// - Raises <see cref="DocumentLoaded"/> regardless of success (errors are reported via <see cref="DocumentLoadError"/>).<br/>
-    /// - On success triggers a render invalidation.
-    /// </remarks>
-    /// <exception cref="Exception">Rethrown when <see cref="OnLoadError(Exception)"/> returns true.</exception>
     protected async Task LoadAsync()
     {
         Dispose();
@@ -347,9 +330,6 @@ public partial class PdfView : RenderVisual, IDisposable
     /// Renders the current PDF page to the given device context.
     /// </summary>
     /// <param name="context">The render context wrapping a Direct2D device context.</param>
-    /// <remarks>
-    /// Throws if a previous load error was recorded. No-op if no document/page/renderer is available.
-    /// </remarks>
     protected unsafe internal override void RenderCore(RenderContext context)
     {
         if (LoadError != null)

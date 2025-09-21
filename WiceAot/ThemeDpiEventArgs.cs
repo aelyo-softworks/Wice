@@ -9,12 +9,6 @@
 /// <param name="newDpi">
 /// The DPI in effect after the change. Expressed as dots per inch (DPI), where 96 represents 100% scaling.
 /// </param>
-/// <remarks>
-/// - Depending on when this is raised, <paramref name="oldDpi"/> and <paramref name="newDpi"/> can be identical
-///   (e.g., during initialization or when emitting a no-op DPI notification).
-/// - Values are integral DPIs as reported by the system for the window/monitor.
-/// </remarks>
-/// <seealso cref="Window"/>
 public class ThemeDpiEventArgs(uint oldDpi, uint newDpi)
 {
     /// <summary>

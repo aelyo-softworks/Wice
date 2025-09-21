@@ -5,15 +5,6 @@
 /// in the range [0, 1] into an eased progress value, typically used by animations
 /// to control acceleration and deceleration over time.
 /// </summary>
-/// <remarks>
-/// Implementations should be pure and side-effect free. Callers typically pass
-/// <c>normalizedTime</c> values within [0, 1]. An easing function commonly
-/// returns values in [0, 1], but specific implementations may overshoot or
-/// undershoot (e.g., back/elastic easings) by design.
-/// 
-/// For smooth animations, prefer continuous and monotonic mappings unless a
-/// special effect is desired.
-/// </remarks>
 public interface IEasingFunction
 {
     /// <summary>

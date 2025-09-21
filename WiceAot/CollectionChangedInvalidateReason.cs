@@ -4,11 +4,6 @@
 /// Represents an <see cref="InvalidateReason"/> caused by a change in a collection,
 /// capturing both the child element type involved and the collection change action.
 /// </summary>
-/// <remarks>
-/// This reason is useful to trace invalidations originating from collection mutations
-/// such as Add, Remove, Replace, Move, or Reset as defined by
-/// <see cref="System.Collections.Specialized.NotifyCollectionChangedAction"/>.
-/// </remarks>
 public class CollectionChangedInvalidateReason
     : InvalidateReason
 {
@@ -19,7 +14,6 @@ public class CollectionChangedInvalidateReason
     /// <param name="childType">The element type of the collection whose change caused the invalidation.</param>
     /// <param name="action">The collection change action that triggered this invalidation.</param>
     /// <param name="innerReason">An optional inner reason providing additional context.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="childType"/> is <c>null</c>.</exception>
     public CollectionChangedInvalidateReason(Type type, Type childType, NotifyCollectionChangedAction action, InvalidateReason? innerReason = null)
         : base(type, innerReason)
     {

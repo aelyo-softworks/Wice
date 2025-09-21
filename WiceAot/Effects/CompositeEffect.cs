@@ -4,12 +4,6 @@
 /// Represents the Direct2D "Composite" effect, which combines multiple input sources
 /// using a specified <see cref="D2D1_COMPOSITE_MODE"/> (e.g., SourceOver, Multiply, etc.).
 /// </summary>
-/// <remarks>
-/// - The effect is exposed to D2D via <see cref="Effect"/> and <see cref="IGraphicsEffectD2D1Interop"/>.
-/// - This effect accepts an unbounded number of sources (limited only by the graph setup),
-///   as indicated by the constructor passing <c>int.MaxValue</c> to the base type.
-/// - The CLSID is provided via <see cref="GuidAttribute"/> and switches between framework and .NET targets.
-/// </remarks>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1CompositeString)]
 #else
@@ -20,12 +14,6 @@ public partial class CompositeEffect : Effect
     /// <summary>
     /// Describes the effect property that controls the compositing mode.
     /// </summary>
-    /// <remarks>
-    /// - Index: <c>0</c> (first effect parameter in the D2D property bag).<br/>
-    /// - Mapping: DIRECT (default mapping for effect properties).<br/>
-    /// - Default: <see cref="D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER"/>.<br/>
-    /// Use <see cref="Mode"/> to get/set the current value.
-    /// </remarks>
     public static EffectProperty ModeProperty { get; }
 
     static CompositeEffect()
@@ -37,10 +25,6 @@ public partial class CompositeEffect : Effect
     /// <summary>
     /// Initializes a new instance of <see cref="CompositeEffect"/> that may accept an unbounded number of sources.
     /// </summary>
-    /// <remarks>
-    /// Passing <c>int.MaxValue</c> to the base constructor enables dynamic source counts
-    /// when interacting with the effect graph.
-    /// </remarks>
     public CompositeEffect()
             : base(int.MaxValue)
     {

@@ -3,9 +3,6 @@
 /// <summary>
 /// Represents the reason why a message loop exited.
 /// </summary>
-/// <remarks>
-/// Useful for diagnostics, logging, and post-loop control flow.
-/// </remarks>
 public enum ExitLoopReason
 {
     /// <summary>

@@ -4,11 +4,6 @@
 /// Represents an effect that applies a linear transfer function to the red, green, blue, and alpha channels of an
 /// image.
 /// </summary>
-/// <remarks>The <see cref="LinearTransferEffect"/> allows you to independently adjust the slope and y-intercept
-/// of the transfer function for each color channel (red, green, blue) and the alpha channel. You can also disable the
-/// transfer function for specific channels and clamp the output values to ensure they remain within the valid range. 
-/// This effect is commonly used for color correction, channel-specific adjustments, or applying custom linear
-/// transformations to image data.</remarks>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1LinearTransferString)]
 #else
@@ -24,8 +19,6 @@ public partial class LinearTransferEffect : EffectWithSource
     /// <summary>
     /// Gets the effect property that controls the red slope adjustment in the effect.
     /// </summary>
-    /// <remarks>The red slope adjustment affects how the red channel is scaled in the effect's output.  This
-    /// property is typically used in scenarios where fine-tuning of color balance or intensity is required.</remarks>
     public static EffectProperty RedSlopeProperty { get; }
 
     /// <summary>
@@ -66,9 +59,6 @@ public partial class LinearTransferEffect : EffectWithSource
     /// <summary>
     /// Gets the effect property that represents the Y-intercept of the alpha channel.
     /// </summary>
-    /// <remarks>This property is typically used in scenarios where adjustments to the alpha channel's linear
-    /// transformation are required. The Y-intercept determines the offset applied to the alpha channel during such
-    /// transformations.</remarks>
     public static EffectProperty AlphaYInterceptProperty { get; }
 
     /// <summary>
@@ -89,10 +79,6 @@ public partial class LinearTransferEffect : EffectWithSource
     /// <summary>
     /// Initializes static properties for the <see cref="LinearTransferEffect"/> class.
     /// </summary>
-    /// <remarks>This static constructor sets up the effect properties for the <see
-    /// cref="LinearTransferEffect"/> class, including properties for red, green, blue, and alpha channel adjustments,
-    /// as well as an option to clamp the output. Each property is initialized with a default value and a unique index
-    /// for internal identification.</remarks>
     static LinearTransferEffect()
     {
         RedYInterceptProperty = EffectProperty.Add(typeof(LinearTransferEffect), nameof(RedYIntercept), 0, 0f);
@@ -118,8 +104,6 @@ public partial class LinearTransferEffect : EffectWithSource
     /// <summary>
     /// Gets or sets the slope value for the red channel.
     /// </summary>
-    /// <remarks>This property is typically used in scenarios where color adjustments or transformations are
-    /// required, such as image processing or graphics rendering.</remarks>
     public float RedSlope { get => (float)GetPropertyValue(RedSlopeProperty)!; set => SetPropertyValue(RedSlopeProperty, value); }
 
     /// <summary>
@@ -135,8 +119,6 @@ public partial class LinearTransferEffect : EffectWithSource
     /// <summary>
     /// Gets or sets the slope of the green channel in the color adjustment process.
     /// </summary>
-    /// <remarks>The value should typically be within a valid range for the specific color adjustment context.
-    /// Setting this property adjusts the green channel's contribution to the overall color processing.</remarks>
     public float GreenSlope { get => (float)GetPropertyValue(GreenSlopeProperty)!; set => SetPropertyValue(GreenSlopeProperty, value); }
 
     /// <summary>
@@ -167,8 +149,6 @@ public partial class LinearTransferEffect : EffectWithSource
     /// <summary>
     /// Gets or sets the slope of the alpha channel adjustment.
     /// </summary>
-    /// <remarks>This property is typically used to control the behavior of alpha blending or transparency
-    /// adjustments. Ensure the value is within a valid range for the intended operation.</remarks>
     public float AlphaSlope { get => (float)GetPropertyValue(AlphaSlopeProperty)!; set => SetPropertyValue(AlphaSlopeProperty, value); }
 
     /// <summary>

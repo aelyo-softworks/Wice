@@ -3,9 +3,6 @@
 /// <summary>
 /// Represents an abstract base class for effects that can be applied to graphics.
 /// </summary>
-/// <remarks>This class provides a framework for creating custom effects by managing sources, properties, and
-/// interop with Direct2D. It implements <see cref="IGraphicsEffect"/>, <see cref="IGraphicsEffectSource"/>, and <see
-/// cref="IGraphicsEffectD2D1Interop"/>. Derived classes can define specific effect behaviors and properties.</remarks>
 /// <param name="sourcesCount">The number of effect sources.</param>
 #if !NETFRAMEWORK
 [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
@@ -28,15 +25,9 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     /// <summary>
     /// Gets the maximum number of effect sources supported by this instance.
     /// </summary>
-    /// <remarks>
-    /// When set to <c>int.MaxValue</c>, the effect reports the current number of sources instead.
-    /// </remarks>
     public uint MaximumSourcesCount { get; } = sourcesCount;
 
     /// <inheritdoc/>
-    /// <remarks>
-    /// Must never return <see langword="null"/> for <see cref="IGraphicsEffectD2D1Interop"/> compatibility.
-    /// </remarks>
     public override string? Name { get => _name ?? string.Empty; set => _name = value; } // *must* not be null for IGraphicsEffectD2D1Interop
 
     /// <summary>
@@ -57,9 +48,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     /// <summary>
     /// Gets the CLSID of the effect, taken from the <see cref="GuidAttribute"/> on the concrete type.
     /// </summary>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when the effect type does not define a valid <see cref="GuidAttribute"/>.
-    /// </exception>
     public Guid Clsid
     {
         get
@@ -84,7 +72,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     /// </summary>
     /// <param name="index">The zero-based source index.</param>
     /// <returns>The source at the index, or <see langword="null"/> if not set.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="index"/> is greater than or equal to <see cref="MaximumSourcesCount"/>.</exception>
     protected virtual IGraphicsEffectSource? GetSource(int index)
     {
         if (index >= MaximumSourcesCount)
@@ -101,7 +88,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     /// </summary>
     /// <param name="index">The zero-based source index.</param>
     /// <param name="effect">The source to set (may be <see langword="null"/>).</param>
-    /// <exception cref="ArgumentOutOfRangeException">When <paramref name="index"/> is greater than or equal to <see cref="MaximumSourcesCount"/>.</exception>
     protected virtual void SetSource(int index, IGraphicsEffectSource? effect)
     {
         // effect can be null
@@ -374,10 +360,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     /// </summary>
     /// <param name="count">Receives the number of sources.</param>
     /// <returns><see cref="WiceCommons.S_OK"/> on success.</returns>
-    /// <remarks>
-    /// When <see cref="MaximumSourcesCount"/> equals <c>int.MaxValue</c>, this returns the current list size.
-    /// Otherwise, it returns the configured maximum.
-    /// </remarks>
     HRESULT IGraphicsEffectD2D1Interop.GetSourceCount(out uint count)
     {
         if (MaximumSourcesCount == int.MaxValue)

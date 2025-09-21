@@ -22,12 +22,6 @@ public class ExponentialEase : IEasingFunction
     /// <value>
     /// The exponent k. Typical useful range is approximately [-10, 10].
     /// </value>
-    /// <remarks>
-    /// - k &gt; 0 results in acceleration (ease-in).
-    /// - k &lt; 0 results in deceleration (ease-out).
-    /// - k = 0 yields a linear mapping.
-    /// Large absolute values may lead to numerical instability due to exponentiation.
-    /// </remarks>
     public float Exponent { get; set; }
 
     /// <summary>
@@ -39,9 +33,6 @@ public class ExponentialEase : IEasingFunction
     /// <returns>
     /// The eased progress value y. For t in [0, 1], y is typically in [0, 1].
     /// </returns>
-    /// <remarks>
-    /// Uses the mapping y = (e^(k·t) - 1) / (e^k - 1). When k == 0, returns t.
-    /// </remarks>
     public float Ease(float normalizedTime)
     {
         var factor = Exponent;

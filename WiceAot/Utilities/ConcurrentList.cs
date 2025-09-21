@@ -4,13 +4,6 @@
 /// A coarse-grained, thread-safe wrapper around <see cref="List{T}"/>.
 /// </summary>
 /// <typeparam name="T">The element type.</typeparam>
-/// <remarks>
-/// - All mutating operations are synchronized by a single lock (<see cref="SyncObject"/>).
-/// - Enumeration operates on a snapshot (via <see cref="ToArray(bool)"/>) and is therefore not blocked by further writes,
-///   nor does it observe subsequent mutations.
-/// - API surface mirrors common <see cref="List{T}"/> members where applicable.
-/// - For multi-step operations that must be atomic, consider locking externally on <see cref="SyncObject"/>.
-/// </remarks>
 public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
 {
     /// <summary>
@@ -171,9 +164,6 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// If true, returns the current underlying list instance and replaces it with an empty one;
     /// if false, returns a shallow copy.
     /// </param>
-    /// <remarks>
-    /// When <paramref name="clear"/> is true, the returned list is no longer synchronized by this instance.
-    /// </remarks>
     /// <returns>A list containing the elements.</returns>
     public virtual List<T> ToList(bool clear = false)
     {

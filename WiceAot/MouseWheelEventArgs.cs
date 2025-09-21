@@ -18,10 +18,6 @@ public class MouseWheelEventArgs(int x, int y, POINTER_MOD vk, int delta, Orient
     /// Normalized number of "detents" for the wheel movement, computed as
     /// <c>delta / <see cref="Constants.WHEEL_DELTA"/></c>.
     /// </summary>
-    /// <remarks>
-    /// Win32 defines <see cref="Constants.WHEEL_DELTA"/> as 120 per detent.
-    /// Positive values typically represent upward/away scrolling; negative values represent downward/toward scrolling.
-    /// </remarks>
     public int Delta { get; } = delta / Constants.WHEEL_DELTA;
 
     /// <summary>

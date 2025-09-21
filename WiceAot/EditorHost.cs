@@ -3,17 +3,6 @@
 /// <summary>
 /// Hosts and toggles a <see cref="Dialog"/> anchored to this control's header selection.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - Subscribes to <see cref="Header.IsSelectedChanged"/> and opens/closes a <see cref="Dialog"/> accordingly.
-/// - Creates the dialog on-demand (first open) and attaches it to the <see cref="Window"/> as a child.
-/// - Placement defaults to <see cref="PlacementMode.OuterBottomRight"/> relative to this host.
-/// - When <see cref="EditorMode"/> is not <see cref="EditorMode.Modal"/>, the dialog is non-modal and does not show a window overlay.
-/// - Global mouse clicks on the window close the dialog when they occur outside both this host and the dialog.
-/// Lifecycle:
-/// - Raises <see cref="DialogOpened"/> after creating and attaching the dialog.
-/// - Raises <see cref="DialogClosed"/> prior to closing and detaching the dialog.
-/// </remarks>
 public partial class EditorHost : HeaderedContent
 {
     /// <summary>
@@ -29,11 +18,6 @@ public partial class EditorHost : HeaderedContent
     /// <summary>
     /// Gets or sets the editor mode that influences dialog modality/overlay at open time.
     /// </summary>
-    /// <remarks>
-    /// Not a base property; the value is only read when opening the dialog to configure
-    /// <see cref="Dialog.IsModal"/> and overlay behavior. Changing this after a dialog
-    /// is already open has no effect until it is closed and reopened.
-    /// </remarks>
     public EditorMode EditorMode { get; set; }
 
     /// <summary>
@@ -44,11 +28,6 @@ public partial class EditorHost : HeaderedContent
     /// <summary>
     /// Initializes a new instance of <see cref="EditorHost"/> and wires header selection to dialog open/close.
     /// </summary>
-    /// <remarks>
-    /// On first selection, creates a <see cref="Dialog"/>, configures placement and brushes, wires window-level
-    /// mouse handling to detect outside clicks, and adds it to <see cref="Window.Children"/>.
-    /// On subsequent selection toggles, closes and disposes the current dialog.
-    /// </remarks>
     public EditorHost()
     {
         Header.IsSelectedChanged += (s, e) =>
@@ -89,10 +68,6 @@ public partial class EditorHost : HeaderedContent
 
 #if DEBUG
     /// <inheritdoc/>
-    /// <remarks>
-    /// When a dialog is open, updates its <see cref="BaseObject.Name"/> to "dialog" + this host's capitalized name
-    /// for easier diagnostics.
-    /// </remarks>
     public override string? Name
     {
         get => base.Name;

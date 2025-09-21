@@ -5,21 +5,12 @@
 /// Uses a single content visual (default: <see cref="Canvas"/>) with an optional drop shadow.
 /// Adjusts its placement offsets to account for the content margin required by the shadow.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - Placement: defaults to <see cref="PlacementMode.Mouse"/> and shows without activation.
-/// - Size: measures to content (<see cref="DimensionOptions.WidthAndHeight"/>) and removes the native frame.
-/// - Interaction: click-through enabled so clicks pass through to the underlying window.
-/// - Visuals: forces exactly one child (the content) to reserve margin for a drop shadow.
-/// - DPI/theme: updates margin/shadow radius/vertical offset on theme DPI changes.
-/// </remarks>
 public partial class ToolTip : PopupWindow, IContentParent
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ToolTip"/> class.
     /// Configures placement, sizing, frame, click-through, content, shadow, and initial offsets.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when <see cref="CreateContent"/> returns null.</exception>
     public ToolTip()
     {
         PlacementMode = PlacementMode.Mouse;

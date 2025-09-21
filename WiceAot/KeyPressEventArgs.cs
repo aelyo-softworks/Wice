@@ -4,22 +4,12 @@
 /// Provides data for a key-press event, including the produced Unicode character(s)
 /// and the state of modifier keys at the time of the event.
 /// </summary>
-/// <remarks>
-/// The event captures a single Unicode scalar value (UTF-32). When constructed from a UTF-32 value,
-/// <see cref="Characters"/> contains one or two UTF-16 code units depending on the code point.
-/// </remarks>
 public class KeyPressEventArgs : HandledEventArgs
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="KeyPressEventArgs"/> class from UTF-16 code unit(s).
     /// </summary>
     /// <param name="characters">One or two UTF-16 code units representing the pressed character.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="characters"/> is <c>null</c>.</exception>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="characters"/> is empty.</exception>
-    /// <remarks>
-    /// The modifier key state (<see cref="WithShift"/>, <see cref="WithControl"/>, <see cref="WithMenu"/>) is captured at construction time.
-    /// The <see cref="UTF32Character"/> is initialized from the first UTF-16 code unit provided.
-    /// </remarks>
     public KeyPressEventArgs(char[] characters)
     {
         ExceptionExtensions.ThrowIfNull(characters, nameof(characters));
@@ -37,11 +27,6 @@ public class KeyPressEventArgs : HandledEventArgs
     /// Initializes a new instance of the <see cref="KeyPressEventArgs"/> class from a UTF-32 code point.
     /// </summary>
     /// <param name="character">The Unicode scalar value (UTF-32 code point) for the key press.</param>
-    /// <remarks>
-    /// If <paramref name="character"/> is outside the Basic Multilingual Plane (greater than 0xFFFF),
-    /// <see cref="Characters"/> is a surrogate pair (two UTF-16 code units); otherwise it contains a single code unit.
-    /// The modifier key state (<see cref="WithShift"/>, <see cref="WithControl"/>, <see cref="WithMenu"/>) is captured at construction time.
-    /// </remarks>
     public KeyPressEventArgs(uint character)
     {
         WithShift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
@@ -73,17 +58,11 @@ public class KeyPressEventArgs : HandledEventArgs
     /// <summary>
     /// Gets the first UTF-16 code unit of the produced character(s).
     /// </summary>
-    /// <remarks>
-    /// For characters represented by a surrogate pair, this is the high surrogate.
-    /// </remarks>
     public char UTF16Character => Characters[0];
 
     /// <summary>
     /// Gets the UTF-16 code unit(s) produced by the key press.
     /// </summary>
-    /// <remarks>
-    /// The array length is 1 for BMP characters or 2 for supplementary characters (surrogate pair).
-    /// </remarks>
     public char[] Characters { get; }
 
     /// <summary>

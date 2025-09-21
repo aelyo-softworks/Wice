@@ -6,12 +6,6 @@
 /// clouds, marble, fire, etc. Values are exposed through <see cref="EffectProperty"/>
 /// descriptors and queried by D2D at render time.
 /// </summary>
-/// <remarks>
-/// - The applied GUID differs between .NET Framework and .NET 5+ builds via conditional compilation.
-/// - Property indices match the D2D effect parameter order:
-///   0: Offset, 1: Size, 2: BaseFrequency, 3: NumOctaves, 4: Seed, 5: Noise, 6: Stitchable.
-/// - Default values follow the D2D defaults unless otherwise noted.
-/// </remarks>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1TurbulenceString)]
 #else

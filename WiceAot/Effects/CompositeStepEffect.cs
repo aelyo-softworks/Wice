@@ -3,15 +3,6 @@
 /// <summary>
 /// Direct2D composite effect node that blends two input sources using a configurable mode.
 /// </summary>
-/// <remarks>
-/// - This type maps to the native D2D1 Composite effect (CLSID_D2D1Composite).
-/// - It exposes two input slots:
-///   - <see cref="Destination"/> at index 0 (the "destination" layer),
-///   - <see cref="Source"/> at index 1 (the "source" layer).
-/// - The blend operation is controlled via <see cref="Mode"/>.
-/// </remarks>
-/// <seealso cref="Effect"/>
-/// <seealso cref="IGraphicsEffectSource"/>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1CompositeString)]
 #else
@@ -22,12 +13,6 @@ public partial class CompositeStepEffect : Effect
     /// <summary>
     /// Descriptor for the <see cref="Mode"/> effect parameter.
     /// </summary>
-    /// <remarks>
-    /// - Effect property index: 0 (serialized into the effect property bag at index 0).<br/>
-    /// - CLR type: <see cref="D2D1_COMPOSITE_MODE"/>.<br/>
-    /// - Default value: <see cref="D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER"/>.<br/>
-    /// - Mapping: direct (no special transformation).
-    /// </remarks>
     public static EffectProperty ModeProperty { get; }
 
     // Registers the Mode property descriptor on first use.
@@ -47,9 +32,6 @@ public partial class CompositeStepEffect : Effect
     /// <summary>
     /// Gets or sets the composite operation used to blend <see cref="Source"/> over <see cref="Destination"/>.
     /// </summary>
-    /// <remarks>
-    /// Defaults to <see cref="D2D1_COMPOSITE_MODE.D2D1_COMPOSITE_MODE_SOURCE_OVER"/>.
-    /// </remarks>
     public D2D1_COMPOSITE_MODE Mode { get => (D2D1_COMPOSITE_MODE)GetPropertyValue(ModeProperty)!; set => SetPropertyValue(ModeProperty, value); }
 
     /// <summary>

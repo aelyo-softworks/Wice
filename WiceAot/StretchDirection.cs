@@ -3,12 +3,6 @@
 /// <summary>
 /// Specifies how content is allowed to scale to fit the available space.
 /// </summary>
-/// <remarks>
-/// Use this to constrain resizing behavior relative to the content's natural (desired) size:
-/// - UpOnly: content may grow but will not shrink.
-/// - DownOnly: content may shrink but will not grow.
-/// - Both: content may grow or shrink.
-/// </remarks>
 public enum StretchDirection
 {
     /// <summary>

@@ -3,18 +3,6 @@
 /// <summary>
 /// Provides structural equality comparison for <see cref="CompositionObject"/> instances.
 /// </summary>
-/// <remarks>
-/// - Supports the following types:
-///   - <see cref="CompositionColorBrush"/>: compares <see cref="CompositionColorBrush.Color"/>.
-///   - <see cref="CompositionEffectBrush"/>: compares <see cref="CompositionEffectBrush.Comment"/> (case-insensitive).
-///   - <see cref="CompositionLinearGradientBrush"/>: compares geometry and gradient stops.
-///   - <see cref="CompositionRadialGradientBrush"/> (Windows 10, 1903+): compares geometry and gradient stops.
-///   - <see cref="DropShadow"/>: compares blur radius, color, mask, offset, opacity, and source policy.
-/// - For unsupported <see cref="CompositionObject"/> types, <see cref="Equals(CompositionObject?, CompositionObject?)"/> throws <see cref="NotImplementedException"/>.
-/// - <see cref="GetHashCode(CompositionObject)"/> delegates to <see cref="object.GetHashCode"/> on the input object and does not compute a structural hash.
-///   As a result, equal objects by this comparer might produce different hash codes. Avoid using this comparer as a key selector in hashed collections
-///   unless this behavior is acceptable.
-/// </remarks>
 public class CompositionObjectEqualityComparer : IEqualityComparer<CompositionObject>
 {
     /// <summary>
@@ -35,9 +23,6 @@ public class CompositionObjectEqualityComparer : IEqualityComparer<CompositionOb
     /// </summary>
     /// <param name="obj">The composition object. Must not be <c>null</c>.</param>
     /// <returns>The object's hash code as provided by <see cref="object.GetHashCode"/>.</returns>
-    /// <remarks>
-    /// This is not a structural hash. It may not align with the equality defined in <see cref="Equals(CompositionObject?, CompositionObject?)"/>.
-    /// </remarks>
     public int GetHashCode(CompositionObject obj) => obj.GetHashCode();
 
     /// <summary>
@@ -46,14 +31,6 @@ public class CompositionObjectEqualityComparer : IEqualityComparer<CompositionOb
     /// <param name="x">The first composition object.</param>
     /// <param name="y">The second composition object.</param>
     /// <returns><c>true</c> if the objects are considered equal; otherwise, <c>false</c>.</returns>
-    /// <exception cref="NotImplementedException">Thrown when the objects are of a type not explicitly handled by this comparer.</exception>
-    /// <remarks>
-    /// - If both are <c>null</c>, returns <c>true</c>.
-    /// - If one is <c>null</c>, returns <c>false</c>.
-    /// - If they are reference-equal, returns <c>true</c>.
-    /// - If types differ, returns <c>false</c>.
-    /// - For supported types, compares key properties as documented on the class.
-    /// </remarks>
     public virtual bool Equals(CompositionObject? x, CompositionObject? y)
     {
         if (x == null)

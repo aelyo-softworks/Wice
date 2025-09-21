@@ -57,7 +57,6 @@ public static class Extensions
     /// </summary>
     /// <param name="bitmap">The COM wrapper around <see cref="IWICBitmapSource"/>.</param>
     /// <returns>The bitmap size as a managed <see cref="Size"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="bitmap"/> or its underlying object is null.</exception>
     public static Size GetWinSize(this IComObject<IWICBitmapSource> bitmap) => GetWinSize(bitmap?.Object!);
 
     /// <summary>
@@ -65,7 +64,6 @@ public static class Extensions
     /// </summary>
     /// <param name="bitmap">The WIC bitmap source.</param>
     /// <returns>The bitmap size as a managed <see cref="Size"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="bitmap"/> is null.</exception>
     public static Size GetWinSize(this IWICBitmapSource bitmap)
     {
         ArgumentNullException.ThrowIfNull(bitmap);

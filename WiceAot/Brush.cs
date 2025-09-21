@@ -4,10 +4,6 @@
 /// Represents the abstract base type for brushes used by the rendering system,
 /// providing a way to materialize Direct2D brush instances for a given <see cref="RenderContext"/>.
 /// </summary>
-/// <remarks>
-/// Subclasses implement brush-specific behavior and equality semantics. The underlying native brush
-/// object is obtained through <see cref="GetBrush(RenderContext)"/>.
-/// </remarks>
 public abstract class Brush : IEquatable<Brush>
 {
     /// <summary>
@@ -42,10 +38,6 @@ public abstract class Brush : IEquatable<Brush>
     /// Serves as the default hash function.
     /// </summary>
     /// <returns>A hash code for the current object.</returns>
-    /// <remarks>
-    /// Implementations must ensure that equal brushes (as determined by <see cref="Equals(Brush?)"/>)
-    /// return the same hash code.
-    /// </remarks>
     public override abstract int GetHashCode();
 
     /// <summary>

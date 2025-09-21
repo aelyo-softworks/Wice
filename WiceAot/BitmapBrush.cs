@@ -3,21 +3,6 @@
 /// <summary>
 /// A Direct2D bitmap brush wrapper that can be materialized for a given <see cref="RenderContext"/>.
 /// </summary>
-/// <remarks>
-/// This brush encapsulates an <see cref="ID2D1Bitmap"/> and optional creation-time properties
-/// (<see cref="BitmapBrushProperties"/> and <see cref="BrushProperties"/>). When <see cref="GetBrush(RenderContext)"/>
-/// is invoked, an <see cref="ID2D1BitmapBrush1"/> is created and configured with the non-default settings:
-/// <list type="bullet">
-/// <item><description><see cref="ExtendModeX"/> and <see cref="ExtendModeY"/> (if not clamp)</description></item>
-/// <item><description><see cref="Opacity"/> (if not 1.0)</description></item>
-/// <item><description><see cref="Transform"/> (if provided)</description></item>
-/// <item><description><see cref="InterpolationMode"/> (if not linear)</description></item>
-/// </list>
-/// Equality compares only the source <see cref="Bitmap"/> and the optional creation-time properties
-/// (<see cref="BitmapBrushProperties"/>, <see cref="BrushProperties"/>). Runtime-applied settings like
-/// <see cref="ExtendModeX"/>, <see cref="ExtendModeY"/>, <see cref="Opacity"/>, <see cref="Transform"/>,
-/// and <see cref="InterpolationMode"/> are not part of the equality comparison.
-/// </remarks>
 public class BitmapBrush : Brush
 {
     /// <summary>
@@ -26,14 +11,6 @@ public class BitmapBrush : Brush
     /// <param name="bitmap">The source <see cref="ID2D1Bitmap"/> used by the brush. Must not be null.</param>
     /// <param name="bitmapBrushProperties">Optional bitmap-brush specific properties (extend modes, interpolation).</param>
     /// <param name="brushProperties">Optional generic brush properties (opacity, transform).</param>
-    /// <remarks>
-    /// Defaults:
-    /// <list type="bullet">
-    /// <item><description><see cref="Opacity"/> = 1.0</description></item>
-    /// <item><description><see cref="InterpolationMode"/> = <see cref="D2D1_INTERPOLATION_MODE.D2D1_INTERPOLATION_MODE_LINEAR"/></description></item>
-    /// </list>
-    /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="bitmap"/> is null.</exception>
     public BitmapBrush(ID2D1Bitmap bitmap, D2D1_BITMAP_BRUSH_PROPERTIES? bitmapBrushProperties = null, D2D1_BRUSH_PROPERTIES? brushProperties = null)
     {
         ExceptionExtensions.ThrowIfNull(bitmap, nameof(bitmap));
@@ -94,9 +71,6 @@ public class BitmapBrush : Brush
     /// An <see cref="IComObject{T}"/> wrapping the created <see cref="ID2D1Brush"/>. The returned object is owned by the context
     /// and is disposed by it.
     /// </returns>
-    /// <remarks>
-    /// Only non-default values are applied to the created brush to minimize state changes.
-    /// </remarks>
     protected internal override IComObject<ID2D1Brush> GetBrush(RenderContext context)
     {
         // will be disposed by context
@@ -137,10 +111,6 @@ public class BitmapBrush : Brush
     /// true if both brushes share the same <see cref="Bitmap"/> and the same creation-time properties
     /// (<see cref="BitmapBrushProperties"/> and <see cref="BrushProperties"/>); otherwise, false.
     /// </returns>
-    /// <remarks>
-    /// Note: <see cref="ExtendModeX"/>, <see cref="ExtendModeY"/>, <see cref="Opacity"/>,
-    /// <see cref="Transform"/>, and <see cref="InterpolationMode"/> are not considered for equality.
-    /// </remarks>
     public override bool Equals(Brush? other)
     {
         if (other is not BitmapBrush brush)

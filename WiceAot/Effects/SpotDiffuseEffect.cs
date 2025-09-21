@@ -3,13 +3,6 @@
 /// <summary>
 /// Wraps the Direct2D SpotDiffuse effect, exposing all effect parameters as strongly-typed properties.
 /// </summary>
-/// <remarks>
-/// - This effect models a spotlight that illuminates the input height field to produce a diffuse shading result.
-/// - Properties are mapped to the underlying D2D property bag through <see cref="EffectProperty"/> descriptors,
-///   using the indices defined by the D2D1_SPOTDIFFUSE spec.
-/// - Some properties specify mapping hints (eg. radians-to-degrees, color-to-vector3) to match the native ABI.
-/// - This effect requires a source (see <see cref="EffectWithSource.Source"/>).
-/// </remarks>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1SpotDiffuseString)]
 #else
@@ -96,39 +89,26 @@ public partial class SpotDiffuseEffect : EffectWithSource
     /// <summary>
     /// Gets or sets the spotlight focus exponent.
     /// </summary>
-    /// <remarks>
-    /// Higher values increase concentration at the center of the cone.
-    /// The value is clamped to [0, 200].
-    /// </remarks>
     public float Focus { get => (float)GetPropertyValue(FocusProperty)!; set => SetPropertyValue(FocusProperty, value.Clamp(0f, 200f)); }
 
     /// <summary>
     /// Gets or sets the limiting cone angle of the spotlight.
     /// </summary>
-    /// <remarks>
-    /// - Expressed in degrees for this API and clamped to [0, 90].
-    /// - Serialized using mapping <see cref="GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_RADIANS_TO_DEGREES"/>.
-    /// </remarks>
     public float LimitingConeAngle { get => (float)GetPropertyValue(LimitingConeAngleProperty)!; set => SetPropertyValue(LimitingConeAngleProperty, value.Clamp(0f, 90f)); }
 
     /// <summary>
     /// Gets or sets the diffuse reflection scaling constant.
     /// </summary>
-    /// <remarks>Clamped to [0, 10000].</remarks>
     public float DiffuseConstant { get => (float)GetPropertyValue(DiffuseConstantProperty)!; set => SetPropertyValue(DiffuseConstantProperty, value.Clamp(0f, 10000f)); }
 
     /// <summary>
     /// Gets or sets the height scale of the input surface used for normal computation.
     /// </summary>
-    /// <remarks>Clamped to [0, 10000].</remarks>
     public float SurfaceScale { get => (float)GetPropertyValue(SurfaceScaleProperty)!; set => SetPropertyValue(SurfaceScaleProperty, value.Clamp(0f, 10000f)); }
 
     /// <summary>
     /// Gets or sets the RGB color of the light.
     /// </summary>
-    /// <remarks>
-    /// Serialized using <see cref="GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_COLOR_TO_VECTOR3"/>.
-    /// </remarks>
     public D2D_VECTOR_3F Color { get => (D2D_VECTOR_3F)GetPropertyValue(ColorProperty)!; set => SetPropertyValue(ColorProperty, value); }
 
     /// <summary>

@@ -3,14 +3,6 @@
 /// <summary>
 /// Direct2D Scale effect wrapper (CLSID_D2D1Scale).
 /// </summary>
-/// <remarks>
-/// - Requires at least one <see cref="IGraphicsEffectSource"/> via <see cref="EffectWithSource.Source"/>.
-/// - Properties map to the underlying D2D effect property bag by index.
-/// - Default values mirror the native D2D defaults:
-///   Scale=(1,1), CenterPoint=(0,0), Interpolation=Linear, Border=Soft, Sharpness=0.
-/// - Changing any property invalidates rendering for the owning visual/effect graph.
-/// </remarks>
-/// <seealso cref="EffectWithSource"/>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1ScaleString)]
 #else
@@ -55,9 +47,6 @@ public partial class ScaleEffect : EffectWithSource
     /// A <see cref="D2D_VECTOR_2F"/> where X scales horizontally and Y scales vertically.
     /// Default is (1,1) (no scaling).
     /// </value>
-    /// <remarks>
-    /// Values greater than 1.0 upscale; values between 0 and 1 downscale.
-    /// </remarks>
     public D2D_VECTOR_2F Scale { get => (D2D_VECTOR_2F)GetPropertyValue(ScaleProperty)!; set => SetPropertyValue(ScaleProperty, value); }
 
     /// <summary>
@@ -90,8 +79,5 @@ public partial class ScaleEffect : EffectWithSource
     /// <value>
     /// A value in the [0,1] range, where 0 is smoothest and 1 is sharpest. Default is 0.
     /// </value>
-    /// <remarks>
-    /// The value is clamped to [0,1].
-    /// </remarks>
     public float Sharpness { get => (float)GetPropertyValue(SharpnessProperty)!; set => SetPropertyValue(SharpnessProperty, value.Clamp(0f, 1f)); }
 }

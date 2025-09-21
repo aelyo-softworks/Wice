@@ -3,12 +3,6 @@
 /// <summary>
 /// Defines how content is resized to fit within a given layout slot.
 /// </summary>
-/// <remarks>
-/// - None: No scaling; content retains its natural size.
-/// - Fill: Scales to fill the slot without preserving aspect ratio (may distort).
-/// - Uniform: Scales uniformly to fit entirely within the slot; aspect ratio preserved (letterboxing/pillarboxing possible).
-/// - UniformToFill: Scales uniformly to fill the entire slot; aspect ratio preserved (content may be clipped).
-/// </remarks>
 public enum Stretch
 {
     /// <summary>

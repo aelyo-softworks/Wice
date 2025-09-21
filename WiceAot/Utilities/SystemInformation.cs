@@ -30,20 +30,12 @@ public class SystemInformation(Assembly? assembly = null, Window? window = null,
     /// <summary>
     /// Gets the DPI awareness description of the active window.
     /// </summary>
-    /// <remarks>
-    /// Returns a textual description (e.g., "Per Monitor Aware") when the window and its native handle exist;
-    /// otherwise returns null.
-    /// </remarks>
     [Category("Graphics")]
     public new string? WindowDpiAwareness => (window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiAwarenessDescription;
 
     /// <summary>
     /// Gets the effective DPI inferred from the window's current DPI awareness context.
     /// </summary>
-    /// <remarks>
-    /// Hidden from browsable editors. Falls back to <see cref="WiceCommons.USER_DEFAULT_SCREEN_DPI"/> (typically 96)
-    /// when no active window is available or DPI awareness is unknown.
-    /// </remarks>
     [Category("Graphics")]
     [Browsable(false)]
     public new uint WindowDpiFromDpiAwareness => (window ?? Application.AllWindows.FirstOrDefault())?.NativeIfCreated?.DpiFromDpiAwareness ?? WiceCommons.USER_DEFAULT_SCREEN_DPI;
@@ -51,9 +43,6 @@ public class SystemInformation(Assembly? assembly = null, Window? window = null,
     /// <summary>
     /// Gets the actual DPI of the active window.
     /// </summary>
-    /// <remarks>
-    /// Falls back to <see cref="WiceCommons.USER_DEFAULT_SCREEN_DPI"/> (typically 96) when no window is available.
-    /// </remarks>
     [Category("Graphics")]
     public uint WindowDpi => (window ?? Application.AllWindows.FirstOrDefault())?.Dpi ?? WiceCommons.USER_DEFAULT_SCREEN_DPI;
 
@@ -85,28 +74,18 @@ public class SystemInformation(Assembly? assembly = null, Window? window = null,
     /// <summary>
     /// Gets the current process token elevation type as a string.
     /// </summary>
-    /// <remarks>
-    /// Converted to string for AOT friendliness to avoid potential enum metadata trimming/reflection issues.
-    /// See <c>SystemUtilities.GetTokenElevationType()</c>.
-    /// </remarks>
     [Category("Process")]
     public new string TokenElevationType => SystemUtilities.GetTokenElevationType().ToString();
 
     /// <summary>
     /// Gets the processor architecture as a string (e.g., X86, X64, Arm64).
     /// </summary>
-    /// <remarks>
-    /// Converted to string for consistent formatting and potential AOT friendliness.
-    /// </remarks>
     [Category("System")]
     public new string ProcessorArchitecture => SystemUtilities.GetProcessorArchitecture().ToString();
 
     /// <summary>
     /// Gets a value indicating whether Tablet PC Pen Extensions are installed on this system.
     /// </summary>
-    /// <remarks>
-    /// Queries <c>GetSystemMetrics(SM_TABLETPC)</c>. Non-zero indicates presence.
-    /// </remarks>
     [Category("System")]
     public bool IsPenExtensionsInstalled => Functions.GetSystemMetrics(SYSTEM_METRICS_INDEX.SM_TABLETPC) != 0;
 

@@ -3,13 +3,6 @@
 /// <summary>
 /// Applies per-channel lookup table transfer curves to the RGBA components of the source.
 /// </summary>
-/// <remarks>
-/// - Each table defines a piecewise linear transfer function with values in [0, 1].
-/// - When a channel Disable flag is true, that channel bypasses the table and passes through unchanged.
-/// - When <see cref="ClampOutput"/> is true, the final output is clamped to the [0, 1] range.
-/// - Default tables map the identity function [0, 1].
-/// </remarks>
-/// <seealso cref="EffectWithSource"/>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1TableTransferString)]
 #else
@@ -70,10 +63,6 @@ public partial class TableTransferEffect : EffectWithSource
     /// <summary>
     /// Gets or sets the lookup table for the red channel.
     /// </summary>
-    /// <remarks>
-    /// Values should be in the [0, 1] range. When <see cref="RedDisable"/> is true, this table is ignored.
-    /// The default is an identity mapping [0, 1].
-    /// </remarks>
     public float[]? RedTable { get => (float[]?)GetPropertyValue(RedTableProperty); set => SetPropertyValue(RedTableProperty, value); }
 
     /// <summary>
@@ -84,10 +73,6 @@ public partial class TableTransferEffect : EffectWithSource
     /// <summary>
     /// Gets or sets the lookup table for the green channel.
     /// </summary>
-    /// <remarks>
-    /// Values should be in the [0, 1] range. When <see cref="GreenDisable"/> is true, this table is ignored.
-    /// The default is an identity mapping [0, 1].
-    /// </remarks>
     public float[]? GreenTable { get => (float[]?)GetPropertyValue(GreenTableProperty); set => SetPropertyValue(GreenTableProperty, value); }
 
     /// <summary>
@@ -98,10 +83,6 @@ public partial class TableTransferEffect : EffectWithSource
     /// <summary>
     /// Gets or sets the lookup table for the blue channel.
     /// </summary>
-    /// <remarks>
-    /// Values should be in the [0, 1] range. When <see cref="BlueDisable"/> is true, this table is ignored.
-    /// The default is an identity mapping [0, 1].
-    /// </remarks>
     public float[]? BlueTable { get => (float[]?)GetPropertyValue(BlueTableProperty); set => SetPropertyValue(BlueTableProperty, value); }
 
     /// <summary>
@@ -112,10 +93,6 @@ public partial class TableTransferEffect : EffectWithSource
     /// <summary>
     /// Gets or sets the lookup table for the alpha channel.
     /// </summary>
-    /// <remarks>
-    /// Values should be in the [0, 1] range. When <see cref="AlphaDisable"/> is true, this table is ignored.
-    /// The default is an identity mapping [0, 1].
-    /// </remarks>
     public float[]? AlphaTable { get => (float[]?)GetPropertyValue(AlphaTableProperty); set => SetPropertyValue(AlphaTableProperty, value); }
 
     /// <summary>

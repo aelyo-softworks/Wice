@@ -3,13 +3,6 @@
 /// <summary>
 /// Represents the Direct2D SpotSpecular lighting effect.
 /// </summary>
-/// <remarks>
-/// - Models a spotlight shining on a height field and computes specular highlights.
-/// - Properties are exposed as both <see cref="EffectProperty"/> descriptors (for D2D interop)
-///   and CLR properties (for easy consumption).
-/// - Numeric setters clamp values to documented ranges to match D2D semantics.
-/// </remarks>
-/// <seealso cref="EffectWithSource"/>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1SpotSpecularString)]
 #else
@@ -90,7 +83,6 @@ public partial class SpotSpecularEffect : EffectWithSource
     /// <summary>
     /// Gets or sets the spotlight focus. Higher values create a tighter beam.
     /// </summary>
-    /// <remarks>Clamped to the range [0, 200].</remarks>
     /// <value>Default is 1.0.</value>
     public float Focus { get => (float)GetPropertyValue(FocusProperty)!; set => SetPropertyValue(FocusProperty, value.Clamp(0f, 200f)); }
 
@@ -98,28 +90,24 @@ public partial class SpotSpecularEffect : EffectWithSource
     /// Gets or sets the limiting cone angle in degrees for the spotlight.
     /// Pixels outside this angle relative to <see cref="PointsAt"/> are not lit.
     /// </summary>
-    /// <remarks>Clamped to the range [0, 90].</remarks>
     /// <value>Default is 90 degrees.</value>
     public float LimitingConeAngle { get => (float)GetPropertyValue(LimitingConeAngleProperty)!; set => SetPropertyValue(LimitingConeAngleProperty, value.Clamp(0f, 90f)); }
 
     /// <summary>
     /// Gets or sets the specular exponent (shininess). Larger values produce smaller, sharper highlights.
     /// </summary>
-    /// <remarks>Clamped to the range [1, 128].</remarks>
     /// <value>Default is 1.0.</value>
     public float SpecularExponent { get => (float)GetPropertyValue(SpecularExponentProperty)!; set => SetPropertyValue(SpecularExponentProperty, value.Clamp(1f, 128f)); }
 
     /// <summary>
     /// Gets or sets the specular constant (intensity multiplier).
     /// </summary>
-    /// <remarks>Clamped to the range [0, 10000].</remarks>
     /// <value>Default is 1.0.</value>
     public float SpecularConstant { get => (float)GetPropertyValue(SpecularConstantProperty)!; set => SetPropertyValue(SpecularConstantProperty, value.Clamp(0f, 10000f)); }
 
     /// <summary>
     /// Gets or sets the height scale of the surface's height map.
     /// </summary>
-    /// <remarks>Clamped to the range [0, 10000].</remarks>
     /// <value>Default is 1.0.</value>
     public float SurfaceScale { get => (float)GetPropertyValue(SurfaceScaleProperty)!; set => SetPropertyValue(SurfaceScaleProperty, value.Clamp(0f, 10000f)); }
 

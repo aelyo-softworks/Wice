@@ -3,12 +3,6 @@
 /// <summary>
 /// Compares <see cref="Visual"/> instances by their <see cref="Visual.ViewOrder"/> to determine drawing/input depth.
 /// </summary>
-/// <remarks>
-/// - Sorting is performed in descending order of <see cref="Visual.ViewOrder"/> (higher values come first).
-/// - This comparer throws <see cref="ArgumentNullException"/> when either argument is <c>null</c>.
-/// - When two visuals have equal <see cref="Visual.ViewOrder"/>, the method returns 0 (no tiebreaker is applied).
-/// - The comparer is stateless and thread-safe.
-/// </remarks>
 public class VisualDepthComparer : IComparer<Visual>
 {
     /// <summary>
@@ -20,7 +14,6 @@ public class VisualDepthComparer : IComparer<Visual>
     /// A value less than zero if <paramref name="x"/> should be ordered before <paramref name="y"/> (i.e., has a higher <see cref="Visual.ViewOrder"/>);
     /// zero if they are equal; greater than zero otherwise.
     /// </returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="x"/> or <paramref name="y"/> is <c>null</c>.</exception>
     public virtual int Compare(Visual? x, Visual? y)
     {
         ExceptionExtensions.ThrowIfNull(x, nameof(x));

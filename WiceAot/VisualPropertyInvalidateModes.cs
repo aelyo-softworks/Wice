@@ -5,13 +5,6 @@
 /// Combine flags to indicate which layout/rendering operations should be re-evaluated,
 /// and whether invalidation should also propagate to the parent visual.
 /// </summary>
-/// <remarks>
-/// - Render: Repaint is required.
-/// - Arrange: A new arrange pass is required.
-/// - Measure: A new measure pass is required.
-/// - Parent*: Propagates the corresponding invalidation to the parent visual.
-/// Flags can be combined using bitwise operations.
-/// </remarks>
 [Flags]
 public enum VisualPropertyInvalidateModes
 {

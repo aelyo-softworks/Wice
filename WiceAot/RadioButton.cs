@@ -4,12 +4,6 @@
 /// A radio-style state button that toggles between two logical states (false/true)
 /// and builds its visual content based on the current <see cref="Value"/>.
 /// </summary>
-/// <remarks>
-/// - Inherits <see cref="StateButton"/> and pre-registers two states: <c>false</c> and <c>true</c>.
-/// - The visual content is created on demand via <see cref="CreateChild(StateButton, EventArgs, StateButtonState)"/>.
-/// - Override <see cref="CreateTrueVisual"/> or <see cref="CreateFalseVisual"/> to customize visuals.
-/// - Implements <see cref="IFocusableParent"/> to let the framework draw a focus ring on an <see cref="Ellipse"/>.
-/// </remarks>
 public partial class RadioButton : StateButton, IFocusableParent
 {
     /// <summary>
@@ -24,10 +18,6 @@ public partial class RadioButton : StateButton, IFocusableParent
     /// <summary>
     /// Gets or sets the boolean state of the radio button.
     /// </summary>
-    /// <remarks>
-    /// This shadows <see cref="StateButton.Value"/> with a strongly-typed <see cref="bool"/>.
-    /// Changing this property updates the visual child to match the closest registered state.
-    /// </remarks>
     [Category(CategoryBehavior)]
     public new bool Value { get => (bool)base.Value!; set => base.Value = value; }
 
@@ -64,10 +54,6 @@ public partial class RadioButton : StateButton, IFocusableParent
     /// <summary>
     /// Visual for the <c>true</c> state: renders an outer stroked disk and an inner filled disk.
     /// </summary>
-    /// <remarks>
-    /// - Uses theme colors for stroke and fill, and updates on theme/DPI changes.
-    /// - Inner disk radius shrinks relative to theme border size.
-    /// </remarks>
     public partial class TrueVisual : Border
     {
         /// <summary>

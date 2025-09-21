@@ -5,12 +5,6 @@
 /// Renders a vector <see cref="Path"/> whose geometry is supplied by the current theme/resource manager,
 /// sized using DPI-aware caption metrics retrieved from DWM.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - During measure, sets a square <see cref="Path"/> size derived from the system caption button height.
-/// - During arrange, fetches and caches the geometry for the current <see cref="ButtonType"/> and size.
-/// - When attached to composition, applies stroke thickness and a default black stroke brush.
-/// </remarks>
 public partial class TitleBarButton : ButtonBase
 {
     private const float _strokeThickness = 1;
@@ -20,7 +14,6 @@ public partial class TitleBarButton : ButtonBase
     /// <summary>
     /// Initializes a new instance of <see cref="TitleBarButton"/> and creates the icon <see cref="Path"/>.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when <see cref="CreatePath"/> returns null.</exception>
     public TitleBarButton()
     {
         Path = CreatePath();
@@ -42,9 +35,6 @@ public partial class TitleBarButton : ButtonBase
     /// <summary>
     /// Gets or sets the semantic type of this title bar button (affects icon geometry).
     /// </summary>
-    /// <remarks>
-    /// Updating the type will update the <see cref="Path.Name"/> for easier debugging/diagnostics.
-    /// </remarks>
     [Category(CategoryBehavior)]
     public TitleBarButtonType ButtonType
     {
@@ -120,14 +110,6 @@ public partial class TitleBarButton : ButtonBase
     /// Returns the DPI-adjusted caption button size (width/height) for the given <paramref name="window"/>.
     /// </summary>
     /// <param name="window">The window whose caption metrics to query.</param>
-    /// <remarks>
-    /// Notes:
-    /// - Depends on DWM's DWMWA_CAPTION_BUTTON_BOUNDS and is only reliable after certain window messages
-    ///   (e.g., SHOWWINDOW, NCPAINT).
-    /// - Assumes three caption buttons to derive individual width; this may vary with configuration/localization.
-    /// - Ensures even height when using an odd stroke thickness to align strokes to device pixels.
-    /// - When <see cref="Window.AdaptToDpi"/> is false, manually adjusts values using the window DPI.
-    /// </remarks>
     /// <returns>A <see cref="SIZE"/> representing a single caption button size.</returns>
     public unsafe static SIZE GetDpiAdjustedCaptionButtonSize(Window window)
     {

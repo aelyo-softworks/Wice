@@ -3,13 +3,6 @@
 /// <summary>
 /// Provides a thin, safe wrapper around a Win32 window handle (HWND) and common window operations.
 /// </summary>
-/// <remarks>
-/// - Exposes convenience properties for geometry, DPI awareness, styles, parent/owner relations, and process details.
-/// - Implements COM drag-and-drop interfaces (<see cref="IDropTarget"/>, <see cref="IDropSource"/>, <see cref="IDropSourceNotify"/>).
-/// - Offers utilities for painting, hit-testing, DWM composition attributes, IME interaction, and input helpers.
-/// - Most methods forward to WiceCommons/Functions P/Invoke helpers while keeping usage ergonomic and discoverable.
-/// Thread affinity: some operations must be invoked on the UI thread; use <see cref="CheckRunningAsMainThread"/>.
-/// </remarks>
 #if !NETFRAMEWORK
 [System.Runtime.InteropServices.Marshalling.GeneratedComClass]
 #endif
@@ -373,7 +366,6 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     /// <summary>
     /// Gets or sets whether this window is registered as a drop target (IDropTarget).
     /// </summary>
-    /// <exception cref="WiceException">Thrown if registration fails and it's not already registered.</exception>
     public bool IsDropTarget
     {
         get => _isDropTarget;
@@ -1064,8 +1056,6 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     /// <param name="windowProc">The WNDPROC pointer.</param>
     /// <param name="background">Background brush.</param>
     /// <returns>True if registered now; false if already registered.</returns>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="windowProc"/> is zero.</exception>
-    /// <exception cref="Win32Exception">Thrown when RegisterClassW fails.</exception>
     internal static bool RegisterWindowClass(string className, WNDCLASS_STYLES styles, nint windowProc, HBRUSH background)
     {
         ExceptionExtensions.ThrowIfNull(className, nameof(className));

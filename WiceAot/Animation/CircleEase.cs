@@ -5,12 +5,6 @@
 /// Transforms normalized time t in [0, 1] using: f(t) = 1 - √(1 - t²),
 /// producing a slow start that accelerates towards the end.
 /// </summary>
-/// <remarks>
-/// - Input is clamped to [0, 1].
-/// - Continuous and monotonic on [0, 1].
-/// - Returns values in [0, 1].
-/// Suitable for animations that should start gently and speed up.
-/// </remarks>
 public class CircleEase : IEasingFunction
 {
     /// <summary>

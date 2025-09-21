@@ -5,11 +5,6 @@
 /// Declares the portion of the input that is guaranteed to be fully opaque, allowing the pipeline
 /// to skip unnecessary blending work when possible.
 /// </summary>
-/// <remarks>
-/// - Requires a single input source (<see cref="EffectWithSource"/>).
-/// - Exposes property index 0: <see cref="InputOpaqueRect"/> mapped as RECT_TO_VECTOR4 (Left, Top, Right, Bottom).
-/// - The default value uses sentinel extremes to indicate an unspecified region.
-/// </remarks>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1OpacityMetadataString)]
 #else
@@ -42,10 +37,6 @@ public partial class OpacityMetadataEffect : EffectWithSource
     /// Gets or sets the rectangle (in DIPs) that is fully opaque in the input.
     /// Stored as a <see cref="D2D_VECTOR_4F"/> representing (Left, Top, Right, Bottom).
     /// </summary>
-    /// <remarks>
-    /// - Mapped to D2D as RECT_TO_VECTOR4.
-    /// - Changing this value triggers a render invalidation.
-    /// </remarks>
     public D2D_VECTOR_4F InputOpaqueRect
     {
         get => (D2D_VECTOR_4F)GetPropertyValue(InputOpaqueRectProperty)!;

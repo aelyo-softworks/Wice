@@ -3,13 +3,6 @@
 /// <summary>
 /// A draggable splitter visual used inside a <see cref="Grid"/> to resize adjacent rows or columns.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - Orientation is inferred from the assigned Grid.Row or Grid.Column attached property.
-/// - When dragged, resizes the two dimensions adjacent to the splitter while honoring Min/Max constraints.
-/// - ESC cancels the drag and restores sizes; mouse release commits the change.
-/// - Auto-sizes itself to the theme's default splitter thickness along the relevant axis.
-/// </remarks>
 public partial class GridSplitter : Visual
 {
     /// <summary>

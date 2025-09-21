@@ -3,10 +3,6 @@
 /// <summary>
 /// Specifies how content is positioned along an axis or within the available layout space.
 /// </summary>
-/// <remarks>
-/// Near maps to left (horizontal) or top (vertical); Far maps to right (horizontal) or bottom (vertical).
-/// Stretch consumes the available space along the axis.
-/// </remarks>
 public enum Alignment
 {
     /// <summary>

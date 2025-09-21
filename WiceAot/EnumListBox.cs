@@ -7,10 +7,6 @@
 /// - Selecting an item of type <see cref="EnumBitValue"/> updates <see cref="Value"/> accordingly.
 /// - Changes to <see cref="Value"/> raise <see cref="ValueChanged"/>.
 /// </summary>
-/// <remarks>
-/// The control defers (re)binding until the first assignment of a different enum <see cref="Type"/> to optimize work.
-/// Non-enum values are rejected by the property converter.
-/// </remarks>
 public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
 {
     /// <summary>
@@ -47,7 +43,6 @@ public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
     /// <param name="obj">The target object (expected to be an <see cref="EnumListBox"/>).</param>
     /// <param name="value">The value being set.</param>
     /// <returns>The validated value.</returns>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="value"/> is non-null and not an enum.</exception>
     internal static object? EnumTypeCheck(BaseObject obj, object? value)
     {
         if (value != null)
@@ -71,7 +66,6 @@ public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
     /// Gets or sets the current enum value represented by this control.
     /// Assigning a new enum type schedules a rebind of the <see cref="ListBox.DataSource"/>.
     /// </summary>
-    /// <exception cref="ArgumentException">When assigned value is not an enum (enforced by <see cref="EnumTypeCheck(BaseObject, object?)"/>).</exception>
     [Category(CategoryBehavior)]
     public object Value { get => GetPropertyValue(ValueProperty)!; set => SetPropertyValue(ValueProperty, value); }
 

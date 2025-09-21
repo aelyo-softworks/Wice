@@ -3,21 +3,12 @@
 /// <summary>
 /// Provides per-property configuration for <c>PropertyGrid</c> rendering and editing.
 /// </summary>
-/// <remarks>
-/// Use this attribute on a property to control:
-/// - The sort order within its category (<see cref="SortOrder"/>).
-/// - The editor creation strategy via a custom editor factory type (<see cref="EditorType"/>).
-/// If no custom editor creator is supplied or it produces <see langword="null"/>, the grid falls back to the default editor.
-/// </remarks>
 [AttributeUsage(AttributeTargets.Property)]
 public sealed class PropertyGridPropertyOptionsAttribute : Attribute
 {
     /// <summary>
     /// Gets or sets the explicit sort order of the property within its category/group.
     /// </summary>
-    /// <remarks>
-    /// Lower values are displayed earlier. Defaults to <c>0</c>.
-    /// </remarks>
     public int SortOrder { get; set; }
 
     /// <summary>

@@ -4,11 +4,6 @@
 /// Represents an <see cref="InvalidateReason"/> that is tied to a specific
 /// <see cref="BaseObjectProperty"/> which triggered the invalidation.
 /// </summary>
-/// <remarks>
-/// The base <see cref="InvalidateReason"/> captures the owning <see cref="Type"/> and an optional
-/// inner reason to form a causal chain. This subclass adds the <see cref="Property"/> that initiated
-/// the invalidation and augments the diagnostic string to include the property's name.
-/// </remarks>
 public class PropertyInvalidateReason
     : InvalidateReason
 {
@@ -17,7 +12,6 @@ public class PropertyInvalidateReason
     /// </summary>
     /// <param name="property">The property that triggered the invalidation.</param>
     /// <param name="innerReason">An optional inner reason composing a causal chain.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="property"/> is <c>null</c>.</exception>
     public PropertyInvalidateReason(BaseObjectProperty property, InvalidateReason? innerReason = null)
         : base(property.DeclaringType!, innerReason)
     {

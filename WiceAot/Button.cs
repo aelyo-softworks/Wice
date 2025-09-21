@@ -4,25 +4,12 @@
 /// A themed button composed of two <see cref="TextBox"/> children: an icon glyph and a text label,
 /// hosted inside a panel (<see cref="Dock"/> by default).
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - Focusable and clickable (via <see cref="ButtonBase"/>).
-/// - Sizes itself to its content by centering both horizontal and vertical alignments.
-/// - Applies background styling from the current window theme when attached to composition.
-/// - Dynamically updates spacing between icon and text on theme/DPI changes or when either text value changes.
-/// </remarks>
-/// <seealso cref="ButtonBase"/>
-/// <seealso cref="TextBox"/>
-/// <seealso cref="Dock"/>
 public partial class Button : ButtonBase
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Button"/> class.
     /// Creates the panel, icon, and text visuals; wires property change handlers; and configures default alignments.
     /// </summary>
-    /// <exception cref="InvalidOperationException">
-    /// Thrown when <see cref="CreateIcon"/> or <see cref="CreateText"/> returns <see langword="null"/>.
-    /// </exception>
     public Button()
     {
         IsFocusable = true;
@@ -58,32 +45,24 @@ public partial class Button : ButtonBase
     /// <summary>
     /// Gets the icon text box used to render a symbol/glyph.
     /// </summary>
-    /// <remarks>
-    /// Uses the window theme's <c>SymbolFontName</c>, is centered, color-font enabled, and is disabled to prevent user editing.
-    /// </remarks>
     [Browsable(false)]
     public TextBox Icon { get; }
 
     /// <summary>
     /// Gets the text label of the button.
     /// </summary>
-    /// <remarks>
-    /// Centered, color-font enabled, and disabled to prevent user editing. Update its <see cref="TextBox.Text"/> to change the label.
-    /// </remarks>
     [Browsable(false)]
     public TextBox Text { get; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the button's style (background brush) is updated from the window theme.
     /// </summary>
-    /// <remarks>When true, <see cref="UpdateStyle"/> applies <c>Theme.ButtonColor</c> to <see cref="RenderVisual.RenderBrush"/>.</remarks>
     [Browsable(false)]
     public bool UpdateStyleFromTheme { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether margins are recomputed when the icon or text content changes.
     /// </summary>
-    /// <remarks>When true, changing <see cref="TextBox.Text"/> on <see cref="Icon"/> or <see cref="Text"/> triggers <see cref="UpdateMargins"/>.</remarks>
     [Browsable(false)]
     public bool UpdateMarginsOnPropertyChanged { get; set; } = true;
 
@@ -157,12 +136,6 @@ public partial class Button : ButtonBase
     /// <summary>
     /// Computes and applies margins for <see cref="Icon"/> and <see cref="Text"/> based on their content presence.
     /// </summary>
-    /// <remarks>
-    /// Rules:
-    /// - Both icon and text present: adds left spacing to the icon and left spacing to the text (with a slight vertical tweak for the icon).
-    /// - Only text present: applies uniform theme margin to the text; clears icon margin.
-    /// - Neither or only icon present: clears both margins so the content hugs the button edge.
-    /// </remarks>
     protected virtual void UpdateMargins()
     {
         if (!string.IsNullOrEmpty(Icon.Text) && !string.IsNullOrEmpty(Text.Text))

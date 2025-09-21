@@ -3,13 +3,6 @@
 /// <summary>
 /// Defines the visibility and behavior of scroll bars for a scrollable viewport.
 /// </summary>
-/// <remarks>
-/// Semantics are aligned with common UI frameworks:
-/// - Disabled: no scrolling and no scroll bars.
-/// - Auto: show scroll bars only when content overflows.
-/// - Hidden: scrolling allowed without visible scroll bars.
-/// - Visible: scroll bars are always shown.
-/// </remarks>
 public enum ScrollBarVisibility
 {
     /// <summary>

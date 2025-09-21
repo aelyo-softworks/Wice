@@ -3,19 +3,6 @@
 /// <summary>
 /// Base type providing a thread-safe property bag with change/error notification plumbing.
 /// </summary>
-/// <remarks>
-/// - Values are stored per instance in a <see cref="ConcurrentDictionary{TKey, TValue}"/> keyed by
-///   <see cref="BaseObjectProperty.Id"/>.
-/// - Property setting supports conversion (<see cref="BaseObjectProperty.Convert"/>), veto via
-///   <see cref="BaseObjectProperty.Changing"/>, and post-change callbacks via
-///   <see cref="BaseObjectProperty.Changed"/>.
-/// - Change notification follows the standard .NET patterns
-///   (<see cref="INotifyPropertyChanging"/>, <see cref="INotifyPropertyChanged"/>,
-///   <see cref="INotifyDataErrorInfo"/>), and can be controlled with <see cref="BaseObjectSetOptions"/>.
-/// - Instances receive a unique, incrementing <see cref="Id"/> and are tracked globally to allow
-///   <see cref="GetById(int)"/> lookup. This map is weakly held only by ID; instances are not kept alive
-///   by this class.
-/// </remarks>
 public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChanging, IDataErrorInfo, INotifyDataErrorInfo, IPropertyOwner
 {
     /// <summary>Category name used for base properties in designers.</summary>
@@ -411,14 +398,6 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
     /// <param name="value">The new value to set. May be converted using <see cref="BaseObjectProperty.Convert"/>.</param>
     /// <param name="options">Optional behavioral flags (notifications, equality checks, etc.).</param>
     /// <returns><see langword="true"/> if the stored value changed; otherwise, <see langword="false"/>.</returns>
-    /// <remarks>
-    /// Notification flow:
-    /// 1. If changing, and not suppressed, raises <see cref="PropertyChanging"/> prior to storage.
-    /// 2. Value is stored if not deemed equal (unless equality testing is disabled) and not vetoed by <see cref="BaseObjectProperty.Changing"/>.
-    /// 3. <see cref="BaseObjectProperty.Changed"/> callback is invoked if provided.
-    /// 4. If changed (or forced), raises <see cref="PropertyChanged"/> and any additional names in <see cref="BaseObjectProperty.PropertyNameChanges"/>.
-    /// 5. If enabled, compares old vs new <see cref="GetErrors(string?)"/> and raises <see cref="ErrorsChanged"/> when different (or forced).
-    /// </remarks>
     protected virtual bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         ExceptionExtensions.ThrowIfNull(property, nameof(property));

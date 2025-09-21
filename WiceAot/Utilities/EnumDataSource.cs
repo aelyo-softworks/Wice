@@ -4,15 +4,6 @@
 /// Provides a <see cref="DataSource"/> specialized for enumerations, exposing each enum member
 /// as an <see cref="EnumBitValue"/> and computing selection state based on a provided enum value.
 /// </summary>
-/// <remarks>
-/// - For regular enums, <see cref="FromType(Type, object?, bool?)"/> marks as selected the single member equal to <paramref name="value"/>.
-/// - For <see cref="FlagsAttribute"/> enums, it marks as selected each member whose bit is set in <paramref name="value"/> (zero is skipped).
-/// - Browsability: enum fields decorated with <see cref="System.ComponentModel.BrowsableAttribute"/> set to <c>false</c> are excluded.
-/// - Display: enum fields decorated with <see cref="System.ComponentModel.DescriptionAttribute"/> use that text; otherwise the name is de-camelized via <c>Conversions.Decamelize</c>.
-/// - Trimming: members that perform reflection are annotated with <see cref="System.Diagnostics.CodeAnalysis.DynamicallyAccessedMembersAttribute"/> to assist the linker.
-/// </remarks>
-/// <seealso cref="EnumBitValue"/>
-/// <seealso cref="DataSource"/>
 public partial class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
 {
     private EnumDataSource(IEnumerable<EnumBitValue> values)
@@ -40,10 +31,6 @@ public partial class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
     /// An <see cref="EnumDataSource"/> that enumerates the members of <paramref name="value"/>'s type and reflects its selection state,
     /// or <c>null</c> when <paramref name="value"/> is <c>null</c>.
     /// </returns>
-    /// <remarks>
-    /// This forwards to <see cref="FromType(Type, object?, bool?)"/> using <see cref="object.GetType"/> of <paramref name="value"/>.
-    /// The pragma around the call suppresses trimming warnings because the type is discovered at runtime.
-    /// </remarks>
     public static EnumDataSource? FromValue(object? value)
     {
         if (value == null)
@@ -68,10 +55,6 @@ public partial class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
     /// - <c>null</c> (default) auto-detects via <c>Conversions.IsFlagsEnum(type)</c>.
     /// </param>
     /// <returns>An <see cref="EnumDataSource"/> over the enum members.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> is <c>null</c>.</exception>
-    /// <exception cref="ArgumentException">
-    /// Thrown when <paramref name="type"/> is not an enum, or when <paramref name="value"/> is not assignable to <paramref name="type"/>.
-    /// </exception>
     public static EnumDataSource FromType(
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicFields)]
         Type type,

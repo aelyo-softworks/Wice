@@ -8,15 +8,6 @@
 /// The selected object type hosted by the grid. Marked with
 /// <see cref="DynamicallyAccessedMemberTypes.PublicProperties"/> to cooperate with trimming/AOT.
 /// </typeparam>
-/// <remarks>
-/// Responsibilities:
-/// - Holds reflection metadata (<see cref="Info"/>) and presentation metadata (<see cref="DisplayName"/>, <see cref="Description"/>, <see cref="Category"/>).
-/// - Manages the editable <see cref="Value"/> and conversion to the target <see cref="Type"/> via <c>Conversions</c>.
-/// - Coordinates live synchronization (<see cref="LiveSync"/>) with the underlying object and editor updates.
-/// - Surfaces validation errors through <see cref="INotifyDataErrorInfo"/> when the source implements
-///   <see cref="IPropertyGridPropertyValidator{T}"/>.
-/// - Supports default values via <see cref="DefaultValueAttribute"/> and commit/rollback semantics.
-/// </remarks>
 public partial class PropertyGridProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : BaseObject, IComparable, IComparable<PropertyGridProperty<T>>
 {
     /// <summary>
@@ -82,7 +73,6 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// </summary>
     /// <param name="source">The property source owning this wrapper.</param>
     /// <param name="info">The reflected property to wrap.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="source"/> or <paramref name="info"/> is null.</exception>
     public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -259,14 +249,6 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// <summary>
     /// Gets or sets a string representation of <see cref="Value"/> suitable for text editors.
     /// </summary>
-    /// <remarks>
-    /// Conversion rules:
-    /// - <see cref="string"/> values are returned as-is.<br/>
-    /// - <see cref="byte"/>[] are formatted as hexadecimal (compact) via <c>ToHexa(7, true)</c>.<br/>
-    /// - <see cref="IEnumerable"/> values are concatenated via <see cref="string.Join(string, object[])"/>.<br/>
-    /// - Otherwise uses <c>Conversions.ChangeType&lt;string&gt;()</c>.<br/>
-    /// Setting assigns directly to <see cref="Value"/>.
-    /// </remarks>
     public virtual string? TextValue
     {
         get

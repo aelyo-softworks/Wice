@@ -7,10 +7,6 @@
 /// The CLR type of the selected object the property belongs to. Public properties of <typeparamref name="T"/> are
 /// preserved for trimming via <see cref="DynamicallyAccessedMemberTypes.PublicProperties"/>.
 /// </typeparam>
-/// <remarks>
-/// Simple data holder used by the PropertyGrid to keep the label and value editor together. Lifetime of the visuals
-/// is managed by the grid.
-/// </remarks>
 public class PropertyVisuals<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>
 {
     /// <summary>

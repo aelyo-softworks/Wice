@@ -3,10 +3,6 @@
 /// <summary>
 /// Represents a parent that can host a single child <see cref="Visual"/>.
 /// </summary>
-/// <remarks>
-/// Implementors typically manage layout/measure for the single child and may treat
-/// a <see langword="null"/> child as "no content".
-/// </remarks>
 public interface IOneChildParent
 {
     /// <summary>

@@ -3,10 +3,6 @@
 /// <summary>
 /// Provides event data for legacy mouse-based drag gestures on a <see cref="Visual"/>.
 /// </summary>
-/// <remarks>
-/// Raised by <see cref="Visual.OnMouseDrag(object?, DragEventArgs)"/> while a drag move is in progress.
-/// Coordinates are window-relative. For OLE drag/drop, see <see cref="DragDropEventArgs"/>.
-/// </remarks>
 /// <param name="x">The X coordinate in window space where the drag event occurred.</param>
 /// <param name="y">The Y coordinate in window space where the drag event occurred.</param>
 /// <param name="keys">The modifier/button state at the time of the event.</param>

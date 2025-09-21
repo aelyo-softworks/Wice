@@ -7,9 +7,6 @@
 /// <param name="message">The numeric message identifier (e.g., WM_*).</param>
 /// <param name="wParam">The WPARAM value associated with the message.</param>
 /// <param name="lParam">The LPARAM value associated with the message.</param>
-/// <remarks>
-/// Set <see cref="HandledEventArgs.Handled"/> to true and assign <see cref="Result"/> to override default message processing.
-/// </remarks>
 public class WindowMessageEventArgs(HWND handle, uint message, WPARAM wParam, LPARAM lParam) : HandledEventArgs
 {
     /// <summary>
@@ -35,9 +32,6 @@ public class WindowMessageEventArgs(HWND handle, uint message, WPARAM wParam, LP
     /// <summary>
     /// Gets or sets the result that should be returned to the window procedure when the event is handled.
     /// </summary>
-    /// <remarks>
-    /// If <see cref="HandledEventArgs.Handled"/> is set to true, the window procedure will return this value to the caller.
-    /// </remarks>
     public virtual LRESULT Result { get; set; }
 
     /// <summary>

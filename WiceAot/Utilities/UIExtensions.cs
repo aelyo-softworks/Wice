@@ -37,12 +37,6 @@ public static class UIExtensions
     /// <summary>
     /// Configures a specified range of text within a <see cref="TextBox"/> to behave as a hyperlink.
     /// </summary>
-    /// <remarks>This method enhances the specified text within the <see cref="TextBox"/> to visually and
-    /// functionally  behave as a hyperlink. It applies underline styling, adjusts font weight, and changes the text
-    /// color  based on the hyperlink's state (normal, hover, or disabled). Additionally, it handles mouse events  to
-    /// provide interactivity, such as changing the cursor to a hand icon and invoking the <paramref name="onClick"/> 
-    /// callback or opening the hyperlink in the default browser if the callback is not provided or does not handle the
-    /// event.</remarks>
     /// <param name="textBox">The <see cref="TextBox"/> in which the hyperlink range is set. Cannot be <see langword="null"/>.</param>
     /// <param name="text">The text to be treated as a hyperlink. Cannot be <see langword="null"/>.</param>
     /// <param name="onClick">An optional callback function that is invoked when the hyperlink is clicked.  If provided, the function receives
@@ -230,7 +224,6 @@ public static class UIExtensions
     /// <param name="selectables">The collection to process (may be null).</param>
     /// <param name="selectionCompareFunc">Predicate that returns true for items that should be selected.</param>
     /// <param name="raiseIsSelectedChanged">When true, toggles <see cref="ISelectable.RaiseIsSelectedChanged"/> to raise change events.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="selectionCompareFunc"/> is null.</exception>
     public static void Select(this IEnumerable<ISelectable> selectables, Func<ISelectable, bool> selectionCompareFunc, bool raiseIsSelectedChanged = false)
     {
         ExceptionExtensions.ThrowIfNull(selectionCompareFunc, nameof(selectionCompareFunc));
@@ -284,7 +277,6 @@ public static class UIExtensions
     /// <param name="name">The property name.</param>
     /// <param name="flags">Binding flags applied to the lookup.</param>
     /// <returns>The matching property or null when not found.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> or <paramref name="name"/> is null.</exception>
     public static PropertyInfo GetUnambiguousProperty(this Type type, string name, BindingFlags flags = BindingFlags.Public | BindingFlags.Instance)
     {
         if (type == null)
@@ -401,7 +393,6 @@ public static class UIExtensions
     /// <param name="type">The type to inspect.</param>
     /// <param name="name">The property name.</param>
     /// <returns>The matching property or null when not found.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> or <paramref name="name"/> is null.</exception>
     public static PropertyInfo? GetUnambiguousProperty(
 #if !NETFRAMEWORK
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
@@ -446,7 +437,6 @@ public static class UIExtensions
     /// <param name="visual">The target visual.</param>
     /// <param name="handler">The handler invoked on click.</param>
     /// <returns>An opaque handler token that must be passed to <see cref="RemoveOnClick(Visual, object)"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="visual"/> or <paramref name="handler"/> is null.</exception>
     public static object AddOnClick(this Visual visual, EventHandler handler)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -468,7 +458,6 @@ public static class UIExtensions
     /// </summary>
     /// <param name="visual">The target visual.</param>
     /// <param name="handler">The token returned by <see cref="AddOnClick(Visual, EventHandler)"/>.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="visual"/> or <paramref name="handler"/> is null.</exception>
     public static void RemoveOnClick(this Visual visual, object handler)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -533,7 +522,6 @@ public static class UIExtensions
     /// <param name="onCompleted">Optional completion callback.</param>
     /// <param name="types">Batch types (default Animation).</param>
     /// <returns>The created batch.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="compositor"/> or <paramref name="action"/> is null.</exception>
     public static CompositionScopedBatch RunScopedBatch(this Compositor compositor, Action action, Action? onCompleted = null, CompositionBatchTypes types = CompositionBatchTypes.Animation)
     {
         ExceptionExtensions.ThrowIfNull(compositor, nameof(compositor));
@@ -576,7 +564,6 @@ public static class UIExtensions
     /// <param name="drawAction">The drawing callback.</param>
     /// <param name="options">Optional surface creation options.</param>
     /// <param name="rect">Optional rect passed to BeginDraw.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="visual"/>, <paramref name="device"/>, or <paramref name="drawAction"/> is null.</exception>
     public static void DrawOnSurface(this SpriteVisual visual, CompositionGraphicsDevice device, Action<IComObject<ID2D1DeviceContext>> drawAction, SurfaceCreationOptions? options = null, RECT? rect = null)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -614,7 +601,6 @@ public static class UIExtensions
     /// <param name="drawAction">The drawing callback.</param>
     /// <param name="options">Optional surface creation options.</param>
     /// <returns>The value returned by <paramref name="drawAction"/>, or default if the surface is not available.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="visual"/>, <paramref name="device"/>, or <paramref name="drawAction"/> is null.</exception>
     public static T? DrawOnSurface<T>(this SpriteVisual visual, CompositionGraphicsDevice device, Func<IComObject<ID2D1DeviceContext>, T> drawAction, SurfaceCreationOptions? options = null)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -655,7 +641,6 @@ public static class UIExtensions
     /// <param name="device">The graphics device.</param>
     /// <param name="options">Optional surface creation options.</param>
     /// <returns>The drawing surface or null when the visual size is too small to draw.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="visual"/> is null.</exception>
     public static CompositionDrawingSurface? EnsureDrawingSurface(this SpriteVisual visual, CompositionGraphicsDevice device, SurfaceCreationOptions? options = null)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));

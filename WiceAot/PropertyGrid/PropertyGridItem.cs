@@ -4,10 +4,6 @@
 /// Represents a single item (row) in a property grid, exposing a name, value, and helper flags
 /// used by editors and styling (unset, zero, tri-state checked).
 /// </summary>
-/// <remarks>
-/// Backed by <see cref="VisualProperty"/> descriptors so that value changes participate in the
-/// UI invalidation pipeline. All properties on this item trigger a render invalidation when changed.
-/// </remarks>
 public partial class PropertyGridItem : BaseObject
 {
     /// <summary>

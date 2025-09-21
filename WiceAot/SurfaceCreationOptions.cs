@@ -3,9 +3,6 @@
 /// <summary>
 /// Defines options that control how a drawing surface is created and rendered.
 /// </summary>
-/// <remarks>
-/// Intended to be passed when creating rendering surfaces within Wice components.
-/// </remarks>
 public class SurfaceCreationOptions
 {
     /// <summary>

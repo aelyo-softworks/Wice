@@ -3,11 +3,6 @@
 /// <summary>
 /// Wraps the Direct2D Shadow effect.
 /// </summary>
-/// <remarks>
-/// - Requires a primary input source (<see cref="EffectWithSource.Source"/>).
-/// - Exposes the standard deviation for the blur kernel, the shadow color, and an optimization mode.
-/// - Properties are registered with explicit effect parameter indices and mapping hints for D2D.
-/// </remarks>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1ShadowString)]
 #else
@@ -18,31 +13,16 @@ public partial class ShadowEffect : EffectWithSource
     /// <summary>
     /// Effect property descriptor for <see cref="BlurStandardDeviation"/>.
     /// </summary>
-    /// <remarks>
-    /// - Index: 0 (effect parameter index).
-    /// - Mapping: <see cref="GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_DIRECT"/>.
-    /// - Default: 3.0f.
-    /// </remarks>
     public static EffectProperty BlurStandardDeviationProperty { get; }
 
     /// <summary>
     /// Effect property descriptor for <see cref="Color"/>.
     /// </summary>
-    /// <remarks>
-    /// - Index: 0 (effect parameter index).
-    /// - Mapping: <see cref="GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_COLOR_TO_VECTOR4"/> (RGBA to Vector4).
-    /// - Default: Black (A=1, R=0, G=0, B=0).
-    /// </remarks>
     public static EffectProperty ColorProperty { get; }
 
     /// <summary>
     /// Effect property descriptor for <see cref="Optimization"/>.
     /// </summary>
-    /// <remarks>
-    /// - Index: 0 (effect parameter index).
-    /// - Mapping: <see cref="GRAPHICS_EFFECT_PROPERTY_MAPPING.GRAPHICS_EFFECT_PROPERTY_MAPPING_DIRECT"/>.
-    /// - Default: <see cref="D2D1_SHADOW_OPTIMIZATION.D2D1_SHADOW_OPTIMIZATION_BALANCED"/>.
-    /// </remarks>
     public static EffectProperty OptimizationProperty { get; }
 
     static ShadowEffect()
@@ -61,9 +41,6 @@ public partial class ShadowEffect : EffectWithSource
     /// <summary>
     /// Gets or sets the shadow color.
     /// </summary>
-    /// <remarks>
-    /// The value is mapped to a Vector4 by the effect pipeline using COLOR_TO_VECTOR4 semantics.
-    /// </remarks>
     public D3DCOLORVALUE Color { get => (D3DCOLORVALUE)GetPropertyValue(ColorProperty)!; set => SetPropertyValue(ColorProperty, value); }
 
     /// <summary>

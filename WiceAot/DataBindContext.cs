@@ -5,12 +5,6 @@
 /// including the bound <see cref="Data"/> item, the visuals involved in the binding,
 /// and a case-insensitive extensible property bag.
 /// </summary>
-/// <remarks>
-/// Typical usage:
-/// - <see cref="DataBinder.ItemVisualCreator"/> and <see cref="DataBinder.DataItemVisualCreator"/> create visuals for an item.
-/// - <see cref="DataBinder.DataItemVisualBinder"/> binds data to visuals using this context.
-/// The <see cref="Properties"/> bag enables passing arbitrary values across these steps.
-/// </remarks>
 /// <param name="data">The source data object being bound. May be <see langword="null"/>.</param>
 public class DataBindContext(object? data)
 {
@@ -52,11 +46,6 @@ public class DataBindContext(object? data)
     /// - The result of <see cref="IBindingDisplayName.GetName(object)"/> when implemented and non-null;<br/>
     /// - Otherwise, <see cref="object.ToString"/> of <see cref="Data"/> (via <see cref="string.Format(string, object?)"/>).
     /// </returns>
-    /// <remarks>
-    /// Implementations of <see cref="IBindingDisplayName"/> are encouraged not to return <see langword="null"/>;
-    /// however, this method gracefully falls back to <see cref="object.ToString"/> when they do.
-    /// </remarks>
-    /// <seealso cref="IBindingDisplayName"/>
     public virtual string GetDisplayName(object? context = null)
     {
         context ??= this;

@@ -4,9 +4,6 @@
 /// Provides functionality for managing a composition visual tree, including creating and rendering visuals on a
 /// dedicated thread. It can also be used to create DirectX-based graphics objects on another thread in a Direct Composition context.
 /// </summary>
-/// <remarks>This class is designed to manage a composition visual tree for rendering purposes. It ensures that
-/// all operations related to the visual tree are executed on a dedicated thread. The class provides methods for
-/// creating and rendering visuals, as well as managing resources associated with the visual tree.</remarks>
 public partial class CompositionVisualTree : IDisposable
 {
     private readonly SingleThreadTaskScheduler _scheduler;

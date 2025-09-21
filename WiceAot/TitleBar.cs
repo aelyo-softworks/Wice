@@ -5,16 +5,6 @@
 /// Hosts a title text and standard window caption buttons (Minimize, Maximize/Restore, Close),
 /// aligns them using <see cref="Dock"/> semantics, and integrates with the <see cref="Window"/>.
 /// </summary>
-/// <remarks>
-/// Key responsibilities:
-/// - Computes its height from DPI-adjusted caption button metrics.
-/// - Updates caption buttons and title text based on the owning <see cref="Window"/> or <see cref="ITitleBarParent"/>.
-/// - Provides hit testing results compatible with non-client caption interactions via <see cref="HT"/> values.
-/// - Can designate itself as the main window title bar through <see cref="IsMain"/>.
-/// </remarks>
-/// <seealso cref="Dock"/>
-/// <seealso cref="TitleBarButton"/>
-/// <seealso cref="Window"/>
 public partial class TitleBar : Dock
 {
     private bool _isMain;
@@ -22,10 +12,6 @@ public partial class TitleBar : Dock
     /// <summary>
     /// Occurs after the title bar updates its layout-related metrics and button sizes.
     /// </summary>
-    /// <remarks>
-    /// The event argument contains the DPI-adjusted caption button <see cref="SIZE"/> coming from
-    /// <see cref="TitleBarButton.GetDpiAdjustedCaptionButtonSize(Window)"/>.
-    /// </remarks>
     public event EventHandler<ValueEventArgs<SIZE>>? Updated;
 
     /// <summary>
@@ -149,10 +135,6 @@ public partial class TitleBar : Dock
     /// <summary>
     /// Gets or sets a value indicating whether this title bar instance is the main title bar for the window.
     /// </summary>
-    /// <remarks>
-    /// When set to true and attached to a <see cref="Window"/>, this instance is assigned to
-    /// <see cref="Window.MainTitleBar"/> and ensures the window style contains caption-related flags.
-    /// </remarks>
     [Category(CategoryBehavior)]
     public virtual bool IsMain
     {
@@ -258,12 +240,6 @@ public partial class TitleBar : Dock
     /// A matching <see cref="HT"/> value when a caption button is hit or the caption area itself,
     /// otherwise <see langword="null"/> when the hit occurs on an "other" child visual.
     /// </returns>
-    /// <remarks>
-    /// - Close button: <see cref="HT.HTCLOSE"/><br/>
-    /// - Maximize/Restore: <see cref="HT.HTMAXBUTTON"/><br/>
-    /// - Minimize: <see cref="HT.HTMINBUTTON"/><br/>
-    /// - Caption drag area: <see cref="HT.HTCAPTION"/>
-    /// </remarks>
     protected virtual internal HT? HitTest(D2D_RECT_F bounds)
     {
         if (CloseButton?.AbsoluteRenderBounds.Contains(bounds) == true)
@@ -288,12 +264,6 @@ public partial class TitleBar : Dock
     /// Updates visual state (sizes, brushes, title text, and button types) to reflect the current
     /// window DPI and zoomed state, and raises <see cref="Updated"/>.
     /// </summary>
-    /// <remarks>
-    /// - Adjusts button width/height to the current caption size.<br/>
-    /// - Applies hover brushes (red for close; light gray for others).<br/>
-    /// - Updates title text from <see cref="ITitleBarParent"/> when available, otherwise from <see cref="Window"/> when <see cref="IsMain"/> is true.<br/>
-    /// - Switches the maximize button to restore when the window is zoomed.
-    /// </remarks>
     protected virtual internal void Update()
     {
         var window = Window;

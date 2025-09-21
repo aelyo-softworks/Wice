@@ -13,10 +13,6 @@
 /// <param name="orientation">
 /// Axis of the wheel movement for devices that support horizontal scrolling as well as vertical.
 /// </param>
-/// <remarks>
-/// The normalized number of wheel detents is exposed via <see cref="Delta"/> and is computed as
-/// <c>delta / Constants.WHEEL_DELTA</c>.
-/// </remarks>
 public class PointerWheelEventArgs(uint pointerId, int x, int y, int delta, Orientation orientation) : PointerPositionEventArgs(pointerId, x, y)
 {
     /// <summary>

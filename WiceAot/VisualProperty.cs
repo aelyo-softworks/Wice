@@ -5,16 +5,6 @@
 /// augmenting <see cref="BaseObjectProperty"/> with invalidation semantics for
 /// the layout/render pipeline and a helper to resolve values up the visual tree.
 /// </summary>
-/// <remarks>
-/// - Associates an <see cref="InvalidateMode"/> set (via <see cref="VisualPropertyInvalidateModes"/>)
-///   with the property to drive layout/arrange/render invalidations when the value changes.
-/// - Provides hierarchical value resolution via <see cref="GetValue(Visual, bool)"/> by walking
-///   up <see cref="Visual.Parent"/> when no local value is present.
-/// - Instances are created and registered through the static <c>Add</c> helpers, which freeze
-///   metadata and participate in the global property registry defined by <see cref="BaseObjectProperty"/>.
-/// </remarks>
-/// <seealso cref="BaseObjectProperty"/>
-/// <seealso cref="Visual"/>
 public class VisualProperty : BaseObjectProperty
 {
     /// <summary>
@@ -85,7 +75,6 @@ public class VisualProperty : BaseObjectProperty
     /// <param name="changing">Optional veto hook invoked before storage.</param>
     /// <param name="changed">Optional callback invoked after storage.</param>
     /// <param name="options">Behavior flags (e.g., UI-thread requirements).</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="declaringType"/> is <see langword="null"/>.</exception>
     public VisualProperty(
         Type declaringType,
         string name,
@@ -108,10 +97,6 @@ public class VisualProperty : BaseObjectProperty
     /// <summary>
     /// Gets or sets the invalidation modes that should be triggered when this property's value changes.
     /// </summary>
-    /// <remarks>
-    /// The value is mutable until the descriptor is frozen during registration.
-    /// </remarks>
-    /// <exception cref="InvalidOperationException">Thrown if set after the property has been frozen.</exception>
     public virtual VisualPropertyInvalidateModes InvalidateModes { get => _invalidateModes; set { if (IsFrozen) throw new InvalidOperationException(); _invalidateModes = value; } }
 
     /// <summary>
@@ -126,8 +111,6 @@ public class VisualProperty : BaseObjectProperty
     /// The stored value if present; otherwise, the first ancestor value (when <paramref name="recursive"/> is true);
     /// otherwise the converted <see cref="BaseObjectProperty.DefaultValue"/>.
     /// </returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="target"/> is <see langword="null"/>.</exception>
-    /// <seealso cref="BaseObjectProperty.GetValue(BaseObject)"/>
     public virtual object? GetValue(Visual target, bool recursive = true)
     {
         ExceptionExtensions.ThrowIfNull(target, nameof(target));
@@ -145,7 +128,6 @@ public class VisualProperty : BaseObjectProperty
     /// </summary>
     /// <param name="mode">The basic invalidate mode.</param>
     /// <returns>The equivalent visual property invalidation flag.</returns>
-    /// <exception cref="NotSupportedException">When <paramref name="mode"/> is not a supported value.</exception>
     public static VisualPropertyInvalidateModes ToInvalidateModes(InvalidateMode mode) => mode switch
     {
         InvalidateMode.Render => VisualPropertyInvalidateModes.Render,

@@ -31,9 +31,6 @@ public class ValueEventArgs(object? value, bool isValueReadOnly = true, bool isC
     /// <summary>
     /// Gets or sets the value carried by the event.
     /// </summary>
-    /// <exception cref="ArgumentException">
-    /// Thrown when attempting to set the value while <see cref="IsValueReadOnly"/> is true.
-    /// </exception>
     public virtual object? Value
     {
         get => _value;
@@ -65,9 +62,6 @@ public class ValueEventArgs<T>(T value, bool isValueReadOnly = true, bool isCanc
     /// Gets or sets the strongly-typed value carried by the event.
     /// Setting the value will throw an <see cref="ArgumentException"/> when <see cref="ValueEventArgs.IsValueReadOnly"/> is true.
     /// </summary>
-    /// <exception cref="ArgumentException">
-    /// Thrown when attempting to set the value while <see cref="ValueEventArgs.IsValueReadOnly"/> is true.
-    /// </exception>
     public new T? Value
     {
         get => (T?)base.Value;

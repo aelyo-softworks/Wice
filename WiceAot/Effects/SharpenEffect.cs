@@ -3,15 +3,6 @@
 /// <summary>
 /// Direct2D Sharpen effect wrapper.
 /// </summary>
-/// <remarks>
-/// - Requires at least one input <see cref="IGraphicsEffectSource"/> (see <see cref="EffectWithSource.Source"/>).
-/// - Exposes two parameters mapped to the underlying D2D1 effect:
-///   - Index 0: <see cref="Sharpness"/> (0..10, default 0)
-///   - Index 1: <see cref="Threshold"/> (0..1, default 0)
-/// - Use <see cref="Effect.Sources"/> for additional inputs if needed.
-/// </remarks>
-/// <seealso cref="EffectWithSource"/>
-/// <seealso cref="IGraphicsEffectSource"/>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1SharpenString)]
 #else
@@ -22,21 +13,11 @@ public partial class SharpenEffect : EffectWithSource
     /// <summary>
     /// Effect property descriptor for <see cref="Sharpness"/>.
     /// </summary>
-    /// <remarks>
-    /// - Effect parameter index: 0
-    /// - Mapping: DIRECT
-    /// - Default: 0f
-    /// </remarks>
     public static EffectProperty SharpnessProperty { get; }
 
     /// <summary>
     /// Effect property descriptor for <see cref="Threshold"/>.
     /// </summary>
-    /// <remarks>
-    /// - Effect parameter index: 1
-    /// - Mapping: DIRECT
-    /// - Default: 0f
-    /// </remarks>
     public static EffectProperty ThresholdProperty { get; }
 
     // Registers effect properties and their indices for D2D interop.

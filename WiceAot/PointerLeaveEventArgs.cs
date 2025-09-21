@@ -7,11 +7,6 @@
 /// <param name="x">Window-relative X coordinate at the time the pointer left.</param>
 /// <param name="y">Window-relative Y coordinate at the time the pointer left.</param>
 /// <param name="flags">Raw pointer message flags associated with the leave notification.</param>
-/// <remarks>
-/// Inherits window-space position and WM_POINTER flags from <see cref="PointerUpdateEventArgs"/>.
-/// </remarks>
-/// <seealso cref="PointerUpdateEventArgs"/>
-/// <seealso cref="PointerPositionEventArgs"/>
 public class PointerLeaveEventArgs(uint pointerId, int x, int y, POINTER_MESSAGE_FLAGS flags)
     : PointerUpdateEventArgs(pointerId, x, y, flags)
 {

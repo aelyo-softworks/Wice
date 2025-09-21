@@ -3,20 +3,6 @@
 /// <summary>
 /// Stacks child visuals in a single row or column.
 /// </summary>
-/// <remarks>
-/// - Orientation controls the stacking axis (Horizontal or Vertical).
-/// - Spacing applies outer padding and inter-item gaps:
-///   - Horizontal: spacing.width is applied before the first child, between children, and after the last child.
-///     spacing.height is applied as top/bottom padding (once on each side).
-///   - Vertical: spacing.height is applied before the first child, between children, and after the last child.
-///     spacing.width is applied as left/right padding (once on each side).
-/// - LastChildFill: when true, the last child can consume remaining space along the stacking axis.
-/// - Measurement uses each child's <see cref="Visual.DesiredSize"/> to compute the aggregate desired size,
-///   then adds spacing as described above.
-/// - Arrangement uses <see cref="Canvas.GetRect(D2D_SIZE_F, Visual)"/> to compute each child's rectangle
-///   under the current remaining size, places children sequentially along the stacking axis, applies spacing,
-///   and optionally allows the last child to fill remaining space.
-/// </remarks>
 public partial class Stack : Visual
 {
     /// <summary>
@@ -28,10 +14,6 @@ public partial class Stack : Visual
     /// <summary>
     /// Attached property backing <see cref="LinesSize"/>. Default: 0.
     /// </summary>
-    /// <remarks>
-    /// Reserved for scenarios that need a fixed line thickness when stacking.
-    /// Not currently used by this implementation, but exposed for compatibility/extensibility.
-    /// </remarks>
     public static VisualProperty LinesSizeProperty { get; } = VisualProperty.Add(typeof(Stack), nameof(LinesSize), VisualPropertyInvalidateModes.Measure, 0f);
 
     /// <summary>
@@ -55,34 +37,18 @@ public partial class Stack : Visual
     /// <summary>
     /// Gets or sets a fixed line size used by some stacking scenarios.
     /// </summary>
-    /// <remarks>
-    /// This value does not affect the default measure/arrange logic in this implementation.
-    /// It is provided for advanced/custom layouts that may extend <see cref="Stack"/>.
-    /// </remarks>
     [Category(CategoryLayout)]
     public float LinesSize { get => (float)GetPropertyValue(LinesSizeProperty)!; set => SetPropertyValue(LinesSizeProperty, value); }
 
     /// <summary>
     /// Gets or sets the spacing around and between children.
     /// </summary>
-    /// <remarks>
-    /// - Horizontal orientation:
-    ///   - spacing.width applies before the first child, between children, and after the last child (n + 1 gaps).
-    ///   - spacing.height applies once as top and once as bottom padding.
-    /// - Vertical orientation:
-    ///   - spacing.height applies before the first child, between children, and after the last child (n + 1 gaps).
-    ///   - spacing.width applies once as left and once as right padding.
-    /// </remarks>
     [Category(CategoryLayout)]
     public D2D_SIZE_F Spacing { get => (D2D_SIZE_F)GetPropertyValue(SpacingProperty)!; set => SetPropertyValue(SpacingProperty, value); }
 
     /// <summary>
     /// Gets or sets whether the last child can expand to fill remaining space along the stacking axis.
     /// </summary>
-    /// <remarks>
-    /// When true, the non-last children consume only their desired size along the stacking axis (children with a 0 desired size along that axis are skipped);
-    /// the last child can occupy any remaining space as determined by <see cref="Canvas.GetRect(D2D_SIZE_F, Visual)"/>.
-    /// </remarks>
     [Category(CategoryLayout)]
     public bool LastChildFill { get => (bool)GetPropertyValue(LastChildFillProperty)!; set => SetPropertyValue(LastChildFillProperty, value); }
 

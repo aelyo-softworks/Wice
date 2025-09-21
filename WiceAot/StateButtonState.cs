@@ -6,13 +6,6 @@
 /// - A factory delegate (<see cref="CreateChildFunc"/>) that creates the visual content for this state,
 /// - An optional pluggable equality function (<see cref="EqualsFunc"/>).
 /// </summary>
-/// <remarks>
-/// Instances are typically added to a <see cref="StateButton"/> to represent its possible states. The button
-/// can create state-specific content by invoking <see cref="CreateChildFunc"/>. Equality between states (and
-/// with arbitrary objects) can be customized by supplying <see cref="EqualsFunc"/>.
-/// </remarks>
-/// <seealso cref="StateButton"/>
-/// <seealso cref="Visual"/>
 public class StateButtonState : IEquatable<StateButtonState>
 {
     /// <summary>
@@ -27,9 +20,6 @@ public class StateButtonState : IEquatable<StateButtonState>
     /// The delegate receives the owning <see cref="StateButton"/>, the event that triggered the change,
     /// and this <see cref="StateButtonState"/> instance.
     /// </param>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="createChildFunc"/> is <see langword="null"/>.
-    /// </exception>
     public StateButtonState(object? value, Func<StateButton, EventArgs, StateButtonState, Visual> createChildFunc)
     {
         ExceptionExtensions.ThrowIfNull(createChildFunc, nameof(createChildFunc));
@@ -40,31 +30,16 @@ public class StateButtonState : IEquatable<StateButtonState>
     /// <summary>
     /// Gets the underlying value that represents this state.
     /// </summary>
-    /// <remarks>
-    /// Default equality and hash code behavior delegate to this value's <see cref="object.Equals(object?)"/>
-    /// and <see cref="object.GetHashCode()"/> implementations when <see cref="EqualsFunc"/> is not set or returns <see langword="null"/>.
-    /// </remarks>
     public object? Value { get; }
 
     /// <summary>
     /// Gets the delegate that creates the state-specific child <see cref="Visual"/>.
     /// </summary>
-    /// <remarks>
-    /// The returned <see cref="Visual"/> must not be <see langword="null"/>. If it is, an <see cref="InvalidOperationException"/> is thrown internally.
-    /// The delegate is invoked by the owning <see cref="StateButton"/> during state changes or rendering updates.
-    /// </remarks>
     public Func<StateButton, EventArgs, StateButtonState, Visual> CreateChildFunc { get; }
 
     /// <summary>
     /// Gets or sets an optional tri-state equality delegate.
     /// </summary>
-    /// <remarks>
-    /// When set, <see cref="Equals(object)"/> first invokes this delegate with the current instance and the
-    /// compared object. If the delegate returns <see langword="true"/> or <see langword="false"/>, that value
-    /// is used. If it returns <see langword="null"/>, equality falls back to the default behavior:
-    /// - If the compared object is a <see cref="StateButtonState"/>, compares via <see cref="Equals(StateButtonState)"/>.
-    /// - Otherwise, compares <see cref="Value"/> with the object using <see cref="object.Equals(object?, object?)"/> semantics.
-    /// </remarks>
     public Func<StateButtonState, object?, bool?>? EqualsFunc { get; set; }
 
     internal Visual CreateChild(StateButton box, EventArgs e)

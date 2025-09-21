@@ -6,9 +6,6 @@
 /// - <see cref="Intensity"/> (index 0): sepia intensity in [0,1], default 0.5.
 /// - <see cref="AlphaMode"/> (index 1): alpha mode hint, default <see cref="D2D1_ALPHA_MODE.D2D1_ALPHA_MODE_PREMULTIPLIED"/>.
 /// </summary>
-/// <remarks>
-/// The effect CLSID is provided via <see cref="GuidAttribute"/> and switches based on the target framework.
-/// </remarks>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1SepiaString)]
 #else

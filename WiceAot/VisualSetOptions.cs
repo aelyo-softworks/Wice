@@ -5,11 +5,6 @@
 /// Extends <see cref="BaseObjectSetOptions"/> with flags that request measure/arrange/render invalidations
 /// on the visual and/or its parent.
 /// </summary>
-/// <remarks>
-/// Typical consumers are property setters on visual elements that decide which parts of the layout/render
-/// pipeline to invalidate after a successful value change. The exact precedence with the base options
-/// depends on the consuming setter logic.
-/// </remarks>
 public class VisualSetOptions : BaseObjectSetOptions
 {
     internal static VisualSetOptions _noInvalidate = new()

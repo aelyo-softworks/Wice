@@ -3,10 +3,6 @@
 /// <summary>
 /// Represents a reason that caused an invalidation within the system.
 /// </summary>
-/// <remarks>
-/// This type can be used to build a chain of reasons via <see cref="InnerReason"/> for improved diagnostics.
-/// The <see cref="ToString"/> method produces a readable chain like: "Custom(Type) <= Other(Type)".
-/// </remarks>
 public class InvalidateReason
 {
     /// <summary>
@@ -14,9 +10,6 @@ public class InvalidateReason
     /// </summary>
     /// <param name="type">The <see cref="System.Type"/> associated with this invalidation reason. Must not be <c>null</c>.</param>
     /// <param name="innerReason">An optional inner reason to compose a chain of invalidation causes.</param>
-    /// <exception cref="System.ArgumentNullException">
-    /// Thrown when <paramref name="type"/> is <c>null</c>.
-    /// </exception>
     public InvalidateReason(Type type, InvalidateReason? innerReason = null)
     {
         ExceptionExtensions.ThrowIfNull(type, nameof(type));

@@ -3,11 +3,6 @@
 /// <summary>
 /// Utilities for working with Windows Composition brushes.
 /// </summary>
-/// <remarks>
-/// Provides helpers to clone common brush types and to produce a short trace string
-/// that is useful in diagnostics/logging. The clone helper creates a new brush using
-/// the same <c>Compositor</c> as the source brush.
-/// </remarks>
 public static class CompositionUtilities
 {
 #if NET
@@ -21,17 +16,6 @@ public static class CompositionUtilities
     /// A new brush instance with the same configuration as <paramref name="brush"/>, or <c>null</c> if
     /// <paramref name="brush"/> is <c>null</c>.
     /// </returns>
-    /// <exception cref="NotSupportedException">
-    /// Thrown when <paramref name="brush"/> is a brush type that is not supported by this method.
-    /// </exception>
-    /// <remarks>
-    /// Supported brush types:
-    /// - <c>CompositionColorBrush</c>: clones the color.
-    /// - <c>CompositionBackdropBrush</c>: creates a new backdrop brush.
-    /// - <c>CompositionMaskBrush</c>: recursively clones <c>Source</c> and <c>Mask</c>.
-    /// - <c>CompositionNineGridBrush</c>: copies inset values, scales, center hollowness, and recursively clones <c>Source</c>.
-    /// For other brush types, a <see cref="NotSupportedException"/> is thrown.
-    /// </remarks>
     public static CompositionBrush? Clone(this CompositionBrush? brush)
     {
         if (brush == null)
@@ -73,9 +57,6 @@ public static class CompositionUtilities
     /// <summary>
     /// Calculates the cumulative offset of the specified visual relative to the root visual.
     /// </summary>
-    /// <remarks>This method traverses the visual tree from the specified visual to the root, summing the <see
-    /// cref="Windows.UI.Composition.Visual.Offset"/>  values of each visual in the hierarchy. The result represents the
-    /// total offset of the visual relative to the root visual.</remarks>
     /// <param name="visual">The visual for which to calculate the root-relative offset. Cannot be <see langword="null"/>.</param>
     /// <returns>A <see cref="Vector3"/> representing the total offset of the visual relative to the root visual.  If the visual
     /// has no parent, the offset is equal to its own offset.</returns>

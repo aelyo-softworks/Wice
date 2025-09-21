@@ -3,14 +3,6 @@
 /// <summary>
 /// Direct2D chroma key (green-screen) effect.
 /// </summary>
-/// <remarks>
-/// Wraps the native D2D1 ChromaKey effect (CLSID_D2D1ChromaKey) and exposes its parameters as typed properties:
-/// - Color (index 0): mapped as COLOR_TO_VECTOR3
-/// - Tolerance (index 1)
-/// - InvertAlpha (index 2)
-/// - Feather (index 3)
-/// The effect consumes a single source (<see cref="EffectWithSource.Source"/>).
-/// </remarks>
 #if NETFRAMEWORK
 [Guid(D2D1Constants.CLSID_D2D1ChromaKeyString)]
 #else
@@ -49,33 +41,20 @@ public partial class ChromaKeyEffect : EffectWithSource
     /// <summary>
     /// Key color to remove from the source image.
     /// </summary>
-    /// <remarks>
-    /// RGB components are expected in [0, 1]. Default is (0, 0, 0).
-    /// </remarks>
     public D2D_VECTOR_3F Color { get => (D2D_VECTOR_3F)GetPropertyValue(ColorProperty)!; set => SetPropertyValue(ColorProperty, value); }
 
     /// <summary>
     /// Color match tolerance in [0, 1]. Higher values select a wider range around <see cref="Color"/>.
     /// </summary>
-    /// <remarks>
-    /// The value is clamped to [0, 1]. Default is 0.1.
-    /// </remarks>
     public float Tolerance { get => (float)GetPropertyValue(ToleranceProperty)!; set => SetPropertyValue(ToleranceProperty, value.Clamp(0f, 1f)); }
 
     /// <summary>
     /// Inverts the computed alpha mask.
     /// </summary>
-    /// <remarks>
-    /// When true, regions matching the key color become opaque and others become transparent (flips the mask).
-    /// Default is false.
-    /// </remarks>
     public bool InvertAlpha { get => (bool)GetPropertyValue(InvertAlphaProperty)!; set => SetPropertyValue(InvertAlphaProperty, value); }
 
     /// <summary>
     /// Enables soft edge feathering on the transparency boundary.
     /// </summary>
-    /// <remarks>
-    /// When true, the alpha edges are smoothed to reduce hard transitions. Default is false.
-    /// </remarks>
     public bool Feather { get => (bool)GetPropertyValue(FeatherProperty)!; set => SetPropertyValue(FeatherProperty, value); }
 }

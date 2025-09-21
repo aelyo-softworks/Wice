@@ -4,11 +4,6 @@
 /// Provides a lightweight wrapper around a Direct2D device context, offering scoped transform utilities
 /// and helpers for creating common brush resources during rendering.
 /// </summary>
-/// <remarks>
-/// Instances created via <see cref="WithRenderContext(IComObject{ID2D1DeviceContext}, Action{RenderContext}, SurfaceCreationOptions?, RECT?)"/>
-/// are intended for use only within the provided callback. After the callback returns, the underlying
-/// <see cref="DeviceContext"/> is invalidated and must not be used.
-/// </remarks>
 public class RenderContext
 {
     private RenderContext(IComObject<ID2D1DeviceContext> deviceContext, SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
@@ -21,10 +16,6 @@ public class RenderContext
     /// <summary>
     /// Gets the underlying Direct2D device context used for rendering.
     /// </summary>
-    /// <remarks>
-    /// When created through <see cref="WithRenderContext(IComObject{ID2D1DeviceContext}, Action{RenderContext}, SurfaceCreationOptions?, RECT?)"/>,
-    /// this property is invalidated after the callback returns. Do not cache or use it beyond that scope.
-    /// </remarks>
     public IComObject<ID2D1DeviceContext> DeviceContext { get; private set; }
 
     /// <summary>
@@ -46,7 +37,6 @@ public class RenderContext
     /// <param name="combineWithExisting">
     /// true to pre-multiply the new transform with the current device context transform; false to replace it.
     /// </param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="action"/> is null.</exception>
     public virtual void WithTransform(D2D_MATRIX_3X2_F transform, Action action, bool combineWithExisting = true)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
@@ -78,7 +68,6 @@ public class RenderContext
     /// <param name="action">The action to execute with the created <see cref="RenderContext"/>.</param>
     /// <param name="creationOptions">Optional surface creation options.</param>
     /// <param name="rect">Optional surface rectangle.</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="deviceContext"/> or <paramref name="action"/> is null.</exception>
     public static void WithRenderContext(IComObject<ID2D1DeviceContext> deviceContext, Action<RenderContext> action, SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
     {
         ExceptionExtensions.ThrowIfNull(deviceContext, nameof(deviceContext));
@@ -103,7 +92,6 @@ public class RenderContext
     /// <param name="func">The action to execute with the created <see cref="RenderContext"/>.</param>
     /// <param name="creationOptions">Optional surface creation options.</param>
     /// <param name="rect">Optional surface rectangle.</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="deviceContext"/> or <paramref name="func"/> is null.</exception>
     public static T WithRenderContext<T>(IComObject<ID2D1DeviceContext> deviceContext, Func<RenderContext, T> func, SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
     {
         ExceptionExtensions.ThrowIfNull(deviceContext, nameof(deviceContext));
@@ -127,7 +115,6 @@ public class RenderContext
     /// <returns>
     /// An <see cref="IComObject{T}"/> wrapping the created <see cref="ID2D1Brush"/>, or null if <paramref name="color"/> is null.
     /// </returns>
-    /// <exception cref="InvalidOperationException">Thrown if the device context has been invalidated.</exception>
     [return: NotNullIfNotNull(nameof(color))]
 #endif
     public virtual IComObject<ID2D1Brush>? CreateSolidColorBrush(D3DCOLORVALUE? color)
@@ -151,8 +138,6 @@ public class RenderContext
     /// <param name="bitmapBrushProperties">Optional bitmap brush properties.</param>
     /// <param name="brushProperties">Optional generic brush properties.</param>
     /// <returns>An <see cref="IComObject{T}"/> wrapping the created bitmap brush.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="bitmap"/> is null.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if the device context has been invalidated.</exception>
     public virtual IComObject<T> CreateBitmapBrush<T>(ID2D1Bitmap bitmap, D2D1_BITMAP_BRUSH_PROPERTIES? bitmapBrushProperties = null, D2D1_BRUSH_PROPERTIES? brushProperties = null) where T : ID2D1BitmapBrush
     {
         ExceptionExtensions.ThrowIfNull(bitmap, nameof(bitmap));
@@ -176,8 +161,6 @@ public class RenderContext
     /// <param name="properties">Linear gradient brush properties (start/end points, etc.).</param>
     /// <param name="stops">One or more gradient stops defining the gradient ramp.</param>
     /// <returns>An <see cref="IComObject{T}"/> wrapping the created <see cref="ID2D1Brush"/>.</returns>
-    /// <exception cref="ArgumentException">Thrown if <paramref name="stops"/> is null or empty.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if the device context has been invalidated.</exception>
     public virtual IComObject<ID2D1Brush> CreateLinearGradientBrush(D2D1_LINEAR_GRADIENT_BRUSH_PROPERTIES properties, params D2D1_GRADIENT_STOP[] stops)
     {
         if (stops == null || stops.Length == 0)
@@ -218,8 +201,6 @@ public class RenderContext
     /// <param name="extendMode">How the gradient extends beyond the [0,1] range (default is clamp).</param>
     /// <param name="stops">One or more gradient stops defining the gradient ramp.</param>
     /// <returns>An <see cref="IComObject{T}"/> wrapping the created <see cref="ID2D1Brush"/>.</returns>
-    /// <exception cref="ArgumentException">Thrown if <paramref name="stops"/> is null or empty.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if the device context has been invalidated.</exception>
     public IComObject<ID2D1Brush> CreateRadialGradientBrush(D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES properties, D2D1_GAMMA gamma = D2D1_GAMMA.D2D1_GAMMA_2_2, D2D1_EXTEND_MODE extendMode = D2D1_EXTEND_MODE.D2D1_EXTEND_MODE_CLAMP, params D2D1_GRADIENT_STOP[] stops)
     {
         if (stops == null || stops.Length == 0)

@@ -4,21 +4,6 @@
 /// Arranges visible children into a uniform grid of <see cref="Rows"/> by <see cref="Columns"/> cells,
 /// measuring each child against the cell size and arranging them left-to-right, top-to-bottom.
 /// </summary>
-/// <remarks>
-/// - Measurement:
-///   - If <see cref="Columns"/> or <see cref="Rows"/> is 0, defers to <see cref="RenderVisual.MeasureCore(D2D_SIZE_F)"/>.
-///   - Otherwise, divides the constraint into cell size (constraint/cols, constraint/rows), measures all visible children,
-///     then returns the grid size as max(childDesiredWidth) * cols + inter-column spacing and
-///     max(childDesiredHeight) * rows + inter-row spacing.
-/// - Arrangement:
-///   - Computes cell width/height from the final rect divided by columns/rows.
-///   - Lays out children in reading order. After each column, adds <see cref="ColumnsLineWidth"/>; after each row, adds <see cref="RowsLineWidth"/>.
-///   - Applies floor/ceiling rounding to reduce sub-pixel rendering artifacts.
-/// - Rendering (background only here):
-///   - Clears to <see cref="RenderVisual.BackgroundColor"/> when set.
-///   - Otherwise, clears to transparent if the grid is not fully populated (<c>Children.Count &lt; Rows * Columns</c>).
-/// </remarks>
-/// <seealso cref="RenderVisual"/>
 public partial class UniformGrid : RenderVisual
 {
     /// <summary>
@@ -122,12 +107,6 @@ public partial class UniformGrid : RenderVisual
     /// <returns>
     /// The desired size of the grid. If <see cref="Columns"/> or <see cref="Rows"/> is 0, defers to base measurement.
     /// </returns>
-    /// <remarks>
-    /// Each child is measured with a constraint equal to the cell size (constraint/cols, constraint/rows).
-    /// The resulting grid desired size is:
-    /// width = maxChildDesiredWidth * cols + <see cref="ColumnsLineWidth"/> * (cols - 1),
-    /// height = maxChildDesiredHeight * rows + <see cref="RowsLineWidth"/> * (rows - 1).
-    /// </remarks>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         var cols = Columns;
@@ -166,13 +145,6 @@ public partial class UniformGrid : RenderVisual
     /// Children are placed left-to-right and wrap to the next row when the row is filled.
     /// </summary>
     /// <param name="finalRect">The final content rectangle available for arranging (excluding margin).</param>
-    /// <remarks>
-    /// - If <see cref="Columns"/> or <see cref="Rows"/> is 0, delegates to base arrangement.
-    /// - Cell size is <c>finalSize / (cols, rows)</c>.
-    /// - After each placed child, advances by cell width plus <see cref="ColumnsLineWidth"/>.
-    /// - After each row, advances by cell height plus <see cref="RowsLineWidth"/> and resets column position.
-    /// - Uses floor/ceiling to reduce sub-pixel artifacts on bounds.
-    /// </remarks>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         var cols = Columns;

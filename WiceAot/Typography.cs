@@ -4,13 +4,6 @@
 /// Represents a collection of OpenType font features and a bridge to a cached DirectWrite
 /// <see cref="IDWriteTypography"/> COM object used by the rendering pipeline.
 /// </summary>
-/// <remarks>
-/// - This type provides a managed representation of font features (<see cref="DWRITE_FONT_FEATURE"/>) and
-///   is used to request/construct an <see cref="IDWriteTypography"/> instance through
-///   <see cref="Application.CurrentResourceManager"/>.
-/// - Instances are lightweight; the actual COM object is retrieved on demand via
-///   <see cref="DWriteTypography"/> and may be cached by the resource manager using <see cref="CacheKey"/>.
-/// </remarks>
 public class Typography
 {
     /// <summary>
@@ -21,10 +14,6 @@ public class Typography
     /// The native DirectWrite <see cref="IDWriteTypography"/> to copy features from. If <c>null</c>,
     /// the instance is initialized with an empty feature set.
     /// </param>
-    /// <remarks>
-    /// This constructor does not retain a reference to the provided COM object. It enumerates the features
-    /// via <c>GetFontFeatureCount</c>/<c>GetFontFeature</c> and stores copies in <see cref="Features"/>.
-    /// </remarks>
     public Typography(IDWriteTypography typography)
         : this()
     {
@@ -63,10 +52,6 @@ public class Typography
     /// Gets a <see cref="Typography"/> instance preconfigured to enable common ligature-related
     /// OpenType features: contextual, required, standard, and discretionary ligatures.
     /// </summary>
-    /// <remarks>
-    /// See the OpenType feature tags specification for details:
-    /// <see href="https://learn.microsoft.com/typography/opentype/spec/featuretags"/>.
-    /// </remarks>
     public static Typography WithLigatures { get; } = new
     (
         new DWRITE_FONT_FEATURE { nameTag = DWRITE_FONT_FEATURE_TAG.DWRITE_FONT_FEATURE_TAG_CONTEXTUAL_LIGATURES },
@@ -84,9 +69,6 @@ public class Typography
     /// <summary>
     /// Gets the mutable list of OpenType font features that define this <see cref="Typography"/>.
     /// </summary>
-    /// <remarks>
-    /// Modifying this list changes the identity of the typography and may affect caching via <see cref="CacheKey"/>.
-    /// </remarks>
     public virtual IList<DWRITE_FONT_FEATURE> Features { get; }
 
     /// <summary>

@@ -8,13 +8,6 @@
 /// <typeparam name="T">
 /// The selected object type. Public properties are required for trimming via <see cref="DynamicallyAccessedMemberTypes.PublicProperties"/>.
 /// </typeparam>
-/// <remarks>
-/// Key features:
-/// - Live synchronization: updates editors when the selected object's properties change (when it implements <see cref="INotifyPropertyChanged"/>).
-/// - Read-only detection via <see cref="ReadOnlyAttribute"/> on the selected object type.
-/// - Optional grouping by category (infrastructure exposed; layout binding performed in <see cref="BindDimensions"/>).
-/// - Splitter between name and value columns for runtime resizing.
-/// </remarks>
 public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : Grid
 {
     /// <summary>
@@ -91,8 +84,6 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <summary>
     /// Gets the function used to select and enumerate properties for the <see cref="PropertyGrid{T}"/>.
     /// </summary>
-    /// <remarks>Override this property to customize the logic for selecting and enumerating properties
-    /// displayed in the property grid.</remarks>
     protected virtual Func<PropertyGrid<T>, IEnumerable<PropertyGridProperty<T>>>? PropertiesSelector { get; } = EnumerateSourceProperties;
 
     /// <summary>
@@ -410,12 +401,6 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <summary>
     /// Adds a category visual element to the specified row in the grid.
     /// </summary>
-    /// <remarks>If the specified <paramref name="rowIndex"/> does not already exist in the grid, a new row is
-    /// created and added to the grid. The category visual is a non-editable text box that spans all columns in the
-    /// grid.</remarks>
-    /// <param name="category">The text to display in the category visual. Cannot be <see langword="null"/>.</param>
-    /// <param name="rowIndex">The index of the row to which the category visual will be added. Must be greater than or equal to 0.</param>
-    /// <returns>The number of rows added. Returns 1 or more if the operation is successful; otherwise, 0.</returns>
     protected virtual int AddCategoryVisualsToRow(string category, int rowIndex)
     {
         ArgumentNullException.ThrowIfNull(category);
@@ -437,10 +422,6 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <summary>
     /// Adds the visual elements for a property to a specified row in the grid.
     /// </summary>
-    /// <remarks>This method creates and adds visual elements for the specified property, including text and
-    /// value visuals,  to the specified row in the grid. If the row index is greater than the current number of rows, a
-    /// new row is created. The method also updates the internal collection of property visuals for later
-    /// reference.</remarks>
     /// <param name="property">The property for which visual elements are to be created and added. Cannot be <see langword="null"/>.</param>
     /// <param name="rowIndex">The index of the row where the visual elements will be added. Must be a valid row index.</param>
     /// <returns>The number of rows added. Returns 1 or more if the operation is successful; otherwise, 0.</returns>

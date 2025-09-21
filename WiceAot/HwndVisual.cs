@@ -3,19 +3,6 @@
 /// <summary>
 /// Base visual that hosts a native child window (<see cref="HWND"/>) inside the Wice composition tree.
 /// </summary>
-/// <remarks>
-/// Lifecycle:
-/// - The child <see cref="HWND"/> is created when the visual is attached to the composition
-///   (<see cref="OnAttachedToComposition(object?, EventArgs)"/>) and destroyed when detaching
-///   (<see cref="OnDetachingFromComposition(object?, EventArgs)"/>).
-/// - Derived classes must implement <see cref="CreateWindow(HWND)"/> to create the child window,
-///   typically using <paramref name="parent"/> as the owner/parent (e.g., with WS_CHILD style).
-/// - When <see cref="Handle"/> changes, the <see cref="NativeWindow"/> wrapper is updated to the
-///   new handle and its <c>ManagedThreadId</c> is stamped with the current thread ID.
-/// Message routing:
-/// - Subscribes to the owning <see cref="Window"/>'s native message stream and invokes
-///   <see cref="OnWindowMessage(object?, WindowMessageEventArgs)"/> for derived classes to observe/handle.
-/// </remarks>
 public abstract class HwndVisual : Visual
 {
     private NativeWindow? _nativeWindow;
@@ -31,10 +18,6 @@ public abstract class HwndVisual : Visual
     /// Gets the native window handle owned by this visual.
     /// Returns <see cref="HWND.Null"/> when the handle has not been created or has been destroyed.
     /// </summary>
-    /// <remarks>
-    /// Setting this property updates <see cref="NativeWindow"/> to wrap the new handle (if non-null)
-    /// and records the current managed thread ID on the wrapper for debugging/validation purposes.
-    /// </remarks>
     public HWND Handle
     {
         get => _handle;

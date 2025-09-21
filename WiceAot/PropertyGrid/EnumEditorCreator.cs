@@ -15,7 +15,6 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// <returns>
     /// The created editor host instance, or null when the grid declined to create one.
     /// </returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is null.</exception>
     public object? CreateEditor(PropertyValueVisual<T> value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -105,7 +104,6 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// <param name="value">The host value visual.</param>
     /// <param name="editor">The current editor instance.</param>
     /// <returns>The same <paramref name="editor"/> instance (no-op).</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="value"/> is null.</exception>
     public object? UpdateEditor(PropertyValueVisual<T> value, object? editor)
     {
         ArgumentNullException.ThrowIfNull(value);

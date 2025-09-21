@@ -3,11 +3,6 @@
 /// <summary>
 /// Defines how an easing function interpolates values over time.
 /// </summary>
-/// <remarks>
-/// - In: starts slowly and accelerates (ease-in).
-/// - Out: starts quickly and decelerates (ease-out).
-/// - InOut: accelerates in the first half and decelerates in the second half (ease-in-out).
-/// </remarks>
 public enum EasingMode
 {
     /// <summary>

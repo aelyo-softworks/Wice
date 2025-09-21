@@ -5,18 +5,6 @@
 /// using a configurable <see cref="PlacementMode"/>. The popup can optionally follow its target on arrange/move,
 /// support click-through behavior, and compute coordinates either in screen or window space.
 /// </summary>
-/// <remarks>
-/// Key features:
-/// - Placement computed by <see cref="Place(PlacementParameters)"/> based on <see cref="PlacementMode"/> and offsets.
-/// - Optional following of a <see cref="PlacementTarget"/> via <see cref="FollowPlacementTarget"/>:
-///   updates when the target is arranged or its window moves.
-/// - <see cref="ClickThrough"/> allows forwarding mouse clicks to the target window without activating the popup.
-/// - Coordinates may be computed in screen space (<see cref="UseScreenCoordinates"/>) and rounded to whole pixels
-///   (<see cref="UseRounding"/>).
-/// </remarks>
-/// <seealso cref="PlacementParameters"/>
-/// <seealso cref="PlacementMode"/>
-/// <seealso cref="Window"/>
 public partial class PopupWindow : Window
 {
     /// <summary>
@@ -291,21 +279,6 @@ public partial class PopupWindow : Window
     /// A <see cref="D2D_POINT_2F"/> representing the top-left position for the popup. When
     /// <see cref="PlacementParameters.UseRounding"/> is true, coordinates are rounded to whole pixels.
     /// </returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="parameters"/> is null.</exception>
-    /// <remarks>
-    /// Behavior:
-    /// - Target resolution: uses <see cref="PlacementParameters.Target"/> when set; otherwise falls back to <c>parameters.Visual.Parent</c>.
-    /// - Custom mode: if <see cref="PlacementParameters.Mode"/> is <see cref="PlacementMode.Custom"/> and
-    ///   <see cref="PlacementParameters.CustomFunc"/> is provided, it is invoked and its result is used.
-    /// - Mouse mode: if <see cref="PlacementMode.Mouse"/>, uses the current cursor position.
-    /// - For other modes: computes the reference rect from the target's <see cref="Visual.AbsoluteRenderRect"/>.
-    ///   When <see cref="PlacementParameters.UseScreenCoordinates"/> is true and a window is present, converts to screen space via ClientToScreen.
-    /// - Visual bounds: uses <c>parameters.Visual.AbsoluteRenderBounds</c>, or the <see cref="IContentParent.Content"/> bounds when the visual is an <see cref="IContentParent"/>.
-    /// - Each <see cref="PlacementMode"/> sets base left/top relative to the target rectangle; offsets are applied via
-    ///   <see cref="PlacementParameters.HorizontalOffset"/> and <see cref="PlacementParameters.VerticalOffset"/> by the caller if desired.
-    /// </remarks>
-    /// <seealso cref="PlacementParameters"/>
-    /// <seealso cref="PlacementMode"/>
     public static D2D_POINT_2F Place(PlacementParameters parameters)
     {
         ExceptionExtensions.ThrowIfNull(parameters, nameof(parameters));

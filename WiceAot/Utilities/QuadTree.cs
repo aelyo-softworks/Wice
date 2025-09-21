@@ -9,14 +9,6 @@
 /// The non-nullable item type stored in the quadtree. Items are compared using
 /// <see cref="EqualityComparer"/>.
 /// </typeparam>
-/// <remarks>
-/// - Partitioning: The tree lazily subdivides the initial <see cref="Bounds"/> into four equal
-///   child quadrants. An item is stored in the deepest quadrant that fully contains its bounds;
-///   otherwise it is stored at the current quadrant node.
-/// - Coordinate space: All operations are expressed in the coordinate system of <see cref="Bounds"/>.
-/// - Duplicates: Item uniqueness is determined by <see cref="EqualityComparer"/>.
-/// - Thread-safety: This type is not thread-safe. External synchronization is required for concurrent access.
-/// </remarks>
 public class QuadTree<T> : IQuadTree<T> where T : notnull
 {
     private readonly Quadrant _root;
@@ -89,8 +81,6 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
     /// </summary>
     /// <param name="node">The item to insert.</param>
     /// <param name="bounds">The item bounds in the tree's coordinate space.</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="node"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException">Thrown if <paramref name="bounds"/> is empty.</exception>
     public virtual void Insert(T node, D2D_RECT_F bounds)
     {
         ExceptionExtensions.ThrowIfNull(node, nameof(node));
@@ -107,8 +97,6 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
     /// </summary>
     /// <param name="node">The item to move.</param>
     /// <param name="newBounds">The new bounds for the item.</param>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="node"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException">Thrown if <paramref name="newBounds"/> is empty.</exception>
     public virtual void Move(T node, D2D_RECT_F newBounds)
     {
         ExceptionExtensions.ThrowIfNull(node, nameof(node));
@@ -128,7 +116,6 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
     /// </summary>
     /// <param name="node">The item to remove.</param>
     /// <returns><see langword="true"/> if the item was found and removed; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="node"/> is <see langword="null"/>.</exception>
     public virtual bool Remove(T node)
     {
         ExceptionExtensions.ThrowIfNull(node, nameof(node));

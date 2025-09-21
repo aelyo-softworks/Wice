@@ -6,14 +6,6 @@
 /// - Horizontal: items flow left-to-right, wrapping to a new row.
 /// - Vertical: items flow top-to-bottom, wrapping to a new column.
 /// </summary>
-/// <remarks>
-/// - If <see cref="ItemWidth"/> and/or <see cref="ItemHeight"/> are set (not NaN), those values are used for
-///   all items on the corresponding axis; otherwise, each child's measured size is used.
-/// - Measurement aggregates children into lines until the available U space (Width for Horizontal, Height for Vertical)
-///   is exceeded, then wraps and continues.
-/// - Arrangement mirrors the measurement pass: children are arranged per line, then the next line starts at the
-///   accumulated V offset.
-/// </remarks>
 public partial class Wrap : Visual
 {
     /// <summary>

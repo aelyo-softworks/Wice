@@ -8,26 +8,11 @@
 /// <see cref="Visual.Width"/>/<see cref="Visual.Height"/> is set. Supports optional proportional resizing
 /// and stretching via <see cref="GetRectOptions"/>.
 /// </summary>
-/// <remarks>
-/// Measure:
-/// - Each visible child is measured with an infinite constraint by default, optionally constraining width/height
-///   when the child's alignment is <see cref="Alignment.Stretch"/> and the parent's corresponding constraint is set.
-/// - When <see cref="MeasureToContent"/> is not <see cref="DimensionOptions.Manual"/>, the canvas computes a union
-///   rectangle of all children and returns the requested dimension(s).
-/// Arrange:
-/// - Children are arranged based on attached edge values and alignment when the parent final size is known.
-/// </remarks>
 public partial class Canvas : Visual
 {
     /// <summary>
     /// Controls whether the canvas returns its size from the union of its children during Measure.
     /// </summary>
-    /// <remarks>
-    /// - <see cref="DimensionOptions.Manual"/>: does not size to content; returns 0 for width/height in Measure.
-    /// - <see cref="DimensionOptions.Width"/>: sizes to the union width of children.
-    /// - <see cref="DimensionOptions.Height"/>: sizes to the union height of children.
-    /// - <see cref="DimensionOptions.Width"/> | <see cref="DimensionOptions.Height"/>: sizes to both.
-    /// </remarks>
     public static VisualProperty MeasureToContentProperty { get; } = VisualProperty.Add(typeof(Window), nameof(Canvas), VisualPropertyInvalidateModes.Measure, DimensionOptions.Manual);
 
     // review: invalidate measure or arrange?
@@ -67,7 +52,6 @@ public partial class Canvas : Visual
     ///   when alignment is Stretch and the child has no explicit size, stretches to the parent if the parent dimension is set.
     /// </param>
     /// <returns>The rectangle (position and size) for the child.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="child"/> is null.</exception>
     public static D2D_RECT_F GetRect(D2D_SIZE_F parentSize, Visual child, GetRectOptions options = GetRectOptions.Default)
     {
         ExceptionExtensions.ThrowIfNull(child, nameof(child));
@@ -301,7 +285,6 @@ public partial class Canvas : Visual
     /// </summary>
     /// <param name="properties">The target that stores attached properties.</param>
     /// <param name="rect">The rectangle whose left/top/right/bottom to apply.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetRect(IPropertyOwner properties, D2D_RECT_F rect)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -316,7 +299,6 @@ public partial class Canvas : Visual
     /// </summary>
     /// <param name="properties">The target object.</param>
     /// <param name="value">Left offset in DIPs, or <see cref="float.NaN"/> to unset.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetLeft(IPropertyOwner properties, float value)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -333,7 +315,6 @@ public partial class Canvas : Visual
     /// </summary>
     /// <param name="properties">The target object.</param>
     /// <returns>The left offset or <see cref="float.NaN"/>.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static float GetLeft(IPropertyOwner properties)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -345,7 +326,6 @@ public partial class Canvas : Visual
     /// </summary>
     /// <param name="properties">The target object.</param>
     /// <param name="value">Top offset in DIPs, or <see cref="float.NaN"/> to unset.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetTop(IPropertyOwner properties, float value)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -362,7 +342,6 @@ public partial class Canvas : Visual
     /// </summary>
     /// <param name="properties">The target object.</param>
     /// <returns>The top offset or <see cref="float.NaN"/>.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static float GetTop(IPropertyOwner properties)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -374,7 +353,6 @@ public partial class Canvas : Visual
     /// </summary>
     /// <param name="properties">The target object.</param>
     /// <param name="value">Right offset in DIPs, or <see cref="float.NaN"/> to unset.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetRight(IPropertyOwner properties, float value)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -391,7 +369,6 @@ public partial class Canvas : Visual
     /// </summary>
     /// <param name="properties">The target object.</param>
     /// <returns>The right offset or <see cref="float.NaN"/>.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static float GetRight(IPropertyOwner properties)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -403,7 +380,6 @@ public partial class Canvas : Visual
     /// </summary>
     /// <param name="properties">The target object.</param>
     /// <param name="value">Bottom offset in DIPs, or <see cref="float.NaN"/> to unset.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetBottom(IPropertyOwner properties, float value)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -420,7 +396,6 @@ public partial class Canvas : Visual
     /// </summary>
     /// <param name="properties">The target object.</param>
     /// <returns>The bottom offset or <see cref="float.NaN"/>.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static float GetBottom(IPropertyOwner properties)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));

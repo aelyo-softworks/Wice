@@ -7,12 +7,6 @@
 /// - If bound to a data object implementing <see cref="INotifyPropertyChanged"/>, re-invokes <see cref="DataBinder"/>
 ///   to update the child when the data changes.
 /// </summary>
-/// <remarks>
-/// Implements:
-/// - <see cref="IOneChildParent"/> via <see cref="Border"/> to host a single child visual.
-/// - <see cref="IFocusableParent"/> to route focus to the child.
-/// - <see cref="ISelectable"/> to support selection toggling and event emission.
-/// </remarks>
 public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISelectable
 {
     /// <summary>

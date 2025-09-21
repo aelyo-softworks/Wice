@@ -3,18 +3,6 @@
 /// <summary>
 /// A draggable splitter used within a <see cref="Dock"/> to resize two adjacent docked children.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - When attached, the splitter infers its <see cref="DockType"/> from its position among siblings and sets
-///   <see cref="Orientation"/> accordingly (a Left/Right dock yields a vertical splitter that resizes widths,
-///   a Top/Bottom dock yields a horizontal splitter that resizes heights).
-/// - Dragging adjusts the sizes of the previous and next docked visuals while honoring their min/max constraints.
-/// - If the dock panel uses LastChildFill, the splitter avoids directly setting the size of a last child.
-/// Input:
-/// - Mouse left button starts drag (<see cref="Visual.DragMove(Wice.MouseButtonEventArgs)"/>).
-/// - Releasing the left button commits the resize (<see cref="Commit"/>).
-/// - Pressing Escape cancels and restores original sizes (<see cref="Cancel"/>).
-/// </remarks>
 public partial class DockSplitter : Visual
 {
     /// <summary>

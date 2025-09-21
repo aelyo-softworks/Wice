@@ -3,13 +3,6 @@
 /// <summary>
 /// A visual Rich Text Box that renders text content using a COM-backed text services host.
 /// </summary>
-/// <remarks>
-/// - This control is currently read-only from the UI perspective; content can be set programmatically.
-/// - The underlying text host is a COM object and must be disposed on the same thread that created it.
-/// - Layout honors padding, a configurable <see cref="ZoomFactor"/>, and a <see cref="NaturalSize"/>
-///   computation constrained by <see cref="MaxConstraintSize"/>.
-/// - On DPI changes, the font size is scaled and the <see cref="ZoomFactor"/> is updated to keep visual fidelity.
-/// </remarks>
 public partial class RichTextBox : RenderVisual, IDisposable
 {
     private bool _disposedValue;
@@ -24,7 +17,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
     /// The text services generator to use. When <see cref="TextServicesGenerator.Default"/>,
     /// the default generator is resolved via <see cref="GetDefaultTextServicesGenerator"/>.
     /// </param>
-    /// <exception cref="InvalidOperationException">Thrown when the text host cannot be created.</exception>
     public RichTextBox(TextServicesGenerator generator = TextServicesGenerator.Default)
     {
         if (generator == TextServicesGenerator.Default)
@@ -35,10 +27,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
         Generator = generator;
 
 #if NETFRAMEWORK
-                _host = new TextHost(generator)
-                {
-                    TextColor = 0
-                };
+        _host = new TextHost(generator)
+        {
+            TextColor = 0
+        };
 #else
         _host = CreateTextHost(generator, this);
 #endif
@@ -49,19 +41,19 @@ public partial class RichTextBox : RenderVisual, IDisposable
     }
 
 #if NETFRAMEWORK
-            private readonly TextHost _host;
+    private readonly TextHost _host;
 
-            /// <summary>
-            /// Gets the underlying host document (dynamic due to differing generator implementations).
-            /// </summary>
-            [Category(CategoryLive)]
-            public dynamic Document => _host?.Document;
+    /// <summary>
+    /// Gets the underlying host document (dynamic due to differing generator implementations).
+    /// </summary>
+    [Category(CategoryLive)]
+    public dynamic Document => _host?.Document;
 
-            /// <summary>
-            /// Gets the version string of the active text services generator.
-            /// </summary>
-            [Category(CategoryBehavior)]
-            public string GeneratorVersion => Document.Generator;
+    /// <summary>
+    /// Gets the version string of the active text services generator.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public string GeneratorVersion => Document.Generator;
 #else
     private readonly RichTextBoxTextHost _host;
 
@@ -89,7 +81,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
         /// </summary>
         /// <param name="generator">The text services generator to use.</param>
         /// <param name="richTextBox">The owning <see cref="RichTextBox"/>.</param>
-        /// <exception cref="ArgumentNullException">When <paramref name="richTextBox"/> is null.</exception>
         public RichTextBoxTextHost(TextServicesGenerator generator, RichTextBox richTextBox) : base(generator)
         {
             ExceptionExtensions.ThrowIfNull(richTextBox, nameof(richTextBox));
@@ -267,7 +258,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
     public virtual TextHostOptions Options
     {
 #if NETFRAMEWORK
-                get => (_host?.Options).GetValueOrDefault();
+        get => (_host?.Options).GetValueOrDefault();
 #else
         get => _host?.Options ?? TextHostOptions.Default;
 #endif
@@ -343,7 +334,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
     /// <summary>
     /// Gets or sets the default font family name (e.g., "Calibri").
     /// </summary>
-    /// <remarks>Default is commonly "Calibri" on Windows 10/11.</remarks>
     [Category(CategoryLayout)]
     public virtual string FontName
     {
@@ -363,7 +353,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
     /// <summary>
     /// Gets or sets the default font size in DIPs.
     /// </summary>
-    /// <remarks>Default is commonly 10 on Windows 10/11.</remarks>
     [Category(CategoryLayout)]
     public virtual int FontSize
     {
@@ -383,10 +372,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
     /// <summary>
     /// Gets or sets a uniform zoom factor applied during measure/arrange/render, useful for HiDPI scaling scenarios.
     /// </summary>
-    /// <remarks>
-    /// This scales the entire text box independently of the configured <see cref="FontSize"/>.
-    /// Changing this value triggers a measure invalidation.
-    /// </remarks>
     [Category(CategoryLayout)]
     public virtual float ZoomFactor
     {
@@ -423,7 +408,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
     /// <summary>
     /// Gets or sets a maximum constraint used during measure, protecting the host from invalid values.
     /// </summary>
-    /// <remarks>Defaults to (ushort.MaxValue, ushort.MaxValue).</remarks>
     [Category(CategoryLayout)]
     public virtual D2D_SIZE_F MaxConstraintSize
     {
@@ -446,7 +430,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
     public virtual ushort FontWeight
     {
 #if NETFRAMEWORK
-                get => (ushort)(_host?.Weight ?? 0);
+        get => (ushort)(_host?.Weight ?? 0);
 #else
         get => _host?.Weight ?? 0;
 #endif
@@ -458,7 +442,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
             OnPropertyChanging();
 #if NETFRAMEWORK
-                    host.Weight = (short)value;
+            host.Weight = (short)value;
 #else
             host.Weight = value;
 #endif
@@ -498,7 +482,6 @@ public partial class RichTextBox : RenderVisual, IDisposable
     /// </summary>
     /// <param name="flags">TOM flags controlling which text to set.</param>
     /// <param name="text">The text to set.</param>
-    /// <exception cref="InvalidOperationException">Thrown if the text host is not initialized.</exception>
     public virtual void SetText(tomConstants flags, string text)
     {
         if (_host == null)
@@ -553,9 +536,9 @@ public partial class RichTextBox : RenderVisual, IDisposable
             return WiceCommons.E_FAIL;
 
 #if NETFRAMEWORK
-                var hr = _host.Services.TxSendMessage((int)msg, wParam, lParam, out var res);
-                result = res;
-                return hr;
+        var hr = _host.Services.TxSendMessage((int)msg, wParam, lParam, out var res);
+        result = res;
+        return hr;
 #else
         return _host.SendMessage(msg, wParam, lParam, out result);
 #endif
@@ -844,10 +827,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
     // allow command line change
 #if NETFRAMEWORK
-            /// <summary>
-            /// Gets the default text services generator, optionally overridden by command line argument "TextServicesGenerator".
-            /// </summary>
-            public static TextServicesGenerator GetDefaultTextServicesGenerator() => CommandLine.GetArgument(nameof(TextServicesGenerator), TextServicesGenerator.Default);
+    /// <summary>
+    /// Gets the default text services generator, optionally overridden by command line argument "TextServicesGenerator".
+    /// </summary>
+    public static TextServicesGenerator GetDefaultTextServicesGenerator() => CommandLine.GetArgument(nameof(TextServicesGenerator), TextServicesGenerator.Default);
 #else
     /// <summary>
     /// Gets the default text services generator, optionally overridden by command line argument "TextServicesGenerator".

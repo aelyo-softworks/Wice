@@ -3,16 +3,6 @@
 /// <summary>
 /// Thread-safe bounded undo/redo stack for values of type <typeparamref name="T"/>.
 /// </summary>
-/// <remarks>
-/// - Use <see cref="Do(T)"/> to push a new state/action into the undo stack. This clears the redo stack.
-/// - Use <see cref="TryUndo(T, out T?)"/> to move the latest undo item to the caller, pushing the
-///   provided <paramref name="existing"/> value onto the redo stack.
-/// - Use <see cref="TryRedo(T, out T?)"/> to move the latest redo item to the caller, pushing the
-///   provided <paramref name="existing"/> value onto the undo stack.
-/// - Capacity is enforced by discarding the oldest undo entry when the limit is reached.
-/// - All public methods are synchronized via an internal lock (<see cref="SyncObject"/>).
-/// - When capacity is exceeded, rolling the stack has O(n) behavior; optimized for small capacities.
-/// </remarks>
 /// <typeparam name="T">
 /// The value type stored in the stacks. Prefer immutable snapshots or value types for predictable undo/redo behavior.
 /// </typeparam>
@@ -30,7 +20,6 @@ public class UndoStack<T>
     /// Initializes a new instance of <see cref="UndoStack{T}"/> with an optional capacity.
     /// </summary>
     /// <param name="capacity">Maximum number of undo entries to keep; must be greater than 0. Default is 100.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="capacity"/> is less than 1.</exception>
     public UndoStack(int capacity = 100)
     {
 #if NETFRAMEWORK
@@ -73,9 +62,6 @@ public class UndoStack<T>
     /// Pushes a new item onto the undo stack and clears the redo stack.
     /// </summary>
     /// <param name="item">The item to add as the next undo state.</param>
-    /// <remarks>
-    /// When <see cref="Capacity"/> is reached, the oldest undo entry is discarded (O(n) operation).
-    /// </remarks>
     public virtual void Do(T item)
     {
         lock (SyncObject)

@@ -3,13 +3,6 @@
 /// <summary>
 /// Vertical item presenter with selectable items and simple data-binding support.
 /// </summary>
-/// <remarks>
-/// - Layout: Measures visible children and stacks them vertically during arrange.
-/// - Selection: Supports <see cref="SelectionMode.Single"/> or multi-select via item toggling.
-/// - Data-binding: Creates <see cref="ItemVisual"/> children from <see cref="DataSource"/> using <see cref="DataBinder"/>.
-/// - Input: Keyboard navigation (Up/Down/Home/End), Space toggles selection of the focused item.
-/// - Scrolling: <see cref="ScrollIntoView(object)"/> cooperates with a parent <see cref="ScrollViewer"/>.
-/// </remarks>
 public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
 {
     /// <summary>
@@ -161,10 +154,6 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     }
 
     /// <inheritdoc />
-    /// <remarks>
-    /// When <see cref="IntegralHeight"/> is true, trims the final rect bottom to an integer multiple
-    /// of the first child's <c>DesiredSize.height</c>.
-    /// </remarks>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         if (IntegralHeight)

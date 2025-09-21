@@ -13,8 +13,6 @@ public class WicUtilities
     /// <param name="filePath">Path to an encoded image file (e.g., PNG, JPEG, BMP, etc.).</param>
     /// <param name="metadataOptions">Decode metadata caching behavior. Defaults to <see cref="WICDecodeOptions.WICDecodeMetadataCacheOnDemand"/>.</param>
     /// <returns>An <see cref="IComObject{T}"/> wrapping an <see cref="IWICBitmapSource"/> in 32bpp PBGRA format.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="filePath"/> is null.</exception>
-    /// <exception cref="System.Runtime.InteropServices.COMException">Propagated if the decoder fails to open or read the file.</exception>
     public static IComObject<IWICBitmapSource> LoadBitmapSource(string filePath, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
 #if NETFRAMEWORK
@@ -36,8 +34,6 @@ public class WicUtilities
     /// <param name="stream">A readable stream containing an encoded image (e.g., PNG, JPEG, BMP, etc.).</param>
     /// <param name="metadataOptions">Decode metadata caching behavior. Defaults to <see cref="WICDecodeOptions.WICDecodeMetadataCacheOnDemand"/>.</param>
     /// <returns>An <see cref="IComObject{T}"/> wrapping an <see cref="IWICBitmapSource"/> in 32bpp PBGRA format.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="stream"/> is null.</exception>
-    /// <exception cref="System.Runtime.InteropServices.COMException">Propagated if the decoder fails to read from the stream.</exception>
     public static IComObject<IWICBitmapSource> LoadBitmapSource(Stream stream, WICDecodeOptions metadataOptions = WICDecodeOptions.WICDecodeMetadataCacheOnDemand)
     {
 #if NETFRAMEWORK
@@ -62,9 +58,6 @@ public class WicUtilities
     /// <returns>
     /// A <see cref="D2D1_PIXEL_FORMAT"/> containing the corresponding <see cref="DXGI_FORMAT"/> and <see cref="D2D1_ALPHA_MODE"/>.
     /// </returns>
-    /// <exception cref="NotSupportedException">
-    /// Thrown when the provided WIC pixel format is not supported by the mapping.
-    /// </exception>
     public static D2D1_PIXEL_FORMAT GetDxgiFormat(Guid wicPixelFormat)
     {
         if (wicPixelFormat == WICConstants.GUID_WICPixelFormat32bppPBGRA)
@@ -104,9 +97,6 @@ public class WicUtilities
     /// <returns>
     /// A <see cref="D2D1_PIXEL_FORMAT"/> containing the corresponding <see cref="DXGI_FORMAT"/> and <see cref="D2D1_ALPHA_MODE"/>.
     /// </returns>
-    /// <exception cref="NotSupportedException">
-    /// Thrown when the provided WIC pixel format is not supported by the mapping.
-    /// </exception>
     public static D2D1_PIXEL_FORMAT GetDxgiFormat(Guid wicPixelFormat)
     {
         if (wicPixelFormat == Constants.GUID_WICPixelFormat32bppPBGRA)
@@ -146,8 +136,6 @@ public class WicUtilities
     /// <param name="pointer">Pointer to the start of the encoded image buffer.</param>
     /// <param name="byteLength">Length, in bytes, of the encoded image buffer.</param>
     /// <returns>An <see cref="IComObject{T}"/> wrapping an <see cref="IWICBitmapSource"/>.</returns>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="pointer"/> is zero.</exception>
-    /// <remarks>The buffer must contain an encoded image format understood by WIC (e.g., PNG, JPEG).</remarks>
     public static IComObject<IWICBitmapSource> LoadBitmapSource(nint pointer, long byteLength)
     {
         if (pointer == 0)
@@ -191,7 +179,6 @@ public class WicUtilities
     /// <param name="bufferSize">Total size, in bytes, of the source buffer.</param>
     /// <param name="pointer">Pointer to the start of the raw pixel buffer.</param>
     /// <returns>An <see cref="IComObject{T}"/> wrapping an <see cref="IWICBitmapSource"/> that references the provided memory.</returns>
-    /// <exception cref="ArgumentException">Thrown when <paramref name="pointer"/> is zero.</exception>
     public static IComObject<IWICBitmapSource> LoadBitmapSourceFromMemory(
         uint width,
         uint height,

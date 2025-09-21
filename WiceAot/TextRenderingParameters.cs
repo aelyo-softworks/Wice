@@ -3,12 +3,6 @@
 /// <summary>
 /// Represents a set of DirectWrite text rendering parameters that can be applied to a D2D device context.
 /// </summary>
-/// <remarks>
-/// - Properties map to IDWriteRenderingParams (and IDWriteRenderingParams1/2/3) members.
-/// - Properties are nullable: when a value is null, the corresponding monitor default (queried via <see cref="FromMonitor(HMONITOR)"/>) is used.
-/// - <see cref="Set(HMONITOR, ID2D1DeviceContext)"/> creates the most appropriate IDWriteRenderingParams* instance (0/1/2/3) based on the provided/available values.
-/// - Only <c>DWRITE_RENDERING_MODE1_NATURAL_SYMMETRIC_DOWNSAMPLED</c> is new in Windows 10 for <c>IDWriteRenderingParams3</c>.
-/// </remarks>
 public class TextRenderingParameters
 {
     /// <summary>
@@ -51,9 +45,6 @@ public class TextRenderingParameters
     /// Text rendering mode (version 1).
     /// Available starting with <c>IDWriteRenderingParams3</c>.
     /// </summary>
-    /// <remarks>
-    /// Only <c>DWRITE_RENDERING_MODE1_NATURAL_SYMMETRIC_DOWNSAMPLED</c> is new for Windows 10 and <c>IDWriteRenderingParams3</c>.
-    /// </remarks>
     public virtual DWRITE_RENDERING_MODE1? Mode { get; set; }
 
     /// <summary>
@@ -61,18 +52,6 @@ public class TextRenderingParameters
     /// </summary>
     /// <param name="monitorHandle">The monitor whose default rendering parameters are used to fill unspecified values.</param>
     /// <param name="context">The device context that will receive the text rendering parameters. Must not be null.</param>
-    /// <remarks>
-    /// - Any property left null will be populated from the monitor defaults.
-    /// - If required base values (gamma, enhanced contrast, ClearType level, pixel geometry, and mode) are unavailable, the method returns without modifying the context.
-    /// - The method selects the most capable DirectWrite factory overload:
-    ///   - If <see cref="Mode"/> is a value beyond <c>DWRITE_RENDERING_MODE1_OUTLINE</c> and both <see cref="GridFitMode"/> and <see cref="GrayscaleEnhancedContrast"/> are available, it uses <c>IDWriteFactory3.CreateCustomRenderingParams</c>.
-    ///   - Else if <see cref="GridFitMode"/> is specified and grayscale enhanced contrast is available (from defaults or property), it uses <c>IDWriteFactory2.CreateCustomRenderingParams</c>.
-    ///   - Else if <see cref="GrayscaleEnhancedContrast"/> is specified, it uses <c>IDWriteFactory1.CreateCustomRenderingParams</c>.
-    ///   - Otherwise, it falls back to <c>IDWriteFactory.CreateCustomRenderingParams</c>.
-    /// - The created COM object is disposed after applying to the context.
-    /// </remarks>
-    /// <exception cref="System.ArgumentNullException">Thrown if <paramref name="context"/> is null.</exception>
-    /// <exception cref="System.Exception">Propagates failures from DirectWrite/Direct2D calls via <c>ThrowOnError()</c>.</exception>
     public virtual void Set(HMONITOR monitorHandle, ID2D1DeviceContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
@@ -139,9 +118,6 @@ public class TextRenderingParameters
     /// </summary>
     /// <param name="handle">Handle to the monitor to query.</param>
     /// <returns>A <see cref="TextRenderingParameters"/> instance populated with the monitor defaults.</returns>
-    /// <remarks>
-    /// If the underlying <c>IDWriteRenderingParams</c> supports versions 1/2/3, the corresponding values are read as well.
-    /// </remarks>
     public static TextRenderingParameters FromMonitor(HMONITOR handle)
     {
         Application.CurrentResourceManager.DWriteFactory.Object.CreateMonitorRenderingParams(handle, out var p).ThrowOnError();

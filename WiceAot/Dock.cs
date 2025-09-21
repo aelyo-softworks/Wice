@@ -4,17 +4,6 @@
 /// A layout container that arranges its visible children by docking them to its edges:
 /// Left, Top, Right, Bottom, with an optional last child filling the remaining space.
 /// </summary>
-/// <remarks>
-/// Behavior overview:
-/// - Dock order is the visual order of <see cref="VisibleChildren"/>; each child consumes space from the current
-///   layout rectangle according to its <c>DockType</c>.
-/// - Horizontal-alignment is honored for Top/Bottom docked children; Vertical-alignment is honored for Left/Right.
-/// - When <see cref="AllowOverlap"/> is false, opposing edge docks will not overlap previously docked edges.
-/// - When <see cref="LastChildFill"/> is true, the last visible child fills any remaining area.
-/// Relationship graph:
-/// - During arrange, the container tracks neighbor relationships (left/right/top/bottom) for each child
-///   which can be queried via <see cref="GetAt(Visual, DockType)"/>.
-/// </remarks>
 public partial class Dock : Visual
 {
     private readonly Dictionary<Visual, Docked> _docked = [];
@@ -49,7 +38,6 @@ public partial class Dock : Visual
     /// </summary>
     /// <param name="properties">Target child implementing <see cref="IPropertyOwner"/>.</param>
     /// <param name="type">Dock side to set.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static void SetDockType(IPropertyOwner properties, DockType type)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -61,7 +49,6 @@ public partial class Dock : Visual
     /// </summary>
     /// <param name="properties">Target child implementing <see cref="IPropertyOwner"/>.</param>
     /// <returns>The configured dock side; defaults to <see cref="DockType.Left"/>.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="properties"/> is null.</exception>
     public static DockType GetDockType(IPropertyOwner properties)
     {
         ExceptionExtensions.ThrowIfNull(properties, nameof(properties));
@@ -88,7 +75,6 @@ public partial class Dock : Visual
     /// <param name="visual">The child visual to query.</param>
     /// <param name="type">The neighbor side to retrieve.</param>
     /// <returns>The adjacent visual for that side, or null if none.</returns>
-    /// <exception cref="ArgumentNullException">When <paramref name="visual"/> is null.</exception>
     public Visual? GetAt(Visual visual, DockType type)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -110,9 +96,6 @@ public partial class Dock : Visual
     /// </summary>
     /// <param name="constraint">Available size including margin.</param>
     /// <returns>The desired size required by docked children.</returns>
-    /// <remarks>
-    /// Children are measured in order with the remaining space after previously measured siblings in their orientation.
-    /// </remarks>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         _lastChild = null;

@@ -3,16 +3,6 @@
 /// <summary>
 /// Modal popup dialog visual.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - Centered placement with optional semi-transparent window overlay inserted behind the dialog.
-/// - Measures to its content and updates its own Width/Height once arranged.
-/// - Close semantics: ESC key or a TitleBar CloseButton click attempts to close (can be canceled via <see cref="Closing"/>).
-/// - Animations: fade-in on first render; fade-out on close. Adds an optional drop shadow.
-/// - Input: captures mouse down/up to prevent clicks from passing through to underlying visuals.
-/// Layout:
-/// - Hosts exactly one content visual (a <see cref="Canvas"/> by default) to reserve margin for the drop shadow.
-/// </remarks>
 public partial class Dialog : Popup
 {
     private object? _closeButtonClickHandler;
@@ -33,7 +23,6 @@ public partial class Dialog : Popup
     /// Initializes a new <see cref="Dialog"/> with centered placement, modal/focusable behavior,
     /// a single content visual sized to its content, and an optional shadow.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when <see cref="CreateContent"/> returns null.</exception>
     public Dialog()
     {
         ShowWindowOverlay = true;
@@ -113,10 +102,6 @@ public partial class Dialog : Popup
     /// <summary>
     /// Creates the dialog content visual.
     /// </summary>
-    /// <remarks>
-    /// - Uses a centered <see cref="Canvas"/> that measures to its content (<see cref="DimensionOptions.WidthAndHeight"/>).<br/>
-    /// - After arrange, copies its arranged width/height to the dialog when not explicitly set.
-    /// </remarks>
     /// <returns>The newly created content visual.</returns>
     protected virtual Visual CreateContent()
     {
@@ -197,10 +182,6 @@ public partial class Dialog : Popup
     /// <summary>
     /// Closes the dialog by animating removal and removing it from the visual tree.
     /// </summary>
-    /// <remarks>
-    /// When a compositor is available, a scoped batch is used to play the close animation before removal.
-    /// Always raises <see cref="Closed"/> prior to removal.
-    /// </remarks>
     public virtual void Close() => Compositor?.RunScopedBatch(AnimateRemove, () =>
     {
         OnClosed(this, EventArgs.Empty);
@@ -279,10 +260,6 @@ public partial class Dialog : Popup
     /// </summary>
     /// <param name="sender">Event sender.</param>
     /// <param name="e">Event args.</param>
-    /// <remarks>
-    /// The overlay uses <see cref="WindowOverlayOpacity"/> and <see cref="WindowOverlayColor"/> when set,
-    /// otherwise theme values. The overlay is inserted just before the dialog among the parent's children.
-    /// </remarks>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         base.OnAttachedToParent(sender, e);

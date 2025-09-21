@@ -5,16 +5,6 @@
 /// Hosts a single <see cref="Visual"/> as content and exposes a <see cref="Header"/>
 /// used by the tabs strip for selection and presentation.
 /// </summary>
-/// <remarks>
-/// Behavior:
-/// - The page is owned by a single <see cref="Tabs"/> instance (see <see cref="Tab"/>).
-/// - <see cref="Content"/> changes are delegated to the owning <see cref="Tabs"/> via
-///   <see cref="Tabs.OnPageContentChanged(TabPage, Visual?, Visual?)"/> for layout/visual updates.
-/// - <see cref="IsSelectable"/> changes are delegated to the owning <see cref="Tabs"/> via
-///   <see cref="Tabs.OnPageIsSelectableChanged(TabPage, bool)"/> to update selection logic.
-/// - <see cref="Header"/> is created by <see cref="CreateHeader"/> during construction and
-///   is configured to measure to its content with disabled inner text interaction.
-/// </remarks>
 public partial class TabPage : BaseObject
 {
     /// <summary>
@@ -43,7 +33,6 @@ public partial class TabPage : BaseObject
     /// <summary>
     /// Initializes a new <see cref="TabPage"/>, creating and configuring the <see cref="Header"/>.
     /// </summary>
-    /// <exception cref="InvalidOperationException">Thrown when <see cref="CreateHeader"/> returns null.</exception>
     public TabPage()
     {
         Header = CreateHeader();
@@ -66,11 +55,6 @@ public partial class TabPage : BaseObject
     /// <summary>
     /// Gets or sets the content visual hosted by this page.
     /// </summary>
-    /// <remarks>
-    /// Setting this property notifies the owning <see cref="Tabs"/> so it can insert/remove the visual
-    /// in its visual tree using <see cref="Tabs.AddPageContent(TabPage, int, Visual)"/> and
-    /// <see cref="Tabs.RemovePageContent(TabPage, int, Visual)"/>.
-    /// </remarks>
     [Browsable(false)]
     public Visual? Content { get => (Visual)GetPropertyValue(ContentProperty)!; set => SetPropertyValue(ContentProperty, value); }
 
@@ -83,9 +67,6 @@ public partial class TabPage : BaseObject
     /// <summary>
     /// Gets or sets arbitrary user data associated with this page.
     /// </summary>
-    /// <remarks>
-    /// Changing this value invalidates measure for consumers similar to <see cref="Visual.Data"/>.
-    /// </remarks>
     [Browsable(false)]
     public object? Data { get => GetPropertyValue(DataProperty)!; set => SetPropertyValue(DataProperty, value); }
 
@@ -113,7 +94,6 @@ public partial class TabPage : BaseObject
     /// Override to perform cleanup related to the owning tabs instance.
     /// </summary>
     /// <param name="tabs">The tabs control this page was removed from.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="tabs"/> is null.</exception>
     protected internal void RemovedFromTabs(Tabs tabs) => ExceptionExtensions.ThrowIfNull(tabs, nameof(tabs));
 
     /// <summary>
@@ -121,7 +101,6 @@ public partial class TabPage : BaseObject
     /// Override to perform initialization related to the owning tabs instance.
     /// </summary>
     /// <param name="tabs">The tabs control this page was added to.</param>
-    /// <exception cref="ArgumentNullException">When <paramref name="tabs"/> is null.</exception>
     protected internal void AddedToTabs(Tabs tabs) => ExceptionExtensions.ThrowIfNull(tabs, nameof(tabs));
 #pragma warning restore CA1822 // Mark members as static
 

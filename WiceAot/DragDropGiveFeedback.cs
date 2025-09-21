@@ -20,8 +20,5 @@ public class DragDropGiveFeedback(DROPEFFECT effect) : EventArgs
     /// Gets or sets the HRESULT to return to the drag-and-drop framework.
     /// Use <c>DRAGDROP_S_USEDEFAULTCURSORS</c> to request the system's default cursors.
     /// </summary>
-    /// <remarks>
-    /// Defaults to <see cref="WiceCommons.DRAGDROP_S_USEDEFAULTCURSORS"/>.
-    /// </remarks>
     public HRESULT Result { get; set; } = WiceCommons.DRAGDROP_S_USEDEFAULTCURSORS;
 }

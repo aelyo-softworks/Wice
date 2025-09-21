@@ -3,20 +3,11 @@
 /// <summary>
 /// A two-state toggle button that exposes a strongly-typed boolean <see cref="Value"/>.
 /// </summary>
-/// <remarks>
-/// - Visual content is provided per-state via <see cref="StateButtonState.CreateChildFunc"/>.
-/// - When <see cref="Value"/> is <c>true</c>, a filled background with a stroked check glyph is rendered (<see cref="TrueVisual"/>).
-/// - When <see cref="Value"/> is <c>false</c>, an empty stroked rectangle is rendered (<see cref="FalseVisual"/>).
-/// - Subscribes to the window's Theme/DPI events to keep strokes and sizing consistent with the current theme.
-/// </remarks>
 public partial class CheckBox : StateButton
 {
     /// <summary>
     /// Initializes the checkbox with two states (<c>false</c> and <c>true</c>) and sets the default <see cref="Value"/> to <c>false</c>.
     /// </summary>
-    /// <remarks>
-    /// Uses custom equality to match arbitrary objects that can be converted to <see cref="bool"/> via <c>Conversions.ChangeType&lt;bool&gt;</c>.
-    /// </remarks>
     public CheckBox()
     {
         AddState(new StateButtonState(false, CreateChild) { EqualsFunc = (s, o) => !Conversions.ChangeType<bool>(o) });
@@ -27,10 +18,6 @@ public partial class CheckBox : StateButton
     /// <summary>
     /// Gets or sets the current boolean state of the checkbox.
     /// </summary>
-    /// <remarks>
-    /// This property shadows <see cref="StateButton.Value"/> to provide a strongly-typed boolean API.
-    /// Setting this property updates the visual content to match the current state.
-    /// </remarks>
     [Category(CategoryBehavior)]
     public new bool Value { get => (bool)base.Value!; set => base.Value = value; }
 
@@ -61,10 +48,6 @@ public partial class CheckBox : StateButton
     /// <summary>
     /// Visual for the <c>true</c> state: renders a themed filled background and a stroked check glyph.
     /// </summary>
-    /// <remarks>
-    /// - Uses the current window theme to pick brushes and stroke thickness.
-    /// - Updates its geometry and thickness on Theme/DPI changes.
-    /// </remarks>
     public partial class TrueVisual : Border
     {
         /// <summary>
@@ -137,10 +120,6 @@ public partial class CheckBox : StateButton
     /// <summary>
     /// Visual for the <c>false</c> state: renders a themed stroked rectangle.
     /// </summary>
-    /// <remarks>
-    /// - Uses the current window theme to pick stroke brush and thickness.
-    /// - Updates thickness on Theme/DPI changes.
-    /// </remarks>
     public partial class FalseVisual : Rectangle
     {
         /// <summary>
