@@ -1,8 +1,15 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// Represents a window that serves as the top-level visual container for rendering and user interaction.
+/// </summary>
 public partial class Window : Canvas, ITitleBarParent
 {
     private static Lazy<uint> _maximumBitmapSize = new(GetMaximumBitmapSize, true);
+
+    /// <summary>
+    /// Gets the maximum allowable size, in pixels, for a bitmap image.
+    /// </summary>
     public static uint MaximumBitmapSize => _maximumBitmapSize.Value;
 
     private static Visual? _mouseCaptorVisual;
@@ -61,31 +68,130 @@ public partial class Window : Canvas, ITitleBarParent
     private readonly ConcurrentDictionary<Visual, InvalidateMode> _suspendedInvalidations = new();
     private readonly HashSet<Visual> _ddEntered = [];
 
+    /// <summary>
+    /// Occurs when the handle for the window is created.
+    /// </summary>
     public event EventHandler? HandleCreated;
+
+    /// <summary>
+    /// Occurs when the monitor configuration changes.
+    /// </summary>
     public event EventHandler? MonitorChanged;
+
+    /// <summary>
+    /// Occurs when the window has been moved.
+    /// </summary>
     public event EventHandler? Moved;
+
+    /// <summary>
+    /// Occurs when the window is being moved, providing the current bounds of the window during the move operation.
+    /// </summary>
     public event EventHandler<ValueEventArgs<RECT>>? Moving;
+
+    /// <summary>
+    /// Occurs when the window is resized.
+    /// </summary>
     public event EventHandler? Resized;
+
+    /// <summary>
+    /// Occurs when a window belonging to a different application than the active window is about to be activated
+    /// </summary>
     public event EventHandler<ValueEventArgs<int>>? AppActivated;
+
+    /// <summary>
+    /// Occurs when the window is activated.
+    /// </summary>
     public event EventHandler? Activated;
+
+    /// <summary>
+    /// Occurs when a window belonging to a different application than the active window is about to be deactivated
+    /// </summary>
     public event EventHandler<ValueEventArgs<int>>? AppDeactivated;
+
+    /// <summary>
+    /// Occurs when the window is deactivated.
+    /// </summary>
     public event EventHandler? Deactivated;
+
+    /// <summary>
+    /// Occurs when the window is destroyed.
+    /// </summary>
     public event EventHandler? Destroyed;
+
+    /// <summary>
+    /// Occurs when the DPI (dots per inch) setting of the window changes.
+    /// </summary>
     public event EventHandler<DpiChangedEventArgs>? DpiChanged;
+
+    /// <summary>
+    /// Occurs when the DPI theme settings change.
+    /// </summary>
     public event EventHandler<ThemeDpiEventArgs>? ThemeDpiEvent;
+
+    /// <summary>
+    /// Occurs before the DPI setting of the parent window changes.
+    /// </summary>
     public event EventHandler? DpiChangedBeforeParent;
+
+    /// <summary>
+    /// Occurs when the DPI setting for the parent window has changed
+    /// </summary>
     public event EventHandler? DpiChangedAfterParent;
+
+    /// <summary>
+    /// Occurs when the position of the window is changing.
+    /// </summary>
     public event EventHandler<ValueEventArgs<WINDOWPOS>>? PositionChanging;
+
+    /// <summary>
+    /// Occurs when the position of the window changes.
+    /// </summary>
     public event EventHandler<ValueEventArgs<WINDOWPOS>>? PositionChanged;
+
+    /// <summary>
+    /// Occurs when the window is about to close, allowing subscribers to handle or cancel the closing operation.
+    /// </summary>
     public event EventHandler<ClosingEventArgs>? Closing;
+
+    /// <summary>
+    /// Occurs during a drag-and-drop operation to determine whether the operation should continue, be canceled, or
+    /// complete.
+    /// </summary>
     public event EventHandler<DragDropQueryContinueEventArgs>? DragDropQueryContinue;
+
+    /// <summary>
+    /// Occurs when a drag-and-drop operation is in progress and feedback is provided to the user.
+    /// </summary>
     public event EventHandler<DragDropGiveFeedback>? DragDropGiveFeedback;
+
+    /// <summary>
+    /// Occurs when a drag-and-drop operation targets this window.
+    /// </summary>
     public event EventHandler<DragDropTargetEventArgs>? DragDropTarget;
+
+    /// <summary>
+    /// Occurs when a key is pressed while the focus is on the window.
+    /// </summary>
     public event EventHandler<KeyEventArgs>? PreviewKeyDown;
+
+    /// <summary>
+    /// Occurs when a key is released while the focus is on this window.
+    /// </summary>
     public event EventHandler<KeyEventArgs>? PreviewKeyUp;
+
+    /// <summary>
+    /// Occurs when a key is pressed while the window has focus.
+    /// </summary>
     public event EventHandler<KeyPressEventArgs>? PreviewKeyPress;
+
+    /// <summary>
+    /// Occurs when a window message is received.
+    /// </summary>
     public event EventHandler<WindowMessageEventArgs>? WindowMessage;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Window"/> class.
+    /// </summary>
     public Window()
     {
         //EnableInvalidationStackDiagnostics = true;
@@ -119,41 +225,95 @@ public partial class Window : Canvas, ITitleBarParent
         IsFocusable = true;
     }
 
+    /// <summary>
+    /// Gets the unique identifier for the current managed thread.
+    /// </summary>
     public int ManagedThreadId { get; }
 
+    /// <summary>
+    /// Gets the <see cref="CompositionGraphicsDevice"/> used for rendering composition visuals.
+    /// </summary>
     [Browsable(false)]
     public CompositionGraphicsDevice CompositionDevice => _compositionDevice.Value;
 
+    /// <summary>
+    /// Gets the <see cref="Compositor"/> associated with the current <see cref="CompositorController"/>.
+    /// </summary>
     [Browsable(false)]
     public new Compositor? Compositor => CompositorController?.Compositor;
 
+    /// <summary>
+    /// Gets the <see cref="CompositorController"/> instance used to manage and control compositor-related operations.
+    /// </summary>
     [Browsable(false)]
     public CompositorController CompositorController => _compositorController.Value;
 
+    /// <summary>
+    /// Gets the Direct3D 11 device associated with the window.
+    /// </summary>
     [Browsable(false)]
     public IComObject<ID3D11Device> D3D11Device => _d3D11Device.Value;
 
+    /// <summary>
+    /// Gets the Direct2D device associated with the window.
+    /// </summary>
     [Browsable(false)]
     public IComObject<ID2D1Device1> D2D1Device => _d2D1Device.Value;
 
+    /// <summary>
+    /// Gets the theme configuration for the window.
+    /// </summary>
     [Browsable(false)]
     public virtual Theme Theme { get; protected set; }
 
+    /// <summary>
+    /// Gets the <see cref="ContainerVisual"/> that represents the visual frame used for rendering this window.
+    /// </summary>
     [Category(CategoryRender)]
     public ContainerVisual? FrameVisual { get; private set; }
 
+    /// <summary>
+    /// Gets a value indicating whether the top-level composition visual tree is used.
+    /// </summary>
     [Browsable(false)]
     public virtual bool UseTopCompositionVisualTree => false;
 
+    /// <summary>
+    /// Gets the name of the window class.
+    /// </summary>
     protected virtual string ClassName => GetType().FullName!;
+
+    /// <summary>
+    /// Gets the class styles used to define the behavior and appearance of the window class.
+    /// </summary>
     protected virtual WNDCLASS_STYLES ClassStyles => WNDCLASS_STYLES.CS_HREDRAW | WNDCLASS_STYLES.CS_VREDRAW | WNDCLASS_STYLES.CS_DBLCLKS;
+
+    /// <summary>
+    /// Gets the brush used to paint the background of the window.
+    /// </summary>
     protected virtual HBRUSH BackgroundBrush { get; } // GET_STOCK_OBJECT_FLAGS.STOCK_BRUSH_WINDOW; // default is white, we use transparent
+
+    /// <summary>
+    /// Gets the maximum number of child elements that can be associated with this instance.
+    /// </summary>
     protected virtual int MaxChildrenCount => int.MaxValue;
+
+    /// <summary>
+    /// Gets a value indicating whether the window has a caret.
+    /// </summary>
     protected virtual bool HasCaret => true;
+
+    /// <summary>
+    /// Gets a value indicating whether modal elements intersect with all bounds in the window.
+    /// </summary>
     protected virtual bool ModalsIntersectWithAllBounds => false;
 #if DEBUG
     public virtual bool EnableDiagnosticKeys { get; set; }
 #endif
+
+    /// <summary>
+    /// Gets the flags used to configure the creation of the Direct3D 11 device.
+    /// </summary>
     protected virtual D3D11_CREATE_DEVICE_FLAG CreateDeviceFlags
     {
         get
@@ -168,32 +328,59 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the animation is currently active.
+    /// </summary>
     [Category(CategoryLive)]
     public bool IsAnimating => _animating != 0;
 
+    /// <summary>
+    /// Gets the width, in pixels, of the border surrounding the window.
+    /// </summary>
     [Category(CategoryLayout)]
     public int BorderWidth { get; }
 
+    /// <summary>
+    /// Gets the height of the border in pixels surrounding the window.
+    /// </summary>
     [Category(CategoryLayout)]
     public int BorderHeight { get; }
 
+    /// <summary>
+    /// Gets the dots per inch (DPI) value associated with the window.
+    /// </summary>
     [Category(CategoryLayout)]
     public uint Dpi => NativeIfCreated?.Dpi ?? Monitor?.EffectiveDpi.width ?? WiceCommons.USER_DEFAULT_SCREEN_DPI;
 
+    /// <summary>
+    /// Gets the DPI awareness context of the window.
+    /// </summary>
     [Category(CategoryLayout)]
     public DPI_AWARENESS_CONTEXT DpiAwareness => NativeIfCreated?.DpiAwareness ?? DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE;
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the window runs in the background.
+    /// </summary>
     [Category(CategoryBehavior)]
     public bool IsBackground { get; set; } // true => doesn't prevent to quit
 
     internal bool AdaptToDpi => !WiceCommons.AreDpiAwarenessContextsEqual(DpiAwareness, DPI_AWARENESS_CONTEXT.DPI_AWARENESS_CONTEXT_UNAWARE);
 
+    /// <summary>
+    /// Gets the main title bar of the application window.
+    /// </summary>
     [Browsable(false)]
     public TitleBar? MainTitleBar { get; internal set; }
 
+    /// <summary>
+    /// Gets the <see cref="TaskScheduler"/> associated with this instance.
+    /// </summary>
     [Browsable(false)]
     public TaskScheduler TaskScheduler => _scheduler;
 
+    /// <summary>
+    /// Gets the underlying native window associated with this instance.
+    /// </summary>
     [Category(CategoryLive)]
     public NativeWindow Native
     {
@@ -209,48 +396,94 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets the underlying <see cref="NativeWindow"/> instance if it has been created; otherwise, returns <see
+    /// langword="null"/>.
+    /// </summary>
     [Browsable(false)]
     public NativeWindow? NativeIfCreated => _native.IsValueCreated ? _native.Value : null;
 
+    /// <summary>
+    /// Gets the handle to the monitor associated with the window.
+    /// </summary>
     [Browsable(false)]
     public HMONITOR MonitorHandle { get; private set; }
 
+    /// <summary>
+    /// Gets the monitor associated with the window, if available.
+    /// </summary>
     [Browsable(false)]
     public Monitor? Monitor => MonitorHandle != 0 ? new Monitor(MonitorHandle) : null;
 
+    /// <summary>
+    /// Gets the dimensions and position of the window as a <see cref="RECT"/> structure.
+    /// </summary>
     [Category(CategoryLayout)]
     public RECT WindowRect => NativeIfCreated?.WindowRect ?? new();
 
+    /// <summary>
+    /// Gets the extended bounds of the window frame, including any non-client area extensions.
+    /// </summary>
     [Category(CategoryLayout)]
     public RECT ExtendedFrameBounds => NativeIfCreated?.ExtendedFrameBounds ?? new();
 
+    /// <summary>
+    /// Gets the client area of the window.
+    /// </summary>
     [Category(CategoryLayout)]
     public RECT ClientRect => NativeIfCreated?.ClientRect ?? new();
 
+    /// <summary>
+    /// Gets the currently active <see cref="ToolTip"/> instance, or <see langword="null"/> if no tooltip is active.
+    /// </summary>
     [Browsable(false)]
     public ToolTip? CurrentToolTip { get; private set; }
 
+    /// <summary>
+    /// Gets the current caret associated with the window, if available.
+    /// </summary>
     [Browsable(false)]
     public Caret? Caret => _caret.Value;
 
+    /// <summary>
+    /// Gets a value indicating whether the current view is maximized.
+    /// </summary>
     [Category(CategoryLive)]
     public bool IsZoomed => NativeIfCreated?.IsZoomed() == true;
 
-    [Browsable(false)]
+    /// <summary>
+    /// Gets the native window handle.
+    /// </summary>
     public HWND Handle => _native?.IsValueCreated == true ? _native.Value.Handle : HWND.Null;
 
+    /// <summary>
+    /// Gets the visual used to indicate focus on the control.
+    /// </summary>
     [Browsable(false)]
     public FocusVisual? FocusVisual { get; private set; }
 
+    /// <summary>
+    /// Gets an enumerable collection of visuals that are marked as modal.
+    /// </summary>
     [Browsable(false)]
     public virtual IEnumerable<Visual> ModalVisuals => Children.Where(v => v.IsModal());
 
+    /// <summary>
+    /// Gets a value indicating whether the window has input focus.
+    /// </summary>
     [Category(CategoryLive)]
     public bool HasFocus { get => _hasFocus; private set => SetFocus(value); }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the creation process should occur on the monitor where the cursor is
+    /// currently located.
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual bool CreateOnCursorMonitor { get; set; }
 
+    /// <summary>
+    /// Gets the visual that currently has focus within the control.
+    /// </summary>
     [Browsable(false)]
     public Visual? FocusedVisual
     {
@@ -281,6 +514,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the window can be resized by the user.
+    /// </summary>
     [Category(CategoryBehavior)]
     public bool IsResizable
     {
@@ -303,6 +539,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets the color of the frame used in rendering.
+    /// </summary>
     [Category(CategoryRender)]
     public D3DCOLORVALUE FrameColor
     {
@@ -319,6 +558,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets the size of the window frame.
+    /// </summary>
     [Category(CategoryLayout)]
     public float FrameSize
     {
@@ -335,6 +577,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets the area of the client rectangle into which the window frame is extended.
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual RECT? ExtendFrameIntoClientRect
     {
@@ -350,6 +595,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets the rectangle used to define the layout or bounds during creation.
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual RECT CreateRect
     {
@@ -365,6 +613,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets the frame mode used for rendering the window's borders and title bar.
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual WindowsFrameMode WindowsFrameMode
     {
@@ -381,6 +632,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the compositor controller automatically commits changes.
+    /// </summary>
     [Browsable(false)]
     public bool CompositorControllerAutoCommit
     {
@@ -402,6 +656,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets the style of the window.
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual WINDOW_STYLE Style
     {
@@ -425,6 +682,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets the extended window styles.
+    /// </summary>
     [Category(CategoryLayout)]
     public virtual WINDOW_EX_STYLE ExtendedStyle
     {
@@ -448,6 +708,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets the handle of the parent window associated with this instance.
+    /// </summary>
     [Browsable(false)]
     public virtual HWND ParentHandle
     {
@@ -479,6 +742,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets the handle to the native icon associated with this window.
+    /// </summary>
     [Browsable(false)]
     public virtual HICON IconHandle
     {
@@ -502,6 +768,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Gets or sets the window title.
+    /// </summary>
     [Category(CategoryBehavior)]
     public virtual string Title
     {
@@ -560,6 +829,7 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    // <inheritdoc />
     public override string ToString() => Name ?? Title ?? base.ToString();
 
     private sealed partial class WindowBaseObjectCollection : BaseObjectCollection<Visual>
@@ -611,10 +881,28 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    // <inheritdoc />
     protected sealed override BaseObjectCollection<Visual> CreateChildren() => new WindowBaseObjectCollection(this, MaxChildrenCount);
 
+    /// <summary>
+    /// Converts a measurement in device-independent pixels (DIPs) to pixels based on the window DPI setting.
+    /// </summary>
+    /// <param name="dips">The measurement in device-independent pixels (DIPs) to convert. Must be a non-negative value.</param>
+    /// <returns>The equivalent measurement in pixels, rounded to the nearest integer.</returns>
     public int DipsToPixels(int dips) => (int)(dips * Dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI);
+
+    /// <summary>
+    /// Converts a value in device-independent pixels (DIPs) to physical pixels based on the window DPI setting.
+    /// </summary>
+    /// <param name="dips">The value in device-independent pixels (DIPs) to convert.</param>
+    /// <returns>The equivalent value in physical pixels.</returns>
     public uint DipsToPixels(uint dips) => dips * Dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI;
+
+    /// <summary>
+    /// Converts a value in device-independent pixels (DIPs) to physical pixels based on the window DPI.
+    /// </summary>
+    /// <param name="dips">The value in device-independent pixels (DIPs) to convert.</param>
+    /// <returns>The equivalent value in physical pixels.</returns>
     public float DipsToPixels(float dips) => dips * Dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI;
 
     private void RemoveFocusVisual()
@@ -702,7 +990,24 @@ public partial class Window : Canvas, ITitleBarParent
             throw new WiceException("0014: Native window has already been created.");
     }
 
+    /// <summary>
+    /// Retrieves a list of visuals that intersect with the specified point.
+    /// </summary>
+    /// <param name="point">The point, represented as a <see cref="D2D_POINT_2F"/>, to test for intersections.</param>
+    /// <param name="comparer">An optional comparer used to sort the resulting visuals. If <see langword="null"/>, the visuals are returned in
+    /// their default order.</param>
+    /// <returns>A read-only list of <see cref="Visual"/> objects that intersect with the specified point. The list may be empty
+    /// if no visuals intersect with the point.</returns>
     public IReadOnlyList<Visual> GetIntersectingVisuals(D2D_POINT_2F point, IComparer<Visual>? comparer = null) => GetIntersectingVisuals(D2D_RECT_F.Sized(point.x, point.y, 1, 1), comparer);
+
+    /// <summary>
+    /// Retrieves a list of visuals that intersect with the specified bounds.
+    /// </summary>
+    /// <param name="bounds">The rectangular bounds to test for intersections, specified in device-independent pixels (DIPs).</param>
+    /// <param name="comparer">An optional comparer used to sort the intersecting visuals. If <see langword="null"/>, a default depth-based
+    /// comparer is used.</param>
+    /// <returns>A read-only list of <see cref="Visual"/> objects that intersect with the specified bounds. The list is sorted
+    /// based on the provided comparer or the default depth-based order.</returns>
     public virtual IReadOnlyList<Visual> GetIntersectingVisuals(D2D_RECT_F bounds, IComparer<Visual>? comparer = null)
     {
         var list = GetIntersectingVisualsPrivate(bounds).ToList();
@@ -735,6 +1040,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Enables debug tracking for DirectX components, including leak tracking and message severity breakpoints.
+    /// </summary>
     protected virtual void EnableDebugTracking()
     {
         using var obj = DXGIFunctions.DXGIGetDebugInterface1();
@@ -759,6 +1067,11 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Creates and applies default tooltip content to the specified <see cref="ToolTip"/> control.
+    /// </summary>
+    /// <param name="parent">The <see cref="ToolTip"/> control to which the content will be added. Cannot be <see langword="null"/>.</param>
+    /// <param name="text">The text to display in the tooltip. If <see langword="null"/>, no text content will be added.</param>
     public static void CreateDefaultToolTipContent(ToolTip parent, string text)
     {
         ExceptionExtensions.ThrowIfNull(parent, nameof(parent));
@@ -801,44 +1114,263 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Raises the <see cref="Activated"/> event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
     protected virtual void OnActivated(object? sender, EventArgs e) => Activated?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="Deactivated"/> event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
     protected virtual void OnDeactivated(object? sender, EventArgs e) => Deactivated?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="AppActivated"/> event when the application is activated.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">A <see cref="ValueEventArgs{T}"/> containing the activation value as an integer.</param>
     protected virtual void OnAppActivated(object? sender, ValueEventArgs<int> e) => AppActivated?.Invoke(sender, e);
+
+    /// <summary>
+    /// Invoked when the application is deactivated, allowing subscribers to handle the event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">A <see cref="ValueEventArgs{T}"/> containing the event data, including an integer value representing the
+    /// deactivation context.</param>
     protected virtual void OnAppDeactivated(object? sender, ValueEventArgs<int> e) => AppDeactivated?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="PositionChanging"/> event to notify subscribers that the position of the window is about to
+    /// change.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">A <see cref="ValueEventArgs{WINDOWPOS}"/> instance containing the new position details.</param>
     protected virtual void OnPositionChanging(object? sender, ValueEventArgs<WINDOWPOS> e) => PositionChanging?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="PositionChanged"/> event to notify subscribers that the position of the window has changed.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">A <see cref="ValueEventArgs{WINDOWPOS}"/> instance containing the new position data.</param>
     protected virtual void OnPositionChanged(object? sender, ValueEventArgs<WINDOWPOS> e) => PositionChanged?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="Resized"/> event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
     protected virtual void OnResized(object? sender, EventArgs e) => Resized?.Invoke(sender, e);
+
+    /// <summary>
+    /// Invoked when the window is destroyed, allowing derived classes to handle the destruction event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
     protected virtual void OnDestroyed(object? sender, EventArgs e) => Destroyed?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="Moved"/> event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
     protected virtual void OnMoved(object? sender, EventArgs e) => Moved?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="Moving"/> event to notify subscribers that a movement operation is occurring.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">A <see cref="ValueEventArgs{RECT}"/> instance containing the updated rectangle value associated with the
+    /// movement.</param>
     protected virtual void OnMoving(object? sender, ValueEventArgs<RECT> e) => Moving?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="MonitorChanged"/> event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
     protected virtual void OnMonitorChanged(object? sender, EventArgs e) => MonitorChanged?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="HandleCreated"/> event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
     protected virtual void OnHandleCreated(object? sender, EventArgs e) => HandleCreated?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="DpiChangedAfterParent"/> event after the parent window's DPI change has been processed.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
     protected virtual void OnDpiChangedAfterParent(object sender, EventArgs e) => DpiChangedAfterParent?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="DpiChangedBeforeParent"/> event before the parent window's DPI change is processed.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
     protected virtual void OnDpiChangedBeforeParent(object sender, EventArgs e) => DpiChangedBeforeParent?.Invoke(sender, e);
+
+    /// <summary>
+    /// Invoked when the closing event is triggered.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">An instance of <see cref="ClosingEventArgs"/> containing event data.</param>
     protected virtual void OnClosing(object? sender, ClosingEventArgs e) => Closing?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="DpiChanged"/> event when the DPI setting of the application changes.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">A <see cref="DpiChangedEventArgs"/> instance containing the event data.</param>
     protected virtual void OnDpiChanged(object sender, DpiChangedEventArgs e) => DpiChanged?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="ThemeDpiEvent"/> event with the specified sender and event data.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="ThemeDpiEventArgs"/> containing the event data.</param>
     protected virtual internal void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e) => ThemeDpiEvent?.Invoke(sender, e);
 
+    /// <summary>
+    /// Displays or modifies the visibility state of the window.
+    /// </summary>
+    /// <param name="command">The command specifying how the window's visibility should be changed. The default is <see
+    /// cref="SHOW_WINDOW_CMD.SW_SHOW"/>.</param>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     public virtual bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOW) => Native.Show(command);
+
+    /// <summary>
+    /// Hides the window.
+    /// </summary>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     public bool Hide() => Native.Show(SHOW_WINDOW_CMD.SW_HIDE);
+
+    /// <summary>
+    /// Moves the window to the specified coordinates.
+    /// </summary>
+    /// <param name="x">The x-coordinate to move the window to.</param>
+    /// <param name="y">The y-coordinate to move the window to.</param>
+    /// <returns><see langword="true"/> if the window was successfully moved; otherwise, <see langword="false"/>.</returns>
     public bool Move(int x, int y) => Native.Move(x, y);
+
+    /// <summary>
+    /// Centers the window on the screen.
+    /// </summary>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     public bool Center() => Native.Center();
+
+    /// <summary>
+    /// Centers the window on the screen or relative to an alternate owner window.
+    /// </summary>
+    /// <param name="alternateOwner">The handle to an alternate owner window. If specified, the window will be centered relative to this owner.</param>
+    /// <returns><see langword="true"/> if the window was successfully centered; otherwise, <see langword="false"/>.</returns>
     public bool Center(HWND alternateOwner) => Native.Center(alternateOwner);
+
+    /// <summary>
+    /// Attempts to bring the window to the foreground.
+    /// </summary>
+    /// <returns><see langword="true"/> if the operation successfully brings the window to the foreground; otherwise, <see
+    /// langword="false"/>.</returns>
     public bool SetForeground() => Native.SetForeground();
+
+    /// <summary>
+    /// Retrieves the monitor associated with the window, based on the specified flags.
+    /// </summary>
+    /// <param name="flags">A value that specifies the criteria for retrieving the monitor.  The default is <see
+    /// cref="MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL"/>.</param>
+    /// <returns>The <see cref="Monitor"/> object associated with the specified flags, or <see langword="null"/>  if no monitor
+    /// matches the criteria.</returns>
     public Monitor? GetMonitor(MONITOR_FROM_FLAGS flags = MONITOR_FROM_FLAGS.MONITOR_DEFAULTTONULL) => Native?.GetMonitor(flags);
+
+    /// <summary>
+    /// Enables the blur effect behind the window.
+    /// </summary>
     public void EnableBlurBehind() => Native.EnableBlurBehind();
+
+    /// <summary>
+    /// Resizes the window to the specified width and height.
+    /// </summary>
+    /// <param name="width">The new width of the window. Must be a positive integer.</param>
+    /// <param name="height">The new height of the window. Must be a positive integer.</param>
+    /// <returns><see langword="true"/> if the resize operation was successful; otherwise, <see langword="false"/>.</returns>
     public bool Resize(int width, int height) => Native.Resize(width, height);
 #if !NETFRAMEWORK
+    /// <summary>
+    /// Brings the window to the top of the Z-order.
+    /// </summary>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     public bool BringWindowToTop() => Native.BringWindowToTop();
 #endif
+
+    /// <summary>
+    /// Moves the window to the specified coordinates and resizes it to the specified dimensions.
+    /// </summary>
+    /// <param name="x">The new x-coordinate of the window.</param>
+    /// <param name="y">The new y-coordinate of the window.</param>
+    /// <param name="width">The new width of the window. Must be greater than zero.</param>
+    /// <param name="height">The new height of the window. Must be greater than zero.</param>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     public bool MoveAndResize(int x, int y, int width, int height) => Native.MoveAndResize(x, y, width, height);
+
+    /// <summary>
+    /// Moves and resizes the window to the specified rectangular bounds.
+    /// </summary>
+    /// <param name="rect">The new bounds for the window, specified as a <see cref="D2D_RECT_U"/> structure.</param>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     public bool MoveAndResize(D2D_RECT_U rect) => Native.MoveAndResize(rect);
+
+    /// <summary>
+    /// Moves and resizes the window to the specified rectangular bounds.
+    /// </summary>
+    /// <param name="rect">The new bounds for the window, specified as a <see cref="D2D_RECT_U"/> structure.</param>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     public bool MoveAndResize(D2D_RECT_F rect) => Native.MoveAndResize(rect);
+
+    /// <summary>
+    /// Moves and resizes the window to the specified rectangular bounds.
+    /// </summary>
+    /// <param name="rect">The new bounds for the window, specified as a <see cref="D2D_RECT_U"/> structure.</param>
+    /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     public bool MoveAndResize(RECT rect) => Native.MoveAndResize(rect);
+
+    /// <summary>
+    /// Converts a point from screen coordinates to client-area coordinates.
+    /// </summary>
+    /// <param name="pt">The point in screen coordinates to be converted.</param>
+    /// <returns>A <see cref="POINT"/> structure representing the converted point in client-area coordinates.</returns>
     public POINT ScreenToClient(POINT pt) => Native.ScreenToClient(pt);
+
+    /// <summary>
+    /// Converts a point from client coordinates to screen coordinates.
+    /// </summary>
+    /// <param name="pt">The point in client coordinates to be converted.</param>
+    /// <returns>A <see cref="POINT"/> structure representing the point in screen coordinates.</returns>
     public POINT ClientToScreen(POINT pt) => Native.ClientToScreen(pt);
+
+    /// <summary>
+    /// Converts a rectangle from client coordinates to screen coordinates.
+    /// </summary>
+    /// <param name="pt">The rectangle, specified in client coordinates, to be converted.</param>
+    /// <returns>A <see cref="D2D_RECT_F"/> representing the rectangle in screen coordinates.</returns>
     public D2D_RECT_F ClientToScreen(D2D_RECT_F pt) => new(Native.ClientToScreen(pt.LeftTop), Native.ClientToScreen(pt.RightBottom));
+
+    /// <summary>
+    /// Converts a rectangle from screen coordinates to client coordinates.
+    /// </summary>
+    /// <param name="pt">The rectangle, specified in screen coordinates, to be converted.</param>
+    /// <returns>A <see cref="D2D_RECT_F"/> representing the rectangle in client coordinates.</returns>
     public D2D_RECT_F ScreenToClient(D2D_RECT_F pt) => new(Native.ScreenToClient(pt.LeftTop), Native.ScreenToClient(pt.RightBottom));
+
+    /// <summary>
+    /// Converts a rectangle's coordinates from screen space to client space.
+    /// </summary>
+    /// <param name="pt">The rectangle, specified in screen coordinates, to be converted.</param>
+    /// <returns>A <see cref="RECT"/> representing the rectangle in client coordinates.</returns>
     public RECT ScreenToClient(RECT pt)
     {
         var lt = Native.ScreenToClient(pt.LeftTop);
@@ -846,6 +1378,11 @@ public partial class Window : Canvas, ITitleBarParent
         return new(lt.x, lt.y, rb.x, rb.y);
     }
 
+    /// <summary>
+    /// Converts a rectangle from client coordinates to screen coordinates.
+    /// </summary>
+    /// <param name="pt">The rectangle, specified in client coordinates, to convert to screen coordinates.</param>
+    /// <returns>A <see cref="RECT"/> structure representing the rectangle in screen coordinates.</returns>
     public RECT ClientToScreen(RECT pt)
     {
         var lt = Native.ClientToScreen(pt.LeftTop);
@@ -853,12 +1390,24 @@ public partial class Window : Canvas, ITitleBarParent
         return new(lt.x, lt.y, rb.x, rb.y);
     }
 
+    /// <summary>
+    /// Moves the window by the specified relative offsets along the X and Y axes.
+    /// </summary>
+    /// <param name="x">The horizontal offset, in pixels, to move the window. Positive values move the window to the right, and negative
+    /// values move it to the left.</param>
+    /// <param name="y">The vertical offset, in pixels, to move the window. Positive values move the window downward, and negative
+    /// values move it upward.</param>
     public void RelativeMove(int x, int y)
     {
         var wr = WindowRect;
         Move(wr.left + x, wr.top + y);
     }
 
+    /// <summary>
+    /// Resizes the client area of the window to the specified dimensions.
+    /// </summary>
+    /// <param name="width">The desired width of the client area, in pixels.</param>
+    /// <param name="height">The desired height of the client area, in pixels.</param>
     public void ResizeClient(int width, int height)
     {
         var wr = WindowRect;
@@ -866,6 +1415,10 @@ public partial class Window : Canvas, ITitleBarParent
         Native.Resize(width - (wr.Width - cr.Width), height - (wr.Height - cr.Height));
     }
 
+    /// <summary>
+    /// Closes the window by sending a close message.
+    /// </summary>
+    /// <returns><see langword="true"/> if the close message was successfully sent; otherwise, <see langword="false"/>.</returns>
     public bool Close()
     {
         if (!_native.IsValueCreated)
@@ -874,6 +1427,10 @@ public partial class Window : Canvas, ITitleBarParent
         return _native.Value.PostMessage(MessageDecoder.WM_CLOSE);
     }
 
+    /// <summary>
+    /// Releases resources associated with the window and performs cleanup operations.
+    /// </summary>
+    /// <returns><see langword="true"/> if the native resource was successfully destroyed; otherwise, <see langword="false"/>.</returns>
     public bool Destroy()
     {
         _icon?.Dispose();
@@ -883,6 +1440,17 @@ public partial class Window : Canvas, ITitleBarParent
         return _native.Value.Destroy();
     }
 
+    /// <summary>
+    /// Executes the specified action on the main UI thread, either synchronously or as a new task.
+    /// </summary>
+    /// <param name="action">The action to execute. This parameter cannot be <see langword="null"/>.</param>
+    /// <param name="startNew">A value indicating whether to start the action as a new task. If <see langword="false"/>,  and the current
+    /// thread is the main thread, the action is executed synchronously.</param>
+    /// <param name="options">The task creation options to use if a new task is started. Defaults to <see cref="TaskCreationOptions.None"/>.</param>
+    /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete. Defaults to <see
+    /// cref="CancellationToken.None"/>.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation. If the action is executed synchronously,  the
+    /// returned task is already completed.</returns>
     public virtual Task RunTaskOnMainThread(Action action, bool startNew = false, TaskCreationOptions options = TaskCreationOptions.None, CancellationToken cancellationToken = default)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
@@ -895,6 +1463,16 @@ public partial class Window : Canvas, ITitleBarParent
         return Task.Factory.StartNew(action, cancellationToken, options, _scheduler);
     }
 
+    /// <summary>
+    /// Executes the specified function on the main thread and returns its result.
+    /// </summary>
+    /// <typeparam name="T">The type of the result returned by the function.</typeparam>
+    /// <param name="action">The function to execute. This parameter cannot be <see langword="null"/>.</param>
+    /// <param name="startNew">A value indicating whether to force the function to run as a new task, even if already on the main thread. If
+    /// <see langword="false"/>, the function will execute immediately if the current thread is the main thread.</param>
+    /// <param name="options">The task creation options to use when starting a new task. Defaults to <see cref="TaskCreationOptions.None"/>.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests. Defaults to <see cref="CancellationToken.None"/>.</param>
+    /// <returns>A task that represents the asynchronous operation. The task's result is the value returned by the function.</returns>
     public virtual async Task<T> RunTaskOnMainThread<T>(Func<T> action, bool startNew = false, TaskCreationOptions options = TaskCreationOptions.None, CancellationToken cancellationToken = default)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
@@ -904,6 +1482,17 @@ public partial class Window : Canvas, ITitleBarParent
         return await Task.Factory.StartNew(action, default, options, _scheduler);
     }
 
+    /// <summary>
+    /// Executes the specified asynchronous task on the main thread.
+    /// </summary>
+    /// <typeparam name="T">The type of the result produced by the asynchronous task.</typeparam>
+    /// <param name="action">The asynchronous task to execute. This parameter cannot be <see langword="null"/>.</param>
+    /// <param name="startNew">A value indicating whether to force the creation of a new task, even if the current thread is already the main
+    /// thread. If <see langword="false"/>, the task will execute directly if the current thread is the main thread.</param>
+    /// <param name="options">The task creation options to use when starting a new task. Defaults to <see cref="TaskCreationOptions.None"/>.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the task. Defaults to <see cref="CancellationToken.None"/>.</param>
+    /// <returns>A task that represents the asynchronous operation. The task's result is the value returned by the <paramref
+    /// name="action"/>.</returns>
     public virtual Task<T> RunTaskOnMainThread<T>(Func<Task<T>> action, bool startNew = false, TaskCreationOptions options = TaskCreationOptions.None, CancellationToken cancellationToken = default)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
@@ -914,6 +1503,10 @@ public partial class Window : Canvas, ITitleBarParent
         return task.Unwrap();
     }
 
+    /// <summary>
+    /// Clips the window frame to exclude the area occupied by the title bar buttons  (e.g., minimize, maximize, close)
+    /// when the window is in merged frame mode.
+    /// </summary>
     protected virtual void ClipFrame()
     {
         if (WindowsFrameMode == WindowsFrameMode.Merged)
@@ -956,12 +1549,22 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    // <inheritdoc />
     protected override void Render()
     {
         base.Render();
         ClipFrame();
     }
 
+    /// <summary>
+    /// Processes Windows messages sent to the window and provides an opportunity to handle them.
+    /// </summary>
+    /// <param name="msg">The message identifier indicating the type of message being sent.</param>
+    /// <param name="wParam">Additional message information. The content of this parameter depends on the value of <paramref name="msg"/>.</param>
+    /// <param name="lParam">Additional message information. The content of this parameter depends on the value of <paramref name="msg"/>.</param>
+    /// <param name="handled">When this method returns, contains a value indicating whether the message was handled. Set to <see
+    /// langword="true"/> if the message was handled; otherwise, <see langword="false"/>.</param>
+    /// <returns>The result of the message processing. If the message is not handled, returns <see cref="LRESULT.Null"/>.</returns>
     protected virtual LRESULT WindowProc(uint msg, WPARAM wParam, LPARAM lParam, out bool handled)
     {
         var windowMessage = WindowMessage;
@@ -980,6 +1583,11 @@ public partial class Window : Canvas, ITitleBarParent
         return LRESULT.Null;
     }
 
+    /// <summary>
+    /// Ensures that the specified width and height do not exceed the maximum allowable bitmap size.
+    /// </summary>
+    /// <param name="width">The width of the bitmap. If it exceeds the maximum size, it will be clamped to the maximum value.</param>
+    /// <param name="height">The height of the bitmap. If it exceeds the maximum size, it will be clamped to the maximum value.</param>
     public static void ClampMaxBitmapSize(ref float width, ref float height)
     {
         if (width > MaximumBitmapSize)
@@ -993,6 +1601,11 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Ensures that the dimensions of the specified vector do not exceed the maximum allowable bitmap size.
+    /// </summary>
+    /// <param name="bounds">A reference to a <see cref="Vector2"/> representing the dimensions to be clamped.  If either the X or Y
+    /// component exceeds the maximum bitmap size, it will be adjusted to the maximum value.</param>
     public static void ClampMaxBitmapSize(ref Vector2 bounds)
     {
         if (bounds.X > MaximumBitmapSize)
@@ -1006,6 +1619,11 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Clamps the X and Y components of the specified vector to the maximum allowable bitmap size.
+    /// </summary>
+    /// <param name="bounds">A reference to the <see cref="Vector3"/> whose X and Y components will be clamped.  The Z component remains
+    /// unchanged.</param>
     public static void ClampMaxBitmapSize(ref Vector3 bounds)
     {
         if (bounds.X > MaximumBitmapSize)
@@ -1019,6 +1637,11 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Ensures that the dimensions of the specified rectangle do not exceed the maximum allowable bitmap size.
+    /// </summary>
+    /// <param name="bounds">A reference to the rectangle whose dimensions will be clamped. If the width or height exceeds the maximum bitmap
+    /// size, it will be adjusted to the maximum value.</param>
     public static void ClampMaxBitmapSize(ref D2D_RECT_F bounds)
     {
         if (bounds.Width > MaximumBitmapSize)
@@ -1032,6 +1655,11 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Ensures that the dimensions of a bitmap do not exceed the maximum allowable size.
+    /// </summary>
+    /// <param name="size">A reference to the <see cref="D2D_SIZE_F"/> structure representing the dimensions of the bitmap.  If the width
+    /// or height exceeds the maximum allowable size, it will be clamped to that value.</param>
     public static void ClampMaxBitmapSize(ref D2D_SIZE_F size)
     {
         if (size.width > MaximumBitmapSize)
@@ -1045,6 +1673,11 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Ensures that the dimensions of a bitmap do not exceed the maximum allowable size.
+    /// </summary>
+    /// <param name="size">A reference to a <see cref="D2D_SIZE_U"/> structure representing the dimensions of the bitmap. If either the
+    /// width or height exceeds the maximum allowable size, it will be clamped to that value.</param>
     public static void ClampMaxBitmapSize(ref D2D_SIZE_U size)
     {
         if (size.width > MaximumBitmapSize)
@@ -1058,6 +1691,12 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Adjusts the dimensions of a bitmap to ensure they do not exceed the maximum allowable size.
+    /// </summary>
+    /// <param name="size">A reference to a <c>SIZE</c> structure representing the dimensions of the bitmap. The <c>width</c> and
+    /// <c>height</c> (or <c>cx</c> and <c>cy</c>) fields will be clamped to the maximum allowable size if they exceed
+    /// it.</param>
     public static void ClampMaxBitmapSize(ref SIZE size)
     {
 #if NETFRAMEWORK
@@ -1110,23 +1749,66 @@ public partial class Window : Canvas, ITitleBarParent
     private void OnNativeDragDropTarget(object? sender, DragDropTargetEventArgs e) => DragDropTarget?.Invoke(this, e);
     private void OnNativeDragDropQueryContinue(object? sender, DragDropQueryContinueEventArgs e) => DragDropQueryContinue?.Invoke(this, e);
     private void OnNativeDragDropGiveFeedback(object? sender, DragDropGiveFeedback e) => DragDropGiveFeedback?.Invoke(this, e);
+
+    /// <summary>
+    /// Raises the <see cref="PreviewKeyDown"/> event.
+    /// </summary>
+    /// <param name="sender">The source of the event, typically the control that received the key input.</param>
+    /// <param name="e">A <see cref="KeyEventArgs"/> that contains the event data, including information about the key that was pressed.</param>
     protected virtual void OnPreviewKeyDown(object? sender, KeyEventArgs e) => PreviewKeyDown?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="PreviewKeyUp"/> event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
     protected virtual void OnPreviewKeyUp(object? sender, KeyEventArgs e) => PreviewKeyUp?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="PreviewKeyPress"/> event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">A <see cref="KeyPressEventArgs"/> that contains the event data.</param>
     protected virtual void OnPreviewKeyPress(object? sender, KeyPressEventArgs e) => PreviewKeyPress?.Invoke(sender, e);
+
+    /// <summary>
+    /// Raises the <see cref="WindowMessage"/> event.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="WindowMessageEventArgs"/> containing the event data.</param>
     protected virtual void OnWindowMessage(object? sender, WindowMessageEventArgs e) => WindowMessage?.Invoke(sender, e);
 
+    /// <summary>
+    /// Sends a key event to the associated event handler.
+    /// </summary>
+    /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data. This parameter cannot be <see
+    /// langword="null"/>.</param>
     public virtual void SendKeyEvent(KeyEventArgs e)
     {
         ExceptionExtensions.ThrowIfNull(e, nameof(e));
         OnKeyEvent(e);
     }
 
+    /// <summary>
+    /// Sends a key press event to the associated event handlers.
+    /// </summary>
+    /// <param name="e">The <see cref="KeyPressEventArgs"/> instance containing the event data. This parameter cannot be <see
+    /// langword="null"/>.</param>
     public virtual void SendKeyPressEvent(KeyPressEventArgs e)
     {
         ExceptionExtensions.ThrowIfNull(e, nameof(e));
         OnKeyPressEvent(e);
     }
 
+    /// <summary>
+    /// Initiates a drag-and-drop operation using the specified visual, data object, and allowed effects.
+    /// </summary>
+    /// <param name="visual">The <see cref="Visual"/> that serves as the source of the drag-and-drop operation. This parameter cannot be <see
+    /// langword="null"/>.</param>
+    /// <param name="dataObject">The <see cref="IDataObject"/> containing the data to be dragged. This parameter cannot be <see
+    /// langword="null"/>.</param>
+    /// <param name="allowedEffects">A bitwise combination of <see cref="DROPEFFECT"/> values that specifies the permitted drag-and-drop operations.</param>
+    /// <returns>The <see cref="DROPEFFECT"/> value indicating the result of the drag-and-drop operation.</returns>
     public virtual DROPEFFECT DoDragDrop(Visual visual, IDataObject dataObject, DROPEFFECT allowedEffects)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -1151,6 +1833,12 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Handles native drag-and-drop events and dispatches them to intersecting visuals.
+    /// </summary>
+    /// <param name="sender">The source of the drag-and-drop event. This parameter may be <see langword="null"/>.</param>
+    /// <param name="e">The <see cref="DragDropEventArgs"/> containing details about the drag-and-drop event, including its type and
+    /// associated data.</param>
     protected virtual void OnNativeDragDrop(object? sender, DragDropEventArgs e)
     {
         if (e.Type == DragDropEventType.Leave)
@@ -1221,6 +1909,11 @@ public partial class Window : Canvas, ITitleBarParent
         return size;
     }
 
+    /// <summary>
+    /// Retrieves the most suitable DirectX Graphics Infrastructure (DXGI) adapter for rendering.
+    /// </summary>
+    /// <returns>An <see cref="IComObject{IDXGIAdapter1}"/> representing the selected DXGI adapter, or <see langword="null"/> if
+    /// no adapters are available.</returns>
     protected virtual IComObject<IDXGIAdapter1>? GetAdapter()
     {
         using var fac = DXGIFunctions.CreateDXGIFactory1();
@@ -1229,6 +1922,10 @@ public partial class Window : Canvas, ITitleBarParent
         return adapter;
     }
 
+    /// <summary>
+    /// Creates and initializes a Direct3D 11 device using the specified DXGI adapter and device creation flags.
+    /// </summary>
+    /// <returns>An <see cref="IComObject{ID3D11Device}"/> representing the created Direct3D 11 device.</returns>
     protected virtual IComObject<ID3D11Device> CreateD3D11Device()
     {
         using var fac = DXGIFunctions.CreateDXGIFactory1();
@@ -1243,6 +1940,10 @@ public partial class Window : Canvas, ITitleBarParent
         return device;
     }
 
+    /// <summary>
+    /// Creates and returns a Direct2D device that can be used for rendering operations.
+    /// </summary>
+    /// <returns>An <see cref="IComObject{T}"/> containing the created <see cref="ID2D1Device1"/> instance.</returns>
     protected virtual IComObject<ID2D1Device1> Create2D1Device()
     {
         var dxDev = _d3D11Device.Value.Cast<IDXGIDevice1>()!; // we don't dispose or we dispose the whole device
@@ -1250,6 +1951,10 @@ public partial class Window : Canvas, ITitleBarParent
         return new ComObject<ID2D1Device1>((ID2D1Device1)dev);
     }
 
+    /// <summary>
+    /// Creates and returns a new <see cref="CompositionGraphicsDevice"/> instance for rendering composition visuals.
+    /// </summary>
+    /// <returns>A <see cref="CompositionGraphicsDevice"/> instance that can be used for rendering composition visuals.</returns>
     public virtual CompositionGraphicsDevice CreateCompositionDevice()
     {
         using var interop = CompositorController.Compositor.AsComObject<ICompositorInterop>();
@@ -1290,10 +1995,28 @@ public partial class Window : Canvas, ITitleBarParent
 #endif
     }
 
+    // <inheritdoc />
     protected override ContainerVisual CreateCompositionVisual() => throw new NotSupportedException();
+
+    /// <summary>
+    /// Creates and returns a new <see cref="ContainerVisual"/> instance.
+    /// </summary>
+    /// <param name="compositor">The <see cref="Compositor"/> used to create the visual. Cannot be <see langword="null"/>.</param>
+    /// <returns>A <see cref="ContainerVisual"/> created by the specified <see cref="Compositor"/>.</returns>
     protected virtual ContainerVisual CreateFrameVisual(Compositor compositor) => compositor.CreateSpriteVisual();
+
+    /// <summary>
+    /// Creates and returns a new <see cref="ContainerVisual"/> instance associated with the specified <see
+    /// cref="Compositor"/>.
+    /// </summary>
+    /// <param name="compositor">The <see cref="Compositor"/> used to create the visual. Cannot be <see langword="null"/>.</param>
+    /// <returns>A <see cref="ContainerVisual"/> created by the specified <see cref="Compositor"/>.</returns>
     protected virtual ContainerVisual CreateWindowVisual(Compositor compositor) => compositor.CreateSpriteVisual();
 
+    /// <summary>
+    /// Creates and initializes a new instance of the <see cref="CompositorController"/> class.
+    /// </summary>
+    /// <returns>A fully initialized <see cref="CompositorController"/> instance.</returns>
     protected virtual CompositorController CreateCompositorController()
     {
         var controller = new CompositorController();
@@ -1341,6 +2064,9 @@ public partial class Window : Canvas, ITitleBarParent
         return controller;
     }
 
+    /// <summary>
+    /// Updates the visual representation of the window frame, including its size, brush, and appearance.
+    /// </summary>
     protected virtual void UpdateFrameVisual()
     {
         if (FrameVisual == null)
@@ -1406,6 +2132,11 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Handles the event triggered when the <see cref="CompositorController"/> requires a commit.
+    /// </summary>
+    /// <param name="sender">The <see cref="CompositorController"/> that triggered the event.</param>
+    /// <param name="args">Additional event data. This parameter may be null depending on the event source.</param>
     protected virtual void OnCompositorControllerCommitNeeded(CompositorController sender, object args)
     {
         if (CompositorControllerAutoCommit)
@@ -1414,7 +2145,11 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
-    public void WithInvalidationsProcessingSuspended(Action action)
+    /// <summary>
+    /// Executes the specified action while temporarily suspending the processing of invalidations.
+    /// </summary>
+    /// <param name="action">The action to execute while invalidations processing is suspended.</param>
+    public virtual void WithInvalidationsProcessingSuspended(Action action)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
         if (Interlocked.Increment(ref _invalidationsSuspended) == 1)
@@ -1443,6 +2178,14 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Invalidates the specified visual, marking it for re-rendering or other updates based on the provided modes and
+    /// reason.
+    /// </summary>
+    /// <param name="visual">The visual element to be invalidated. This parameter cannot be <see langword="null"/>.</param>
+    /// <param name="modes">The modes that specify the type of invalidation to apply to the visual.</param>
+    /// <param name="reason">An optional reason for the invalidation, which can provide additional context for the operation. If not
+    /// specified, a default reason is used.</param>
     public virtual void Invalidate(Visual visual, VisualPropertyInvalidateModes modes, InvalidateReason? reason = null)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -1621,6 +2364,7 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    // <inheritdoc />
     protected internal override VisualPropertyInvalidateModes GetInvalidateModes(Visual childVisual, InvalidateMode childMode, VisualPropertyInvalidateModes defaultModes, InvalidateReason reason)
     {
         if (childVisual is FocusVisual || childVisual is Caret)
@@ -1632,6 +2376,13 @@ public partial class Window : Canvas, ITitleBarParent
         return base.GetInvalidateModes(childVisual, childMode, defaultModes, reason);
     }
 
+    /// <summary>
+    /// Sets the position of the Input Method Editor (IME) composition window relative to the specified visual.
+    /// </summary>
+    /// <param name="visual">The <see cref="Visual"/> used to determine the position of the IME composition window. Cannot be <see
+    /// langword="null"/>.</param>
+    /// <returns><see langword="true"/> if the IME composition window position was successfully set; otherwise, <see
+    /// langword="false"/>.</returns>
     public virtual bool SetImmCompositionWindowPosition(Visual visual)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -1649,7 +2400,10 @@ public partial class Window : Canvas, ITitleBarParent
         return native.SetImmCompositionWindowPosition(cursorPos);
     }
 
-    // this is to ensure render will happen on main/ui thread
+    /// <summary>
+    /// Requests a render operation to be queued on the main or UI thread.
+    /// </summary>
+    /// <returns><see langword="true"/> if a render operation was successfully queued; otherwise, <see langword="false"/>.</returns>
     public virtual bool RequestRender()
     {
         if (_native?.IsValueCreated == false)
@@ -1840,6 +2594,11 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Determines if invalidation requests for visuals must be processed. The default implementation always returns <see langword="true"/>
+    /// </summary>
+    /// <returns><see langword="true"/> if the invalidation requests must be processed;  otherwise, <see
+    /// langword="false"/>.</returns>
     protected virtual bool ProcessInvalidationsCore(IReadOnlyList<KeyValuePair<Visual, InvalidateMode>> list) => true;
 
     private void ProcessInvalidations()
@@ -1925,6 +2684,11 @@ public partial class Window : Canvas, ITitleBarParent
         UpdateFocus(FocusedVisual, null);
     }
 
+    /// <summary>
+    /// Updates the focus to the specified visual element, optionally removing focus from the previous visual.
+    /// </summary>
+    /// <param name="focused">The visual element to receive focus. Can be <see langword="null"/> to remove focus.</param>
+    /// <param name="oldVisual">The previously focused visual element. Can be <see langword="null"/> if no element was previously focused.</param>
     protected virtual void UpdateFocus(Visual? focused, Visual? oldVisual)
     {
         if (focused != null)
@@ -1971,6 +2735,15 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Executes an animation within a scoped composition batch, ensuring proper state management during the animation.
+    /// </summary>
+    /// <param name="action">The animation logic to execute within the scoped batch. This action is required and cannot be <see
+    /// langword="null"/>.</param>
+    /// <param name="onCompleted">An optional callback to invoke after the animation completes. If <see langword="null"/>, no callback is
+    /// executed.</param>
+    /// <param name="types">The type of composition batch to use for the animation. Defaults to <see
+    /// cref="CompositionBatchTypes.Animation"/>.</param>
     public virtual void Animate(Action action, Action? onCompleted = null, CompositionBatchTypes types = CompositionBatchTypes.Animation)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
@@ -2000,7 +2773,10 @@ public partial class Window : Canvas, ITitleBarParent
         }, types);
     }
 
-    // don't use Native in there
+    /// <summary>
+    /// Extends the window frame into the client area for the specified window handle. Don't use Native window here.
+    /// </summary>
+    /// <param name="handle">The handle of the window for which the frame should be extended.</param>
     protected virtual void ExtendFrame(HWND handle)
     {
         if (_frameExtended)
@@ -2045,6 +2821,9 @@ public partial class Window : Canvas, ITitleBarParent
         OnDestroyed(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Releases resources and performs cleanup operations for the current window instance.
+    /// </summary>
     protected virtual void DestroyCore()
     {
         if (_native.IsValueCreated && _native.Value.IsDropTarget)
@@ -2096,6 +2875,10 @@ public partial class Window : Canvas, ITitleBarParent
         _repeatTimes.Clear();
     }
 
+    /// <summary>
+    /// Updates the monitor handle associated with the current instance and raises relevant events if the monitor
+    /// changes.
+    /// </summary>
     protected virtual void UpdateMonitor()
     {
         var native = NativeIfCreated;
@@ -2112,11 +2895,34 @@ public partial class Window : Canvas, ITitleBarParent
         OnPropertyChanged(nameof(MonitorHandle));
     }
 
+    /// <summary>
+    /// Creates a new instance of a <see cref="ToolTip"/> to be used by the window.
+    /// </summary>
+    /// <returns>A new <see cref="ToolTip"/> instance.</returns>
     protected virtual ToolTip CreateToolTip() => new();
+
+    /// <summary>
+    /// Creates a new instance of a focus visual element.
+    /// </summary>
+    /// <returns>A new <see cref="FocusVisual"/> instance representing the focus visual element.</returns>
     protected virtual FocusVisual CreateFocusVisual() => new();
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="Caret"/> class.
+    /// </summary>
+    /// <returns>A new instance of the <see cref="Caret"/> class.</returns>
     protected virtual Caret CreateCaret() => new();
+
+    /// <summary>
+    /// Creates and returns a new instance of a <see cref="Theme"/> associated with the current window.
+    /// </summary>
+    /// <returns>A new instance of the <see cref="Theme"/> class.</returns>
     protected virtual Theme CreateTheme() => new(this);
 
+    /// <summary>
+    /// Creates and initializes a new instance of a <see cref="NativeWindow"/> with the specified properties.
+    /// </summary>
+    /// <returns>A <see cref="NativeWindow"/> instance representing the created window.</returns>
     protected virtual NativeWindow CreateNativeWindow()
     {
         RECT rc;
@@ -2202,7 +3008,22 @@ public partial class Window : Canvas, ITitleBarParent
         return native;
     }
 
+    /// <summary>
+    /// Handles the mouse activation event for the window.
+    /// </summary>
+    /// <param name="parentWindowHandle">The handle to the parent window that received the mouse activation message.</param>
+    /// <param name="mouseMessage">The mouse message that triggered the activation. Typically corresponds to a Windows message identifier.</param>
+    /// <param name="hitTest">The hit-test value indicating the location of the mouse event within the window.</param>
+    /// <returns>A value of the <see cref="MA"/> enumeration that specifies how the mouse activation should be handled. The
+    /// default implementation returns <see cref="MA.MA_DONT_HANDLE"/>.</returns>
     protected virtual MA OnMouseActivate(HWND parentWindowHandle, int mouseMessage, HT hitTest) => MA.MA_DONT_HANDLE;
+
+    /// <summary>
+    /// Handles the activation of a pointer input event.
+    /// </summary>
+    /// <param name="e">The event data associated with the pointer activation, including details about the pointer and its context.</param>
+    /// <returns>A <see cref="PA"/> value indicating how the pointer activation event is handled.  The default implementation
+    /// returns <see cref="PA.PA_DONT_HANDLE"/>.</returns>
     protected virtual PA OnPointerActivate(PointerActivateEventArgs e) => PA.PA_DONT_HANDLE;
 
     private void OnWmNcPaint() => MainTitleBar?.Update();
@@ -2296,13 +3117,31 @@ public partial class Window : Canvas, ITitleBarParent
         OnResized(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Releases the current mouse capture, if any, and restores the default mouse behavior.
+    /// </summary>
     public static void ReleaseMouseCapture()
     {
         Interlocked.Exchange(ref _mouseCaptorVisual, null);
         NativeWindow.ReleaseMouse();
     }
 
+    /// <summary>
+    /// Determines whether the specified <see cref="Visual"/> has captured the mouse, or if any <see cref="Visual"/> has
+    /// captured the mouse when no parameter is provided.
+    /// </summary>
+    /// <param name="visual">The <see cref="Visual"/> to check for mouse capture. If <see langword="null"/>, checks if any <see
+    /// cref="Visual"/> has captured the mouse.</param>
+    /// <returns><see langword="true"/> if the specified <paramref name="visual"/> has captured the mouse, or if any <see
+    /// cref="Visual"/> has captured the mouse when <paramref name="visual"/> is <see langword="null"/>; otherwise, <see
+    /// langword="false"/>.</returns>
     public static bool IsMouseCaptured(Visual? visual = null) => (visual != null && visual == _mouseCaptorVisual) || (visual == null && _mouseCaptorVisual != null);
+
+    /// <summary>
+    /// Captures the mouse input and associates it with the specified visual element.
+    /// </summary>
+    /// <param name="visual">The visual element to associate with the mouse capture.  If <paramref name="visual"/> is <see langword="null"/>,
+    /// the mouse capture is released.  The visual must not have pointer events disabled.</param>
     public virtual void CaptureMouse(Visual visual)
     {
         Native.CaptureMouse();
@@ -2448,6 +3287,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Updates the cursor based on the current pointer position and the intersecting visuals.
+    /// </summary>
     public void UpdateCursor()
     {
         var cursorSet = false;
@@ -2673,6 +3515,12 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Displays a tooltip for the specified visual element with content provided by the specified delegate.
+    /// </summary>
+    /// <param name="placementTarget">The visual element to which the tooltip is anchored. Cannot be <see langword="null"/>.</param>
+    /// <param name="contentCreator">A delegate that defines the content of the tooltip. Cannot be <see langword="null"/>.</param>
+    /// <param name="e">The event arguments associated with the action that triggered the tooltip.</param>
     protected virtual void AddToolTip(Visual placementTarget, Action<ToolTip> contentCreator, EventArgs e)
     {
         ExceptionExtensions.ThrowIfNull(placementTarget, nameof(placementTarget));
@@ -2688,6 +3536,10 @@ public partial class Window : Canvas, ITitleBarParent
         tt.Show();
     }
 
+    /// <summary>
+    /// Removes the currently displayed tooltip, if one exists.
+    /// </summary>
+    /// <param name="e">The event data associated with the action that triggered the removal.</param>
     protected virtual internal void RemoveToolTip(EventArgs e)
     {
         var ctt = CurrentToolTip;
@@ -2700,6 +3552,7 @@ public partial class Window : Canvas, ITitleBarParent
         ctt.Destroy();
     }
 
+    // <inheritdoc />
     protected override object? GetPropertyValue(BaseObjectProperty property)
     {
         // ensure we don't mess with w&h
@@ -2712,6 +3565,7 @@ public partial class Window : Canvas, ITitleBarParent
         return base.GetPropertyValue(property);
     }
 
+    // <inheritdoc />
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (property == WidthProperty)
@@ -2956,6 +3810,11 @@ public partial class Window : Canvas, ITitleBarParent
         base.OnKeyEvent(e);
     }
 
+    /// <summary>
+    /// Handles the behavior of the Tab key press to move focus between focusable visuals.
+    /// </summary>
+    /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+    /// <returns><see langword="true"/> if the focus was successfully moved; otherwise, <see langword="false"/>.</returns>
     protected virtual bool HandleTabKeyDown(KeyEventArgs e)
     {
         var shift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
@@ -3025,6 +3884,11 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Determines whether the specified visual can receive input.
+    /// </summary>
+    /// <param name="visual">The visual to evaluate for input eligibility. Cannot be <see langword="null"/>.</param>
+    /// <returns><see langword="true"/> if the specified visual can receive input; otherwise, <see langword="false"/>.</returns>
     public virtual bool CanReceiveInput(Visual visual)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -3086,7 +3950,12 @@ public partial class Window : Canvas, ITitleBarParent
         return false;
     }
 
-    // caret APIs must be called on window's message thread
+    /// <summary>
+    /// Sets the position of the caret within the specified rectangular bounds.
+    /// </summary>
+    /// <remarks>This method must be called on the window's message thread. Failure to do so may result in
+    /// undefined behavior.</remarks>
+    /// <param name="rc">A <see cref="D2D_RECT_F"/> structure that defines the rectangular area where the caret should be positioned.</param>
     public void SetCaretPosition(D2D_RECT_F rc) => Native.PostMessage(WM_SETCARETPOS, WPARAM.Null, new LPARAM { Value = GCHandle.ToIntPtr(GCHandle.Alloc(rc)) });
     private void SetCaretPosition(LPARAM lParam)
     {
@@ -3238,6 +4107,12 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
+    /// <summary>
+    /// Retrieves the <see cref="Window"/> instance associated with the specified window handle.
+    /// </summary>
+    /// <param name="hwnd">The handle of the window for which to retrieve the associated <see cref="Window"/> instance.</param>
+    /// <returns>The <see cref="Window"/> instance associated with the specified handle, or <see langword="null"/> if no instance
+    /// is associated.</returns>
     public static Window? GetWindow(HWND hwnd)
     {
         var ptr = NativeWindow.GetUserData(hwnd);
