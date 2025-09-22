@@ -1,4 +1,5 @@
-﻿using WinRT;
+﻿#pragma warning disable CS1591
+using WinRT;
 using WinRT.Interop;
 
 // see here https://github.com/microsoft/CsWinRT/issues/1722

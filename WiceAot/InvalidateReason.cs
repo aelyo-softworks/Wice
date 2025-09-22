@@ -48,12 +48,7 @@ public class InvalidateReason
         return typeName + "(" + Type.Name + ")";
     }
 
-    /// <summary>
-    /// Returns a string that represents the current object, including chained reasons if present.
-    /// </summary>
-    /// <returns>
-    /// The base string representation, optionally followed by " <= " and the <see cref="InnerReason"/> string representation.
-    /// </returns>
+    /// <inheritdoc>
     public override string ToString()
     {
         var str = GetBaseString();

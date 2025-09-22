@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices.Marshalling;
+﻿#pragma warning disable CS1591
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Wice.Interop;
 

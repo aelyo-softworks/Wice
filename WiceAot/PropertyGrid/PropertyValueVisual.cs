@@ -1,10 +1,9 @@
 ﻿namespace Wice.PropertyGrid;
 
-/// Visual hosting the editor for a single <see cref="PropertyGridProperty{T}"/> value.
+/// <summary>
+/// Represents a visual element for displaying and editing a property within a <see cref="PropertyGrid{T}"/>.
 /// </summary>
-/// <typeparam name="T">
-/// The selected object type for the owning <see cref="PropertyGrid{T}"/>. The attribute requires public properties for trimming.
-/// </typeparam>
+/// <typeparam name="T">The type of the object containing the property being displayed and edited.</typeparam>
 public partial class PropertyValueVisual<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : Border
 {
     /// <summary>

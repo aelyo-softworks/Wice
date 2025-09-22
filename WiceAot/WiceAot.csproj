@@ -12,6 +12,7 @@
 		<WindowsSdkPackageVersion>10.0.26100.57</WindowsSdkPackageVersion>
 		<!-- https://github.com/microsoft/CsWinRT/blob/master/docs/aot-trimming.md -->
 		<CsWinRTAotOptimizerEnabled>Auto</CsWinRTAotOptimizerEnabled>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>

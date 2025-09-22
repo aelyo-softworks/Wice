@@ -113,9 +113,7 @@ public partial class FastTextBox : TextBox
     [Category(CategoryLayout)]
     public override string Text { get => _container.Text; set => SetText(value); }
 
-    /// <summary>
-    /// Always throws for <see cref="true"/>. This control is read-only by design.
-    /// </summary>
+    /// <inheritdoc>
     [Category(CategoryBehavior)]
     public override bool IsEditable
     {
@@ -129,9 +127,7 @@ public partial class FastTextBox : TextBox
         }
     }
 
-    /// <summary>
-    /// Always throws for <see cref="true"/>. The control is always enabled internally.
-    /// </summary>
+    /// <inheritdoc>
     [Category(CategoryBehavior)]
     public override bool IsEnabled
     {

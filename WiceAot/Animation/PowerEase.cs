@@ -1,5 +1,6 @@
 ﻿namespace Wice.Animation;
 
+/// <summary>
 /// Easing function that raises the normalized time to a specified non-negative power.
 /// </summary>
 public class PowerEase : IEasingFunction

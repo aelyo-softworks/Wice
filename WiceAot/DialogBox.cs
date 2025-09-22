@@ -218,10 +218,11 @@ public partial class DialogBox : Dialog
     protected virtual Button CreateButton() => new();
 
     /// <summary>
-    /// Returns the first button whose <see cref="Button.Command"/> matches the provided message box result.
+    /// Retrieves the first button associated with the specified command.
     /// </summary>
-    /// <param name="command">The command/result to look for.</param>
-    /// <returns>The matching <see cref="Button"/>, or null when not found.</returns>
+    /// <param name="command">The command to match against the buttons' commands.</param>
+    /// <returns>The first <see cref="Button"/> whose <c>Command</c> property matches the specified <paramref name="command"/>, 
+    /// or <see langword="null"/> if no matching button is found.</returns>
     public Button? GetCommandButton(MESSAGEBOX_RESULT command) => Buttons.FirstOrDefault(b => command.Equals(b.Command));
 
     /// <summary>

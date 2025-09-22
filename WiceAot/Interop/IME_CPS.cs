@@ -1,4 +1,5 @@
-﻿namespace Wice.Interop;
+﻿#pragma warning disable CS1591
+namespace Wice.Interop;
 
 [Flags]
 public enum IME_CPS : uint

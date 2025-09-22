@@ -48,7 +48,7 @@ public partial class Image : RenderVisual, IDisposable
     public event EventHandler<EventArgs>? BitmapCreated;
 
     /// <summary>
-    /// Raised after the cached Direct2D bitmap is disposed, either due to <see cref="Source"/> change or <see cref="Dispose"/>.
+    /// Occurs when the bitmap resource has been disposed.
     /// </summary>
     public event EventHandler<EventArgs>? BitmapDisposed;
 
