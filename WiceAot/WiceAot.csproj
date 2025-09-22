@@ -52,6 +52,8 @@
 		<Using Include="Windows.Graphics" />
 		<Using Include="Windows.Graphics.DirectX" />
 		<Using Include="Windows.Graphics.Effects" />
+		<Using Include="Windows.Media.Core" />
+		<Using Include="Windows.Media.Playback" />
 		<Using Include="Windows.UI" />
 		<Using Include="Windows.UI.Composition" />
 		<Using Include="Windows.UI.Composition.Core" />

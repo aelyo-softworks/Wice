@@ -22,6 +22,7 @@ public partial class MediaPage : SampleListPage
             yield return new PdfViewSampleList();
 #if !NETFRAMEWORK
             yield return new WebViewSampleList();
+            yield return new MediaPlayerSampleList();
 #endif
         }
     }

@@ -25,6 +25,7 @@
 
 	<ItemGroup>
 		<None Remove="Resources\aelyo_flat.png" />
+		<None Remove="Resources\Big_Buck_Bunny_360_10s_1MB.mp4" />
 		<None Remove="Resources\lorem-cn.txt" />
 		<None Remove="Resources\rainier.jpg" />
 		<None Remove="Resources\sample.pdf" />
@@ -43,6 +44,7 @@
 
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\aelyo_flat.png" />
+		<EmbeddedResource Include="Resources\Big_Buck_Bunny_360_10s_1MB.mp4" />
 		<EmbeddedResource Include="Resources\lorem-cn.txt" />
 		<EmbeddedResource Include="Resources\rainier.jpg" />
 		<EmbeddedResource Include="Resources\sample.pdf">
@@ -84,6 +86,7 @@
 		<Using Include="Wice.Samples.Gallery.Pages" />
 		<Using Include="Wice.Samples.Gallery.Samples" />
 		<Using Include="Wice.Samples.Gallery.Utilities" />
+		<Using Include="Windows.Media.Core" />
 		<Using Include="Windows.UI.Composition" />
 		<Using Include="Windows.Graphics.DirectX" />
 
