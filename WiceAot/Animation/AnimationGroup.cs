@@ -28,9 +28,7 @@ public partial class AnimationGroup : Animation
     /// </returns>
     protected virtual BaseObjectCollection<Animation> CreateChildren() => [];
 
-    /// <summary>
-    /// Advances the group by one tick by ticking each child animation.
-    /// </summary>
+    /// <inheritdoc/>
     protected internal override void OnTick()
     {
         foreach (var animation in Children)

@@ -52,11 +52,7 @@ public partial class Stack : Visual
     [Category(CategoryLayout)]
     public bool LastChildFill { get => (bool)GetPropertyValue(LastChildFillProperty)!; set => SetPropertyValue(LastChildFillProperty, value); }
 
-    /// <summary>
-    /// Measures the aggregate desired size of children arranged in a stack, including spacing.
-    /// </summary>
-    /// <param name="constraint">The available size including margins.</param>
-    /// <returns>The desired size of the stack including spacing, clamped to valid numeric ranges.</returns>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         var width = 0f;
@@ -119,10 +115,7 @@ public partial class Stack : Visual
         return new D2D_SIZE_F(width.ClampMinMax(), height.ClampMinMax());
     }
 
-    /// <summary>
-    /// Arranges children sequentially along the stacking axis, applying spacing and optional last-child fill.
-    /// </summary>
-    /// <param name="finalRect">Final rectangle available for content (excluding margins).</param>
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         var position = 0f;

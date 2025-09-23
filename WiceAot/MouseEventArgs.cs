@@ -77,9 +77,6 @@ public class MouseEventArgs(int x, int y, POINTER_MOD vk)
         return new D2D_RECT_F(size).Contains(GetPosition(visual));
     }
 
-    /// <summary>
-    /// Returns a string that represents the current object.
-    /// </summary>
-    /// <returns>A string containing X, Y, and VK values.</returns>
+    /// <inheritdoc/>
     public override string ToString() => "X=" + X + ",Y=" + Y + ",VK=" + Keys;
 }

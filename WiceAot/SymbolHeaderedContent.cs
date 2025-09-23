@@ -11,9 +11,5 @@ public partial class SymbolHeaderedContent : HeaderedContent
     public new SymbolHeader Header => (SymbolHeader)base.Header;
 
     /// <inheritdoc/>
-    /// <summary>
-    /// Creates the specialized header instance used by this control.
-    /// </summary>
-    /// <returns>A new <see cref="SymbolHeader"/>.</returns>
     protected override Header CreateHeader() => new SymbolHeader();
 }

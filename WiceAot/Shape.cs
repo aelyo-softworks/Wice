@@ -55,10 +55,7 @@ public abstract partial class Shape : Visual
     /// </summary>
     public static VisualProperty IsStrokeNonScalingProperty { get; } = VisualProperty.Add<bool>(typeof(Shape), nameof(IsStrokeNonScaling), VisualPropertyInvalidateModes.Render);
 
-    /// <summary>
-    /// Creates the logical children collection for this shape.
-    /// </summary>
-    /// <returns>An empty children collection. Shapes do not host child visuals.</returns>
+    /// <inheritdoc/>
     protected override BaseObjectCollection<Visual> CreateChildren() => new(0);
 
     /// <summary>
@@ -66,12 +63,7 @@ public abstract partial class Shape : Visual
     /// </summary>
     public new ShapeVisual? CompositionVisual => (ShapeVisual?)base.CompositionVisual;
 
-    /// <summary>
-    /// Creates the underlying composition visual for this shape.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="ShapeVisual"/> from the window compositor if available; otherwise, null.
-    /// </returns>
+    /// <inheritdoc/>
     protected override ContainerVisual? CreateCompositionVisual() => Window?.Compositor?.CreateShapeVisual();
 
     /// <summary>
@@ -140,13 +132,7 @@ public abstract partial class Shape : Visual
     [Category(CategoryRender)]
     public bool IsStrokeNonScaling { get => (bool)GetPropertyValue(IsStrokeNonScalingProperty)!; set => SetPropertyValue(IsStrokeNonScalingProperty, value); }
 
-    /// <summary>
-    /// Overrides property setting to mirror persisted values to the composition layer.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set options.</param>
-    /// <returns><see langword="true"/> if the stored value changed; otherwise <see langword="false"/>.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -199,11 +185,7 @@ public abstract partial class Shape : Visual
         return true;
     }
 
-    /// <summary>
-    /// Called when the visual is attached to the composition tree; pushes managed state to composition objects.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="e">Event arguments.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);

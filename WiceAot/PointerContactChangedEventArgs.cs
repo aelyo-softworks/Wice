@@ -29,8 +29,6 @@ public class PointerContactChangedEventArgs(uint pointerId, int x, int y, POINTE
     /// </summary>
     public bool IsDoubleClick { get; internal set; }
 
-    /// <summary>
-    /// Returns a string that represents the current object, including base information and the up/down state.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => base.ToString() + ",UP=" + IsUp;
 }

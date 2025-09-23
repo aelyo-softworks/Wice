@@ -10,17 +10,10 @@ public partial class Rectangle : SingleShape
     /// </summary>
     public new CompositionRectangleGeometry? Geometry => (CompositionRectangleGeometry?)base.Geometry;
 
-    /// <summary>
-    /// Creates a rectangle geometry using the owning window's compositor.
-    /// </summary>
-    /// <returns>
-    /// A new <see cref="CompositionRectangleGeometry"/> when the window and compositor are available; otherwise, null.
-    /// </returns>
+    /// <inheritdoc/>
     protected override CompositionGeometry? CreateGeometry() => Window?.Compositor?.CreateRectangleGeometry();
 
-    /// <summary>
-    /// Applies render-time updates to the composition state.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void Render()
     {
         base.Render();

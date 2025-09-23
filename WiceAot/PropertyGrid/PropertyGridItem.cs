@@ -57,10 +57,7 @@ public partial class PropertyGridItem : BaseObject
     /// </summary>
     public bool IsZero { get => (bool)GetPropertyValue(IsZeroProperty)!; set => SetPropertyValue(IsZeroProperty, value); }
 
-    /// <inheritdoc cref="BaseObject.Name"/>
-    /// <summary>
-    /// Gets or sets the display name for this property grid item.
-    /// </summary>
+    /// <inheritdoc/>
     public override string? Name { get => (string?)GetPropertyValue(NameProperty); set => SetPropertyValue(NameProperty, value); }
 
     /// <summary>
@@ -74,8 +71,6 @@ public partial class PropertyGridItem : BaseObject
     /// </summary>
     public bool? IsChecked { get => (bool?)GetPropertyValue(IsCheckedProperty)!; set => SetPropertyValue(IsCheckedProperty, value); }
 
-    /// <summary>
-    /// Returns <see cref="Name"/> or an empty string when not set.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => Name ?? string.Empty;
 }

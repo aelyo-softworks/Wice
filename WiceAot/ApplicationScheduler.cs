@@ -56,20 +56,13 @@ public partial class ApplicationScheduler : TaskScheduler, IDisposable
     /// </summary>
     public virtual int WaitTimeout { get; set; }
 
-    /// <summary>
-    /// Returns an enumerable of the tasks currently scheduled to this scheduler.
-    /// </summary>
+    /// <inheritdoc/>
     protected override IEnumerable<Task>? GetScheduledTasks() => _tasks;
 
-    /// <summary>
-    /// Returns <see langword="false"/> to prevent inline task execution; tasks are executed via the dequeue mechanism.
-    /// </summary>
+    /// <inheritdoc/>
     protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued) => false;
 
-    /// <summary>
-    /// Queues a <see cref="Task"/> for execution and signals the dequeue event (subject to <see cref="DequeueTimeout"/>).
-    /// </summary>
-    /// <param name="task">The task to queue.</param>
+    /// <inheritdoc/>
     protected override void QueueTask(Task task)
     {
         ArgumentNullException.ThrowIfNull(task);
@@ -185,13 +178,11 @@ public partial class ApplicationScheduler : TaskScheduler, IDisposable
     }
 
     /// <summary>
-    /// Dequeues all pending tasks and optionally executes them on the current thread.
+    /// Removes and optionally executes all tasks from the queue.
     /// </summary>
-    /// <param name="execute">
-    /// If <see langword="true"/>, each dequeued task is executed via <see cref="TryExecuteTask(Task)"/> and
-    /// <see cref="OnExecuting(object, EventArgs)"/> is raised beforehand.
-    /// </param>
-    /// <returns>The number of tasks dequeued.</returns>
+    /// <param name="execute">A value indicating whether the dequeued tasks should be executed.  If <see langword="true"/>, each task is
+    /// executed as it is dequeued; otherwise, tasks are only removed from the queue.</param>
+    /// <returns>The number of tasks that were removed from the queue.</returns>
     protected virtual int Dequeue(bool execute)
     {
         if (_disposedValue)

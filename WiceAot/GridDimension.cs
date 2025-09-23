@@ -224,14 +224,7 @@ public abstract class GridDimension : BaseObject
         }
     }
 
-    /// <summary>
-    /// Overrides property setting to enforce mutual exclusivity between <see cref="Stars"/> and <see cref="Size"/>,
-    /// and to invalidate the parent grid for a new measure pass.
-    /// </summary>
-    /// <param name="property">The property being updated.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set options.</param>
-    /// <returns>true if the stored value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -252,10 +245,7 @@ public abstract class GridDimension : BaseObject
         return true;
     }
 
-    /// <summary>
-    /// Returns a human-readable representation, e.g.:
-    /// "[1] 2*" for star-sized, "[0] Auto" for auto-sized, "[2] Fixed: 100" for fixed.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString()
     {
         string idx;

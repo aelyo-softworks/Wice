@@ -46,14 +46,7 @@ public partial class Wrap : Visual
     [Category(CategoryLayout)]
     public float ItemHeight { get => (float)GetPropertyValue(ItemHeightProperty)!; set => SetPropertyValue(ItemHeightProperty, value); }
 
-    /// <summary>
-    /// Measures children and computes the desired size for the wrap panel under the given constraint.
-    /// Children are measured with <see cref="ItemWidth"/>/<see cref="ItemHeight"/> if set; otherwise with the provided constraint.
-    /// Lines are built by accumulating along the U axis until exceeding the available U, then wrapping and starting a new line.
-    /// The panel's desired size is the maximum U encountered and the sum of all line V heights.
-    /// </summary>
-    /// <param name="constraint">Available size including margin from the parent.</param>
-    /// <returns>The desired size of the panel.</returns>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         var orientation = Orientation;
@@ -103,12 +96,7 @@ public partial class Wrap : Visual
         return new D2D_SIZE_F(panelSize.Width, panelSize.Height);
     }
 
-    /// <summary>
-    /// Arranges children into lines computed similarly to <see cref="MeasureCore(D2D_SIZE_F)"/>.
-    /// Each line is positioned at the accumulated V offset, and children are placed sequentially along U.
-    /// If <see cref="ItemWidth"/>/<see cref="ItemHeight"/> are set, those are used to allocate the slot on the U axis.
-    /// </summary>
-    /// <param name="finalRect">Final content rectangle allocated by the parent (without margin).</param>
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         var orientation = Orientation;

@@ -326,10 +326,7 @@ public partial class PdfView : RenderVisual, IDisposable
                 RelativeRenderRect);
     }
 
-    /// <summary>
-    /// Renders the current PDF page to the given device context.
-    /// </summary>
-    /// <param name="context">The render context wrapping a Direct2D device context.</param>
+    /// <inheritdoc/>
     protected unsafe internal override void RenderCore(RenderContext context)
     {
         if (LoadError != null)

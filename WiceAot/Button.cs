@@ -66,11 +66,7 @@ public partial class Button : ButtonBase
     [Browsable(false)]
     public bool UpdateMarginsOnPropertyChanged { get; set; } = true;
 
-    /// <summary>
-    /// Subscribes to theme/DPI events and initializes style/margins once attached to composition.
-    /// </summary>
-    /// <param name="sender">Event source.</param>
-    /// <param name="e">Event data.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -78,11 +74,7 @@ public partial class Button : ButtonBase
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
-    /// <summary>
-    /// Unsubscribes from theme/DPI events when detaching from composition.
-    /// </summary>
-    /// <param name="sender">Event source.</param>
-    /// <param name="e">Event data.</param>
+    /// <inheritdoc/>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);
@@ -116,10 +108,7 @@ public partial class Button : ButtonBase
         }
     }
 
-    /// <summary>
-    /// Updates the button's visual style. When <see cref="UpdateStyleFromTheme"/> is true,
-    /// applies the theme's button color to the <see cref="RenderVisual.RenderBrush"/>.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void UpdateStyle()
     {
         base.UpdateStyle();

@@ -27,15 +27,10 @@ public partial class RoundedRectangle : SingleShape
     /// </summary>
     public new CompositionRoundedRectangleGeometry? Geometry => (CompositionRoundedRectangleGeometry?)base.Geometry;
 
-    /// <summary>
-    /// Creates the underlying <see cref="CompositionRoundedRectangleGeometry"/> using the window compositor.
-    /// </summary>
-    /// <returns>A new geometry instance, or <c>null</c> when the window/compositor is not available.</returns>
+    /// <inheritdoc/>
     protected override CompositionGeometry? CreateGeometry() => Window?.Compositor?.CreateRoundedRectangleGeometry();
 
-    /// <summary>
-    /// Updates the composition geometry to reflect the current arranged bounds and margin.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void Render()
     {
         base.Render();

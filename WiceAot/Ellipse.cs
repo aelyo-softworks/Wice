@@ -31,17 +31,10 @@ public partial class Ellipse : SingleShape
     /// </summary>
     public Vector2 RadiusOffset { get => (Vector2)GetPropertyValue(RadiusOffsetProperty)!; set => SetPropertyValue(RadiusOffsetProperty, value); }
 
-    /// <summary>
-    /// Creates the composition geometry for the ellipse using the current window's compositor.
-    /// </summary>
-    /// <returns>
-    /// A new <see cref="CompositionEllipseGeometry"/> when the compositor is available; otherwise <c>null</c>.
-    /// </returns>
+    /// <inheritdoc/>
     protected override CompositionGeometry? CreateGeometry() => Window?.Compositor?.CreateEllipseGeometry();
 
-    /// <summary>
-    /// Updates the composition geometry to reflect the current layout and stroke settings.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void Render()
     {
         base.Render();

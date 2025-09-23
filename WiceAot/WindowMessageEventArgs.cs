@@ -34,9 +34,6 @@ public class WindowMessageEventArgs(HWND handle, uint message, WPARAM wParam, LP
     /// </summary>
     public virtual LRESULT Result { get; set; }
 
-    /// <summary>
-    /// Returns a human-readable representation of the message and its parameters for diagnostics.
-    /// </summary>
-    /// <returns>A string describing the message, decoded via <c>WiceCommons.DecodeMessage</c>.</returns>
+    /// <inheritdoc/>
     public override string ToString() => WiceCommons.DecodeMessage(Handle, Message, WParam, LParam);
 }

@@ -48,24 +48,10 @@ public class RadialGradientBrush : Brush
     /// <inheritdoc />
     protected internal override IComObject<ID2D1Brush> GetBrush(RenderContext context) => context.CreateRadialGradientBrush(Properties, Gamma, ExtendMode, Stops);
 
-    /// <summary>
-    /// Determines whether the specified object is equal to the current brush instance.
-    /// </summary>
-    /// <param name="obj">The object to compare with the current brush.</param>
-    /// <returns>
-    /// <see langword="true"/> if <paramref name="obj"/> is a <see cref="Brush"/> and
-    /// is equal to this instance; otherwise, <see langword="false"/>.
-    /// </returns>
+    /// <inheritdoc/>
     public override bool Equals(object? obj) => Equals(obj as LinearGradientBrush);
 
-    /// <summary>
-    /// Determines whether the specified brush is equal to the current brush instance.
-    /// </summary>
-    /// <param name="other">The other brush to compare with this instance.</param>
-    /// <returns>
-    /// <see langword="true"/> if the type, <see cref="Properties"/>, <see cref="Gamma"/>,
-    /// <see cref="ExtendMode"/>, and all <see cref="Stops"/> are equal; otherwise, <see langword="false"/>.
-    /// </returns>
+    /// <inheritdoc/>
     public override bool Equals(Brush? other)
     {
         if (other is not RadialGradientBrush brush)
@@ -91,13 +77,7 @@ public class RadialGradientBrush : Brush
         return true;
     }
 
-    /// <summary>
-    /// Returns a hash code for this instance.
-    /// </summary>
-    /// <returns>
-    /// A hash code that reflects the values of <see cref="Properties"/>, <see cref="Gamma"/>,
-    /// <see cref="ExtendMode"/>, and all <see cref="Stops"/>.
-    /// </returns>
+    /// <inheritdoc/>
     public override int GetHashCode()
     {
         var code = Properties.GetHashCode() ^ Gamma.GetHashCode() ^ ExtendMode.GetHashCode();

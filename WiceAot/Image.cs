@@ -126,14 +126,7 @@ public partial class Image : RenderVisual, IDisposable
     /// <inheritdoc />
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => GetSize(constraint);
 
-    /// <summary>
-    /// Overrides property setting to manage bitmap lifecycle and invalidation behavior.
-    /// Disposes the cached bitmap when <see cref="Source"/> changes so that a new one is created on next render.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional behavioral flags.</param>
-    /// <returns>true if the stored value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -174,10 +167,10 @@ public partial class Image : RenderVisual, IDisposable
     }
 
     /// <summary>
-    /// Computes the destination rectangle (relative to this visual) where the image will be drawn,
-    /// based on the current source size, alignment, and stretch settings.
+    /// Calculates the destination rectangle for rendering based on the source size, alignment, stretch mode, and other
+    /// parameters.
     /// </summary>
-    /// <returns>The destination rectangle relative to <see cref="RelativeRenderRect"/> origin.</returns>
+    /// <returns>A <see cref="D2D_RECT_F"/> representing the calculated destination rectangle.</returns>
     public virtual D2D_RECT_F GetDestinationRectangle() => GetDestinationRectangle(
                     Source?.GetSizeF() ?? new D2D_SIZE_F(),
                     HorizontalAlignment,
@@ -265,12 +258,7 @@ public partial class Image : RenderVisual, IDisposable
         return destRc;
     }
 
-    /// <summary>
-    /// Performs the Direct2D rendering for this visual. Ensures the cached bitmap exists,
-    /// creating it lazily from <see cref="Source"/>. Then draws the bitmap into the computed
-    /// destination rectangle using the configured opacity, interpolation mode, and optional source crop.
-    /// </summary>
-    /// <param name="context">The active render context with a valid device context.</param>
+    /// <inheritdoc/>
     protected internal override void RenderCore(RenderContext context)
     {
         base.RenderCore(context);

@@ -63,14 +63,7 @@ public class BitmapBrush : Brush
     /// </summary>
     public D2D1_INTERPOLATION_MODE InterpolationMode { get; set; }
 
-    /// <summary>
-    /// Creates and configures an <see cref="ID2D1BitmapBrush1"/> for the specified <paramref name="context"/>.
-    /// </summary>
-    /// <param name="context">The render context providing the device context to create the brush with.</param>
-    /// <returns>
-    /// An <see cref="IComObject{T}"/> wrapping the created <see cref="ID2D1Brush"/>. The returned object is owned by the context
-    /// and is disposed by it.
-    /// </returns>
+    /// <inheritdoc/>
     protected internal override IComObject<ID2D1Brush> GetBrush(RenderContext context)
     {
         // will be disposed by context
@@ -103,14 +96,7 @@ public class BitmapBrush : Brush
         return bmp;
     }
 
-    /// <summary>
-    /// Determines whether this brush is equal to another brush.
-    /// </summary>
-    /// <param name="other">The other brush to compare with.</param>
-    /// <returns>
-    /// true if both brushes share the same <see cref="Bitmap"/> and the same creation-time properties
-    /// (<see cref="BitmapBrushProperties"/> and <see cref="BrushProperties"/>); otherwise, false.
-    /// </returns>
+    /// <inheritdoc/>
     public override bool Equals(Brush? other)
     {
         if (other is not BitmapBrush brush)
@@ -144,11 +130,6 @@ public class BitmapBrush : Brush
         return true;
     }
 
-    /// <summary>
-    /// Returns a hash code that reflects the equality semantics of this brush.
-    /// </summary>
-    /// <returns>
-    /// A hash code combining <see cref="Bitmap"/>, <see cref="BitmapBrushProperties"/>, and <see cref="BrushProperties"/>.
-    /// </returns>
+    /// <inheritdoc/>
     public override int GetHashCode() => Bitmap.GetHashCode() ^ BitmapBrushProperties.GetHashCode() ^ BrushProperties.GetHashCode();
 }

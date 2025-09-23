@@ -122,8 +122,7 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
     public Visual? Child { get => Viewer.Child; set => Viewer.Child = value; }
 
     /// <summary>
-    /// Gets the inner <see cref="Viewer"/> responsible for measuring/arranging the child,
-    /// and applying <see cref="ChildOffsetLeft"/>/<see cref="ChildOffsetTop"/> when scrolled.
+    /// Gets the <see cref="Viewer"/> instance associated with this object.
     /// </summary>
     [Browsable(false)]
     public Viewer Viewer { get; }
@@ -344,11 +343,7 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         _ => throw new NotSupportedException(),
     };
 
-    /// <summary>
-    /// Arranges children depending on <see cref="ScrollMode"/>. When arranging, invalidations triggered by
-    /// internal children are temporarily suspended to avoid oscillations.
-    /// </summary>
-    /// <param name="finalRect">The final rectangle allocated by the parent.</param>
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         var window = Window;
@@ -387,12 +382,7 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         HorizontalOffset = _horizontalOffsetStart + ratio * e.State.DeltaX;
     }
 
-    /// <summary>
-    /// Applies side effects when dependency properties change:
-    /// - When offsets change and the corresponding scrollbar is visible, updates <see cref="Viewer.ChildOffsetLeft"/>
-    ///   or <see cref="Viewer.ChildOffsetTop"/>.
-    /// - When visibility policies change, toggles viewer constraints in that dimension.
-    /// </summary>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         var ret = base.SetPropertyValue(property, value, options);
@@ -657,9 +647,7 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
     /// </summary>
     protected virtual void OnHorizontalLargeDecreaseClick(object? sender, EventArgs e) => DoAction(PageLeft, e);
 
-    /// <summary>
-    /// Releases mouse capture and stops the auto-repeat timer when the left mouse button is released.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
         if (e.Button == MouseButton.Left)
@@ -688,14 +676,7 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
         }
     }
 
-    /// <summary>
-    /// Handles mouse wheel scrolling:
-    /// - With Shift: uses the page size (<see cref="VerticalScrollBar.Thumb"/> height) as unit.
-    /// - With Control: scrolls horizontally; otherwise scrolls vertically.
-    /// The direction is inverted to produce a natural scrolling experience.
-    /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">The wheel event data.</param>
+    /// <inheritdoc/>
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {
         float offset;

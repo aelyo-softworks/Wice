@@ -79,17 +79,7 @@ public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISe
     /// </summary>
     float? IFocusableParent.FocusOffset => null;
 
-    /// <summary>
-    /// Overrides property setting to:
-    /// - Raise <see cref="IsSelectedChanged"/> when <see cref="IsSelectedProperty"/> changes (when enabled).
-    /// - Manage subscriptions to the data object's <see cref="INotifyPropertyChanged"/> when <see cref="Visual.DataProperty"/> changes,
-    ///   invoking <see cref="DataBinder"/> on each data change to update the child.
-    /// All other properties are delegated to the base implementations.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Set options.</param>
-    /// <returns>True if the stored value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -142,12 +132,7 @@ public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISe
     /// </summary>
     protected virtual void OnIsSelectedChanged(object? sender, ValueEventArgs<bool> e) => IsSelectedChanged?.Invoke(sender, e);
 
-    /// <summary>
-    /// Toggles <see cref="IsSelected"/> when the item is clicked, focuses the child visual, and forwards the event to the base.
-    /// When the parent is disabled, the interaction is ignored.
-    /// </summary>
-    /// <param name="sender">Event source.</param>
-    /// <param name="e">Mouse button event args.</param>
+    /// <inheritdoc/>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         if (Parent?.IsEnabled == false)

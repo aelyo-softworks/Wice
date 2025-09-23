@@ -30,8 +30,6 @@ public class PointerUpdateEventArgs(uint pointerId, int x, int y, POINTER_MESSAG
     /// </summary>
     public bool IsPrimary => Flags.HasFlag(POINTER_MESSAGE_FLAGS.POINTER_MESSAGE_FLAG_PRIMARY);
 
-    /// <summary>
-    /// Returns a string that represents the current object, including position and flags.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => base.ToString() + ",Flags=" + Flags;
 }

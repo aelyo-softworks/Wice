@@ -105,11 +105,7 @@ public partial class Popup : Canvas, IModalVisual
         SetTop(this, pt.y);
     }
 
-    /// <summary>
-    /// Called after the visual has been rendered; recomputes placement to reflect the latest layout and render state.
-    /// </summary>
-    /// <param name="sender">The sender.</param>
-    /// <param name="e">The event data.</param>
+    /// <inheritdoc/>
     protected override void OnRendered(object? sender, EventArgs e)
     {
         base.OnRendered(sender, e);

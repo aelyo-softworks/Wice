@@ -86,11 +86,7 @@ public partial class NullableCheckBox : StateButton
         /// </summary>
         public Border Border { get; } = new();
 
-        /// <summary>
-        /// Applies initial theme brushes and subscribes to Theme/DPI notifications.
-        /// </summary>
-        /// <param name="sender">Event source.</param>
-        /// <param name="e">Event args.</param>
+        /// <inheritdoc/>
         protected override void OnAttachedToComposition(object? sender, EventArgs e)
         {
             base.OnAttachedToComposition(sender, e);
@@ -101,11 +97,7 @@ public partial class NullableCheckBox : StateButton
             Window!.ThemeDpiEvent += OnThemeDpiEvent;
         }
 
-        /// <summary>
-        /// Unsubscribes from Theme/DPI notifications.
-        /// </summary>
-        /// <param name="sender">Event source.</param>
-        /// <param name="e">Event args.</param>
+        /// <inheritdoc/>
         protected override void OnDetachingFromComposition(object? sender, EventArgs e)
         {
             base.OnDetachingFromComposition(sender, e);

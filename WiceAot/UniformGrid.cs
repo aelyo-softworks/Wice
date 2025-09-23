@@ -99,14 +99,7 @@ public partial class UniformGrid : RenderVisual
     [Category(CategoryLayout)]
     public Brush LineBrush { get => (Brush)GetPropertyValue(LineBrushProperty)!; set => SetPropertyValue(LineBrushProperty, value); }
 
-    /// <summary>
-    /// Measures the desired size of the grid based on the maximum desired size of its visible children per cell,
-    /// multiplied by the number of columns/rows and including inter-row/column line widths.
-    /// </summary>
-    /// <param name="constraint">The available size for the grid (width/height in DIPs).</param>
-    /// <returns>
-    /// The desired size of the grid. If <see cref="Columns"/> or <see cref="Rows"/> is 0, defers to base measurement.
-    /// </returns>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         var cols = Columns;
@@ -140,11 +133,7 @@ public partial class UniformGrid : RenderVisual
         return new D2D_SIZE_F(maxChildDesiredWidth * cols + colsLine * (cols - 1), maxChildDesiredHeight * rows + rowsLine * (rows - 1));
     }
 
-    /// <summary>
-    /// Arranges visible children into grid cells computed from the final rectangle.
-    /// Children are placed left-to-right and wrap to the next row when the row is filled.
-    /// </summary>
-    /// <param name="finalRect">The final content rectangle available for arranging (excluding margin).</param>
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         var cols = Columns;
@@ -180,12 +169,7 @@ public partial class UniformGrid : RenderVisual
         }
     }
 
-    /// <summary>
-    /// Clears the device context to <see cref="RenderVisual.BackgroundColor"/> when set.
-    /// If not set and the grid is not fully populated (<c>Children.Count &lt; Rows * Columns</c>), clears to transparent.
-    /// Otherwise, does not clear (preserves existing content).
-    /// </summary>
-    /// <param name="context">The render context for the current draw pass.</param>
+    /// <inheritdoc/>
     protected override void RenderBackgroundCore(RenderContext context)
     {
         var bg = BackgroundColor;

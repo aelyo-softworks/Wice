@@ -91,11 +91,7 @@ public partial class Dock : Visual
         };
     }
 
-    /// <summary>
-    /// Measures desired size by simulating docking and accumulating consumed width/height per orientation.
-    /// </summary>
-    /// <param name="constraint">Available size including margin.</param>
-    /// <returns>The desired size required by docked children.</returns>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         _lastChild = null;
@@ -138,10 +134,7 @@ public partial class Dock : Visual
         return new D2D_SIZE_F(width, height);
     }
 
-    /// <summary>
-    /// Arranges children by docking them to the requested edges, honoring alignment and overlap rules.
-    /// </summary>
-    /// <param name="finalRect">Final rectangle allocated by the parent, without margin.</param>
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         var finalSize = finalRect.Size;

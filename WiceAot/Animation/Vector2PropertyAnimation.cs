@@ -34,19 +34,7 @@ public partial class Vector2PropertyAnimation(PropertyAnimationArguments argumen
     /// </summary>
     public EasingMode EasingMode { get; } = easingMode;
 
-    /// <summary>
-    /// Computes the next value to apply to the target property and indicates whether to set it,
-    /// continue without setting, or stop.
-    /// </summary>
-    /// <param name="value">
-    /// When the return value is <see cref="AnimationResult.Set"/> or <see cref="AnimationResult.Stop"/>,
-    /// contains the <see cref="Vector2"/> value to assign to the target property.
-    /// </param>
-    /// <returns>
-    /// - <see cref="AnimationResult.Stop"/> when the animation is complete or should immediately set the final value.<br/>
-    /// - <see cref="AnimationResult.Set"/> to apply the interpolated value for this tick and continue running.<br/>
-    /// - <see cref="AnimationResult.Continue"/> is not used by this implementation.
-    /// </returns>
+    /// <inheritdoc/>
     protected override AnimationResult TryGetValue(out object value)
     {
         // special "set" case

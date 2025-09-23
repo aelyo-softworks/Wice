@@ -2684,14 +2684,7 @@ public partial class Visual : BaseObject
     /// </summary>
     protected bool SetPropertyValue(BaseObjectProperty property, object? value, VisualPropertyInvalidateModes modes) => SetPropertyValue(property, value, new VisualSetOptions { InvalidateModes = modes });
 
-    /// <summary>
-    /// Overrides property setting to integrate with the invalidation pipeline and cursor/focus stubs.
-    /// When an update requires a UI-thread call, this method enforces main thread execution.
-    /// </summary>
-    /// <param name="property">The property descriptor being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set options; when <see cref="VisualSetOptions.InvalidateModes"/> is provided, it overrides default invalidation modes.</param>
-    /// <returns>true if the stored value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         ExceptionExtensions.ThrowIfNull(property, nameof(property));

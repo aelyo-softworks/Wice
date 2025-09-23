@@ -51,26 +51,13 @@ public class StateButtonState : IEquatable<StateButtonState>
         return visual;
     }
 
-    /// <summary>
-    /// Returns a string representation of the underlying <see cref="Value"/>.
-    /// </summary>
-    /// <returns><see cref="Value"/>.ToString() if not <see langword="null"/>; otherwise, an empty string.</returns>
+    /// <inheritdoc/>
     public override string ToString() => Value?.ToString() ?? string.Empty;
 
-    /// <summary>
-    /// Returns a hash code based on <see cref="Value"/>.
-    /// </summary>
-    /// <returns><see cref="Value"/>'s hash code when not <see langword="null"/>; otherwise, <c>0</c>.</returns>
+    /// <inheritdoc/>
     public override int GetHashCode() => Value != null ? Value.GetHashCode() : 0;
 
-    /// <summary>
-    /// Determines whether the specified object is equal to the current instance.
-    /// </summary>
-    /// <param name="obj">The object to compare with this instance.</param>
-    /// <returns>
-    /// <see langword="true"/> if equal; otherwise, <see langword="false"/>.
-    /// Uses <see cref="EqualsFunc"/> when provided; falls back to comparing states or <see cref="Value"/>.
-    /// </returns>
+    /// <inheritdoc/>
     public override bool Equals(object? obj)
     {
         var func = EqualsFunc;

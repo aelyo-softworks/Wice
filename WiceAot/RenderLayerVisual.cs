@@ -25,15 +25,10 @@ public partial class RenderLayerVisual : Canvas
     [Category(CategoryRender)]
     public new LayerVisual? CompositionVisual => (LayerVisual?)base.CompositionVisual;
 
-    /// <summary>
-    /// Creates the backing composition visual for this element.
-    /// </summary>
-    /// <returns>A new <see cref="LayerVisual"/> created from the current window's compositor; otherwise null.</returns>
+    /// <inheritdoc/>
     protected override ContainerVisual? CreateCompositionVisual() => Window?.Compositor?.CreateLayerVisual();
 
-    /// <summary>
-    /// Applies composition-time updates for this visual and assigns the effect to the layer when appropriate.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void Render()
     {
         base.Render();

@@ -16,16 +16,16 @@ public interface IFocusableParent
     /// </value>
     Visual? FocusableVisual { get; }
 
-#if !NETFRAMEWORK
     /// <summary>
     /// Gets the CLR <see cref="Type"/> of a shape/visual used to render the focus cue.
     /// </summary>
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
-#endif
     /// <value>
     /// A <see cref="Type"/> describing the focus visual/shape to use; <see langword="null"/> to
     /// fall back to the theme or framework default.
     /// </value>
+#if !NETFRAMEWORK
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
     Type? FocusVisualShapeType { get; }
 
     /// <summary>

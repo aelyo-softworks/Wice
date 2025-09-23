@@ -29,18 +29,7 @@ public partial class SinglePropertyAnimation(PropertyAnimationArguments argument
     /// </summary>
     public EasingMode EasingMode { get; } = easingMode;
 
-    /// <summary>
-    /// Computes the next value to apply to the target property and indicates how the animation should proceed.
-    /// </summary>
-    /// <param name="value">
-    /// When returning <see cref="AnimationResult.Set"/> or <see cref="AnimationResult.Stop"/>, contains the value
-    /// to assign to the target property this tick.
-    /// </param>
-    /// <returns>
-    /// - <see cref="AnimationResult.Stop"/> when the animation is complete or trivially resolved (e.g., From == To or elapsed >= duration).<br/>
-    /// - <see cref="AnimationResult.Set"/> when an interpolated value should be written this tick.<br/>
-    /// - <see cref="AnimationResult.Continue"/> is not used by this implementation.
-    /// </returns>
+    /// <inheritdoc/>
     protected override AnimationResult TryGetValue(out object value)
     {
         // special "set" case

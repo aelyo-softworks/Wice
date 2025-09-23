@@ -1,5 +1,8 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// Represents a visual media player that supports playback of audio and video content.
+/// </summary>
 public partial class MediaPlayer : Visual, IDisposable
 {
     /// <summary>
@@ -94,9 +97,15 @@ public partial class MediaPlayer : Visual, IDisposable
         return player;
     }
 
+    /// <summary>
+    /// Gets a read-only list of file extensions commonly associated with video files.
+    /// </summary>
     public static IReadOnlyList<string> VideoFileExtensions => _videoFileExtensions.Value;
     private static readonly Lazy<List<string>> _videoFileExtensions = new(() => GetMediaFileExtensions("video"));
 
+    /// <summary>
+    /// Gets a read-only list of file extensions commonly associated with audio files.
+    /// </summary>
     public static IReadOnlyList<string> AudioFileExtensions => _audioFileExtensions.Value;
     private static readonly Lazy<List<string>> _audioFileExtensions = new(() => GetMediaFileExtensions("audio"));
 

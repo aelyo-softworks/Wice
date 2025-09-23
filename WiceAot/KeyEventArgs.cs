@@ -64,10 +64,7 @@ public class KeyEventArgs(VIRTUAL_KEY vk, uint states) : HandledEventArgs
     /// </summary>
     public virtual bool WithMenu { get; set; } = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_MENU);
 
-    /// <summary>
-    /// Returns a compact, human-readable representation of the key event.
-    /// </summary>
-    /// <returns>A string that describes transition, flags, repeat count, scan code, virtual key, and character.</returns>
+    /// <inheritdoc/>
     public override string ToString()
     {
         var s = IsUp ? "UP" : "DOWN";

@@ -29,9 +29,6 @@ public partial class ApplicationWithScheduler : Application
     /// </summary>
     public ApplicationScheduler Scheduler { get; }
 
-    /// <summary>
-    /// Retrieves a message from the calling thread's message queue using the <see cref="Scheduler"/>.
-    /// </summary>
     /// <inheritdoc/>
     protected override BOOL GetMessage(out MSG msg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax) => Scheduler.GetMessage(out msg, hWnd, wMsgFilterMin, wMsgFilterMax);
 
@@ -57,12 +54,7 @@ public partial class ApplicationWithScheduler : Application
         return Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, Scheduler);
     }
 
-    /// <summary>
-    /// Releases resources used by this instance.
-    /// </summary>
-    /// <param name="disposing">
-    /// True to release managed resources; otherwise, false.
-    /// </param>
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (disposing)

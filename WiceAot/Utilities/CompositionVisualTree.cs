@@ -13,6 +13,13 @@ public partial class CompositionVisualTree : IDisposable
     private CompositionTarget? _compositionTarget;
     private ContainerVisual? _rootVisual;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CompositionVisualTree"/> class, optionally configuring the thread
+    /// used by the task scheduler.
+    /// </summary>
+    /// <param name="threadConfigure">An optional delegate that is invoked to configure the thread used by the task scheduler.  The delegate receives
+    /// the thread as a parameter and should return <see langword="true"/> to indicate successful configuration. If <see
+    /// langword="null"/>, no additional thread configuration is performed.</param>
     public CompositionVisualTree(Func<Thread, bool>? threadConfigure = null)
     {
         _scheduler = new SingleThreadTaskScheduler(t =>
@@ -23,6 +30,9 @@ public partial class CompositionVisualTree : IDisposable
         });
     }
 
+    /// <summary>
+    /// Gets the <see cref="TaskScheduler"/> associated with this instance.
+    /// </summary>
     public TaskScheduler Scheduler
     {
         get
@@ -33,6 +43,9 @@ public partial class CompositionVisualTree : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gets the root visual element of the container.
+    /// </summary>
     public ContainerVisual? RootVisual
     {
         get
@@ -44,10 +57,13 @@ public partial class CompositionVisualTree : IDisposable
     }
 
     /// <summary>
-    /// Gets a value indicating whether the application has been disposed.
+    /// Gets a value indicating whether the visual tree has been disposed.
     /// </summary>
     public bool IsDisposed => _disposedValue;
 
+    /// <summary>
+    /// Ensures that the current method is being executed on the dedicated thread and throw if it's not the case.
+    /// </summary>
     public void CheckRunningAsDedicatedThread() { if (!IsRunningAsDedicatedThread) throw new WiceException("0037: This method must be called on the dedicated thread."); }
     private void CheckDisposed() => ObjectDisposedException.ThrowIf(IsDisposed, nameof(CompositionVisualTree));
     private static void CheckWindow(Window window)
@@ -60,6 +76,11 @@ public partial class CompositionVisualTree : IDisposable
             throw new InvalidOperationException("Window must have a FrameVisual set before calling this method.");
     }
 
+    /// <summary>
+    /// Creates and returns the root visual for the specified window.
+    /// </summary>
+    /// <param name="window">The <see cref="Window"/> for which the root visual is created. Must not be <see langword="null"/>.</param>
+    /// <returns>A <see cref="ContainerVisual"/> representing the root visual for the specified window.</returns>
     protected virtual ContainerVisual CreateRootVisual(Window window)
     {
         CheckWindow(window);
@@ -68,7 +89,23 @@ public partial class CompositionVisualTree : IDisposable
         return visual;
     }
 
+    /// <summary>
+    /// Gets a value indicating whether the current code is running on the dedicated thread.
+    /// </summary>
     public virtual bool IsRunningAsDedicatedThread => _threadId == Environment.CurrentManagedThreadId;
+
+    /// <summary>
+    /// Executes the specified action on the dedicated thread.
+    /// </summary>
+    /// <param name="action">The action to execute. This parameter cannot be <see langword="null"/>.</param>
+    /// <param name="startNew">A value indicating whether to start a new dedicated thread for the action.  If <see langword="false"/>, the
+    /// action may reuse an existing thread.</param>
+    /// <param name="options">Specifies the task creation options to configure the behavior of the task that runs the action. The default is
+    /// <see cref="TaskCreationOptions.None"/>.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests. The action will not execute if the token is canceled before the
+    /// task starts.</param>
+    /// <returns>A <see cref="Task"/> that represents the asynchronous operation. The task completes when the action has finished
+    /// executing.</returns>
     public virtual Task RunOnDedicatedThread(Action action, bool startNew = false, TaskCreationOptions options = TaskCreationOptions.None, CancellationToken cancellationToken = default) => RunOnDedicatedThread(action, startNew, true, options, cancellationToken);
     private Task RunOnDedicatedThread(Action action, bool startNew, bool checkDisposed, TaskCreationOptions options, CancellationToken cancellationToken)
     {
@@ -87,6 +124,17 @@ public partial class CompositionVisualTree : IDisposable
         return Task.Factory.StartNew(action, cancellationToken, options, _scheduler);
     }
 
+    /// <summary>
+    /// Executes the specified function on the dedicated thread, optionally starting a new thread if required.
+    /// </summary>
+    /// <typeparam name="T">The type of the result returned by the function.</typeparam>
+    /// <param name="action">The function to execute on the dedicated thread. Cannot be <see langword="null"/>.</param>
+    /// <param name="startNew">A value indicating whether to force the creation of a new dedicated thread.  If <see langword="false"/>, the
+    /// function may execute on the current dedicated thread if one is already running.</param>
+    /// <param name="options">The task creation options to use when starting a new thread. Defaults to <see cref="TaskCreationOptions.None"/>.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests. Defaults to <see cref="CancellationToken.None"/>.</param>
+    /// <returns>A task that represents the asynchronous operation. The task's result contains the value returned by the executed
+    /// function.</returns>
     public virtual async Task<T> RunOnDedicatedThread<T>(Func<T> action, bool startNew = false, TaskCreationOptions options = TaskCreationOptions.None, CancellationToken cancellationToken = default)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
@@ -97,6 +145,18 @@ public partial class CompositionVisualTree : IDisposable
         return await Task.Factory.StartNew(action, cancellationToken, options, _scheduler);
     }
 
+    /// <summary>
+    /// Executes the specified asynchronous action on the dedicated thread.
+    /// </summary>
+    /// <typeparam name="T">The type of the result produced by the asynchronous action.</typeparam>
+    /// <param name="action">The asynchronous action to execute. This parameter cannot be <see langword="null"/>.</param>
+    /// <param name="startNew">A value indicating whether to force the creation of a new dedicated thread. If <see langword="false"/>, the
+    /// action may execute on the current dedicated thread if one is already running.</param>
+    /// <param name="options">The task creation options to use when starting the action on a new thread. Defaults to <see
+    /// cref="TaskCreationOptions.None"/>.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation. Defaults to <see cref="CancellationToken.None"/>.</param>
+    /// <returns>A task that represents the asynchronous operation. The task's result is the value returned by the <paramref
+    /// name="action"/>.</returns>
     public virtual Task<T> RunOnDedicatedThread<T>(Func<Task<T>> action, bool startNew = false, TaskCreationOptions options = TaskCreationOptions.None, CancellationToken cancellationToken = default)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(action));
@@ -108,7 +168,14 @@ public partial class CompositionVisualTree : IDisposable
         return task.Unwrap();
     }
 
-    // create a device & visual tree for rendering on its own thread
+    /// <summary>
+    /// Ensures that the visual tree for the specified <see cref="Window"/> is created and initialized for rendering on
+    /// its own thread.
+    /// </summary>
+    /// <param name="window">The <see cref="Window"/> instance for which the visual tree should be created. This parameter cannot be <see
+    /// langword="null"/>.</param>
+    /// <returns><see langword="true"/> if the visual tree was successfully created; <see langword="false"/> if the visual tree
+    /// already exists.</returns>
     public virtual bool EnsureVisualTree(Window window)
     {
         if (_rootVisual != null)
@@ -127,6 +194,16 @@ public partial class CompositionVisualTree : IDisposable
         return true;
     }
 
+    /// <summary>
+    /// Renders content onto a Direct2D surface associated with the specified <see cref="SpriteVisual"/>.
+    /// </summary>
+    /// <param name="visual">The <see cref="SpriteVisual"/> that defines the target surface for rendering.  The visual must be visible for
+    /// rendering to occur.</param>
+    /// <param name="action">A callback action that performs the rendering logic. The action receives a <see cref="RenderContext"/>  that
+    /// provides methods and properties for drawing operations.</param>
+    /// <param name="creationOptions">Optional. Specifies the surface creation options, such as pixel format or alpha mode.  If null, default options
+    /// are used.</param>
+    /// <param name="rect">Optional. Defines the rectangular region of the surface to render to. If null, the entire surface is used.</param>
     public virtual void RenderD2DSurface(SpriteVisual visual, Action<RenderContext> action, SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
     {
         ExceptionExtensions.ThrowIfNull(action, nameof(visual));

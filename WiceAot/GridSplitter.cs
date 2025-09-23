@@ -34,21 +34,14 @@ public partial class GridSplitter : Visual
     /// </summary>
     public event EventHandler? Cancel;
 
-    /// <summary>
-    /// Called when attached to a parent. Initializes orientation-dependent state and cursor.
-    /// </summary>
-    /// <param name="sender">The parent visual.</param>
-    /// <param name="e">Event data.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         base.OnAttachedToParent(sender, e);
         UpdateProperties();
     }
 
-    /// <summary>
-    /// Creates the drag state used to track original sizes and render sizes during a drag operation.
-    /// </summary>
-    /// <param name="e">Mouse button args that initiated the drag.</param>
+    /// <inheritdoc/>
     protected override DragState CreateDragState(MouseButtonEventArgs e) => new SplitDragState(this, e);
 
     /// <summary>
@@ -107,13 +100,7 @@ public partial class GridSplitter : Visual
         Dimension.DefaultAlignment = Alignment.Center;
     }
 
-    /// <summary>
-    /// Intercepts updates to grid attached properties in order to set <see cref="Orientation"/> and refresh internal state.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Set options.</param>
-    /// <returns>True when the stored value changed.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -134,9 +121,7 @@ public partial class GridSplitter : Visual
         return true;
     }
 
-    /// <summary>
-    /// Handles mouse drag by delegating to the type-specific overload, then calls base.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseDrag(object? sender, DragEventArgs e)
     {
         OnMouseDrag(e);
@@ -227,9 +212,7 @@ public partial class GridSplitter : Visual
         }
     }
 
-    /// <summary>
-    /// Starts a drag move when the left mouse button is pressed.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         if (e.Button == MouseButton.Left)
@@ -239,9 +222,7 @@ public partial class GridSplitter : Visual
         base.OnMouseButtonDown(sender, e);
     }
 
-    /// <summary>
-    /// Commits the drag on left mouse button release.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
         if (e.Button == MouseButton.Left)
@@ -278,9 +259,7 @@ public partial class GridSplitter : Visual
         }
     }
 
-    /// <summary>
-    /// Handles ESC to cancel the in-progress drag.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == VIRTUAL_KEY.VK_ESCAPE)

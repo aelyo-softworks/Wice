@@ -453,10 +453,7 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
     /// <returns><see langword="true"/> if both refer to the same registered descriptor; otherwise, <see langword="false"/>.</returns>
     public bool Equals(BaseObjectProperty? other) => other != null && Id > 0 && other.Id == Id;
 
-    /// <summary>
-    /// Returns a diagnostic string containing the <see cref="Id"/>, <see cref="Name"/>, and default value info.
-    /// </summary>
-    /// <returns>A human-readable representation.</returns>
+    /// <inheritdoc/>
     public override string ToString()
     {
         var s = Id + " " + Name;

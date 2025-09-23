@@ -91,8 +91,6 @@ public abstract class PointerEventArgs(uint pointerId)
         }
     }
 
-    /// <summary>
-    /// Returns a string containing the pointer identifier.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => "Id=" + PointerId;
 }

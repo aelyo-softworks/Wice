@@ -1,16 +1,7 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// Base class for a scroll bar composed of five parts:
-/// <list type="bullet">
-/// <item><description><see cref="SmallDecrease"/></description></item>
-/// <item><description><see cref="LargeDecrease"/></description></item>
-/// <item><description><see cref="Thumb"/></description></item>
-/// <item><description><see cref="LargeIncrease"/></description></item>
-/// <item><description><see cref="SmallIncrease"/></description></item>
-/// </list>
-/// The concrete visuals are created by the abstract factory methods during construction.
-/// Handles overlay/standard styling and click routing to public events.
+/// Represents a scroll bar control that provides a user interface for scrolling content.
 /// </summary>
 public abstract class ScrollBar : Dock
 {
@@ -204,11 +195,7 @@ public abstract class ScrollBar : Dock
         // should only be implemented by vsb
     }
 
-    /// <summary>
-    /// Handles hover state changes. In overlay mode, forces a render invalidation
-    /// so visual expansion/opacity changes are reflected immediately.
-    /// </summary>
-    /// <param name="newValue">The new hover state.</param>
+    /// <inheritdoc/>
     protected override void IsMouseOverChanged(bool newValue)
     {
         base.IsMouseOverChanged(newValue);
@@ -219,12 +206,7 @@ public abstract class ScrollBar : Dock
         }
     }
 
-    /// <summary>
-    /// Applies theme styling after rendering is prepared. Switches between overlay and standard
-    /// colors, corner radii, and arrow button visibility based on <see cref="IsOverlay"/>.
-    /// </summary>
-    /// <param name="sender">Render source.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnRendered(object? sender, EventArgs e)
     {
         base.OnRendered(sender, e);

@@ -80,9 +80,7 @@ public partial class RadioButton : StateButton, IFocusableParent
         /// </summary>
         public Ellipse InnerDisk { get; } = new();
 
-        /// <summary>
-        /// Subscribes to theme/DPI updates and applies initial brushes.
-        /// </summary>
+        /// <inheritdoc/>
         protected override void OnAttachedToComposition(object? sender, EventArgs e)
         {
             base.OnAttachedToComposition(sender, e);
@@ -93,9 +91,7 @@ public partial class RadioButton : StateButton, IFocusableParent
             Window!.ThemeDpiEvent += OnThemeDpiEvent;
         }
 
-        /// <summary>
-        /// Unsubscribes from theme/DPI notifications.
-        /// </summary>
+        /// <inheritdoc/>
         protected override void OnDetachingFromComposition(object? sender, EventArgs e)
         {
             base.OnDetachingFromComposition(sender, e);
@@ -130,9 +126,7 @@ public partial class RadioButton : StateButton, IFocusableParent
 #endif
         }
 
-        /// <summary>
-        /// Subscribes to theme/DPI updates and applies initial stroke brush.
-        /// </summary>
+        /// <inheritdoc/>
         protected override void OnAttachedToComposition(object? sender, EventArgs e)
         {
             base.OnAttachedToComposition(sender, e);
@@ -141,9 +135,7 @@ public partial class RadioButton : StateButton, IFocusableParent
             Window!.ThemeDpiEvent += OnThemeDpiEvent;
         }
 
-        /// <summary>
-        /// Unsubscribes from theme/DPI notifications.
-        /// </summary>
+        /// <inheritdoc/>
         protected override void OnDetachingFromComposition(object? sender, EventArgs e)
         {
             base.OnDetachingFromComposition(sender, e);

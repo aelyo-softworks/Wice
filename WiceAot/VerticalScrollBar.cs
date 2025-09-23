@@ -1,21 +1,15 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// A vertical <see cref="ScrollBar"/> implementation that:
-/// - Creates a square corner visual to align with the horizontal scrollbar when both are visible.
-/// - Docks itself to the right and sizes using the current theme's vertical scrollbar width (DPI-aware).
-/// - In overlay mode, adapts the thumb width on hover to reveal a right-side margin.
-/// - Propagates its <see cref="RenderBrush"/> to the corner for consistent styling.
-/// - Subscribes to window DPI updates to keep dimensions in sync.
+/// Represents a vertical scrollbar control that provides scrolling functionality for content within a <see
+/// cref="ScrollViewer"/>. This control is docked to the right edge of the parent container and includes a customizable
+/// corner visual for scenarios where both horizontal and vertical scrollbars are visible.
 /// </summary>
 public partial class VerticalScrollBar : ScrollBar
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="VerticalScrollBar"/>:
-    /// - Creates and inserts the corner visual as the first child, docked to bottom.
-    /// - Docks this scrollbar to the right edge and positions it at the window's right/top.
-    /// - Sizes itself using the theme's vertical scrollbar width for the default DPI.
-    /// - Sets square sizes for small arrow buttons and aligns the thumb width to the bar width.
+    /// Initializes a new instance of the <see cref="VerticalScrollBar"/> class, configuring its layout and child
+    /// elements.
     /// </summary>
     public VerticalScrollBar()
     {
@@ -46,34 +40,19 @@ public partial class VerticalScrollBar : ScrollBar
     [Browsable(false)]
     public Visual Corner { get; }
 
-    /// <summary>
-    /// Creates the small-decrease arrow button for the top direction.
-    /// </summary>
-    /// <returns>A <see cref="ScrollBarButton"/> docked to <see cref="DockType.Top"/>.</returns>
+    /// <inheritdoc/>
     protected override ScrollBarButton CreateSmallDecrease() => new(DockType.Top);
 
-    /// <summary>
-    /// Creates the large-decrease (track) button above the thumb.
-    /// </summary>
-    /// <returns>A button base instance used as the track segment.</returns>
+    /// <inheritdoc/>
     protected override ButtonBase CreateLargeDecrease() => new();
 
-    /// <summary>
-    /// Creates the small-increase arrow button for the bottom direction.
-    /// </summary>
-    /// <returns>A <see cref="ScrollBarButton"/> docked to <see cref="DockType.Bottom"/>.</returns>
+    /// <inheritdoc/>
     protected override ScrollBarButton CreateSmallIncrease() => new(DockType.Bottom);
 
-    /// <summary>
-    /// Creates the large-increase (track) button below the thumb.
-    /// </summary>
-    /// <returns>A button base instance used as the track segment.</returns>
+    /// <inheritdoc/>
     protected override ButtonBase CreateLargeIncrease() => new();
 
-    /// <summary>
-    /// Creates the draggable thumb element.
-    /// </summary>
-    /// <returns>A new <see cref="Thumb"/>.</returns>
+    /// <inheritdoc/>
     protected override Thumb CreateThumb() => new();
 
     /// <summary>
@@ -82,10 +61,7 @@ public partial class VerticalScrollBar : ScrollBar
     /// <returns>A new <see cref="Border"/> by default. Derived classes may override to customize.</returns>
     protected virtual Visual CreateCorner() => new Border();
 
-    /// <summary>
-    /// Updates the corner sizing/visibility to match the horizontal scrollbar and adjusts the horizontal bar width in overlay mode.
-    /// </summary>
-    /// <param name="view">The owning <see cref="ScrollViewer"/>.</param>
+    /// <inheritdoc/>
     protected internal override void UpdateCorner(ScrollViewer view)
     {
         base.UpdateCorner(view);
@@ -103,13 +79,7 @@ public partial class VerticalScrollBar : ScrollBar
         }
     }
 
-    /// <summary>
-    /// Mirrors the scrollbar's <see cref="RenderBrush"/> to the corner when that property changes.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set options.</param>
-    /// <returns><c>true</c> if the stored value changed; otherwise, <c>false</c>.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (property == RenderBrushProperty)
@@ -119,14 +89,7 @@ public partial class VerticalScrollBar : ScrollBar
         return base.SetPropertyValue(property, value, options);
     }
 
-    /// <summary>
-    /// Applies overlay-dependent thumb width:
-    /// - In overlay mode and when hovered, shrinks the thumb width by a small right-side margin.
-    /// - In overlay mode and not hovered, sets thumb width to the theme's horizontal scrollbar height (thin overlay thumb).
-    /// - Otherwise, matches the full scrollbar width.
-    /// </summary>
-    /// <param name="sender">Render source.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnRendered(object? sender, EventArgs e)
     {
         base.OnRendered(sender, e);
@@ -149,11 +112,7 @@ public partial class VerticalScrollBar : ScrollBar
         }
     }
 
-    /// <summary>
-    /// Subscribes to DPI changes and performs an initial DPI-aware size update.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -161,11 +120,7 @@ public partial class VerticalScrollBar : ScrollBar
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
-    /// <summary>
-    /// Unsubscribes from DPI changes when detaching from composition.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);
@@ -173,13 +128,11 @@ public partial class VerticalScrollBar : ScrollBar
     }
 
     /// <summary>
-    /// Updates sizes to match the current DPI:
-    /// - Bar <see cref="Width"/>
-    /// - Square small arrow button heights
-    /// - Thumb width
+    /// Handles DPI-related changes for the current theme and updates the dimensions of the scroll bar components
+    /// accordingly.
     /// </summary>
-    /// <param name="sender">The event sender (typically the <see cref="Window"/>).</param>
-    /// <param name="e">Theme DPI event arguments.</param>
+    /// <param name="sender">The source of the event. This parameter may be <see langword="null"/>.</param>
+    /// <param name="e">An instance of <see cref="ThemeDpiEventArgs"/> containing the new DPI value and related event data.</param>
     protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         Width = GetWindowTheme().GetVerticalScrollBarWidth(e.NewDpi);

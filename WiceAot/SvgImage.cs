@@ -90,14 +90,7 @@ public partial class SvgImage : RenderVisual, IDisposable
     /// <param name="e">Event payload carrying the created <see cref="ID2D1SvgDocument"/> or null.</param>
     protected virtual void OnSvgDocumentCreated(object sender, ValueEventArgs<IComObject<ID2D1SvgDocument>?> e) => SvgDocumentCreated?.Invoke(this, e);
 
-    /// <summary>
-    /// Overrides property setting to clear the buffered stream when <see cref="Document"/> changes,
-    /// while delegating standard behavior to the base implementation.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set options.</param>
-    /// <returns>true if the stored value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -122,12 +115,7 @@ public partial class SvgImage : RenderVisual, IDisposable
                 StretchDirection,
                 RelativeRenderRect);
 
-    /// <summary>
-    /// Performs the Direct2D render pass: creates an <see cref="ID2D1SvgDocument"/> from the current
-    /// <see cref="Document"/> (buffered or on-demand), raises <see cref="SvgDocumentCreated"/>,
-    /// and draws it to the device context.
-    /// </summary>
-    /// <param name="context">The current render context (wrapping a D2D device context).</param>
+    /// <inheritdoc/>
     protected internal override void RenderCore(RenderContext context)
     {
         base.RenderCore(context);

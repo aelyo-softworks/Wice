@@ -6,11 +6,7 @@
 /// </summary>
 public partial class CheckBoxList : StateButtonListBox
 {
-    /// <summary>
-    /// Creates the per-item <see cref="CheckBox"/> and wires its click to toggle the item's selection.
-    /// </summary>
-    /// <param name="context">The data-bind context for the current item.</param>
-    /// <returns>A configured, non-null <see cref="CheckBox"/>.</returns>
+    /// <inheritdoc/>
     protected override StateButton CreateStateButton(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
@@ -25,17 +21,7 @@ public partial class CheckBoxList : StateButtonListBox
         return cb;
     }
 
-    /// <summary>
-    /// Applies a selection state to an item visual and synchronizes the embedded <see cref="CheckBox"/> value.
-    /// </summary>
-    /// <param name="visual">The item visual whose selection state should be updated.</param>
-    /// <param name="select">
-    /// The new selection state:
-    /// - true to select,
-    /// - false to unselect,
-    /// - null to only refresh brushes/visual state without changing selection.
-    /// </param>
-    /// <returns>True when the selection state changed; otherwise false.</returns>
+    /// <inheritdoc/>
     public override bool UpdateItemSelection(ItemVisual visual, bool? select)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));

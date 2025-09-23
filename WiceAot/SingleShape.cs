@@ -40,12 +40,7 @@ public abstract class SingleShape : Shape, IDisposable
     /// </returns>
     protected virtual CompositionSpriteShape? CreateShape() => Window?.Compositor?.CreateSpriteShape(Geometry);
 
-    /// <summary>
-    /// Called when this visual is attached to the composition tree; builds geometry and sprite shape and
-    /// adds it to the <see cref="Shape.CompositionVisual"/>.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         Geometry = CreateGeometry();
@@ -70,6 +65,11 @@ public abstract class SingleShape : Shape, IDisposable
         base.OnAttachedToComposition(sender, e);
     }
 
+    /// <summary>
+    /// Releases the unmanaged resources used by the object and optionally releases the managed resources.
+    /// </summary>
+    /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only
+    /// unmanaged resources.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposedValue)
@@ -84,5 +84,8 @@ public abstract class SingleShape : Shape, IDisposable
         }
     }
 
+    /// <summary>
+    /// Releases the resources used by the current instance of the class.
+    /// </summary>
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 }

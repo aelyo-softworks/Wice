@@ -80,11 +80,6 @@ public class KeyPressEventArgs : HandledEventArgs
     /// </summary>
     public virtual bool WithMenu { get; set; }
 
-    /// <summary>
-    /// Returns a string that represents the current object.
-    /// </summary>
-    /// <returns>
-    /// A string containing the UTF-32 value and the first UTF-16 code unit of the character.
-    /// </returns>
+    /// <inheritdoc/>
     public override string ToString() => "C:" + UTF32Character + " CH:'" + UTF16Character + "'";
 }

@@ -5,11 +5,7 @@
 /// </summary>
 public partial class NullableCheckBoxList : StateButtonListBox
 {
-    /// <summary>
-    /// Creates the per-item <see cref="NullableCheckBox"/> and wires its click handler to update item selection.
-    /// </summary>
-    /// <param name="context">The data-bind context for the current item.</param>
-    /// <returns>A configured <see cref="NullableCheckBox"/> instance.</returns>
+    /// <inheritdoc/>
     protected override StateButton CreateStateButton(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
@@ -24,17 +20,7 @@ public partial class NullableCheckBoxList : StateButtonListBox
         return ncb;
     }
 
-    /// <summary>
-    /// Applies the selection state to an item and, when selected, synchronizes the first <see cref="NullableCheckBox"/> child to <c>true</c>.
-    /// </summary>
-    /// <param name="visual">The item visual whose selection state is being updated.</param>
-    /// <param name="select">
-    /// Selection directive:
-    /// - <c>true</c> to select the item,
-    /// - <c>false</c> to unselect the item,
-    /// - <c>null</c> to refresh visuals without changing logical selection.
-    /// </param>
-    /// <returns><see langword="true"/> if the selection state changed; otherwise, <see langword="false"/>.</returns>
+    /// <inheritdoc/>
     public override bool UpdateItemSelection(ItemVisual visual, bool? select)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));

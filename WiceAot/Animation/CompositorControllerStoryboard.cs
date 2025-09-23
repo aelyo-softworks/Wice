@@ -14,9 +14,7 @@ public partial class CompositorControllerStoryboard(Window window) : Storyboard(
     /// </summary>
     public virtual int TickDivider { get => _tickDivider; set => _tickDivider = value.Clamp(1); }
 
-    /// <summary>
-    /// Requests the storyboard driver loop to stop and delegates to the base implementation.
-    /// </summary>
+    /// <inheritdoc/>
     public override void Stop()
     {
         _stop = true;
@@ -56,9 +54,7 @@ public partial class CompositorControllerStoryboard(Window window) : Storyboard(
         while (true);
     }
 
-    /// <summary>
-    /// Starts the storyboard by creating a background thread bound to the window's compositor controller.
-    /// </summary>
+    /// <inheritdoc/>
     public override void Start()
     {
         var controller = Window?.CompositorController;

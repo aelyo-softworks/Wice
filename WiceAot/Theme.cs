@@ -1,5 +1,8 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// Represents a customizable theme for UI elements, including fonts, colors, sizes, and other visual properties.
+/// </summary>
 public class Theme
 {
     /// <summary>

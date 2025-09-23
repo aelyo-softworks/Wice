@@ -26,9 +26,6 @@ public class PointerWheelEventArgs(uint pointerId, int x, int y, int delta, Orie
     /// </summary>
     public Orientation Orientation { get; } = orientation;
 
-    /// <summary>
-    /// Returns a string that represents this instance for debugging purposes.
-    /// </summary>
-    /// <returns>A string containing position, normalized delta, and orientation.</returns>
+    /// <inheritdoc/>
     public override string ToString() => base.ToString() + ",DE=" + Delta + ",O=" + Orientation;
 }

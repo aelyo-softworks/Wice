@@ -14,9 +14,6 @@ public class DpiChangedInvalidateReason(D2D_SIZE_U newDpi)
     /// </summary>
     public D2D_SIZE_U NewDpi { get; } = newDpi;
 
-    /// <summary>
-    /// Builds the base diagnostic string and appends the new DPI in brackets.
-    /// </summary>
-    /// <returns>A string suitable for debugging/logging.</returns>
+    /// <inheritdoc/>
     protected override string GetBaseString() => base.GetBaseString() + "[" + NewDpi + "]";
 }

@@ -43,12 +43,7 @@ public partial class Thumb : RoundedRectangle
     /// <param name="e">Event args associated with the completion/cancellation.</param>
     protected virtual void OnDragCompleted(object? sender, EventArgs e) => DragCompleted?.Invoke(sender, e);
 
-    /// <summary>
-    /// Handles mouse button down input. Starts a drag move when the left button is pressed and raises <see cref="DragStarted"/>.
-    /// Always marks the event as handled.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="e">Mouse button event arguments.</param>
+    /// <inheritdoc/>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         ExceptionExtensions.ThrowIfNull(e, nameof(e));
@@ -68,11 +63,7 @@ public partial class Thumb : RoundedRectangle
     /// <param name="e">Optional event args; when null, <see cref="System.EventArgs.Empty"/> is used.</param>
     public void CancelDrag(EventArgs? e = null) => CancelDragMove(e ?? EventArgs.Empty);
 
-    /// <summary>
-    /// Forwards drag updates to <see cref="DragDelta"/> during an active drag gesture.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="e">Drag delta event data.</param>
+    /// <inheritdoc/>
     protected override void OnMouseDrag(object? sender, DragEventArgs e)
     {
         ExceptionExtensions.ThrowIfNull(e, nameof(e));
@@ -80,13 +71,7 @@ public partial class Thumb : RoundedRectangle
         base.OnMouseDrag(sender, e);
     }
 
-    /// <summary>
-    /// Cancels the current drag move operation and raises <see cref="DragCompleted"/>.
-    /// </summary>
-    /// <param name="e">Event args associated with the completion/cancellation.</param>
-    /// <returns>
-    /// The prior <see cref="Wice.DragState"/> if a drag was active; otherwise <see langword="null"/>.
-    /// </returns>
+    /// <inheritdoc/>
     protected override DragState? CancelDragMove(EventArgs e)
     {
         ExceptionExtensions.ThrowIfNull(e, nameof(e));

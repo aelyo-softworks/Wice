@@ -71,10 +71,7 @@ public abstract class RenderVisual : Visual
     public D3DCOLORVALUE? BackgroundColor { get => (D3DCOLORVALUE?)GetPropertyValue(BackgroundColorProperty); set => SetPropertyValue(BackgroundColorProperty, value); }
 
     /// <summary>
-    /// Gets the first non-null background color discovered by walking up the visual tree.
-    /// It first checks <see cref="BackgroundColor"/> on <see cref="RenderVisual"/> ancestors, then attempts to
-    /// extract a color from <see cref="RenderBrush"/> when it is a <see cref="CompositionColorBrush"/> or an
-    /// acrylic effect brush.
+    /// Gets the background color applied to ascendant elements in the rendering hierarchy.
     /// </summary>
     [Category(CategoryRender)]
     public D3DCOLORVALUE? AscendantsBackgroundColor => GetAscendantsBackgroundColor(this);
@@ -100,14 +97,7 @@ public abstract class RenderVisual : Visual
         return GetAscendantsBackgroundColor(visual.Parent);
     }
 
-    /// <summary>
-    /// Overrides property setting to keep <see cref="BackgroundColor"/> in sync when <see cref="RenderBrush"/> is a solid color brush.
-    /// Only <see cref="CompositionColorBrush"/> is accepted. Other brush types must be applied by derived classes explicitly.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set options.</param>
-    /// <returns>true if the stored value changed; otherwise, false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (property == RenderBrushProperty)
@@ -129,12 +119,7 @@ public abstract class RenderVisual : Visual
         return base.SetPropertyValue(property, value, options);
     }
 
-    /// <summary>
-    /// Performs the render pass for this visual:
-    /// - Resets clamping state,
-    /// - Calls <see cref="Visual.Render"/> for composition updates,
-    /// - Invokes <see cref="RenderD2DSurface(SurfaceCreationOptions?, RECT?)"/> to draw D2D content.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void Render()
     {
         _widthMaxed = null;
@@ -222,12 +207,7 @@ public abstract class RenderVisual : Visual
         }
     }
 
-    /// <summary>
-    /// Sets the composition visual size and offset based on <see cref="RelativeRenderRect"/> and <see cref="RenderOffset"/>.
-    /// If the desired size exceeds the maximum supported bitmap size, clamps the size and records a translation to be
-    /// applied on the D2D device context during rendering.
-    /// </summary>
-    /// <param name="visual">The target composition visual.</param>
+    /// <inheritdoc/>
     protected override void SetCompositionVisualSizeAndOffset(ContainerVisual visual)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));

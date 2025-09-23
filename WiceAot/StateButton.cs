@@ -117,14 +117,7 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         _states.Add(state);
     }
 
-    /// <summary>
-    /// Overrides property setting to react to <see cref="ValueProperty"/> changes:
-    /// updates state visuals, raises <see cref="ValueChanged"/>, and propagates selection changes.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set options.</param>
-    /// <returns>true if the stored value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -193,11 +186,7 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         return States[0];
     }
 
-    /// <summary>
-    /// Cycles to the next state (if any), updates the visual, and then invokes base click handling.
-    /// </summary>
-    /// <param name="sender">The event source.</param>
-    /// <param name="e">The event data.</param>
+    /// <inheritdoc/>
     protected override void OnClick(object? sender, EventArgs e)
     {
         var state = GetNextState();
@@ -210,11 +199,7 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         base.OnClick(sender, e);
     }
 
-    /// <summary>
-    /// Subscribes to DPI/theme changes, applies autosizing, and synchronizes the visual with the current <see cref="Value"/>.
-    /// </summary>
-    /// <param name="sender">The event source.</param>
-    /// <param name="e">The event data.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -223,11 +208,7 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
-    /// <summary>
-    /// Unsubscribes from DPI/theme change notifications.
-    /// </summary>
-    /// <param name="sender">The event source.</param>
-    /// <param name="e">The event data.</param>
+    /// <inheritdoc/>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);

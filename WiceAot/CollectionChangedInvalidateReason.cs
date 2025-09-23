@@ -32,12 +32,6 @@ public class CollectionChangedInvalidateReason
     /// </summary>
     public NotifyCollectionChangedAction Action { get; }
 
-    /// <summary>
-    /// Builds the base descriptive string for this reason, including the action and child type.
-    /// </summary>
-    /// <returns>
-    /// A string composed of the base reason plus the action and child type, e.g.:
-    /// "Base[Add](MyChildType)".
-    /// </returns>
+    /// <inheritdoc/>
     protected override string GetBaseString() => base.GetBaseString() + "[" + Action + "](" + ChildType.Name + ")";
 }

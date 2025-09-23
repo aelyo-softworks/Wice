@@ -60,9 +60,7 @@ public abstract class PropertyAnimation : Animation
     /// <inheritdoc />
     public override string ToString() => base.ToString() + " TargetProperty: " + TargetProperty + " Duration: " + Duration + " State: " + State;
 
-    /// <summary>
-    /// Advances the animation by one tick.
-    /// </summary>
+    /// <inheritdoc/>
     protected internal override void OnTick()
     {
         var target = Target;

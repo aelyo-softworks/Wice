@@ -33,15 +33,7 @@ public partial class Vector3PropertyAnimation(
     /// </summary>
     public EasingMode EasingMode { get; } = easingMode;
 
-    /// <summary>
-    /// Computes the next value to apply to the target property for the current tick.
-    /// </summary>
-    /// <param name="value">When this method returns with <see cref="AnimationResult.Set"/> or <see cref="AnimationResult.Stop"/>,
-    /// contains the interpolated <c>Vector3</c> value.</param>
-    /// <returns>
-    /// - <see cref="AnimationResult.Stop"/> to set the final value and stop when the duration has elapsed or the start/end are equal.<br/>
-    /// - <see cref="AnimationResult.Set"/> to set the interpolated value and continue running.
-    /// </returns>
+    /// <inheritdoc/>
     protected override AnimationResult TryGetValue(out object value)
     {
         // special "set" case

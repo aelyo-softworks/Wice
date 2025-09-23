@@ -13,24 +13,13 @@ public class WindowSynchronizationContext : SynchronizationContext
     /// </summary>
     public int ManagedThreadId { get; } = Environment.CurrentManagedThreadId;
 
-    /// <summary>
-    /// Creates a shallow copy of this synchronization context.
-    /// </summary>
-    /// <returns>A new <see cref="WindowSynchronizationContext"/> instance.</returns>
+    /// <inheritdoc/>
     public override SynchronizationContext CreateCopy() => new WindowSynchronizationContext();
 
-    /// <summary>
-    /// Dispatches a synchronous operation to the window's main thread.
-    /// </summary>
-    /// <param name="d">The delegate to invoke.</param>
-    /// <param name="state">An optional state object passed to <paramref name="d"/>.</param>
+    /// <inheritdoc/>
     public override void Send(SendOrPostCallback d, object? state) => GetWindow()?.RunTaskOnMainThread(() => { d(state); });
 
-    /// <summary>
-    /// Posts an asynchronous operation to the window's main thread.
-    /// </summary>
-    /// <param name="d">The delegate to invoke.</param>
-    /// <param name="state">An optional state object passed to <paramref name="d"/>.</param>
+    /// <inheritdoc/>
     public override void Post(SendOrPostCallback d, object? state) => GetWindow()?.RunTaskOnMainThread(() => { d(state); }, true);
 
     /// <summary>

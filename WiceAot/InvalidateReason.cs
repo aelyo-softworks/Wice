@@ -48,7 +48,7 @@ public class InvalidateReason
         return typeName + "(" + Type.Name + ")";
     }
 
-    /// <inheritdoc>
+    /// <inheritdoc/>
     public override string ToString()
     {
         var str = GetBaseString();

@@ -44,12 +44,7 @@ public abstract class HwndVisual : Visual
     /// </returns>
     protected abstract HWND CreateWindow(HWND parent);
 
-    /// <summary>
-    /// Called when this visual is attached to the composition (the owning <see cref="Window"/> exists).
-    /// Subscribes to window messages and creates the child <see cref="HWND"/> via <see cref="CreateWindow(HWND)"/>.
-    /// </summary>
-    /// <param name="sender">The event source.</param>
-    /// <param name="e">Event data.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -57,12 +52,7 @@ public abstract class HwndVisual : Visual
         Handle = CreateWindow(Window.Handle);
     }
 
-    /// <summary>
-    /// Called when this visual is detaching from the composition.
-    /// Unsubscribes from window messages, destroys the child <see cref="HWND"/>, and clears <see cref="Handle"/>.
-    /// </summary>
-    /// <param name="sender">The event source.</param>
-    /// <param name="e">Event data.</param>
+    /// <inheritdoc/>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);

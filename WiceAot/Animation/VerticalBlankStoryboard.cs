@@ -20,18 +20,14 @@ public partial class VerticalBlankStoryboard(Window window) : Storyboard(window)
     /// <param name="e">Event arguments.</param>
     private void OnTickerTick(object? sender, EventArgs e) => OnTick();
 
-    /// <summary>
-    /// Stops the storyboard and detaches from the ticker to prevent further callbacks.
-    /// </summary>
+    /// <inheritdoc/>
     public override void Stop()
     {
         _ticker.Tick -= OnTickerTick;
         base.Stop();
     }
 
-    /// <summary>
-    /// Starts the storyboard by subscribing to the ticker and ensuring it is running.
-    /// </summary>
+    /// <inheritdoc/>
     public override void Start()
     {
         base.Start();

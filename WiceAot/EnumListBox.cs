@@ -98,9 +98,7 @@ public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
     /// <inheritdoc cref="IBindList.NeedBind"/>
     bool IBindList.NeedBind { get; set; }
 
-    /// <summary>
-    /// Updates <see cref="Value"/> from the selected item when it is an <see cref="EnumBitValue"/>.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnSelectionChanged()
     {
         base.OnSelectionChanged();
@@ -118,16 +116,7 @@ public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
     /// <param name="e">Event args carrying the new value.</param>
     protected virtual void OnValueChanged(object sender, ValueEventArgs e) => ValueChanged?.Invoke(sender, e);
 
-    /// <summary>
-    /// Intercepts property sets to:
-    /// - Raise <see cref="ValueChanged"/> when <see cref="ValueProperty"/> changes.
-    /// - Rebuild the <see cref="ListBox.DataSource"/> from <see cref="Value"/> when a new enum type was detected.
-    /// Delegates all other properties to the base implementation.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set options.</param>
-    /// <returns>true if the stored value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))

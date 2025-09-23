@@ -547,8 +547,8 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     void IDataSourceVisual.BindDataSource() => BindDataSource();
 
     /// <summary>
-    /// Rebuilds item visuals from <see cref="DataSource"/> using <see cref="DataBinder"/> and raises <see cref="DataBound"/>.
-    /// Preserves selection by comparing item <see cref="ItemVisual.Data"/> references where possible.
+    /// Binds the data source to the visual elements of the control, creating and configuring item visuals based on the
+    /// data source and binding logic.
     /// </summary>
     protected virtual void BindDataSource()
     {
@@ -637,8 +637,9 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     }
 
     /// <summary>
-    /// Default binder: if <see cref="DataBindContext.DataVisual"/> is a <see cref="TextBox"/>, sets <c>Text</c> to <see cref="DataBindContext.GetDisplayName()"/>.
+    /// Binds the data item visual representation to the specified data binding context.
     /// </summary>
+    /// <param name="context">The data binding context that provides the visual element and associated data. Cannot be <see langword="null"/>.</param>
     protected virtual void BindDataItemVisual(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
@@ -736,10 +737,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// </summary>
     private int GetFocusedIndex() => Children.IndexOf(c => c.IsFocusedOrAnyChildrenFocused);
 
-    /// <summary>
-    /// Handles keyboard navigation: Up/Down/Home/End moves focus (with wrap-around), Space toggles focused item.
-    /// In single-select mode, focusing an item selects it.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (!IsEnabled)

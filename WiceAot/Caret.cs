@@ -99,15 +99,7 @@ public partial class Caret : Border, IDisposable
         set { Canvas.SetLeft(this, value.x); Canvas.SetTop(this, value.y); DoWhenMeasured(ArrangeWithParent); }
     }
 
-    /// <summary>
-    /// Prevents bubbling invalidate modes to the parent once measured to avoid costly relayouts.
-    /// Caret manages its own arrange based on explicit coordinates.
-    /// </summary>
-    /// <param name="mode">The child invalidate mode.</param>
-    /// <param name="defaultParentModes">Default parent modes.</param>
-    /// <param name="reason">Invalidate reason.</param>
-    /// <returns><see cref="VisualPropertyInvalidateModes.None"/> once measured; otherwise the default modes.</returns>
-    // this would be too costly, we manage our own life
+    /// <inheritdoc/>
     protected internal override VisualPropertyInvalidateModes GetParentInvalidateModes(InvalidateMode mode, VisualPropertyInvalidateModes defaultParentModes, InvalidateReason reason)
     {
         if (!LastMeasureSize.HasValue)
@@ -160,14 +152,7 @@ public partial class Caret : Border, IDisposable
         StartBlinking();
     }
 
-    /// <summary>
-    /// Intercepts property setting to react to <see cref="IsShown"/> transitions
-    /// by starting/stopping blinking and managing visibility.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Set options.</param>
-    /// <returns>true if the stored value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -191,11 +176,7 @@ public partial class Caret : Border, IDisposable
         return true;
     }
 
-    /// <summary>
-    /// Creates the blink timer when attached to a <see cref="Window"/> parent. The timer is not started here.
-    /// </summary>
-    /// <param name="sender">Sender.</param>
-    /// <param name="e">Args.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         if (Parent is not Wice.Window)
@@ -206,11 +187,7 @@ public partial class Caret : Border, IDisposable
         base.OnAttachedToParent(sender, e);
     }
 
-    /// <summary>
-    /// Disposes the blink timer when detaching from the parent.
-    /// </summary>
-    /// <param name="sender">Sender.</param>
-    /// <param name="e">Args.</param>
+    /// <inheritdoc/>
     protected override void OnDetachingFromParent(object? sender, EventArgs e)
     {
         Interlocked.Exchange(ref _blinkTimer, null)?.SafeDispose();

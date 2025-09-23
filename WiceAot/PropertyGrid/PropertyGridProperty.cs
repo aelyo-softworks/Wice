@@ -267,18 +267,10 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
         set => Value = value;
     }
 
-    /// <summary>
-    /// Returns a simple "Name=Value" string useful for diagnostics.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => Name + "=" + Value;
 
-    /// <summary>
-    /// Intercepts property changes to raise dependent notifications and to apply live synchronization behavior.
-    /// </summary>
-    /// <param name="property">The property descriptor being changed.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set behavior flags.</param>
-    /// <returns><see langword="true"/> if the stored value changed; otherwise <see langword="false"/>.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -349,11 +341,7 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
         Info.SetValue(Source.Value, cv);
     }
 
-    /// <summary>
-    /// Raises standard change notifications and keeps validity flags in sync.
-    /// </summary>
-    /// <param name="sender">The change sender.</param>
-    /// <param name="e">Change arguments.</param>
+    /// <inheritdoc/>
     protected override void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(sender, e);
@@ -362,20 +350,10 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
         base.OnPropertyChanged(sender, new PropertyChangedEventArgs(nameof(ErrorText)));
     }
 
-    /// <summary>
-    /// Always returns <see langword="false"/> to force error-diff notifications on value changes.
-    /// </summary>
-    /// <param name="errors1">First error sequence.</param>
-    /// <param name="errors2">Second error sequence.</param>
-    /// <returns>Always <see langword="false"/>.</returns>
+    /// <inheritdoc/>
     protected override bool AreErrorsEqual(IEnumerable? errors1, IEnumerable? errors2) => false;
 
-    /// <summary>
-    /// Yields validation errors for <see cref="Value"/>. If the selected object implements
-    /// <see cref="IPropertyGridPropertyValidator{T}"/>, delegates to it, then appends base errors.
-    /// </summary>
-    /// <param name="propertyName">The property name being queried; <see langword="null"/> for entity-level errors.</param>
-    /// <returns>An enumeration of errors (possibly empty).</returns>
+    /// <inheritdoc/>
     protected override IEnumerable GetErrors(string? propertyName)
     {
         if (propertyName == null || propertyName == nameof(Value))

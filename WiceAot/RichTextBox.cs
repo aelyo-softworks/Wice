@@ -96,11 +96,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         /// </summary>
         public RichTextBox RichTextBox { get; }
 
-        /// <summary>
-        /// Gets the extent of the client area in HiMetric units as required by the text host.
-        /// </summary>
-        /// <param name="lpExtent">Pointer to a <c>SIZE</c> structure to receive the extent.</param>
-        /// <returns><see cref="Constants.S_OK"/> on success; <see cref="Constants.E_INVALIDARG"/> on invalid pointer.</returns>
+        /// <inheritdoc/>
         public override unsafe HRESULT TxGetExtent(nint lpExtent)
         {
             if (lpExtent == 0)
@@ -115,18 +111,10 @@ public partial class RichTextBox : RenderVisual, IDisposable
             return Constants.S_OK;
         }
 
-        /// <summary>
-        /// Gets a system color by index, avoiding extra debug tracing.
-        /// </summary>
-        /// <param name="nIndex">The system color index.</param>
-        /// <returns>The ARGB color value.</returns>
+        /// <inheritdoc/>
         public override uint TxGetSysColor(SYS_COLOR_INDEX nIndex) => Functions.GetSysColor(nIndex);
 
-        /// <summary>
-        /// Converts a client point (relative to the host) to screen coordinates.
-        /// </summary>
-        /// <param name="lppt">Pointer to a <c>POINT</c> to translate.</param>
-        /// <returns>true on success; otherwise false.</returns>
+        /// <inheritdoc/>
         public unsafe override bool TxClientToScreen(nint lppt)
         {
             if (lppt == 0 || RichTextBox == null)
@@ -147,11 +135,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
             return true;
         }
 
-        /// <summary>
-        /// Converts a screen point to the client coordinates of the host.
-        /// </summary>
-        /// <param name="lppt">Pointer to a <c>POINT</c> to translate.</param>
-        /// <returns>true on success; otherwise false.</returns>
+        /// <inheritdoc/>
         public unsafe override bool TxScreenToClient(nint lppt)
         {
             if (lppt == 0 || RichTextBox == null)
@@ -168,12 +152,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
             return true;
         }
 
-        /// <summary>
-        /// Provides window style information to the text host (delegated from the owner window).
-        /// </summary>
-        /// <param name="pdwStyle">Pointer to receive <see cref="WINDOW_STYLE"/>.</param>
-        /// <param name="pdwExStyle">Pointer to receive <see cref="WINDOW_EX_STYLE"/>.</param>
-        /// <returns>S_OK on success; E_FAIL when the owning window is not available.</returns>
+        /// <inheritdoc/>
         public unsafe override HRESULT TxGetWindowStyles(nint pdwStyle, nint pdwExStyle)
         {
             var window = RichTextBox?.Window;
@@ -192,20 +171,13 @@ public partial class RichTextBox : RenderVisual, IDisposable
             return WiceCommons.S_OK;
         }
 
-        /// <summary>
-        /// Notifies the owner to update its view (invalidate) when the host changes.
-        /// </summary>
-        /// <param name="fUpdate">Indicates whether an update is requested.</param>
+        /// <inheritdoc/>
         public override void TxViewChange(BOOL fUpdate)
         {
             RichTextBox?.Invalidate(VisualPropertyInvalidateModes.Render);
         }
 
-        /// <summary>
-        /// Requests invalidation for a sub-rectangle; delegated to the owner with render invalidation.
-        /// </summary>
-        /// <param name="prc">Rectangle to invalidate (unused; full render invalidated).</param>
-        /// <param name="fMode">Mode flags (unused).</param>
+        /// <inheritdoc/>
         public override unsafe void TxInvalidateRect(nint prc, BOOL fMode)
         {
             RichTextBox?.Invalidate(VisualPropertyInvalidateModes.Render);
@@ -556,9 +528,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         base.Invalidate(modes);
     }
 
-    /// <summary>
-    /// Called when the visual is attached to the composition. Subscribes to window DPI events and initializes zoom.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -566,9 +536,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
-    /// <summary>
-    /// Called when the visual is detaching from composition. Unsubscribes from window DPI events.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);
@@ -586,15 +554,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         ZoomFactor = Window!.Dpi / (float)WiceCommons.USER_DEFAULT_SCREEN_DPI;
     }
 
-    /// <summary>
-    /// Measures desired size by:
-    /// - Removing padding from the incoming constraint,
-    /// - Clamping by <see cref="MaxConstraintSize"/>,
-    /// - Dividing by <see cref="ZoomFactor"/> before asking the host,
-    /// - Adding padding and re-applying <see cref="ZoomFactor"/> to the returned size.
-    /// </summary>
-    /// <param name="constraint">The available size.</param>
-    /// <returns>The desired size.</returns>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         var host = _host;
@@ -713,10 +673,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         return rc.ToRECT();
     }
 
-    /// <summary>
-    /// Activates the host with the arranged client rectangle derived from <see cref="GetRect"/>.
-    /// </summary>
-    /// <param name="finalRect">The final arranged rectangle.</param>
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         base.ArrangeCore(finalRect);
@@ -728,11 +685,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         host.Activate(rc);
     }
 
-    /// <summary>
-    /// Renders the host into the provided device context, adjusting for relative render rect and
-    /// clamping to any viewer parent visible area.
-    /// </summary>
-    /// <param name="context">The render context.</param>
+    /// <inheritdoc/>
     protected internal override void RenderCore(RenderContext context)
     {
         base.RenderCore(context);
@@ -768,13 +721,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
 
     private IViewerParent? GetViewerParent() => Parent is Viewer viewer ? viewer.Parent as ScrollViewer : null;
 
-    /// <summary>
-    /// Bridges property changes from the visual to the host (e.g., <see cref="BackgroundColor"/> to host BackColor).
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Set options.</param>
-    /// <returns>true when the value was accepted; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))

@@ -115,14 +115,10 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
     object IValueable.Value => Value;
     event EventHandler<ValueEventArgs> IValueable.ValueChanged { add { throw new NotSupportedException(); } remove { throw new NotSupportedException(); } }
 
-    /// <summary>
-    /// Returns a hash code based on <see cref="Value"/>.
-    /// </summary>
+    /// <inheritdoc/>
     public override int GetHashCode() => Value.GetHashCode();
 
-    /// <summary>
-    /// Determines whether the specified object is equal to the current object.
-    /// </summary>
+    /// <inheritdoc/>
     public override bool Equals(object? obj) => Equals(obj as EnumBitValue);
 
     /// <summary>
@@ -148,11 +144,6 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
     /// <returns>A display-friendly name.</returns>
     public string GetName(object context) => Conversions.Decamelize(DisplayName ?? Name);
 
-    /// <summary>
-    /// Returns a string that represents the current object.
-    /// </summary>
-    /// <returns>
-    /// A string containing the <see cref="Value"/>, the display name, and the selection state.
-    /// </returns>
+    /// <inheritdoc/>
     public override string ToString() => Value + " '" + DisplayName ?? Name + "' " + (IsSelected ? "On" : "Off");
 }

@@ -66,11 +66,7 @@ public partial class CheckBox : StateButton
         /// </summary>
         public Path Path { get; } = new();
 
-        /// <summary>
-        /// Updates the check geometry to fit the current arranged size.
-        /// </summary>
-        /// <param name="sender">Event source.</param>
-        /// <param name="e">Event args.</param>
+        /// <inheritdoc/>
         protected override void OnArranged(object? sender, EventArgs e)
         {
             base.OnArranged(sender, e);
@@ -79,11 +75,7 @@ public partial class CheckBox : StateButton
             Path.GeometrySource2D = geoSource;
         }
 
-        /// <summary>
-        /// Applies initial theme brushes and subscribes to Theme/DPI notifications.
-        /// </summary>
-        /// <param name="sender">Event source.</param>
-        /// <param name="e">Event args.</param>
+        /// <inheritdoc/>
         protected override void OnAttachedToComposition(object? sender, EventArgs e)
         {
             base.OnAttachedToComposition(sender, e);
@@ -94,11 +86,7 @@ public partial class CheckBox : StateButton
             Window!.ThemeDpiEvent += OnThemeDpiEvent;
         }
 
-        /// <summary>
-        /// Unsubscribes from Theme/DPI notifications.
-        /// </summary>
-        /// <param name="sender">Event source.</param>
-        /// <param name="e">Event args.</param>
+        /// <inheritdoc/>
         protected override void OnDetachingFromComposition(object? sender, EventArgs e)
         {
             base.OnDetachingFromComposition(sender, e);
@@ -132,11 +120,7 @@ public partial class CheckBox : StateButton
 #endif
         }
 
-        /// <summary>
-        /// Applies initial theme stroke brush and subscribes to Theme/DPI notifications.
-        /// </summary>
-        /// <param name="sender">Event source.</param>
-        /// <param name="e">Event args.</param>
+        /// <inheritdoc/>
         protected override void OnAttachedToComposition(object? sender, EventArgs e)
         {
             base.OnAttachedToComposition(sender, e);
@@ -146,11 +130,7 @@ public partial class CheckBox : StateButton
             Window!.ThemeDpiEvent += OnThemeDpiEvent;
         }
 
-        /// <summary>
-        /// Unsubscribes from Theme/DPI notifications.
-        /// </summary>
-        /// <param name="sender">Event source.</param>
-        /// <param name="e">Event args.</param>
+        /// <inheritdoc/>
         protected override void OnDetachingFromComposition(object? sender, EventArgs e)
         {
             base.OnDetachingFromComposition(sender, e);

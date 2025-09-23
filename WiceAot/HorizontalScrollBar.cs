@@ -22,41 +22,22 @@ public partial class HorizontalScrollBar : ScrollBar
         Thumb.Height = Height;
     }
 
-    /// <summary>
-    /// Creates the left-pointing small decrease arrow button.
-    /// </summary>
-    /// <returns>A <see cref="ScrollBarButton"/> configured for <see cref="DockType.Left"/>.</returns>
+    /// <inheritdoc/>
     protected override ScrollBarButton CreateSmallDecrease() => new(DockType.Left);
 
-    /// <summary>
-    /// Creates the large left (page-left) clickable segment.
-    /// </summary>
-    /// <returns>A <see cref="ButtonBase"/> representing the large decrease area.</returns>
+    /// <inheritdoc/>
     protected override ButtonBase CreateLargeDecrease() => new();
 
-    /// <summary>
-    /// Creates the right-pointing small increase arrow button.
-    /// </summary>
-    /// <returns>A <see cref="ScrollBarButton"/> configured for <see cref="DockType.Right"/>.</returns>
+    /// <inheritdoc/>
     protected override ScrollBarButton CreateSmallIncrease() => new(DockType.Right);
 
-    /// <summary>
-    /// Creates the large right (page-right) clickable segment.
-    /// </summary>
-    /// <returns>A <see cref="ButtonBase"/> representing the large increase area.</returns>
+    /// <inheritdoc/>
     protected override ButtonBase CreateLargeIncrease() => new();
 
-    /// <summary>
-    /// Creates the draggable thumb for the horizontal track.
-    /// </summary>
-    /// <returns>A new <see cref="Thumb"/> instance.</returns>
+    /// <inheritdoc/>
     protected override Thumb CreateThumb() => new();
 
-    /// <summary>
-    /// Applies visual adjustments after rendering is prepared.
-    /// </summary>
-    /// <param name="sender">Render source.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnRendered(object? sender, EventArgs e)
     {
         base.OnRendered(sender, e);
@@ -77,11 +58,7 @@ public partial class HorizontalScrollBar : ScrollBar
         }
     }
 
-    /// <summary>
-    /// Subscribes to theme/DPI notifications and applies initial DPI-dependent sizing.
-    /// </summary>
-    /// <param name="sender">Attach source.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -89,11 +66,7 @@ public partial class HorizontalScrollBar : ScrollBar
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
-    /// <summary>
-    /// Unsubscribes from theme/DPI notifications.
-    /// </summary>
-    /// <param name="sender">Detach source.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);

@@ -31,14 +31,10 @@ public partial class FastTextBox : TextBox
         base.IsEditable = false;
     }
 
-    /// <summary>
-    /// Indicates that the composition transform is maxed when we are in fallback mode (base <see cref="TextBox"/> handles layout).
-    /// </summary>
+    /// <inheritdoc/>
     protected override bool TransformMaxed => HasFallback;
 
-    /// <summary>
-    /// Gets the text content currently used by the DirectWrite layout for rendering (viewport lines).
-    /// </summary>
+    /// <inheritdoc/>
     protected override string RenderedText => _renderedText ?? string.Empty;
 
     /// <summary>
@@ -107,13 +103,11 @@ public partial class FastTextBox : TextBox
         }
     }
 
-    /// <summary>
-    /// Gets or sets the control text. Setting triggers parsing and measurement invalidation.
-    /// </summary>
+    /// <inheritdoc/>
     [Category(CategoryLayout)]
     public override string Text { get => _container.Text; set => SetText(value); }
 
-    /// <inheritdoc>
+    /// <inheritdoc/>
     [Category(CategoryBehavior)]
     public override bool IsEditable
     {
@@ -127,7 +121,7 @@ public partial class FastTextBox : TextBox
         }
     }
 
-    /// <inheritdoc>
+    /// <inheritdoc/>
     [Category(CategoryBehavior)]
     public override bool IsEnabled
     {
@@ -205,11 +199,7 @@ public partial class FastTextBox : TextBox
             throw new ArgumentOutOfRangeException(nameof(DeferredParsingLineCountThreshold));
     }
 
-    /// <summary>
-    /// Measures desired size using parsed lines and viewport metrics or base fallback.
-    /// </summary>
-    /// <param name="constraint">Measure constraint.</param>
-    /// <returns>Desired size.</returns>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         ValidateProperties();
@@ -221,10 +211,7 @@ public partial class FastTextBox : TextBox
         return size;
     }
 
-    /// <summary>
-    /// Updates the current top line based on the arranged rect and invalidates the cached layout when needed.
-    /// </summary>
-    /// <param name="finalRect">Final arranged rect.</param>
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         if (!HasFallback)
@@ -241,11 +228,7 @@ public partial class FastTextBox : TextBox
         base.ArrangeCore(finalRect);
     }
 
-    /// <summary>
-    /// Ensures a valid layout exists (when using the fast path). Throws if missing and <paramref name="throwIfNull"/> is true.
-    /// </summary>
-    /// <param name="throwIfNull">True to throw when layout is null/invalid.</param>
-    /// <returns>The current layout or null.</returns>
+    /// <inheritdoc/>
     protected override IComObject<IDWriteTextLayout>? CheckLayout(bool throwIfNull)
     {
         var layout = _layout;
@@ -255,12 +238,7 @@ public partial class FastTextBox : TextBox
         return layout;
     }
 
-    /// <summary>
-    /// Builds or retrieves a DirectWrite layout for the current viewport range.
-    /// </summary>
-    /// <param name="maxWidth">Max layout width.</param>
-    /// <param name="maxHeight">Max layout height (text extent); will be clamped to the visible window height.</param>
-    /// <returns>The layout for the current viewport, or base layout when in fallback.</returns>
+    /// <inheritdoc/>
     protected override IComObject<IDWriteTextLayout>? GetLayout(float maxWidth, float maxHeight)
     {
         if (HasFallback)
@@ -309,10 +287,7 @@ public partial class FastTextBox : TextBox
         Invalidate(VisualPropertyInvalidateModes.Measure);
     }
 
-    /// <summary>
-    /// Renders the visual element within the specified rendering context.
-    /// </summary>
-    /// <param name="context">The rendering context that provides the necessary information and resources for rendering.</param>
+    /// <inheritdoc/>
     protected internal override void RenderCore(RenderContext context)
     {
         var ready = IsReady;
@@ -588,9 +563,7 @@ public partial class FastTextBox : TextBox
         /// </summary>
         public int Length { get; } = length;
 
-        /// <summary>
-        /// Returns a diagnostic string containing position and length.
-        /// </summary>
+        /// <inheritdoc/>
         public override string ToString() => Position + " (" + Length + ")";
     }
 }

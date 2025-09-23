@@ -81,10 +81,7 @@ public class AccessKey
         return true;
     }
 
-    /// <summary>
-    /// Returns a human-readable string that describes this access key.
-    /// </summary>
-    /// <returns>A string representation of the access key and its modifiers.</returns>
+    /// <inheritdoc/>
     public override string ToString()
     {
         var str = Key.ToString();

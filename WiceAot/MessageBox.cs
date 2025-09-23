@@ -31,11 +31,7 @@ public partial class MessageBox : DialogBox
         }
     }
 
-    /// <summary>
-    /// Applies theme/DPI updates to the message text padding.
-    /// </summary>
-    /// <param name="sender">The event source (typically the owning <see cref="Window"/>).</param>
-    /// <param name="e">DPI event data.</param>
+    /// <inheritdoc/>
     protected override void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         base.OnThemeDpiEvent(sender, e);
@@ -47,17 +43,13 @@ public partial class MessageBox : DialogBox
     }
 
     /// <summary>
-    /// Shows a modal message dialog attached to the specified <paramref name="window"/>.
+    /// Displays a message box with the specified text and optional title, attached to the given window.
     /// </summary>
-    /// <param name="window">The owning window. Must not be null.</param>
-    /// <param name="text">The message text to display. Must not be null.</param>
-    /// <param name="title">
-    /// Optional dialog title. When not provided, the window title is used via <see cref="Application.GetTitle(nint)"/>.
-    /// </param>
-    /// <param name="onClose">
-    /// Optional callback invoked after the dialog is removed from its parent. Receives the <see cref="MessageBox"/> instance
-    /// whose <see cref="Result"/> reflects the outcome at close time.
-    /// </param>
+    /// <param name="window">The parent <see cref="Window"/> to which the message box will be attached. Cannot be <see langword="null"/>.</param>
+    /// <param name="text">The message text to display in the message box. Cannot be <see langword="null"/>.</param>
+    /// <param name="title">The optional title of the message box. If <see langword="null"/>, the title is derived from the parent window.</param>
+    /// <param name="onClose">An optional callback to execute when the message box is closed. The callback receives the <see
+    /// cref="MessageBox"/> instance as a parameter.</param>
     public static void Show(Window window, string text, string? title = null, Action<MessageBox>? onClose = null)
     {
         ExceptionExtensions.ThrowIfNull(window, nameof(window));

@@ -170,8 +170,6 @@ public class EffectProperty : VisualProperty
     /// </summary>
     public GRAPHICS_EFFECT_PROPERTY_MAPPING Mapping { get => _mapping; set { if (IsFrozen) throw new InvalidOperationException(); _mapping = value; } }
 
-    /// <summary>
-    /// Returns a string representation including the invalidation modes inherited from <see cref="VisualProperty"/>.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => base.ToString() + " im: " + InvalidateModes;
 }

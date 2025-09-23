@@ -58,9 +58,7 @@ public partial class TimerStoryboard(Window window) : Storyboard(window), IDispo
         _timer = new Timer((state) => OnTick(), null, dueTime.Value, period);
     }
 
-    /// <summary>
-    /// Stops the storyboard and disposes the underlying timer if active.
-    /// </summary>
+    /// <inheritdoc/>
     public override void Stop()
     {
         DisposeTimer();

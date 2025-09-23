@@ -55,11 +55,7 @@ public partial class TitleBarButton : ButtonBase
     /// <returns>A new <see cref="Path"/> instance.</returns>
     protected virtual Path CreatePath() => new();
 
-    /// <summary>
-    /// Measures the button and sizes the icon <see cref="Path"/> to a square based on caption height.
-    /// </summary>
-    /// <param name="constraint">Available size including margin.</param>
-    /// <returns>The desired size excluding margin.</returns>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         var window = Window;
@@ -76,9 +72,7 @@ public partial class TitleBarButton : ButtonBase
         return size;
     }
 
-    /// <summary>
-    /// Applies the appropriate geometry to the icon path based on the arranged size and <see cref="ButtonType"/>.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnArranged(object? sender, EventArgs e)
     {
         base.OnArranged(sender, e);
@@ -92,9 +86,7 @@ public partial class TitleBarButton : ButtonBase
         _lastGeometrySource2D = geoSource;
     }
 
-    /// <summary>
-    /// Sets stroke thickness and a default black stroke brush for the icon path when composition is available.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);

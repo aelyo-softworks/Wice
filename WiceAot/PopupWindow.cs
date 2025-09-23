@@ -124,12 +124,7 @@ public partial class PopupWindow : Window
         ExtendedStyle |= WINDOW_EX_STYLE.WS_EX_NOACTIVATE | WINDOW_EX_STYLE.WS_EX_NOREDIRECTIONBITMAP;
     }
 
-    /// <summary>
-    /// Overrides mouse button handling to optionally forward to the placement target's window when
-    /// <see cref="ClickThrough"/> is enabled. Coordinates are translated from this window to the target window.
-    /// </summary>
-    /// <param name="msg">The message identifier.</param>
-    /// <param name="e">Mouse button event data.</param>
+    /// <inheritdoc/>
     internal override void OnMouseButtonEvent(uint msg, MouseButtonEventArgs e)
     {
         base.OnMouseButtonEvent(msg, e);
@@ -146,12 +141,7 @@ public partial class PopupWindow : Window
         }
     }
 
-    /// <summary>
-    /// Shows the popup, mapping <see cref="SHOW_WINDOW_CMD.SW_SHOW"/> to
-    /// <see cref="SHOW_WINDOW_CMD.SW_SHOWNOACTIVATE"/> when the window has <see cref="WINDOW_EX_STYLE.WS_EX_NOACTIVATE"/>.
-    /// </summary>
-    /// <param name="command">The show command to use (default SW_SHOW).</param>
-    /// <returns>true if the window became visible; otherwise false.</returns>
+    /// <inheritdoc/>
     public override bool Show(SHOW_WINDOW_CMD command = SHOW_WINDOW_CMD.SW_SHOW)
     {
         if (ExtendedStyle.HasFlag(WINDOW_EX_STYLE.WS_EX_NOACTIVATE) && command == SHOW_WINDOW_CMD.SW_SHOW)
@@ -161,14 +151,7 @@ public partial class PopupWindow : Window
         return base.Show(command);
     }
 
-    /// <summary>
-    /// Extends base property setting to manage follow/unfollow wiring when <see cref="FollowPlacementTarget"/>
-    /// or <see cref="PlacementTarget"/> changes. Unsubscribes before change and conditionally subscribes after.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set behavior flags.</param>
-    /// <returns>true if the value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (property == FollowPlacementTargetProperty || property == PlacementTargetProperty)
@@ -253,12 +236,7 @@ public partial class PopupWindow : Window
         return parameters;
     }
 
-    /// <summary>
-    /// After rendering, computes the desired position using <see cref="Place(PlacementParameters)"/> and moves the native
-    /// window if a position is available.
-    /// </summary>
-    /// <param name="sender">The sender.</param>
-    /// <param name="e">Event arguments.</param>
+    /// <inheritdoc/>
     protected override void OnRendered(object? sender, EventArgs e)
     {
         base.OnRendered(sender, e);

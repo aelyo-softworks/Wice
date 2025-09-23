@@ -13,16 +13,10 @@ public partial class GridRow : GridDimension
     {
     }
 
-    /// <summary>
-    /// Gets the zero-based index of this row within its <see cref="Grid"/> parent,
-    /// or -1 when the row is not attached to a grid.
-    /// </summary>
+    /// <inheritdoc/>
     public override int Index => Parent != null ? Parent.Rows.IndexOf(this) : -1;
 
-    /// <summary>
-    /// Gets the next row in the parent grid, or <see langword="null"/> when this is the last row
-    /// or when the row is not attached to a grid.
-    /// </summary>
+    /// <inheritdoc/>
     [Browsable(false)]
     public override GridDimension? Next
     {
@@ -40,10 +34,7 @@ public partial class GridRow : GridDimension
         }
     }
 
-    /// <summary>
-    /// Gets the previous row in the parent grid, or <see langword="null"/> when this is the first row
-    /// or when the row is not attached to a grid.
-    /// </summary>
+    /// <inheritdoc/>
     [Browsable(false)]
     public override GridDimension? Previous
     {
@@ -84,9 +75,6 @@ public partial class GridRow : GridDimension
         }
     }
 
-    /// <summary>
-    /// Returns a string representation prefixed with <c>"R:"</c>, followed by the base dimension string.
-    /// </summary>
-    /// <returns>A human-readable string for diagnostics.</returns>
+    /// <inheritdoc/>
     public override string ToString() => "R:" + base.ToString();
 }

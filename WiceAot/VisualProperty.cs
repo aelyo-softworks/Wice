@@ -181,8 +181,6 @@ public class VisualProperty : BaseObjectProperty
         return InvalidateMode.None;
     }
 
-    /// <summary>
-    /// Returns a string representation including the invalidation modes.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => base.ToString() + " im: " + InvalidateModes;
 }

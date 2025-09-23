@@ -21,10 +21,7 @@ public class FileStreamer : IReadStreamer
     /// </summary>
     public string FilePath { get; }
 
-    /// <summary>
-    /// Returns the configured file path.
-    /// </summary>
-    /// <returns>The value of <see cref="FilePath"/>.</returns>
+    /// <inheritdoc/>
     public override string ToString() => FilePath;
 
     /// <summary>

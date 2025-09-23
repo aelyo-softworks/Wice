@@ -286,11 +286,7 @@ public partial class DialogBox : Dialog
     /// <summary>Adds a default Close button (Enter/Escape) that closes the dialog with <c>false</c>.</summary>
     public virtual Button AddCloseButton() => AddCommandButton(MESSAGEBOX_RESULT.IDCLOSE, false, AccessKey.Enter, AccessKey.Escape);
 
-    /// <summary>
-    /// Subscribes to theme/DPI changes and initializes DPI-dependent properties after attaching to composition.
-    /// </summary>
-    /// <param name="sender">Event source.</param>
-    /// <param name="e">Event data.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -298,11 +294,7 @@ public partial class DialogBox : Dialog
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
-    /// <summary>
-    /// Unsubscribes from theme/DPI changes when detaching from composition.
-    /// </summary>
-    /// <param name="sender">Event source.</param>
-    /// <param name="e">Event data.</param>
+    /// <inheritdoc/>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);

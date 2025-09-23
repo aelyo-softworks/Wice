@@ -76,9 +76,7 @@ public partial class TabPage : BaseObject
     [Browsable(false)]
     public SymbolHeader Header { get; }
 
-    /// <summary>
-    /// Returns a string useful for diagnostics that includes the index and header text.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => $"{Index} '{Header?.Text}'";
 
     /// <summary>

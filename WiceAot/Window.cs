@@ -12,8 +12,12 @@ public partial class Window : Canvas, ITitleBarParent
     /// </summary>
     public static uint MaximumBitmapSize => _maximumBitmapSize.Value;
 
-    private static Visual? _mouseCaptorVisual;
+    /// <summary>
+    /// Gets the <see cref="Visual"/> that currently captures mouse input, if any.
+    /// </summary>
     public static Visual? MouseCaptorVisual => _mouseCaptorVisual;
+    private static Visual? _mouseCaptorVisual;
+
     private readonly Lock _lock = new();
 
 #if NETFRAMEWORK
@@ -308,6 +312,9 @@ public partial class Window : Canvas, ITitleBarParent
     /// </summary>
     protected virtual bool ModalsIntersectWithAllBounds => false;
 #if DEBUG
+    /// <summary>
+    /// Gets or sets a value indicating whether diagnostic keys are enabled in debug builds.
+    /// </summary>
     public virtual bool EnableDiagnosticKeys { get; set; }
 #endif
 
@@ -829,7 +836,7 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
-    // <inheritdoc />
+    /// <inheritdoc/>
     public override string ToString() => Name ?? Title ?? base.ToString();
 
     private sealed partial class WindowBaseObjectCollection : BaseObjectCollection<Visual>
@@ -881,7 +888,7 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
-    // <inheritdoc />
+    /// <inheritdoc/>
     protected sealed override BaseObjectCollection<Visual> CreateChildren() => new WindowBaseObjectCollection(this, MaxChildrenCount);
 
     /// <summary>
@@ -1549,7 +1556,7 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
-    // <inheritdoc />
+    /// <inheritdoc/>
     protected override void Render()
     {
         base.Render();
@@ -1995,7 +2002,7 @@ public partial class Window : Canvas, ITitleBarParent
 #endif
     }
 
-    // <inheritdoc />
+    /// <inheritdoc/>
     protected override ContainerVisual CreateCompositionVisual() => throw new NotSupportedException();
 
     /// <summary>
@@ -2364,7 +2371,7 @@ public partial class Window : Canvas, ITitleBarParent
         }
     }
 
-    // <inheritdoc />
+    /// <inheritdoc/>
     protected internal override VisualPropertyInvalidateModes GetInvalidateModes(Visual childVisual, InvalidateMode childMode, VisualPropertyInvalidateModes defaultModes, InvalidateReason reason)
     {
         if (childVisual is FocusVisual || childVisual is Caret)
@@ -3552,7 +3559,7 @@ public partial class Window : Canvas, ITitleBarParent
         ctt.Destroy();
     }
 
-    // <inheritdoc />
+    /// <inheritdoc/>
     protected override object? GetPropertyValue(BaseObjectProperty property)
     {
         // ensure we don't mess with w&h
@@ -3565,7 +3572,7 @@ public partial class Window : Canvas, ITitleBarParent
         return base.GetPropertyValue(property);
     }
 
-    // <inheritdoc />
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (property == WidthProperty)

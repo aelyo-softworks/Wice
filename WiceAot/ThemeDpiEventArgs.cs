@@ -21,10 +21,7 @@ public class ThemeDpiEventArgs(uint oldDpi, uint newDpi)
     /// </summary>
     public uint NewDpi { get; } = newDpi;
 
-    /// <summary>
-    /// Returns a compact, human-readable representation of the DPI transition.
-    /// </summary>
-    /// <returns>A string in the form "oldDpi =&gt; newDpi".</returns>
+    /// <inheritdoc/>
     public override string ToString() => $"{OldDpi} => {NewDpi}";
 
     /// <summary>

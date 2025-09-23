@@ -182,22 +182,14 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         OffPathBrushProperty.CopyValue(baseObject, this, options);
     }
 
-    /// <summary>
-    /// Toggles <see cref="Value"/> when the control is clicked.
-    /// </summary>
-    /// <param name="sender">Event source.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnClick(object? sender, EventArgs e)
     {
         Value = !Value;
         base.OnClick(sender, e);
     }
 
-    /// <summary>
-    /// Applies rendering state for composition:
-    /// - Chooses brushes for the track and knob based on <see cref="Value"/>.
-    /// - Uses theme defaults when custom brushes are not provided.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void Render()
     {
         if (Compositor == null)
@@ -257,14 +249,7 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         OnIsSelectedChanged(sender, e);
     }
 
-    /// <summary>
-    /// Intercepts property setting to react to <see cref="ValueProperty"/>:
-    /// updates knob alignment and raises change events after base storage.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The value to set.</param>
-    /// <param name="options">Set options.</param>
-    /// <returns>True if the stored value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -278,11 +263,7 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         return true;
     }
 
-    /// <summary>
-    /// Subscribes to theme/DPI changes and applies initial sizing when attached to composition.
-    /// </summary>
-    /// <param name="sender">Event source.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -290,11 +271,7 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
-    /// <summary>
-    /// Unsubscribes from theme/DPI changes when detaching from composition.
-    /// </summary>
-    /// <param name="sender">Event source.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);

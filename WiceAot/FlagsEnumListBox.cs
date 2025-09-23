@@ -55,17 +55,7 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, EnumListBox.IB
     /// </summary>
     bool EnumListBox.IBindList.NeedBind { get; set; }
 
-    /// <summary>
-    /// Applies a selection state to an item and updates the underlying enum bit mask accordingly.
-    /// </summary>
-    /// <param name="visual">The item visual.</param>
-    /// <param name="select">
-    /// The new selection state:
-    /// - true to select (set bit),
-    /// - false to unselect (clear bit),
-    /// - null to only refresh visual state without changing selection.
-    /// </param>
-    /// <returns>True when the selection state changed; otherwise false.</returns>
+    /// <inheritdoc/>
     public override bool UpdateItemSelection(ItemVisual visual, bool? select)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -134,13 +124,7 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, EnumListBox.IB
     /// <param name="e">The event args containing the new value.</param>
     protected virtual void OnValueChanged(object sender, ValueEventArgs e) => ValueChanged?.Invoke(sender, e);
 
-    /// <summary>
-    /// Reacts to property changes, raising <see cref="ValueChanged"/> and performing deferred binding when needed.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set options.</param>
-    /// <returns>true if the stored value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))

@@ -30,9 +30,7 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
     /// </summary>
     public Type? Type { get; set; }
 
-    /// <summary>
-    /// Gets the unique identifier for this attribute instance used by the attribute system.
-    /// </summary>
+    /// <inheritdoc/>
     public override object TypeId => Name ?? string.Empty;
 
     /// <summary>

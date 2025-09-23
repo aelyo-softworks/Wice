@@ -54,11 +54,7 @@ public partial class DockSplitter : Visual
     [Category(CategoryBehavior)]
     public virtual float Size { get => (float)GetPropertyValue(SizeProperty)!; set => SetPropertyValue(SizeProperty, value); }
 
-    /// <summary>
-    /// Creates the drag state storing initial sizes and neighbor visuals.
-    /// </summary>
-    /// <param name="e">Mouse button event that initiated the drag.</param>
-    /// <returns>A <see cref="SplitDragState"/> bound to this splitter.</returns>
+    /// <inheritdoc/>
     protected override DragState CreateDragState(MouseButtonEventArgs e) => new SplitDragState(this, e);
 
     /// <summary>
@@ -71,11 +67,7 @@ public partial class DockSplitter : Visual
     /// </summary>
     protected virtual void OnCancel(object sender, EventArgs e) => Cancel?.Invoke(sender, e);
 
-    /// <summary>
-    /// Called when the visual is attached to a parent. Determines <see cref="DockType"/>, <see cref="Orientation"/>,
-    /// updates the cursor, sets the splitter thickness on <see cref="Visual.Width"/> or <see cref="Visual.Height"/>,
-    /// and assigns the dock type on this visual.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         var parent = Parent;
@@ -97,11 +89,7 @@ public partial class DockSplitter : Visual
         base.OnAttachedToParent(sender, e);
     }
 
-    /// <summary>
-    /// Returns the area considered for hit testing. Inflates the default bounds by <see cref="HitTestTolerance"/> when set.
-    /// </summary>
-    /// <param name="defaultBounds">The base hit-test rectangle computed by the framework.</param>
-    /// <returns>The possibly inflated rectangle used for hit testing.</returns>
+    /// <inheritdoc/>
     protected override D2D_RECT_F GetHitTestBounds(D2D_RECT_F defaultBounds)
     {
         var bounds = base.GetHitTestBounds(defaultBounds);
@@ -115,9 +103,7 @@ public partial class DockSplitter : Visual
         return bounds;
     }
 
-    /// <summary>
-    /// Drag callback invoked during a mouse move with capture.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseDrag(object? sender, DragEventArgs e)
     {
         OnMouseDrag(e);
@@ -221,9 +207,7 @@ public partial class DockSplitter : Visual
         }
     }
 
-    /// <summary>
-    /// Starts a drag move when the left mouse button is pressed.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         if (e.Button == MouseButton.Left)
@@ -233,9 +217,7 @@ public partial class DockSplitter : Visual
         base.OnMouseButtonDown(sender, e);
     }
 
-    /// <summary>
-    /// Commits the current drag operation when the left mouse button is released.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
         if (e.Button == MouseButton.Left)
@@ -281,9 +263,7 @@ public partial class DockSplitter : Visual
         }
     }
 
-    /// <summary>
-    /// Handles Escape to cancel the drag operation.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == VIRTUAL_KEY.VK_ESCAPE)

@@ -44,9 +44,6 @@ public class DragState
     /// </summary>
     public virtual int DeltaY { get; set; }
 
-    /// <summary>
-    /// Returns a string that represents the current drag state, including button, start point, and deltas.
-    /// </summary>
-    /// <returns>A human-readable string describing the drag state.</returns>
+    /// <inheritdoc/>
     public override string ToString() => Button + " Start: " + StartX + " x " + StartY + " Delta: " + DeltaX + " x " + DeltaY;
 }

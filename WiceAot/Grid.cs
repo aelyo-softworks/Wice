@@ -285,11 +285,7 @@ public partial class Grid : Visual
         return Math.Max(0, (int)properties.GetPropertyValue(RowProperty)!);
     }
 
-    /// <summary>
-    /// Measures the grid and returns its desired size based on children and row/column definitions.
-    /// </summary>
-    /// <param name="constraint">Available size including margin.</param>
-    /// <returns>Desired size excluding margin.</returns>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         // reset all
@@ -631,10 +627,7 @@ public partial class Grid : Visual
         }
     }
 
-    /// <summary>
-    /// Positions children inside their computed row/column cells and finalizes the arranged rectangle.
-    /// </summary>
-    /// <param name="finalRect">Final rectangle available for content, without margin.</param>
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         if (Rows.Any(r => !r.DesiredSize.HasValue) || Columns.Any(c => !c.DesiredSize.HasValue))

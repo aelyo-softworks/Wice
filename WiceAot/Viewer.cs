@@ -31,9 +31,7 @@ public partial class Viewer : Visual, IOneChildParent
     /// </summary>
     public static VisualProperty KeepProportionsProperty { get; } = VisualProperty.Add(typeof(Viewer), nameof(KeepProportions), VisualPropertyInvalidateModes.Measure, false);
 
-    /// <summary>
-    /// Creates the children collection with a capacity of 1, as this control supports a single child.
-    /// </summary>
+    /// <inheritdoc/>
     protected override BaseObjectCollection<Visual> CreateChildren() => new(1);
 
     private float _childOffsetLeft;
@@ -140,12 +138,7 @@ public partial class Viewer : Visual, IOneChildParent
     [Category(CategoryLayout)]
     public float BaseChildOffsetTop { get; private set; }
 
-    /// <summary>
-    /// Measures the child with potentially unconstrained width/height according to
-    /// <see cref="IsWidthUnconstrained"/> and <see cref="IsHeightUnconstrained"/>.
-    /// </summary>
-    /// <param name="constraint">Available size provided by the parent (including margins).</param>
-    /// <returns>The child's desired size when a child exists; otherwise falls back to the base implementation.</returns>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         var child = Child;
@@ -170,12 +163,7 @@ public partial class Viewer : Visual, IOneChildParent
         return base.MeasureCore(constraint);
     }
 
-    /// <summary>
-    /// Arranges the child within the final rectangle using the configured unconstrained axes and
-    /// optional proportion preservation. Applies <see cref="ChildOffsetLeft"/> and <see cref="ChildOffsetTop"/>
-    /// after computing the base rect.
-    /// </summary>
-    /// <param name="finalRect">Final content rectangle excluding margin.</param>
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         var child = Child;

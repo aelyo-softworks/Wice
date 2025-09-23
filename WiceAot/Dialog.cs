@@ -94,9 +94,7 @@ public partial class Dialog : Popup
     /// <param name="e">Cancelable event arguments.</param>
     protected virtual void OnClosing(object sender, CancelEventArgs e) => Closing?.Invoke(this, e);
 
-    /// <summary>
-    /// Forces a one-child collection for the dialog (its content) to reserve margin for the drop shadow.
-    /// </summary>
+    /// <inheritdoc/>
     protected override BaseObjectCollection<Visual> CreateChildren() => new(1);
 
     /// <summary>
@@ -128,11 +126,7 @@ public partial class Dialog : Popup
         return content;
     }
 
-    /// <summary>
-    /// Handles ESC to attempt closing the dialog. Marks the event handled when a close occurs.
-    /// </summary>
-    /// <param name="sender">Event sender.</param>
-    /// <param name="e">Keyboard event data.</param>
+    /// <inheritdoc/>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         base.OnKeyDown(sender, e);
@@ -146,22 +140,14 @@ public partial class Dialog : Popup
         }
     }
 
-    /// <summary>
-    /// Captures mouse button down to prevent click-through. Marks the event handled.
-    /// </summary>
-    /// <param name="sender">Event sender.</param>
-    /// <param name="e">Mouse event data.</param>
+    /// <inheritdoc/>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         base.OnMouseButtonDown(sender, e);
         e.Handled = true; // we capture mouse. should this go into Popup instead?
     }
 
-    /// <summary>
-    /// Captures mouse button up to prevent click-through. Marks the event handled.
-    /// </summary>
-    /// <param name="sender">Event sender.</param>
-    /// <param name="e">Mouse event data.</param>
+    /// <inheritdoc/>
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
         base.OnMouseButtonUp(sender, e);
@@ -255,11 +241,7 @@ public partial class Dialog : Popup
         return shadow;
     }
 
-    /// <summary>
-    /// Inserts an optional window overlay behind the dialog when attached to a parent.
-    /// </summary>
-    /// <param name="sender">Event sender.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         base.OnAttachedToParent(sender, e);
@@ -294,20 +276,14 @@ public partial class Dialog : Popup
         }
     }
 
-    /// <summary>
-    /// Removes the window overlay (if present) when detaching from parent.
-    /// </summary>
-    /// <param name="sender">Event sender.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnDetachingFromParent(object? sender, EventArgs e)
     {
         base.OnDetachingFromParent(sender, e);
         _overlay?.Remove();
     }
 
-    /// <summary>
-    /// Renders the dialog and triggers the one-time show (fade-in) animation.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void Render()
     {
         base.Render();
@@ -347,11 +323,7 @@ public partial class Dialog : Popup
         });
     }
 
-    /// <summary>
-    /// Produces placement parameters and compensates the popup position for the content's margin,
-    /// so that the visible content aligns with the desired point while preserving shadow padding.
-    /// </summary>
-    /// <returns>The adjusted placement parameters.</returns>
+    /// <inheritdoc/>
     protected override PlacementParameters CreatePlacementParameters()
     {
         var parameters = base.CreatePlacementParameters();

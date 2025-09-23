@@ -634,13 +634,16 @@ public static class UIExtensions
     }
 
     /// <summary>
-    /// Ensures a <see cref="CompositionDrawingSurface"/> exists for the <paramref name="visual"/> and is sized to its current <see cref="SpriteVisual.Size"/>.
-    /// Creates a <see cref="CompositionSurfaceBrush"/> when needed and assigns it to the visual.
+    /// Ensures that the specified <see cref="SpriteVisual"/> has a valid <see cref="CompositionDrawingSurface"/>
+    /// associated with its brush. If no surface exists, a new one is created based on the visual's size.
     /// </summary>
-    /// <param name="visual">The sprite visual.</param>
-    /// <param name="device">The graphics device.</param>
-    /// <param name="options">Optional surface creation options.</param>
-    /// <returns>The drawing surface or null when the visual size is too small to draw.</returns>
+    /// <param name="visual">The <see cref="SpriteVisual"/> for which to ensure a drawing surface. Cannot be <see langword="null"/>.</param>
+    /// <param name="device">The <see cref="CompositionGraphicsDevice"/> used to create a new drawing surface if needed. Cannot be <see
+    /// langword="null"/>.</param>
+    /// <param name="options">Optional configuration for surface creation, such as pixel snapping behavior. If <see langword="null"/>, default
+    /// options are used.</param>
+    /// <returns>The <see cref="CompositionDrawingSurface"/> associated with the <paramref name="visual"/>. Returns <see
+    /// langword="null"/> if the visual's size is too small to create a valid surface.</returns>
     public static CompositionDrawingSurface? EnsureDrawingSurface(this SpriteVisual visual, CompositionGraphicsDevice device, SurfaceCreationOptions? options = null)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));

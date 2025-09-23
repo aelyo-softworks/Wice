@@ -205,13 +205,7 @@ public partial class TitleBar : Dock
     /// </returns>
     protected virtual Visual CreateCloseButton() => new TitleBarButton { ButtonType = TitleBarButtonType.Close };
 
-    /// <summary>
-    /// Measures the desired size of this title bar.
-    /// Sets the height from the DPI-adjusted caption button metrics when a window is available,
-    /// then defers to <see cref="Dock.MeasureCore(D2D_SIZE_F)"/>.
-    /// </summary>
-    /// <param name="constraint">Available size including margin.</param>
-    /// <returns>The desired size for the title bar.</returns>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         var window = Window;
@@ -327,12 +321,7 @@ public partial class TitleBar : Dock
         OnUpdated(this, new ValueEventArgs<SIZE>(size));
     }
 
-    /// <summary>
-    /// Handles composition attachment by performing an initial <see cref="Update"/> and
-    /// applying <see cref="IsMain"/> semantics to the owning <see cref="Window"/>.
-    /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">The event data.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);

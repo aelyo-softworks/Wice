@@ -98,11 +98,7 @@ public partial class ButtonBase : Border, IAccessKeyParent, IClickable
         }
     }
 
-    /// <summary>
-    /// Handles key presses while this visual has focus.
-    /// </summary>
-    /// <param name="sender">Originating sender.</param>
-    /// <param name="e">Key event data.</param>
+    /// <inheritdoc/>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (!IsEnabled || !IsFocused)
@@ -116,11 +112,7 @@ public partial class ButtonBase : Border, IAccessKeyParent, IClickable
         base.OnKeyDown(sender, e);
     }
 
-    /// <summary>
-    /// Handles mouse button presses.
-    /// </summary>
-    /// <param name="sender">Originating sender.</param>
-    /// <param name="e">Mouse button event data.</param>
+    /// <inheritdoc/>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         if (!IsEnabled)

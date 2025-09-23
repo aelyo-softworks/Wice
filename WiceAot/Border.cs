@@ -66,16 +66,10 @@ public partial class Border : RenderVisual, IOneChildParent
         }
     }
 
-    /// <summary>
-    /// Creates the children collection with a capacity of 1 (single child parent).
-    /// </summary>
+    /// <inheritdoc/>
     protected override BaseObjectCollection<Visual> CreateChildren() => new(1);
 
-    /// <summary>
-    /// Measures the border and its child, accounting for padding and border thickness.
-    /// </summary>
-    /// <param name="constraint">The available size including this visual's margin.</param>
-    /// <returns>The desired size excluding margin.</returns>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
     {
         var padding = Padding - BorderThickness.ToZero();
@@ -139,10 +133,7 @@ public partial class Border : RenderVisual, IOneChildParent
         return new D2D_SIZE_F(width, height);
     }
 
-    /// <summary>
-    /// Arranges the child within the final rectangle, honoring padding and border thickness.
-    /// </summary>
-    /// <param name="finalRect">The final rectangle excluding margin.</param>
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect)
     {
         var child = Child;
@@ -183,9 +174,7 @@ public partial class Border : RenderVisual, IOneChildParent
         }
     }
 
-    /// <summary>
-    /// Updates composition state and applies rounded clipping when <see cref="Visual.ClipChildren"/> is enabled.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void Render()
     {
         base.Render();
@@ -205,10 +194,7 @@ public partial class Border : RenderVisual, IOneChildParent
         }
     }
 
-    /// <summary>
-    /// Renders the background. When <see cref="CornerRadius"/> is non-zero, draws a rounded rectangle background.
-    /// </summary>
-    /// <param name="context">The current render context.</param>
+    /// <inheritdoc/>
     protected override void RenderBackgroundCore(RenderContext context)
     {
         var radius = CornerRadius;
@@ -235,11 +221,7 @@ public partial class Border : RenderVisual, IOneChildParent
         base.RenderBackgroundCore(context);
     }
 
-    /// <summary>
-    /// Ensures a D2D surface exists only when needed (rounded corners or non-zero border thickness).
-    /// </summary>
-    /// <param name="creationOptions">Optional surface creation options.</param>
-    /// <param name="rect">Optional sub-rect to render.</param>
+    /// <inheritdoc/>
     protected override void RenderD2DSurface(SurfaceCreationOptions? creationOptions = null, RECT? rect = null)
     {
         // using D2D cancels Windows.UI.Composition animations, so avoid when possible...
@@ -250,10 +232,7 @@ public partial class Border : RenderVisual, IOneChildParent
         base.RenderD2DSurface(creationOptions, rect);
     }
 
-    /// <summary>
-    /// Draws the border (rounded or rectangular) using Direct2D when <see cref="BorderThickness"/> is greater than zero.
-    /// </summary>
-    /// <param name="context">The render context.</param>
+    /// <inheritdoc/>
     protected internal override void RenderCore(RenderContext context)
     {
         base.RenderCore(context);

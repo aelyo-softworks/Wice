@@ -22,11 +22,7 @@ public partial class FocusVisual : Border
     /// </summary>
     public new Window? Parent => (Window?)base.Parent;
 
-    /// <summary>
-    /// Ensures the parent is a <see cref="Window"/> and completes attachment.
-    /// </summary>
-    /// <param name="sender">Event sender.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         if (Parent is null)
@@ -35,22 +31,10 @@ public partial class FocusVisual : Border
         base.OnAttachedToParent(sender, e);
     }
 
-    /// <summary>
-    /// Prevents bubbling any invalidate modes to the parent <see cref="Window"/>; layout is managed locally.
-    /// </summary>
-    /// <param name="mode">The child invalidate mode.</param>
-    /// <param name="defaultParentModes">Default parent modes.</param>
-    /// <param name="reason">Invalidate reason.</param>
-    /// <returns>Always <see cref="VisualPropertyInvalidateModes.None"/>.</returns>
+    /// <inheritdoc/>
     protected internal override VisualPropertyInvalidateModes GetParentInvalidateModes(InvalidateMode mode, VisualPropertyInvalidateModes defaultParentModes, InvalidateReason reason) => VisualPropertyInvalidateModes.None;
 
-    /// <summary>
-    /// Intercepts property sets to short-circuit parent invalidation by measuring/arranging locally when needed.
-    /// </summary>
-    /// <param name="property">The property descriptor being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set options.</param>
-    /// <returns>True if the stored value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         if (!base.SetPropertyValue(property, value, options))
@@ -142,11 +126,7 @@ public partial class FocusVisual : Border
         Height = Math.Max(0, ar.Height - offset * 2);
     }
 
-    /// <summary>
-    /// Applies composition updates:
-    /// - Clips the focus adornment to the focused visual parent clip.
-    /// - Updates the child shape stroke from the current theme.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void Render()
     {
         base.Render();

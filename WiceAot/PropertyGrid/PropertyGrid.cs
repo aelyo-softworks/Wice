@@ -134,17 +134,7 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     [Category(CategoryLive)]
     public T? SelectedObject { get => (T?)GetPropertyValue(SelectedObjectProperty); set => SetPropertyValue(SelectedObjectProperty, value); }
 
-    /// <summary>
-    /// Overrides property setting to:
-    /// - Propagate <see cref="LiveSync"/> to all property descriptors.
-    /// - Manage <see cref="INotifyPropertyChanged"/> subscriptions on <see cref="SelectedObject"/>.
-    /// - Derive <see cref="IsReadOnly"/> from a <see cref="ReadOnlyAttribute"/> on the selected object's type.
-    /// - Rebind layout and editors when <see cref="SelectedObject"/> changes.
-    /// </summary>
-    /// <param name="property">The property descriptor.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Set options.</param>
-    /// <returns>True if the underlying value changed; otherwise false.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         object? oldValue = null;
@@ -195,11 +185,7 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
         return true;
     }
 
-    /// <summary>
-    /// Applies theme-specific visuals once attached to composition (window exists).
-    /// </summary>
-    /// <param name="sender">Event sender.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);

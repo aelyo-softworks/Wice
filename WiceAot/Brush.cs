@@ -34,10 +34,7 @@ public abstract class Brush : IEquatable<Brush>
     /// </returns>
     public abstract bool Equals(Brush? other);
 
-    /// <summary>
-    /// Serves as the default hash function.
-    /// </summary>
-    /// <returns>A hash code for the current object.</returns>
+    /// <inheritdoc/>
     public override abstract int GetHashCode();
 
     /// <summary>

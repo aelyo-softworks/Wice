@@ -43,9 +43,6 @@ public class ParentUpgradeInvalidateReason
     /// </summary>
     public VisualPropertyInvalidateModes FinalModes { get; }
 
-    /// <summary>
-    /// Builds the base string used by <see cref="InvalidateReason.ToString"/> to describe this reason.
-    /// </summary>
-    /// <returns>A concise textual representation including the child type and mode transition.</returns>
+    /// <inheritdoc/>
     protected override string GetBaseString() => base.GetBaseString() + "(" + ChildType.Name + ")[" + InitialModes + " -> " + FinalModes + "]";
 }

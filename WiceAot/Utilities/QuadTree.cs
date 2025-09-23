@@ -151,16 +151,9 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
 
     internal class QuadNode(T node, D2D_RECT_F bounds)
     {
-        /// <summary>The bounds associated with <see cref="Node"/>.</summary>
         public D2D_RECT_F Bounds = bounds;
-
-        /// <summary>Pointer to the next node in the circular list (or self if this is the only node).</summary>
         public QuadNode? Next;
-
-        /// <summary>The stored item.</summary>
         public T Node = node;
-
-        /// <inheritdoc />
         public override string ToString() => Node + " => " + Bounds;
     }
 

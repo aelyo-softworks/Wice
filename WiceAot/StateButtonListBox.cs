@@ -21,11 +21,7 @@ public abstract partial class StateButtonListBox : ListBox
     /// <returns>A non-null <see cref="StateButton"/> configured for the item.</returns>
     protected abstract StateButton CreateStateButton(DataBindContext context);
 
-    /// <summary>
-    /// Builds the visual container for an item: a <see cref="Dock"/> with a leading
-    /// <see cref="StateButton"/> and a read-only <see cref="TextBox"/> for the label.
-    /// </summary>
-    /// <param name="context">The data-bind context for the current item.</param>
+    /// <inheritdoc/>
     protected override void CreateDataItemVisual(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
@@ -56,10 +52,7 @@ public abstract partial class StateButtonListBox : ListBox
         context.DataVisual = panel;
     }
 
-    /// <summary>
-    /// Binds the item visual created by <see cref="CreateDataItemVisual"/> to the item data.
-    /// </summary>
-    /// <param name="context">The data-bind context for the current item.</param>
+    /// <inheritdoc/>
     protected override void BindDataItemVisual(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
@@ -73,13 +66,7 @@ public abstract partial class StateButtonListBox : ListBox
         }
     }
 
-    /// <summary>
-    /// Prevents switching to single-selection mode; otherwise defers to base behavior.
-    /// </summary>
-    /// <param name="property">The property being set.</param>
-    /// <param name="value">The new value.</param>
-    /// <param name="options">Optional set options.</param>
-    /// <returns>True if the value changed; false when vetoed or unchanged.</returns>
+    /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
         // prevent single mode
@@ -96,11 +83,7 @@ public abstract partial class StateButtonListBox : ListBox
     {
     }
 
-    /// <summary>
-    /// Handles DPI/theme changes to refresh the left margin between the state button and the label.
-    /// </summary>
-    /// <param name="sender">The event source.</param>
-    /// <param name="e">DPI/theme change event data.</param>
+    /// <inheritdoc/>
     protected override void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         base.OnThemeDpiEvent(sender, e);

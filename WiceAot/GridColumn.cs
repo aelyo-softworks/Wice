@@ -13,16 +13,10 @@ public partial class GridColumn : GridDimension
     {
     }
 
-    /// <summary>
-    /// Gets the zero-based index of this column within its parent grid;
-    /// returns -1 when no parent is set or when the column is not found in the parent's collection.
-    /// </summary>
+    /// <inheritdoc/>
     public override int Index => Parent != null ? Parent.Columns.IndexOf(this) : -1;
 
-    /// <summary>
-    /// Gets the next <see cref="GridDimension"/> (column) in the parent grid, or <see langword="null"/> if this is the last column
-    /// or the column is not attached to a grid.
-    /// </summary>
+    /// <inheritdoc/>
     public override GridDimension? Next
     {
         get
@@ -39,10 +33,7 @@ public partial class GridColumn : GridDimension
         }
     }
 
-    /// <summary>
-    /// Gets the previous <see cref="GridDimension"/> (column) in the parent grid, or <see langword="null"/> if this is the first column
-    /// or the column is not attached to a grid.
-    /// </summary>
+    /// <inheritdoc/>
     public override GridDimension? Previous
     {
         get
@@ -82,9 +73,6 @@ public partial class GridColumn : GridDimension
         }
     }
 
-    /// <summary>
-    /// Returns a string that represents the current column, prefixed with <c>"C:"</c>,
-    /// followed by the base <see cref="GridDimension.ToString()"/> representation.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => "C:" + base.ToString();
 }

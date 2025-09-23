@@ -73,9 +73,7 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
     /// <inheritdoc />
     object? IList.this[int index] { get => this[index]; set => this[index] = (T)value!; }
 
-    /// <summary>
-    /// Returns a string that represents the current object, including the current <see cref="Count"/>.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => base.ToString() + " Count: " + Count;
 
     /// <summary>

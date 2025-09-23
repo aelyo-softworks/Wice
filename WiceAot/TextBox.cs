@@ -1,5 +1,8 @@
 ﻿namespace Wice;
 
+/// <summary>
+/// Represents a control that allows the user to input, edit, and display text.
+/// </summary>
 public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IValueable, IPasswordCapable, IDisposable, IImmVisual
 {
     /// <summary>
@@ -213,7 +216,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         _maxWidth = 0;
     }
 
+    /// <inheritdoc/>
     protected override bool FallbackToTransparentBackground => true;
+
+    /// <inheritdoc/>
     protected override bool ShouldRender => !_rendered;
 
     /// <summary>
@@ -487,15 +493,14 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    /// <summary>
-    /// Returns a short, human-readable description including the current text (CR/LF visualized).
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString()
     {
         var text = base.ToString() + " '" + Text?.Replace('\r', '⏎').Replace("\n", string.Empty) + "'";
         return text.TrimWithEllipsis() ?? string.Empty;
     }
 
+    /// <inheritdoc/>
     protected override void SetCompositionBrush(CompositionBrush? brush)
     {
         // we use or own system
@@ -543,9 +548,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         base.Invalidate(modes, reason);
     }
 
-    /// <summary>
-    /// Shows/hides caret on focus changes and optionally defers <see cref="TextChanged"/> until focus loss.
-    /// </summary>
+    /// <inheritdoc/>
     protected internal override void IsFocusedChanged(bool newValue)
     {
         base.IsFocusedChanged(newValue);
@@ -564,9 +567,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    /// <summary>
-    /// Updates hover brush invalidation and cursor to I-beam when editable/enabled.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void IsMouseOverChanged(bool newValue)
     {
         base.IsMouseOverChanged(newValue);
@@ -631,9 +632,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return true;
     }
 
-    /// <summary>
-    /// Handles caret visibility on focus gain/loss and updates caret location when focused.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnFocusedChanged(object? sender, ValueEventArgs<bool> e)
     {
         base.OnFocusedChanged(sender, e);
@@ -1140,9 +1139,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return new D2D_SIZE_F(width, height);
     }
 
-    /// <summary>
-    /// Measures the control using a DirectWrite text layout and accounts for padding and caret size.
-    /// </summary>
+    /// <inheritdoc/>
     protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint) => MeasureWithPadding(constraint, c =>
     {
         var layout = GetLayout(c.width, c.height);
@@ -1157,9 +1154,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 #endif
     });
 
-    /// <summary>
-    /// Arranges the control and updates the caret location after layout.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void ArrangeCore(D2D_RECT_F finalRect) => SetCaretLocation();
 
     private IComObject<ID2D1Brush> GetSelectionBrush(RenderContext context, IComObject<ID2D1Brush> brush)
@@ -1236,10 +1231,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return context.CreateSolidColorBrush(middle);
     }
 
-    /// <summary>
-    /// Renders the text layout, including selection highlight and optional clipping.
-    /// Applies <see cref="TextRenderingParameters"/> and <see cref="AntiAliasingMode"/> as appropriate.
-    /// </summary>
+    /// <inheritdoc/>
     protected internal override void RenderCore(RenderContext context)
     {
         base.RenderCore(context);
@@ -1400,9 +1392,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         _rendered = true;
     }
 
-    /// <summary>
-    /// Restarts caret blinking when a key is released while the control is focused and editable.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnKeyUp(object? sender, KeyEventArgs e)
     {
         base.OnKeyUp(sender, e);
@@ -1425,9 +1415,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    /// <summary>
-    /// Handles navigation, selection, clipboard and editing keys (including paste via Ctrl+V/Shift+Insert).
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         base.OnKeyDown(sender, e);
@@ -1724,9 +1712,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
     private float GetFontSize() => Application.CurrentResourceManager.GetFontSize(GetWindowTheme(), FontSize);
 
-    /// <summary>
-    /// Handles Ctrl/Shift+wheel zooming/panning and plain wheel vertical panning when <see cref="IsWheelZoomEnabled"/> is true.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {
         base.OnMouseWheel(sender, e);
@@ -1761,18 +1747,14 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         Invalidate(VisualPropertyInvalidateModes.Measure, new InvalidateReason(GetType()));
     }
 
-    /// <summary>
-    /// Clears selection when mouse leaves the control.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseLeave(object? sender, MouseEventArgs e)
     {
         base.OnMouseLeave(sender, e);
         _selecting = false;
     }
 
-    /// <summary>
-    /// Begins selection drag on left button press and captures mouse.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         base.OnMouseButtonDown(sender, e);
@@ -1789,9 +1771,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    /// <summary>
-    /// Ends selection drag on left button release and releases mouse capture.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
         base.OnMouseButtonUp(sender, e);
@@ -1802,9 +1782,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         }
     }
 
-    /// <summary>
-    /// Extends selection while dragging the mouse.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseMove(object? sender, MouseEventArgs e)
     {
         base.OnMouseMove(sender, e);
@@ -1823,9 +1801,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
         e.UTF16Character >= ' ';
 
-    /// <summary>
-    /// Inserts printable characters at the caret, replacing the current selection if any.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnKeyPress(object? sender, KeyPressEventArgs e)
     {
         base.OnKeyPress(sender, e);
@@ -3273,9 +3249,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         public DWRITE_LINE_SPACING? lineSpacing;
     }
 
-    /// <summary>
-    /// Resets internal resources on composition detach (layout cache, flags).
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);

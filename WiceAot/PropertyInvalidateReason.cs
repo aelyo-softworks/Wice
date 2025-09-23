@@ -24,9 +24,6 @@ public class PropertyInvalidateReason
     /// </summary>
     public BaseObjectProperty Property { get; }
 
-    /// <summary>
-    /// Builds the base diagnostic text and appends the property's logical name in brackets.
-    /// </summary>
-    /// <returns>A concise, human-readable description of this reason.</returns>
+    /// <inheritdoc/>
     protected override string GetBaseString() => base.GetBaseString() + "[" + Property.Name + "]";
 }

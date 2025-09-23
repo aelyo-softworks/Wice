@@ -35,14 +35,7 @@ public class LinearGradientBrush : Brush
     /// <inheritdoc />
     public override bool Equals(object? obj) => Equals(obj as LinearGradientBrush);
 
-    /// <summary>
-    /// Determines whether this brush is equal to another brush.
-    /// </summary>
-    /// <param name="other">The other brush to compare against.</param>
-    /// <returns>
-    /// <see langword="true"/> when <paramref name="other"/> is a <see cref="LinearGradientBrush"/> with the same
-    /// <see cref="Properties"/> and an identical ordered sequence of <see cref="Stops"/>; otherwise, <see langword="false"/>.
-    /// </returns>
+    /// <inheritdoc/>
     public override bool Equals(Brush? other)
     {
         if (other is not LinearGradientBrush brush)
@@ -62,9 +55,7 @@ public class LinearGradientBrush : Brush
         return true;
     }
 
-    /// <summary>
-    /// Returns a hash code for this instance.
-    /// </summary>
+    /// <inheritdoc/>
     public override int GetHashCode()
     {
         var code = Properties.GetHashCode();

@@ -20,8 +20,6 @@ public class PointerActivateEventArgs(uint pointerId, HWND windowBeingActivated,
     /// </summary>
     public HT HitTest { get; } = hitTest;
 
-    /// <summary>
-    /// Returns a concise string that includes the base pointer information plus the window and hit-test values.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => base.ToString() + ",W=" + WindowBeingActivated + ",HT=" + HitTest;
 }

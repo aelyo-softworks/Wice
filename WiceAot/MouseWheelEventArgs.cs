@@ -25,8 +25,6 @@ public class MouseWheelEventArgs(int x, int y, POINTER_MOD vk, int delta, Orient
     /// </summary>
     public Orientation Orientation { get; } = orientation;
 
-    /// <summary>
-    /// Returns a string that includes base mouse data plus the wheel delta and orientation, for diagnostics.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString() => base.ToString() + ",DE=" + Delta + ",O=" + Orientation;
 }

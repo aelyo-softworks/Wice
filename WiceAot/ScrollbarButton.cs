@@ -52,11 +52,7 @@ public partial class ScrollBarButton : ButtonBase
     [Category(CategoryBehavior)]
     public float ArrowRatio { get => (float)GetPropertyValue(ArrowRatioProperty)!; set => SetPropertyValue(ArrowRatioProperty, value); }
 
-    /// <summary>
-    /// Rebuilds the arrow geometry sized to the arranged bounds and applies it to the <see cref="Path"/> child.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnArranged(object? sender, EventArgs e)
     {
         base.OnArranged(sender, e);
@@ -68,11 +64,7 @@ public partial class ScrollBarButton : ButtonBase
         Child.GeometrySource2D = geoSource;
     }
 
-    /// <summary>
-    /// Applies theme/DPI-dependent styling and subscribes to subsequent theme DPI updates.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
@@ -80,11 +72,7 @@ public partial class ScrollBarButton : ButtonBase
         Window!.ThemeDpiEvent += OnThemeDpiEvent;
     }
 
-    /// <summary>
-    /// Unsubscribes from theme DPI updates when detaching from composition.
-    /// </summary>
-    /// <param name="sender">The event sender.</param>
-    /// <param name="e">Event args.</param>
+    /// <inheritdoc/>
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);

@@ -896,9 +896,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
         return e.Result;
     }
 
-    /// <summary>
-    /// Returns a string representation including class name and window text.
-    /// </summary>
+    /// <inheritdoc/>
     public override string ToString()
     {
         var str = ClassName;

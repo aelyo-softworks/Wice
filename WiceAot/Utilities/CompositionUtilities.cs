@@ -5,17 +5,16 @@
 /// </summary>
 public static class CompositionUtilities
 {
+    /// <summary>
+    /// Creates a deep copy of the specified <see cref="CompositionBrush"/> instance.
+    /// </summary>
+    /// <param name="brush">The <see cref="CompositionBrush"/> to clone. Can be <see langword="null"/>.</param>
+    /// <returns>A new <see cref="CompositionBrush"/> instance that is a copy of the input brush, or <see langword="null"/> if
+    /// <paramref name="brush"/> is <see langword="null"/>.</returns>
+    /// <exception cref="NotSupportedException">Thrown if the specified <see cref="CompositionBrush"/> type is not supported for cloning.</exception>
 #if NET
     [return: NotNullIfNotNull(nameof(brush))]
 #endif
-    /// <summary>
-    /// Creates a new <see cref="CompositionBrush"/> that copies the state of the specified brush.
-    /// </summary>
-    /// <param name="brush">The source brush to clone. If <c>null</c>, this method returns <c>null</c>.</param>
-    /// <returns>
-    /// A new brush instance with the same configuration as <paramref name="brush"/>, or <c>null</c> if
-    /// <paramref name="brush"/> is <c>null</c>.
-    /// </returns>
     public static CompositionBrush? Clone(this CompositionBrush? brush)
     {
         if (brush == null)

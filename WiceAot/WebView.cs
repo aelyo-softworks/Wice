@@ -246,9 +246,7 @@ public partial class WebView : Border, IDisposable
         return keys;
     }
 
-    /// <summary>
-    /// Forwards a double-click mouse event to WebView2.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseButtonDoubleClick(object? sender, MouseButtonEventArgs e)
     {
         CheckDisposed();
@@ -290,9 +288,7 @@ public partial class WebView : Border, IDisposable
         controller.Object.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos).ThrowOnError();
     }
 
-    /// <summary>
-    /// Forwards a mouse down event to WebView2 and starts mouse capture on this visual.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         CheckDisposed();
@@ -336,9 +332,7 @@ public partial class WebView : Border, IDisposable
         controller.Object.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos).ThrowOnError();
     }
 
-    /// <summary>
-    /// Forwards a mouse up event to WebView2 and releases mouse capture.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseButtonUp(object? sender, MouseButtonEventArgs e)
     {
         CheckDisposed();
@@ -382,9 +376,7 @@ public partial class WebView : Border, IDisposable
         controller.Object.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos).ThrowOnError();
     }
 
-    /// <summary>
-    /// Forwards mouse move/enter events to WebView2 (includes button state and X button data when captured).
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseEnter(object? sender, MouseEventArgs e) => OnMouseMove(sender, e);
 
     /// <inheritdoc/>
@@ -414,9 +406,7 @@ public partial class WebView : Border, IDisposable
         controller.Object.SendMouseInput(COREWEBVIEW2_MOUSE_EVENT_KIND.COREWEBVIEW2_MOUSE_EVENT_KIND_MOVE, keys, mouseData, pos).ThrowOnError();
     }
 
-    /// <summary>
-    /// Forwards a mouse leave event to WebView2.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseLeave(object? sender, MouseEventArgs e)
     {
         CheckDisposed();
@@ -427,9 +417,7 @@ public partial class WebView : Border, IDisposable
         controller.Object.SendMouseInput(COREWEBVIEW2_MOUSE_EVENT_KIND.COREWEBVIEW2_MOUSE_EVENT_KIND_LEAVE, 0, 0, new POINT()).ThrowOnError();
     }
 
-    /// <summary>
-    /// Forwards a mouse wheel event to WebView2.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnMouseWheel(object? sender, MouseWheelEventArgs e)
     {
         CheckDisposed();
@@ -492,9 +480,7 @@ public partial class WebView : Border, IDisposable
     // Pointer-based forwarding variants are currently disabled due to known issues with CoreWebView2 pointer routing.
     // See mouse-path above which is supported.
 
-    /// <summary>
-    /// Updates the composition root and controller bounds during the render pass.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void Render()
     {
         CheckDisposed();
@@ -609,9 +595,7 @@ public partial class WebView : Border, IDisposable
         return _webViewInfo.Environment;
     }
 
-    /// <summary>
-    /// Starts first navigation (if any source is already provided) after attachment to parent.
-    /// </summary>
+    /// <inheritdoc/>
     protected override void OnAttachedToParent(object? sender, EventArgs e)
     {
         base.OnAttachedToParent(sender, e);

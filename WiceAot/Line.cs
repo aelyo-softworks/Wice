@@ -10,11 +10,6 @@ public partial class Line : SingleShape
     /// </summary>
     public new CompositionLineGeometry? Geometry => (CompositionLineGeometry?)base.Geometry;
 
-    /// <summary>
-    /// Creates a <see cref="CompositionLineGeometry"/> using the owning window's compositor.
-    /// </summary>
-    /// <returns>
-    /// The created composition geometry, or null if the window or compositor is not available.
-    /// </returns>
+    /// <inheritdoc/>
     protected override CompositionGeometry? CreateGeometry() => Window?.Compositor?.CreateLineGeometry();
 }

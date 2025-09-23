@@ -70,9 +70,7 @@ public partial class HeaderedContent : Stack, IOneChildParent, IDisposable
     /// </summary>
     protected virtual ScrollViewer CreateViewer() => new() { Height = 0 };
 
-    /// <summary>
-    /// Optimizes children collection capacity to two entries (header + viewer).
-    /// </summary>
+    /// <inheritdoc/>
     protected override BaseObjectCollection<Visual> CreateChildren() => new(2);
 
     /// <summary>

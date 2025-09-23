@@ -40,9 +40,6 @@ public partial class Path : SingleShape
     [Category(CategoryRender)]
     public new CompositionPathGeometry? Geometry => (CompositionPathGeometry?)base.Geometry;
 
-    /// <summary>
-    /// Creates a <see cref="CompositionPathGeometry"/> using the window's compositor.
-    /// </summary>
-    /// <returns>A new <see cref="CompositionPathGeometry"/> instance or <c>null</c> when no compositor is available.</returns>
+    /// <inheritdoc/>
     protected override CompositionGeometry? CreateGeometry() => Window?.Compositor?.CreatePathGeometry();
 }
