@@ -1,6 +1,4 @@
 ﻿#nullable enable
-using Wice.PropertyGrid;
-
 namespace Wice.Samples.Gallery.Samples.Collections.PropertyGrid;
 
 public class AutoObject : INotifyPropertyChanged
@@ -9,19 +7,23 @@ public class AutoObject : INotifyPropertyChanged
 
     private readonly Dictionary<string, object?> _values = [];
 
-    protected virtual void OnPropertyChanged(object sender, PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
+    protected virtual void OnPropertyChanged(object? sender, PropertyChangedEventArgs e) => PropertyChanged?.Invoke(this, e);
 
     protected virtual T? GetPropertyValue<T>(T? defaultValue = default, [CallerMemberName] string? name = null)
     {
         if (!_values.TryGetValue(name!, out var value))
             return default;
 
+#if NETFRAMEWORK
         return Conversions.ChangeType(value, defaultValue);
+#else
+        return DirectN.Extensions.Utilities.Conversions.ChangeType(value, defaultValue);
+#endif
     }
 
     protected virtual bool SetPropertyValue(object? value, [CallerMemberName] string? name = null)
     {
-        ExceptionExtensions.ThrowIfNull(name, nameof(name));
+        name.ThrowIfNull(nameof(name));
         if (_values.TryGetValue(name!, out var existing))
         {
             if (value == null)
@@ -41,6 +43,8 @@ public class AutoObject : INotifyPropertyChanged
 
 public class SampleCustomer : AutoObject
 {
+    public static SampleCustomer Instance { get; } = new();
+
     public SampleCustomer()
     {
         Id = Guid.NewGuid();
@@ -98,7 +102,7 @@ public class SampleCustomer : AutoObject
         }
     }
 
-    private void OnSubObjectPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void OnSubObjectPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         OnPropertyChanged(sender, new PropertyChangedEventArgs(nameof(SubObject)));
         OnPropertyChanged(sender, new PropertyChangedEventArgs(nameof(SubObjectAsObject)));
@@ -140,16 +144,26 @@ public class SampleCustomer : AutoObject
     [Category("Enums")]
     public SampleStatus StatusColor { get => Status; set => Status = value; }
 
+#if NETFRAMEWORK
     [PropertyGridPropertyOptions(IsEnum = true, EnumNames = new string[] { @"INVALID", @"VALID", "UNKNOWN" }, EnumValues = new object[] { SampleStatus.Invalid, SampleStatus.Valid, SampleStatus.Unknown })]
     [DisplayName("Status (enum as string list)")]
     [Category("Enums")]
     public string StatusColorString { get => Status.ToString(); set => Status = Conversions.ChangeType<SampleStatus>(value); }
+#else
+    [DisplayName("Status (enum as string list)")]
+    [Category("Enums")]
+    public string StatusColorString { get => Status.ToString(); set => Status = DirectN.Extensions.Utilities.Conversions.ChangeType<SampleStatus>(value); }
+#endif
 
+#if NETFRAMEWORK
     [PropertyGridPropertyOptions(IsEnum = true, IsFlagsEnum = true, EnumNames = new string[] { "First", "Second", "Third" })]
+#endif
     [Category("Enums")]
     public string? MultiEnumString { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
 
+#if NETFRAMEWORK
     [PropertyGridPropertyOptions(IsEnum = true, IsFlagsEnum = true, EnumNames = new string[] { "None", "My First", "My Second", "My Third" }, EnumValues = new object[] { 0, 1, 2, 4 })]
+#endif
     [Category("Enums")]
     public string? MultiEnumStringWithDisplay { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
 
@@ -158,10 +172,12 @@ public class SampleCustomer : AutoObject
     public TimeSpan TimeSpan { get => GetPropertyValue<TimeSpan>(); set => SetPropertyValue(value); }
 
 
+#if NETFRAMEWORK
     [Category("Security")]
     [PropertyGridPropertyOptions(EditorType = typeof(PasswordEditorCreator))]
     [DisplayName("Password")]
     public string? Password { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
+#endif
 
     [Browsable(false)]
     public string? NotBrowsable { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
@@ -328,14 +344,14 @@ public class SampleAddress : AutoObject
     {
         for (var i = 0; i < properties.Length; i++)
         {
-            if ((offset + i) >= split.Length || (offset + i) >= max)
+            if (offset + i >= split.Length || offset + i >= max)
                 return;
 
             var s = split[offset + i].Trim();
             if (s.Length == 0)
                 continue;
 
-            SetPropertyValue((object)s, properties[i]);
+            SetPropertyValue(s, properties[i]);
         }
     }
 
@@ -406,8 +422,8 @@ public enum SampleStatus
 
 public class SampleAddressConverter : TypeConverter
 {
-    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
-    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+    public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType) => sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
         if (value is string s)
             return SampleAddress.Parse(s);
@@ -418,8 +434,8 @@ public class SampleAddressConverter : TypeConverter
 
 public class SamplePointConverter : TypeConverter
 {
-    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
-    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+    public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType) => sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
         if (value is string s)
         {
@@ -430,10 +446,10 @@ public class SamplePointConverter : TypeConverter
         return base.ConvertFrom(context, culture, value);
     }
 
-    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
     {
         if (destinationType == typeof(string))
-            return ((SamplePoint)value).X + ";" + ((SamplePoint)value).Y;
+            return ((SamplePoint)value!).X + ";" + ((SamplePoint)value).Y;
 
         return base.ConvertTo(context, culture, value, destinationType);
     }

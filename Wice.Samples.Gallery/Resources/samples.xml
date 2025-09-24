@@ -1,25 +1,4 @@
 <samples>
-  <sample namespace="Samples.Collections.PropertyGrid.PropertyGridSample">void Layout(Visual parent)
-{
-    // wrap the property grid in a scroll viewer
-    var sv = new ScrollViewer
-    {
-        Height = 500,
-        Width = 500
-    };
-    parent.Children.Add(sv);
-
-    var pg = new PropertyGrid.PropertyGrid
-    {
-        CellMargin = 5
-    };
-    sv.Viewer.Child = pg;
-
-    // use a custom complex object for demonstration
-    var cus = new SampleCustomer();
-    pg.SelectedObject = cus;
-
-}</sample>
   <sample namespace="Samples.Misc.VisualsTree.VisualsTreeSample">void Layout(Visual parent)
 {
     var btn = new Button();

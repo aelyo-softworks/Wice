@@ -3,9 +3,9 @@
 // a visual button for a given sample
 public partial class SampleButton : ButtonBase
 {
-    private readonly TextBox _icon = new();
-    private readonly TextBox _title = new();
-    private readonly TextBox _description = new();
+    private readonly TextBox _icon = new() { IsEnabled = false };
+    private readonly TextBox _title = new() { IsEnabled = false };
+    private readonly TextBox _description = new() { IsEnabled = false };
 
     public SampleButton(SampleList sample)
     {

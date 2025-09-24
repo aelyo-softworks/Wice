@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System.IO;
+using Wice.Samples.Gallery.Samples.Collections.PropertyGrid;
 
 namespace Wice.Tests;
 
@@ -8,9 +9,7 @@ public class TestWindow : Window
 {
     public TestWindow()
     {
-#if DEBUG
         EnableDiagnosticKeys = true;
-#endif
         //WindowsFrameMode = WindowsFrameMode.Merged;
         Style |= WS.WS_THICKFRAME | WS.WS_CAPTION | WS.WS_SYSMENU | WS.WS_MAXIMIZEBOX | WS.WS_MINIMIZEBOX;
         //SizeToContent = DimensionOptions.WidthAndHeight;
@@ -60,7 +59,8 @@ public class TestWindow : Window
         //AddRtbHtml();
         //AddScrollableRtbRtfFile();
 
-        AddTextBar();
+        AddPropertyGrid();
+        //AddTextBar();
 
         //AddSvg();
         //DrawCurve();
@@ -140,6 +140,13 @@ public class TestWindow : Window
         //        }, true);
         //    }
         //};
+    }
+
+    public void AddPropertyGrid()
+    {
+        var pg = new PropertyGrid.PropertyGrid { Margin = D2D_RECT_F.Thickness(10, 10, 10, 10), LiveSync = true };
+        Children.Add(pg);
+        pg.SelectedObject = new Model();
     }
 
     public void AddTextBar()
@@ -2868,4 +2875,16 @@ public class TestWindow : Window
         b5.MinHeight = 10;
         b5.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Violet.ToColor());
     }
+}
+
+public class Model
+{
+    public string Name { get; set; } = Environment.UserName;
+    public int Age { get; set; } = 42;
+    public DateTime BirthDate { get; set; } = new DateTime(1980, 1, 1);
+    public bool IsMale { get; set; } = true;
+    public ConsoleColor FavoriteColor { get; set; } = ConsoleColor.Blue;
+    public float Height { get; set; } = 1.75f;
+    public double Weight { get; set; } = 70.5;
+    public SampleDaysOfWeek WorkDays { get; set; }
 }

@@ -127,10 +127,6 @@ public class PropertyGridProperty : BaseObject, IComparable, IComparable<Propert
 
     protected override bool SetPropertyValue(BaseObjectProperty property, object value, BaseObjectSetOptions options = null)
     {
-        if (property == ValueProperty)
-        {
-        }
-
         if (!base.SetPropertyValue(property, value, options))
             return false;
 

@@ -6,14 +6,12 @@
 public partial class FlagsEnumListBox : CheckBoxList, IValueable, EnumListBox.IBindList
 {
     /// <summary>
-    /// Backing property for <see cref="Value"/>.
-    /// Uses <see cref="EnumListBox.EnumTypeCheck"/> to validate/normalize the incoming value
-    /// and invalidates measure on change to refresh layout as needed.
+    /// Gets the <see cref="VisualProperty"/> representing the value of the control.
     /// </summary>
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(FlagsEnumListBox), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: EnumListBox.EnumTypeCheck);
 
     /// <summary>
-    /// Raised when <see cref="Value"/> changes (after storage).
+    /// Occurs when the value changes.
     /// </summary>
     public event EventHandler<ValueEventArgs>? ValueChanged;
 
@@ -45,14 +43,7 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, EnumListBox.IB
         return true;
     }
 
-    /// <summary>
-    /// Gets or sets the enum <see cref="System.Type"/> bound to this list.
-    /// </summary>
     Type? EnumListBox.IBindList.Type { get; set; }
-
-    /// <summary>
-    /// Indicates whether the data source needs to be (re)bound on the next <see cref="Value"/> set.
-    /// </summary>
     bool EnumListBox.IBindList.NeedBind { get; set; }
 
     /// <inheritdoc/>

@@ -2122,6 +2122,11 @@ public partial class Visual : BaseObject
             child.AddToComposition();
         }
 
+        if (this is IModalVisual modal)
+        {
+            Window?.RunTaskOnMainThread(Focus, true);
+        }
+
         if (attached)
         {
             OnAttachedToComposition(this, EventArgs.Empty);

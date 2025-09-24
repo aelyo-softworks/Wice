@@ -61,9 +61,7 @@ public partial class Window : Canvas, ITitleBarParent
     private int _lastPointerDownPositionY = int.MinValue;
     private D3DCOLORVALUE _frameColor;
     private readonly Lazy<Caret> _caret;
-#if DEBUG
     private bool _showOverdraw;
-#endif
     private bool _isResizable;
     private bool _hasFocus;
     private Visual? _focusedVisual;
@@ -311,12 +309,16 @@ public partial class Window : Canvas, ITitleBarParent
     /// Gets a value indicating whether modal elements intersect with all bounds in the window.
     /// </summary>
     protected virtual bool ModalsIntersectWithAllBounds => false;
-#if DEBUG
+
     /// <summary>
-    /// Gets or sets a value indicating whether diagnostic keys are enabled in debug builds.
+    /// Gets or sets a value indicating whether diagnostic keys are enabled.
     /// </summary>
     public virtual bool EnableDiagnosticKeys { get; set; }
-#endif
+
+    /// <summary>
+    /// Gets or sets a value indicating whether mouse event traces are enabled.
+    /// </summary>
+    public virtual bool EnableMouseEventTraces { get; set; }
 
     /// <summary>
     /// Gets the flags used to configure the creation of the Direct3D 11 device.
@@ -1088,7 +1090,7 @@ public partial class Window : Canvas, ITitleBarParent
         if (parent.Content == null)
             throw new InvalidOperationException();
 
-        if (text == null)
+        if (string.IsNullOrWhiteSpace(text))
             return;
 
         var theme = parent.GetWindowTheme();
@@ -2504,7 +2506,6 @@ public partial class Window : Canvas, ITitleBarParent
         UpdateFocus(FocusedVisual, null);
     }
 
-#if DEBUG
     private static void TraceInformation()
     {
         Application.Trace("Windows Count: " + Application.AllWindows.Count);
@@ -2586,7 +2587,6 @@ public partial class Window : Canvas, ITitleBarParent
 
         Application.Trace(_visualsTree.Dump());
     }
-#endif
 
     private void ProcessTasks()
     {
@@ -3221,30 +3221,75 @@ public partial class Window : Canvas, ITitleBarParent
         CheckVisualsTree();
 #endif
         var rc = D2D_RECT_F.Sized(e.X, e.Y, 1, 1);
-        //#if DEBUG
-        //            var stack = GetIntersectingVisuals(rc);
-        //            var i = 0;
-        //            foreach (var st in stack)
-        //            {
-        //                Application.Trace("stack[" + i + "]: " + st.Level + "/" + st.ZIndexOrDefault + " " + st.FullName);
-        //                i++;
-        //            }
-        //#endif
-        foreach (var visual in GetIntersectingVisuals(rc))
+
+        if (EnableMouseEventTraces)
         {
-            if (visual.DisablePointerEvents)
-                continue;
+            processWithTraces();
+        }
+        else
+        {
+            process();
+        }
 
-            if (!CanReceiveInput(visual))
-                continue;
+        // enable this to understand who may be stealing input
+        void processWithTraces()
+        {
+            var stack = GetIntersectingVisuals(rc);
+            var i = 0;
+            foreach (var st in stack)
+            {
+                Application.Trace("stack[" + i + "]: " + st.Level + "/" + st.ZIndexOrDefault + " " + st.FullName);
+                i++;
+            }
 
-            e._visualsStack.Add(visual);
-            if (visual == this)
-                continue;
+            foreach (var visual in GetIntersectingVisuals(rc))
+            {
+                if (visual.DisablePointerEvents)
+                {
+                    Application.Trace(" skip (DisablePointerEvents): " + visual.Level + "/" + visual.ZIndexOrDefault + " " + visual.FullName);
+                    continue;
+                }
 
-            visual.OnMouseButtonEvent(msg, e);
-            if (e.Handled)
-                break;
+                if (!CanReceiveInput(visual))
+                {
+                    Application.Trace(" skip (CanReceiveInput=false): " + visual.Level + "/" + visual.ZIndexOrDefault + " " + visual.FullName);
+                    continue;
+                }
+
+                e._visualsStack.Add(visual);
+                if (visual == this)
+                {
+                    Application.Trace(" skip (this): " + visual.Level + "/" + visual.ZIndexOrDefault + " " + visual.FullName);
+                    continue;
+                }
+
+                visual.OnMouseButtonEvent(msg, e);
+                if (e.Handled)
+                {
+                    Application.Trace(" handled by: " + visual.Level + "/" + visual.ZIndexOrDefault + " " + visual.FullName);
+                    break;
+                }
+            }
+        }
+
+        void process()
+        {
+            foreach (var visual in GetIntersectingVisuals(rc))
+            {
+                if (visual.DisablePointerEvents)
+                    continue;
+
+                if (!CanReceiveInput(visual))
+                    continue;
+
+                e._visualsStack.Add(visual);
+                if (visual == this)
+                    continue;
+
+                visual.OnMouseButtonEvent(msg, e);
+                if (e.Handled)
+                    break;
+            }
         }
     }
 
@@ -3712,7 +3757,6 @@ public partial class Window : Canvas, ITitleBarParent
 
     internal new void OnKeyEvent(KeyEventArgs e)
     {
-#if DEBUG
         if (EnableDiagnosticKeys)
         {
             if (e.Key == VIRTUAL_KEY.VK_F5)
@@ -3805,7 +3849,6 @@ public partial class Window : Canvas, ITitleBarParent
                 return;
             }
         }
-#endif
 
         OnKeyEvent(e, this);
         if (e.Handled)
@@ -3859,16 +3902,10 @@ public partial class Window : Canvas, ITitleBarParent
 
         if (!visual.DisablePointerEvents)
         {
-            var va = visual.IsActuallyVisible;
             _visualsTree?.Move(visual, renderBounds);
 
             // vtree is recomputed, remove the tooltip
             RemoveToolTip(EventArgs.Empty);
-        }
-
-        if (visual is IModalVisual modal)
-        {
-            _ = RunTaskOnMainThread(Focus, true);
         }
     }
 

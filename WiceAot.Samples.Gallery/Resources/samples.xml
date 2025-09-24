@@ -103,6 +103,24 @@
         new Tuple&lt;string, string&gt;("red", "white")
     };
 }</sample>
+  <sample namespace="Samples.Collections.PropertyGrid.PropertyGridSample">void Layout(Visual parent)
+{
+    // wrap the property grid in a scroll viewer
+    var sv = new ScrollViewer { Width = 800, Height = 500 };
+    parent.Children.Add(sv);
+
+    var pg = new PropertyGrid.PropertyGrid
+    {
+        CellMargin = 5
+    };
+    {
+    sv.Viewer.Child = pg;
+
+    // use a custom complex object for demonstration
+    var cus = new SampleCustomer();
+    pg.SelectedObject = cus;
+
+}</sample>
   <sample namespace="Samples.Effects.Contrast.ContrastSample">void Layout(Visual parent)
 {
     var visual = new Visual();
@@ -1514,16 +1532,17 @@ gma warning restore IDE0017 // Simplify object initialization
             WindowsFrameMode = WindowsFrameMode.None,
             CreateOnCursorMonitor = true,
         };
+
+        // add a Wice titlebar
+        var titleBar = new TitleBar { IsMain = true };
+        window.Children.Add(titleBar);
+
         window.ResizeClient(
             parent.Window!.DipsToPixels(400),
             parent.Window!.DipsToPixels(400)
         );
         window.Center();
         window.Show();
-
-        // add a Wice titlebar
-        var titleBar = new TitleBar { IsMain = true };
-        window.Children.Add(titleBar);
     };
 
     btn.Text.Text = "Open new window";
@@ -1646,7 +1665,7 @@ gma warning restore IDE0017 // Simplify object initialization
 }</sample>
   <sample namespace="Samples.Text.TextBox.EditableTextBoxSample">void Layout(Visual parent)
 {
-    var tb = new TextBox();
+    var tb = new TextBox { IsFocusable = true };
     parent.Children.Add(tb);
     Dock.SetDockType(tb, DockType.Top);
     tb.IsEditable = true;
@@ -1672,6 +1691,7 @@ gma warning restore IDE0017 // Simplify object initialization
             parent.Window!.DipsToPixels(50)
         ),
         ClipText = false,
+        IsFocusable = true,
         Text = "Hello World using   DirectWrite!"
     };
     Dock.SetDockType(tb, DockType.Top);
@@ -1707,7 +1727,7 @@ gma warning restore IDE0017 // Simplify object initialization
 }</sample>
   <sample namespace="Samples.Text.TextBox.SimpleTextBoxSample">void Layout(Visual parent)
 {
-    var tb = new TextBox();
+    var tb = new TextBox { IsFocusable = true };
     parent.Children.Add(tb);
     Dock.SetDockType(tb, DockType.Top);
 
@@ -1727,7 +1747,7 @@ gma warning restore IDE0017 // Simplify object initialization
     parent.Children.Add(sv);
     Dock.SetDockType(sv, DockType.Top);
 
-    var tb = new TextBox();
+    var tb = new TextBox { IsFocusable = true };
     sv.Viewer.Child = tb;
     tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Coral);
     tb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.CornflowerBlue.ToColor());

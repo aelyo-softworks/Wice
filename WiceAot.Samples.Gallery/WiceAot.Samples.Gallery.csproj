@@ -64,13 +64,16 @@
 
 	<ItemGroup>
 		<Using Include="System.Collections.Concurrent" />
+		<Using Include="System.Collections.ObjectModel" />
 		<Using Include="System.ComponentModel" />
 		<Using Include="System.Diagnostics" />
 		<Using Include="System.Diagnostics.CodeAnalysis" />
+		<Using Include="System.Globalization" />
 		<Using Include="System.Numerics" />
 		<Using Include="System.Reflection" />
-		<Using Include="System.Runtime.Versioning" />
+		<Using Include="System.Runtime.CompilerServices" />
 		<Using Include="System.Runtime.InteropServices" />
+		<Using Include="System.Runtime.Versioning" />
 		<Using Include="System.Text" />
 		<Using Include="System.Xml" />
 		<Using Include="ColorCode" />
@@ -82,6 +85,7 @@
 		<Using Include="Wice.Animation" />
 		<Using Include="Wice.Effects" />
 		<Using Include="Wice.Interop" />
+		<Using Include="Wice.PropertyGrid" />
 		<Using Include="Wice.Utilities" />
 		<Using Include="Wice.Samples.Gallery.Pages" />
 		<Using Include="Wice.Samples.Gallery.Samples" />

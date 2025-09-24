@@ -41,6 +41,9 @@
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\ListBoxSampleList.cs" Link="Samples\Collections\ListBoxSampleList.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\ListBox\AdvancedListBoxSample.cs" Link="Samples\Collections\ListBox\AdvancedListBoxSample.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\ListBox\ListBoxSample.cs" Link="Samples\Collections\ListBox\ListBoxSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\PropertyGridSampleList.cs" Link="Samples\Collections\PropertyGridSampleList.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\PropertyGrid\PropertyGridSample.cs" Link="Samples\Collections\PropertyGrid\PropertyGridSample.cs" />
+	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="Samples\Collections\PropertyGrid\SampleModel.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\ContrastSampleList.cs" Link="Samples\Effects\ContrastSampleList.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\Contrast\ContrastSample.cs" Link="Samples\Effects\Contrast\ContrastSample.cs" />
 	  <Compile Include="..\WiceAot.Samples.Gallery\Samples\Effects\GaussianBlurSampleList.cs" Link="Samples\Effects\GaussianBlurSampleList.cs" />
@@ -197,6 +200,7 @@
 		<Using Include="Wice.Animation" />
 		<Using Include="Wice.Effects" />
 		<Using Include="Wice.Interop" />
+		<Using Include="Wice.PropertyGrid" />
 		<Using Include="Wice.Utilities" />
 		<Using Include="Wice.Samples.Gallery.Pages" />
 		<Using Include="Wice.Samples.Gallery.Samples" />
@@ -222,6 +226,7 @@
 	  <Folder Include="Samples\Collections\EnumListBox\" />
 	  <Folder Include="Samples\Collections\FlagsEnumListBox\" />
 	  <Folder Include="Samples\Collections\ListBox\" />
+	  <Folder Include="Samples\Collections\PropertyGrid\" />
 	  <Folder Include="Samples\Effects\Contrast\" />
 	  <Folder Include="Samples\Effects\GaussianBlur\" />
 	  <Folder Include="Samples\Effects\Grayscale\" />

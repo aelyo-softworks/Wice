@@ -337,7 +337,7 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// <param name="value">The value to assign (may be <see langword="null"/>).</param>
     protected virtual void SetDescriptorValue(object? value)
     {
-        var cv = Conversions.ChangeType(value, Info.PropertyType);
+        var cv = Conversions.ChangeObjectType(value, Info.PropertyType);
         Info.SetValue(Source.Value, cv);
     }
 

@@ -317,10 +317,6 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// Toggles selection for the specified item or data item.
     /// </summary>
     public virtual void Toggle(object? obj) => Toggle(GetItemVisual(obj));
-
-    /// <summary>
-    /// Toggles selection state for the given item visual.
-    /// </summary>
     private void Toggle(ItemVisual? obj)
     {
         if (obj == null)
@@ -340,10 +336,6 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// Unselects the specified item or data item.
     /// </summary>
     public virtual void Unselect(object? obj) => UnselectChild(GetItemVisual(obj));
-
-    /// <summary>
-    /// Unselects the given item, raising <see cref="SelectionChanged"/> if changed.
-    /// </summary>
     private void UnselectChild(ItemVisual? obj)
     {
         if (obj == null)
@@ -359,10 +351,6 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// Selects the specified item or data item.
     /// </summary>
     public virtual void Select(object? obj) => SelectChild(GetItemVisual(obj));
-
-    /// <summary>
-    /// Selects the given item visual, honoring <see cref="SelectionMode"/>.
-    /// </summary>
     private void SelectChild(ItemVisual? obj)
     {
         if (obj == null)
@@ -655,7 +643,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     protected virtual void CreateDataItemVisual(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
-        var visual = new TextBox { IsFocusable = true };
+        var visual = new TextBox { IsEnabled = false, IsFocusable = true };
         context.DataVisual = visual;
     }
 
@@ -732,9 +720,6 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
         }
     }
 
-    /// <summary>
-    /// Finds the index of the focused child (or a child with any focused descendant), or -1 if none.
-    /// </summary>
     private int GetFocusedIndex() => Children.IndexOf(c => c.IsFocusedOrAnyChildrenFocused);
 
     /// <inheritdoc/>
@@ -746,7 +731,6 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
         if (Children.Count > 0)
         {
             Visual? newChild = null;
-            // note contrary to most UI, we loop when under or over, we don't stop
             int index;
             switch (e.Key)
             {

@@ -2,31 +2,19 @@
 
 /// <summary>
 /// Visual representing a selectable item container.
-/// - Exposes an IsSelected boolean state (dynamic VisualProperty) and raises <see cref="IsSelectedChanged"/> when it changes.
-/// - When clicked (mouse button down) it toggles the selection and attempts to focus its single child.
-/// - If bound to a data object implementing <see cref="INotifyPropertyChanged"/>, re-invokes <see cref="DataBinder"/>
-///   to update the child when the data changes.
 /// </summary>
 public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISelectable
 {
     /// <summary>
-    /// Dynamic visual property backing <see cref="IsSelected"/>. Triggers a Measure invalidation when changed.
-    /// Default value is <see langword="false"/>.
+    /// Gets the dependency property that represents the selection state of an item.
     /// </summary>
     public static VisualProperty IsSelectedProperty { get; } = VisualProperty.Add(typeof(ItemVisual), nameof(IsSelected), VisualPropertyInvalidateModes.Measure, false);
 
     /// <summary>
-    /// Raised after <see cref="IsSelected"/> changes and when <see cref="RaiseIsSelectedChanged"/> is <see langword="true"/>.
+    /// Occurs when the selection state changes.
     /// </summary>
     public event EventHandler<ValueEventArgs<bool>>? IsSelectedChanged;
 
-    /// <summary>
-    /// Holds the current data item cast to <see cref="INotifyPropertyChanged"/> (when available) in order to
-    /// subscribe to its <see cref="INotifyPropertyChanged.PropertyChanged"/> and re-run the <see cref="DataBinder"/>.
-    /// Lifecycle:
-    /// - Unsubscribed when the Data property changes away from an observable instance.
-    /// - Subscribed when the Data property is set to an observable instance.
-    /// </summary>
     private INotifyPropertyChanged? _notifyPropertyChanged;
 
     /// <summary>
@@ -38,14 +26,10 @@ public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISe
     }
 
     /// <summary>
-    /// Controls whether <see cref="IsSelectedChanged"/> is raised when <see cref="IsSelected"/> changes.
-    /// </summary>
-    bool ISelectable.RaiseIsSelectedChanged { get => RaiseIsSelectedChanged; set => RaiseIsSelectedChanged = value; }
-
-    /// <summary>
     /// Virtual hook to enable/disable event emission for selection changes.
     /// </summary>
     protected virtual bool RaiseIsSelectedChanged { get; set; }
+    bool ISelectable.RaiseIsSelectedChanged { get => RaiseIsSelectedChanged; set => RaiseIsSelectedChanged = value; }
 
     /// <summary>
     /// Provides data-binding logic used to map the current data item onto the child visual.
@@ -61,23 +45,13 @@ public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISe
     [Category(CategoryBehavior)]
     public bool IsSelected { get => (bool)GetPropertyValue(IsSelectedProperty)!; set => SetPropertyValue(IsSelectedProperty, value); }
 
-    /// <summary>
-    /// Returns the focusable visual for this container, which is its single child.
-    /// </summary>
     Visual? IFocusableParent.FocusableVisual => Child;
+    float? IFocusableParent.FocusOffset => null;
 
 #if !NETFRAMEWORK
-    /// <summary>
-    /// Returns the shape type to use for focus adorner. Null means default focus visuals.
-    /// </summary>
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
     Type? IFocusableParent.FocusVisualShapeType => null;
-
-    /// <summary>
-    /// Optional offset for focus adorner. Null means default offset.
-    /// </summary>
-    float? IFocusableParent.FocusOffset => null;
 
     /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
@@ -110,10 +84,6 @@ public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISe
         return true;
     }
 
-    /// <summary>
-    /// Handles <see cref="INotifyPropertyChanged.PropertyChanged"/> for the current data object.
-    /// Re-invokes the <see cref="DataBinder"/>'s DataItemVisualBinder with a context targeting the child visual.
-    /// </summary>
     private void OnDataPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         var vb = DataBinder?.DataItemVisualBinder;
@@ -138,7 +108,6 @@ public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISe
         if (Parent?.IsEnabled == false)
             return;
 
-        Application.Trace("ItemVisual");
         // e.Handled = true;
         IsSelected = !IsSelected;
         Child?.Focus();

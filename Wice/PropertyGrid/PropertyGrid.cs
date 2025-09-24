@@ -161,13 +161,13 @@ public class PropertyGrid : Grid
 #endif
 
             EditorMode = EditorMode.NonModal,
-            HorizontalAlignment = Alignment.Stretch
         };
+
+        host.Header.Panel.VerticalAlignment = Alignment.Center;
+        host.Header.Text.IsFocusable = false;
+        host.Header.Text.IsEnabled = false;
         host.Header.Text.Text = visual.Property.TextValue;
         host.Header.Text.CopyFrom(this);
-        host.Header.Panel.Margin = 0;
-        host.Header.SelectedButtonText.Opacity = 0;
-        host.MouseOverChanged += (s, e) => host.Header.SelectedButtonText.Opacity = host.IsMouseOver ? 1 : 0;
         host.Header.Text.PropertyChanged += (s, e) =>
         {
             if (e.PropertyName == nameof(TextBox.FontSize))

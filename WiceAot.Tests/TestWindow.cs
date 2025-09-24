@@ -1,5 +1,7 @@
 ﻿using WebView2;
 using Wice.Interop;
+using Wice.PropertyGrid;
+using Wice.Samples.Gallery.Samples.Collections.PropertyGrid;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
@@ -30,12 +32,13 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
+        AddPropertyGrid();
         //AddLogVisual();
         //AddFastLogVisual();
         //ShowTabs();
         //AddScrollableRtbRtfFile();
         //ChoosePdfView();
-        ShowBrowser();
+        //ShowBrowser();
         //LoadSvg();
         //Show64bppImageStream();
         //ShowWebView();
@@ -71,6 +74,13 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void AddPropertyGrid()
+    {
+        var pg = new PropertyGrid<Model> { Margin = D2D_RECT_F.Thickness(10, 10, 10, 10), LiveSync = true };
+        Children.Add(pg);
+        pg.SelectedObject = new Model();
     }
 
     public void AddLogVisual()
@@ -1239,4 +1249,16 @@ internal partial class TestWindow : Window
             }
         };
     }
+}
+
+public class Model
+{
+    public string Name { get; set; } = Environment.UserName;
+    public int Age { get; set; } = 42;
+    public DateTime BirthDate { get; set; } = new DateTime(1980, 1, 1);
+    public bool IsMale { get; set; } = true;
+    public ConsoleColor FavoriteColor { get; set; } = ConsoleColor.Blue;
+    public float Height { get; set; } = 1.75f;
+    public double Weight { get; set; } = 70.5;
+    public SampleDaysOfWeek WorkDays { get; set; }
 }

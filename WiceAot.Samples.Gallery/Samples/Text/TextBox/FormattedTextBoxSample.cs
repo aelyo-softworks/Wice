@@ -20,6 +20,7 @@ public class FormattedTextBoxSample : Sample
                 parent.Window!.DipsToPixels(50)
             ),
             ClipText = false,
+            IsFocusable = true,
             Text = "Hello World using   DirectWrite!"
         };
         Dock.SetDockType(tb, DockType.Top);

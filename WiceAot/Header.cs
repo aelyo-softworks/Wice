@@ -53,7 +53,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
             throw new InvalidOperationException();
 
 #if DEBUG
-        Selection.Name ??= nameof(Selection);
+        Selection.Name = "headerSelection";
 #endif
         Children.Add(Selection);
         Selection.IsVisible = false;
@@ -63,7 +63,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
         if (Panel == null)
             throw new InvalidOperationException();
 #if DEBUG
-        Panel.Name ??= "headerChild";
+        Panel.Name = "headerPanel";
 #endif
         Children.Add(Panel);
 
@@ -72,7 +72,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
             throw new InvalidOperationException();
 
 #if DEBUG
-        Icon.Name ??= nameof(Icon);
+        Icon.Name = "headerIcon";
 #endif
         Panel.Children.Add(Icon);
 
@@ -81,7 +81,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
             throw new InvalidOperationException();
 
 #if DEBUG
-        SelectedButton.Name ??= nameof(SelectedButton);
+        SelectedButton.Name = "headerSelectedButton";
 #endif
         Dock.SetDockType(SelectedButton, DockType.Right);
         Panel.Children.Add(SelectedButton);
@@ -89,8 +89,9 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
         SelectedButtonText = new TextBox
         {
 #if DEBUG
-            Name = "selectedButtonText",
+            Name = "headerSelectedButtonText",
 #endif
+            IsEnabled = false,
             FontFamilyName = GetWindowTheme().SymbolFontName,
             Text = MDL2GlyphResource.ChevronDown,
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER
@@ -114,7 +115,7 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
             throw new InvalidOperationException();
 
 #if DEBUG
-        Text.Name ??= nameof(Text);
+        Text.Name = "headerText";
 #endif
         Panel.Children.Add(Text);
         Text.TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER;

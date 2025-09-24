@@ -15,7 +15,7 @@ public class UnicodeTextBoxSample : Sample
         parent.Children.Add(sv);
         Dock.SetDockType(sv, DockType.Top);
 
-        var tb = new Wice.TextBox();
+        var tb = new Wice.TextBox { IsFocusable = true };
         sv.Viewer.Child = tb;
         tb.SelectionBrush = new SolidColorBrush(D3DCOLORVALUE.Coral);
         tb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.CornflowerBlue.ToColor());

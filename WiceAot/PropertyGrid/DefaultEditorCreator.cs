@@ -7,7 +7,11 @@
 /// The selected object type for the owning <see cref="PropertyGrid{T}"/>. Annotated to preserve public properties
 /// for trimming/AOT so editors can reflect on them.
 /// </typeparam>
+#if NETFRAMEWORK
+public class DefaultEditorCreator : IEditorCreator
+#else
 public class DefaultEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : IEditorCreator<T>
+#endif
 {
     /// <summary>
     /// Creates a new <see cref="TextBox"/> editor for the specified property value visual.
@@ -16,9 +20,13 @@ public class DefaultEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <returns>
     /// A configured <see cref="TextBox"/> instance, or <see langword="null"/> when creation is not applicable.
     /// </returns>
-    public object? CreateEditor(PropertyValueVisual<T> value)
+#if NETFRAMEWORK
+    public virtual object? CreateEditor(PropertyValueVisual value)
+#else
+    public virtual object? CreateEditor(PropertyValueVisual<T> value)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(value);
+        ExceptionExtensions.ThrowIfNull(value, nameof(value));
 
         var text = new TextBox
         {
@@ -27,14 +35,19 @@ public class DefaultEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
 #endif
             TextChangedTrigger = EventTrigger.LostFocus,
             IsEditable = value.Property.IsReadWrite,
+            IsFocusable = true,
+            IsEnabled = value.Property.IsReadWrite,
             TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER,
             Text = value.Property.TextValue ?? string.Empty
         };
+
         text.ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, text.Text);
         value.DoWhenAttachedToParent(() =>
         {
             text.CopyFrom(value.Parent);
+            text.Margin = value.GetWindowTheme().HeaderPanelMargin;
         });
+
         return text;
     }
 
@@ -46,9 +59,13 @@ public class DefaultEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <returns>
     /// The updated editor instance (same reference when applicable), or <see langword="null"/> when no editor is available.
     /// </returns>
-    public object? UpdateEditor(PropertyValueVisual<T> value, object? editor)
+#if NETFRAMEWORK
+    public virtual object? UpdateEditor(PropertyValueVisual value, object? editor)
+#else
+    public virtual object? UpdateEditor(PropertyValueVisual<T> value, object? editor)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(value);
+        ExceptionExtensions.ThrowIfNull(value, nameof(value));
         if (editor is TextBox tb)
         {
             tb.Text = value.Property.TextValue ?? string.Empty;

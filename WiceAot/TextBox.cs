@@ -794,9 +794,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return metrics;
     }
 
-    /// <summary>
-    /// Creates or retrieves a DirectWrite text format for the current theme and control values.
-    /// </summary>
     internal IComObject<IDWriteTextFormat> GetFormat()
     {
         var format = Application.CurrentResourceManager.GetTextFormat(GetWindowTheme(), this)!;
@@ -1248,7 +1245,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 
         if (brush == null)
         {
-            Application.Trace(this + " has no brush defined.");
+            //Application.Trace(this + " has no brush defined.");
             return;
         }
 
@@ -1764,10 +1761,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         if (e.Button == MouseButton.Left)
         {
             _selecting = true;
-            //e.Handled = true;
             Window?.CaptureMouse(this);
             var shift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
             SetSelectionFromPoint(e, shift);
+            e.Handled = true;
         }
     }
 

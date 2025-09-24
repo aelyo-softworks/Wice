@@ -8,7 +8,11 @@
 /// The selected object type displayed by the <see cref="PropertyGrid{T}"/>. The attribute ensures public properties
 /// are preserved for trimming/AOT scenarios.
 /// </typeparam>
+#if NETFRAMEWORK
+public class BooleanEditorCreator : IEditorCreator
+#else
 public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : IEditorCreator<T>
+#endif
 {
     /// <summary>
     /// Creates a new <see cref="ToggleSwitch"/> editor for the given property value visual.
@@ -17,9 +21,13 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <returns>
     /// A <see cref="ToggleSwitch"/> initialized from the underlying boolean property when available.
     /// </returns>
-    public object? CreateEditor(PropertyValueVisual<T> value)
+#if NETFRAMEWORK
+    public virtual object? CreateEditor(PropertyValueVisual value)
+#else
+    public virtual object? CreateEditor(PropertyValueVisual<T> value)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(value);
+        ExceptionExtensions.ThrowIfNull(value, nameof(value));
 
         var toggle = new ToggleSwitch { HorizontalAlignment = Alignment.Near };
         toggle.CopyStyleFrom(value.Property.Source.Grid);
@@ -51,6 +59,8 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
         {
             toggle.Value = targetValue;
         }
+
+        toggle.Margin = value.GetWindowTheme().HeaderPanelMargin;
         return toggle;
     }
 
@@ -60,9 +70,13 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <param name="value">The property value visual that owns the editor.</param>
     /// <param name="editor">The current editor instance.</param>
     /// <returns>The same editor instance that was provided.</returns>
-    public object? UpdateEditor(PropertyValueVisual<T> value, object? editor)
+#if NETFRAMEWORK
+    public virtual object? UpdateEditor(PropertyValueVisual value, object? editor)
+#else
+    public virtual object? UpdateEditor(PropertyValueVisual<T> value, object? editor)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(value);
+        ExceptionExtensions.ThrowIfNull(value, nameof(value));
         return editor;
     }
 }

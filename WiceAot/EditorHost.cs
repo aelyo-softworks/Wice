@@ -18,7 +18,7 @@ public partial class EditorHost : HeaderedContent
     /// <summary>
     /// Gets or sets the editor mode that influences dialog modality/overlay at open time.
     /// </summary>
-    public EditorMode EditorMode { get; set; }
+    public virtual EditorMode EditorMode { get; set; }
 
     /// <summary>
     /// Gets the current dialog instance managed by this host, or null when no dialog is open.
@@ -48,8 +48,8 @@ public partial class EditorHost : HeaderedContent
                         dlg.ShowWindowOverlay = false;
                     }
 
-                    dlg.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightPink.ToColor());
-                    dlg.PlacementMode = PlacementMode.OuterBottomRight;
+                    dlg.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Transparent.ToColor());
+                    dlg.PlacementMode = PlacementMode.Center;
                     dlg.PlacementTarget = this;
                     Window.Children.Add(dlg);
                     Dialog = dlg;

@@ -15,16 +15,17 @@ public class TitleBarSample : Sample
                 WindowsFrameMode = WindowsFrameMode.None,
                 CreateOnCursorMonitor = true,
             };
+
+            // add a Wice titlebar
+            var titleBar = new Wice.TitleBar { IsMain = true };
+            window.Children.Add(titleBar);
+
             window.ResizeClient(
                 parent.Window!.DipsToPixels(400),
                 parent.Window!.DipsToPixels(400)
             );
             window.Center();
             window.Show();
-
-            // add a Wice titlebar
-            var titleBar = new Wice.TitleBar { IsMain = true };
-            window.Children.Add(titleBar);
         };
 
         btn.Text.Text = "Open new window";

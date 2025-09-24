@@ -36,10 +36,7 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     public static VisualProperty CellMarginProperty { get; } = VisualProperty.Add(typeof(PropertyGrid<T>), nameof(CellMargin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
 
     /// <summary>
-    /// Initializes the grid with three columns:
-    /// - Column 0: property names (Auto size).
-    /// - Column 1: splitter (fixed theme thickness).
-    /// - Column 2: property editors (fills remaining space).
+    /// Initializes a new instance of the <see cref="PropertyGrid"/> class.
     /// </summary>
     public PropertyGrid()
     {
@@ -246,13 +243,13 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
 #endif
 
             EditorMode = EditorMode.NonModal,
-            HorizontalAlignment = Alignment.Stretch
         };
+
+        host.Header.Panel.VerticalAlignment = Alignment.Center;
+        host.Header.Text.IsFocusable = false;
+        host.Header.Text.IsEnabled = false;
         host.Header.Text.Text = visual.Property.TextValue ?? string.Empty;
         host.Header.Text.CopyFrom(this);
-        host.Header.Panel.Margin = 0;
-        host.Header.SelectedButtonText.Opacity = 0;
-        host.MouseOverChanged += (s, e) => host.Header.SelectedButtonText.Opacity = host.IsMouseOver ? 1 : 0;
         host.Header.Text.PropertyChanged += (s, e) =>
         {
             if (e.PropertyName == nameof(TextBox.FontSize))

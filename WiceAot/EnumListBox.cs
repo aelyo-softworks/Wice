@@ -1,17 +1,12 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// A ListBox specialized for enumerations, including [Flags] enums.
-/// - When <see cref="Value"/> is set with an enum instance, the control auto-binds its <see cref="ListBox.DataSource"/>
-///   to items representing the enum values (via <c>EnumDataSource.FromValue</c>) the first time a new enum type is encountered.
-/// - Selecting an item of type <see cref="EnumBitValue"/> updates <see cref="Value"/> accordingly.
-/// - Changes to <see cref="Value"/> raise <see cref="ValueChanged"/>.
+/// Represents a specialized <see cref="ListBox"/> control for selecting values from an enumeration.
 /// </summary>
 public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
 {
     /// <summary>
-    /// Backing <see cref="VisualProperty"/> for <see cref="Value"/>. Changing triggers a Measure invalidation
-    /// and routes through <see cref="EnumTypeCheck(BaseObject, object?)"/> for validation/bind-triggering.
+    /// Gets the visual property representing the value of the control.
     /// </summary>
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(EnumListBox), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: EnumTypeCheck);
 
@@ -20,29 +15,12 @@ public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
     /// </summary>
     public event EventHandler<ValueEventArgs>? ValueChanged;
 
-    /// <summary>
-    /// Internal contract used to track the current enum <see cref="Type"/> and whether items need to be re-bound.
-    /// </summary>
     internal interface IBindList
     {
-        /// <summary>
-        /// The enum <see cref="Type"/> currently bound. Becomes non-null after the first valid <see cref="Value"/> assignment.
-        /// </summary>
         Type? Type { get; set; }
-        /// <summary>
-        /// Indicates that the <see cref="ListBox.DataSource"/> must be rebuilt from the current <see cref="Value"/>.
-        /// Set to true when the enum type changes.
-        /// </summary>
         bool NeedBind { get; set; }
     }
 
-    /// <summary>
-    /// Validates that the incoming <paramref name="value"/> is an enum and, when the enum <see cref="Type"/> changes,
-    /// marks the instance to rebind its items.
-    /// </summary>
-    /// <param name="obj">The target object (expected to be an <see cref="EnumListBox"/>).</param>
-    /// <param name="value">The value being set.</param>
-    /// <returns>The validated value.</returns>
     internal static object? EnumTypeCheck(BaseObject obj, object? value)
     {
         if (value != null)
@@ -93,9 +71,7 @@ public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
         return true;
     }
 
-    /// <inheritdoc cref="IBindList.Type"/>
     Type? IBindList.Type { get; set; }
-    /// <inheritdoc cref="IBindList.NeedBind"/>
     bool IBindList.NeedBind { get; set; }
 
     /// <inheritdoc/>

@@ -14,10 +14,7 @@ public sealed partial class GalleryWindow : Window, IDisposable
     // define Window settings
     public GalleryWindow()
     {
-#if DEBUG
         EnableDiagnosticKeys = true;
-#endif
-
         CreateOnCursorMonitor = true;
         // we draw our own titlebar using Wice itself
         WindowsFrameMode = WindowsFrameMode.None;

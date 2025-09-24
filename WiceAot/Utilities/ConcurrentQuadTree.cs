@@ -60,7 +60,6 @@ public class ConcurrentQuadTree<T> : IQuadTree<T> where T : notnull
     /// <inheritdoc />
     public override string ToString() => Bounds.ToString();
 
-#if DEBUG
     /// <summary>
     /// Returns a human-readable dump of the nodes stored in the tree (for debugging).
     /// </summary>
@@ -82,7 +81,6 @@ public class ConcurrentQuadTree<T> : IQuadTree<T> where T : notnull
             writer.WriteLine("N: " + node);
         }
     }
-#endif
 
     /// <summary>
     /// Inserts an item into the quadtree with the specified <paramref name="bounds"/>.

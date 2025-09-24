@@ -34,6 +34,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Compile Include="..\WiceAot.Samples.Gallery\Samples\Collections\PropertyGrid\SampleModel.cs" Link="SampleModel.cs" />
 		<Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
 	</ItemGroup>
 
@@ -93,15 +94,21 @@
 		<Using Include="DirectN" />
 		<Using Include="DirectN.Extensions" />
 		<Using Include="DirectN.Extensions.Com" />
+		<Using Include="System.Collections.ObjectModel" />
+		<Using Include="System.ComponentModel" />
 		<Using Include="System.Diagnostics" />
 		<Using Include="System.Diagnostics.CodeAnalysis" />
+		<Using Include="System.Globalization" />
 		<Using Include="System.Numerics" />
 		<Using Include="System.Reflection" />
-		<Using Include="System.Runtime.Versioning" />
+		<Using Include="System.Runtime.CompilerServices" />
 		<Using Include="System.Runtime.InteropServices" />
+		<Using Include="System.Runtime.Versioning" />
+		<Using Include="System.Text" />
 		<Using Include="Wice" />
 		<Using Include="Wice.Animation" />
 		<Using Include="Wice.Effects" />
+		<Using Include="Wice.PropertyGrid" />
 		<Using Include="Wice.Utilities" />
 	</ItemGroup>
 

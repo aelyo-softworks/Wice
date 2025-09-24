@@ -6,7 +6,11 @@
 /// <typeparam name="T">
 /// The selected object type for the owning <see cref="PropertyGrid{T}"/>. The attribute requires public properties for trimming.
 /// </typeparam>
+#if NETFRAMEWORK
+public class EnumEditorCreator : IEditorCreator
+#else
 public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : IEditorCreator<T>
+#endif
 {
     /// <summary>
     /// Creates and wires an editor host that lets the user pick a value for an enum (or [Flags] enum) property.
@@ -15,32 +19,37 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// <returns>
     /// The created editor host instance, or null when the grid declined to create one.
     /// </returns>
-    public object? CreateEditor(PropertyValueVisual<T> value)
+#if NETFRAMEWORK
+    public virtual object? CreateEditor(PropertyValueVisual value)
+#else
+    public virtual object? CreateEditor(PropertyValueVisual<T> value)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(value);
+        ExceptionExtensions.ThrowIfNull(value, nameof(value));
 
         // Ask the grid to provide a host for the editor UI of this property.
-        var editor = value.Property.Source.Grid.CreateEditorHost(value);
-        if (editor != null)
+        var host = value.Property.Source.Grid.CreateEditorHost(value);
+        if (host != null)
         {
             // Copy header typography from the parent once the visual is part of the tree.
             value.DoWhenAttachedToParent(() =>
             {
                 var parentFontSize = (float?)TextBox.FontSizeProperty.GetValue(value.Parent!);
                 // Keep the editor header text style consistent with the parent value visual.
-                editor.Header.Text.CopyFrom(value.Parent);
+                host.Header.Text.CopyFrom(value.Parent);
 
                 var fontSize = parentFontSize ?? value.GetWindowTheme().DefaultFontSize;
-                editor.Header.Height = fontSize + 4;
+                host.Header.Height = fontSize + 4;
             });
 
             // Populate the editor dialog lazily on open.
-            editor.DialogOpened += (s, e) =>
+            host.DialogOpened += (s, e) =>
             {
                 object child;
 
                 // Choose a specialized editor depending on whether the enum is flagged.
-                if (Conversions.IsFlagsEnum(value.Property.Type!))
+                var flags = Conversions.IsFlagsEnum(value.Property.Type);
+                if (flags)
                 {
                     var flb = new FlagsEnumListBox();
                     if (value.Property.TryGetTargetValue(out var targetValue))
@@ -82,7 +91,7 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
                 // Inject the picker visual into the dialog content.
                 if (child is Visual visual)
                 {
-                    editor.Dialog?.Content.Children.Add(visual);
+                    host.Dialog?.Content.Children.Add(visual);
                 }
 
                 // Bridge editor value changes back to the underlying property value.
@@ -91,11 +100,15 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
                     valueable.ValueChanged += (s2, e2) =>
                     {
                         value.Property.Value = e2.Value;
+                        if (!flags)
+                        {
+                            host.CloseDialog();
+                        }
                     };
                 }
             };
         }
-        return editor;
+        return host;
     }
 
     /// <summary>
@@ -104,9 +117,13 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// <param name="value">The host value visual.</param>
     /// <param name="editor">The current editor instance.</param>
     /// <returns>The same <paramref name="editor"/> instance (no-op).</returns>
-    public object? UpdateEditor(PropertyValueVisual<T> value, object? editor)
+#if NETFRAMEWORK
+    public virtual object? UpdateEditor(PropertyValueVisual value, object? editor)
+#else
+    public virtual object? UpdateEditor(PropertyValueVisual<T> value, object? editor)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(value);
+        ExceptionExtensions.ThrowIfNull(value, nameof(value));
         return editor;
     }
 }

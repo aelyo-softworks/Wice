@@ -41,10 +41,6 @@ public partial class ResourceManager
     /// </summary>
     public IComObject<IDWriteFactory> DWriteFactory { get; }
 
-#if DEBUG
-    /// <summary>
-    /// Emits a detailed trace of cached resources and render disposables per window (debug builds only).
-    /// </summary>
     internal void TraceInformation()
     {
         var sb = new StringBuilder();
@@ -73,7 +69,6 @@ public partial class ResourceManager
 
         Application.Trace(sb.ToString());
     }
-#endif
 
     private enum Domain
     {

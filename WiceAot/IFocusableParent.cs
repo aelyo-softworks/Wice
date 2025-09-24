@@ -1,9 +1,8 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// Contract for a visual that can delegate keyboard focus to a designated child
-/// and provide customization hints for how a focus cue (focus adorners/visual)
-/// should be rendered around it.
+/// Represents a parent element that can delegate focus to a specific visual and provides customization options for
+/// focus cues.
 /// </summary>
 public interface IFocusableParent
 {
@@ -29,7 +28,7 @@ public interface IFocusableParent
     Type? FocusVisualShapeType { get; }
 
     /// <summary>
-    /// Gets an optional offset, in device-independent pixels (DIPs), applied when drawing the focus cue.
+    /// Gets an optional offset applied when drawing the focus cue.
     /// </summary>
     /// <value>
     /// A positive or negative offset in DIPs to expand or contract the focus outline relative to the
