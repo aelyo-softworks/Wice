@@ -83,12 +83,6 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
                         {
                             tb.CopyFrom(value.Parent);
                         }
-
-                        // TODO: adjust item brushes if needed
-                        // if (e2.Value.ItemVisual != null)
-                        // {
-                        //     e2.Value.ItemVisual.RenderBrush = null;
-                        // }
                     };
                 }
 

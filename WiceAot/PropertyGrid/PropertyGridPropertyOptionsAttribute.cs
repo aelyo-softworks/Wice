@@ -29,43 +29,4 @@ public sealed class PropertyGridPropertyOptionsAttribute : Attribute
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
     public Type? EditorCreatorType { get; set; }
-
-#if NETFRAMEWORK
-    internal (object?, IEditorCreator?) CreateEditor(PropertyValueVisual value)
-#else
-    internal (object? Editor, IEditorCreator<T>? EditorCreator) CreateEditor<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyValueVisual<T> value)
-#endif
-    {
-#if NETFRAMEWORK
-        var creator = value.Property.Value as IEditorCreator;
-#else
-        var creator = value.Property.Value as IEditorCreator<T>;
-#endif
-        if (creator == null)
-        {
-            if (EditorCreatorType != null)
-            {
-                var editorCreator = Activator.CreateInstance(EditorCreatorType);
-#if NETFRAMEWORK
-                creator = editorCreator as IEditorCreator;
-                if (creator == null)
-                    throw new WiceException("0024: type '" + EditorCreatorType.FullName + "' doesn't implement the " + nameof(IEditorCreator) + " interface.");
-#else
-                creator = editorCreator as IEditorCreator<T>;
-                if (creator == null)
-                    throw new WiceException("0024: type '" + EditorCreatorType.FullName + "' doesn't implement the " + nameof(IEditorCreator<T>) + " interface.");
-#endif
-            }
-        }
-
-        if (creator != null)
-        {
-            var editor = creator.CreateEditor(value);
-            if (editor != null)
-                return (editor, creator);
-        }
-
-        // fall back to default editor
-        return (value.CreateDefaultEditor(), null);
-    }
 }

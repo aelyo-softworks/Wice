@@ -14,6 +14,8 @@ public class BooleanEditorCreator : IEditorCreator
 public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : IEditorCreator<T>
 #endif
 {
+    private readonly ToggleSwitch _toggle = new();
+
     /// <summary>
     /// Creates a new <see cref="ToggleSwitch"/> editor for the given property value visual.
     /// </summary>
@@ -29,8 +31,8 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
     {
         ExceptionExtensions.ThrowIfNull(value, nameof(value));
 
-        var toggle = new ToggleSwitch { HorizontalAlignment = Alignment.Near };
-        toggle.CopyStyleFrom(value.Property.Source.Grid);
+        _toggle.HorizontalAlignment = Alignment.Near;
+        _toggle.CopyStyleFrom(value.Property.Source.Grid);
 
         if (value.Property.Name != null)
         {
@@ -39,17 +41,17 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
             {
                 if (tb.FontSize.HasValue)
                 {
-                    toggle.AutoSize = false;
-                    toggle.Height = tb.FontSize.Value;
-                    toggle.Width = tb.FontSize.Value * 2; // Approximate width for toggle switch
+                    _toggle.AutoSize = false;
+                    _toggle.Height = tb.FontSize.Value;
+                    _toggle.Width = tb.FontSize.Value * 2; // Approximate width for toggle switch
                 }
 
                 if (((IPropertyOwner)tb).TryGetPropertyValue(TextBox.ForegroundBrushProperty, out var foreground) &&
                     foreground is SolidColorBrush color)
                 {
-                    toggle.DoWhenAttachedToComposition(() =>
+                    _toggle.DoWhenAttachedToComposition(() =>
                     {
-                        toggle.OffPathBrush = toggle.Compositor!.CreateColorBrush(color.Color.ToColor());
+                        _toggle.OffPathBrush = _toggle.Compositor!.CreateColorBrush(color.Color.ToColor());
                     });
                 }
             }
@@ -57,10 +59,10 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
 
         if (value.Property.TryGetTargetValue(out bool targetValue))
         {
-            toggle.Value = targetValue;
+            _toggle.Value = targetValue;
         }
 
-        return toggle;
+        return _toggle;
     }
 
     /// <summary>
@@ -76,6 +78,11 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
 #endif
     {
         ExceptionExtensions.ThrowIfNull(value, nameof(value));
+
+        if (value.Property.TryGetTargetValue(out bool targetValue))
+        {
+            _toggle.Value = targetValue;
+        }
         return editor;
     }
 }

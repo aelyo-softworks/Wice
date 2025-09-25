@@ -97,7 +97,7 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
     /// A boolean, enum, or default editor creator depending on <see cref="Property"/>.
     /// </returns>
 #if NETFRAMEWORK
-    public virtual IEditorCreator CreateEditorCreator()
+    public virtual IEditorCreator CreateDefaultEditorCreator()
     {
         if (typeof(bool).IsAssignableFrom(Property.Type))
             return new BooleanEditorCreator();
@@ -111,7 +111,7 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
         return new DefaultEditorCreator();
     }
 #else
-    public virtual IEditorCreator<T> CreateEditorCreator()
+    public virtual IEditorCreator<T> CreateDefaultEditorCreator()
     {
         if (typeof(bool).IsAssignableFrom(Property.Type))
             return new BooleanEditorCreator<T>();
@@ -127,33 +127,60 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
 #endif
 
     /// <summary>
-    /// Creates the default editor using the selected <see cref="EditorCreator"/>.
-    /// </summary>
-    /// <returns>The created editor instance or <see langword="null"/>.</returns>
-    public virtual object? CreateDefaultEditor()
-    {
-        EditorCreator = CreateEditorCreator();
-        if (EditorCreator == null)
-            return null;
-
-        return EditorCreator.CreateEditor(this);
-    }
-
-    /// <summary>
     /// Creates the editor based on <see cref="PropertyGridPropertyOptionsAttribute"/> set on the target property,
     /// or uses default behavior when none is provided.
     /// </summary>
-    public virtual void CreateEditor()
+    protected internal virtual void CreateEditor()
     {
         var options = Property.Options ?? new PropertyGridPropertyOptionsAttribute();
-        var editorAndCreator = options.CreateEditor(this);
+        var cae = CreateCreatorAndEditor(options);
+        EditorCreator = cae?.Creator;
+        AddEditor(cae?.Editor);
+    }
+
+    /// <summary>
+    /// Creates an instance of <see cref="CreatorAndEditor"/> that contains an editor creator and its associated editor.
+    /// </summary>
+    /// <param name="options">Optional configuration for the editor creator. If specified, the <see
+    /// cref="PropertyGridPropertyOptionsAttribute.EditorCreatorType"/>  property may be used to determine the type of
+    /// the editor creator to instantiate.</param>
+    /// <returns>A <see cref="CreatorAndEditor"/> instance containing the editor creator and the created editor, or <see
+    /// langword="null"/>  if no suitable editor creator or editor could be created.</returns>
+    public virtual CreatorAndEditor? CreateCreatorAndEditor(PropertyGridPropertyOptionsAttribute? options = null)
+    {
 #if NETFRAMEWORK
-        EditorCreator = editorAndCreator.Item2;
-        AddEditor(editorAndCreator.Item1);
+        var creator = Property.Value as IEditorCreator;
 #else
-        EditorCreator = editorAndCreator.EditorCreator;
-        AddEditor(editorAndCreator.Editor);
+        var creator = Property.Value as IEditorCreator<T>;
 #endif
+        if (creator == null)
+        {
+            var type = options?.EditorCreatorType;
+            if (type != null)
+            {
+                var editorCreator = Activator.CreateInstance(type);
+#if NETFRAMEWORK
+                creator = editorCreator as IEditorCreator;
+                if (creator == null)
+                    throw new WiceException("0024: type '" + type.FullName + "' doesn't implement the " + nameof(IEditorCreator) + " interface.");
+#else
+                creator = editorCreator as IEditorCreator<T>;
+                if (creator == null)
+                    throw new WiceException("0024: type '" + type.FullName + "' doesn't implement the " + nameof(IEditorCreator<T>) + " interface.");
+#endif
+            }
+        }
+
+        // fall back to default editor
+        creator ??= CreateDefaultEditorCreator();
+        if (creator != null)
+        {
+            var editor = creator.CreateEditor(this);
+            if (editor != null)
+                return new CreatorAndEditor(creator, editor);
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -194,4 +221,30 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
 
         Editor = editor;
     }
+
+#if NETFRAMEWORK
+    public class CreatorAndEditor(IEditorCreator? creator, object? editor)
+    {
+        public IEditorCreator? Creator { get; } = creator;
+        public object? Editor { get; } = editor;
+    }
+#else
+    /// <summary>
+    /// Represents a pair consisting of an editor creator and an associated editor instance.
+    /// </summary>
+    /// <param name="creator"></param>
+    /// <param name="editor"></param>
+    public class CreatorAndEditor(IEditorCreator<T>? creator, object? editor)
+    {
+        /// <summary>
+        /// Gets the creator responsible for generating editor instances of type <typeparamref name="T"/>.
+        /// </summary>
+        public IEditorCreator<T>? Creator { get; } = creator;
+
+        /// <summary>
+        /// Gets the editor associated with the current context.
+        /// </summary>
+        public object? Editor { get; } = editor;
+    }
+#endif
 }

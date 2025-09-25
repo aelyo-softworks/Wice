@@ -306,6 +306,10 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// <returns><see langword="true"/> when conversion succeeds; otherwise <see langword="false"/>.</returns>
     public virtual bool TryGetTargetValue(out object? value)
     {
+        if (Name == "Status")
+        {
+        }
+
         if (Type == null)
         {
             value = null;

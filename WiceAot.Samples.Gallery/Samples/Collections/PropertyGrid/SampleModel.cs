@@ -124,6 +124,7 @@ public class SampleCustomer : AutoObject
 #else
     [PropertyGridPropertyOptions(EditorCreatorType = typeof(PasswordEditorCreator<SampleCustomer>))]
 #endif
+    [PropertyGridDynamicProperty(Name = nameof(TextBox.PasswordCharacter), Value = '*', Type = typeof(char))]
     [Category("Security")]
     [DisplayName("Password")]
     public string? Password { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
@@ -175,12 +176,22 @@ public class SampleCustomer : AutoObject
 
     [DisplayName("Boolean (Checkbox)")]
     [Category("Booleans")]
-    public bool SampleBoolean { get => GetPropertyValue<bool>(); set => SetPropertyValue(value); }
+    public bool SampleBoolean
+    {
+        get => GetPropertyValue<bool>();
+        set
+        {
+            if (SetPropertyValue(value))
+            {
+                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(ReadOnlyBoolean)));
+            }
+        }
+    }
 
-    [DisplayName("ReadOnly Boolean")]
+    [DisplayName("Boolean (Coupled, ReadOnly)")]
     [Category("Booleans")]
     [ReadOnly(true)]
-    public bool ReadOnlyBoolean { get => GetPropertyValue<bool>(); set => SetPropertyValue(value); }
+    public bool ReadOnlyBoolean => SampleBoolean;
 
     [DisplayName("Boolean (Checkbox three states)")]
     [Category("Booleans")]

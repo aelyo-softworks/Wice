@@ -25,13 +25,23 @@ public class PasswordEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccess
     {
         ExceptionExtensions.ThrowIfNull(value, nameof(value));
 
-        var editor = value.CreateDefaultEditor();
-        if (editor is RenderVisual rv)
+        // we could also derive from DefaultEditorCreator and call base.CreateEditor
+        var cae = value.CreateCreatorAndEditor(null);
+        if (cae == null)
+            return null;
+
+        if (cae.Editor is Visual visual)
+        {
+            // disable tooltip on password box
+            visual.ToolTipContentCreator = null;
+        }
+
+        if (cae.Editor is RenderVisual rv)
         {
             rv.BackgroundColor = D3DCOLORVALUE.Red.ChangeAlpha(20);
         }
 
-        if (editor is IPasswordCapable pc)
+        if (cae.Editor is IPasswordCapable pc)
         {
             pc.IsPasswordModeEnabled = true;
 #if NETFRAMEWORK
@@ -44,7 +54,7 @@ public class PasswordEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccess
                 pc.SetPasswordCharacter(pw);
             }
         }
-        return editor;
+        return cae.Editor;
     }
 
     /// <summary>
