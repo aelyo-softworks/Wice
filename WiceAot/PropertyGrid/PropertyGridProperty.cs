@@ -8,75 +8,127 @@
 /// The selected object type hosted by the grid. Marked with
 /// <see cref="DynamicallyAccessedMemberTypes.PublicProperties"/> to cooperate with trimming/AOT.
 /// </typeparam>
+#if NETFRAMEWORK
+public partial class PropertyGridProperty : BaseObject, IComparable, IComparable<PropertyGridProperty>
+#else
 public partial class PropertyGridProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : BaseObject, IComparable, IComparable<PropertyGridProperty<T>>
+#endif
 {
     /// <summary>
     /// Controls whether this property applies changes to the underlying object as the user edits.
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty LiveSyncProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
+#else
     public static VisualProperty LiveSyncProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty<T>), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
+#endif
 
     /// <summary>
     /// Indicates whether the property is read-only in the editor (derived from <see cref="PropertyInfo.CanWrite"/>).
     /// Affects editor enabled state and opacity.
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty IsReadOnlyProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(IsReadOnly), VisualPropertyInvalidateModes.Render, false);
+#else
     public static VisualProperty IsReadOnlyProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty<T>), nameof(IsReadOnly), VisualPropertyInvalidateModes.Render, false);
+#endif
 
     /// <summary>
     /// Holds a default value (when available from <see cref="DefaultValueAttribute"/>) used when
     /// <see cref="Value"/> cannot be converted to the target <see cref="Type"/>.
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty DefaultValueProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGridProperty), nameof(DefaultValue), VisualPropertyInvalidateModes.Measure, null);
+#else
     public static VisualProperty DefaultValueProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGridProperty<T>), nameof(DefaultValue), VisualPropertyInvalidateModes.Measure, null);
+#endif
 
     /// <summary>
     /// The current editable value for this property. Changes can trigger live sync and validation.
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGridProperty), nameof(Value), VisualPropertyInvalidateModes.Measure, null);
+#else
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGridProperty<T>), nameof(Value), VisualPropertyInvalidateModes.Measure, null);
+#endif
 
     /// <summary>
     /// The CLR property name.
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty NameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty), nameof(Name), VisualPropertyInvalidateModes.Render, null);
+#else
     public static VisualProperty NameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty<T>), nameof(Name), VisualPropertyInvalidateModes.Render, null);
+#endif
 
     /// <summary>
     /// Sort weight used when ordering properties in the grid. Higher values appear first.
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty SortOrderProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(SortOrder), VisualPropertyInvalidateModes.Render, 0);
+#else
     public static VisualProperty SortOrderProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty<T>), nameof(SortOrder), VisualPropertyInvalidateModes.Render, 0);
+#endif
 
     /// <summary>
     /// Indicates whether a default value is available for this property (typically from <see cref="DefaultValueAttribute"/>).
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty HasDefaultValueProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty), nameof(HasDefaultValue), VisualPropertyInvalidateModes.Render, false);
+#else
     public static VisualProperty HasDefaultValueProperty { get; } = VisualProperty.Add(typeof(PropertyGridProperty<T>), nameof(HasDefaultValue), VisualPropertyInvalidateModes.Render, false);
+#endif
 
     /// <summary>
     /// Human-friendly name shown in the grid. Defaults to a de-camelized <see cref="Name"/> when not specified
     /// via <see cref="DisplayNameAttribute"/>.
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty DisplayNameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty), nameof(DisplayName), VisualPropertyInvalidateModes.Render);
+#else
     public static VisualProperty DisplayNameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty<T>), nameof(DisplayName), VisualPropertyInvalidateModes.Render);
+#endif
 
     /// <summary>
     /// Description shown as secondary text or tooltip when available (from <see cref="DescriptionAttribute"/>).
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty DescriptionProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty), nameof(Description), VisualPropertyInvalidateModes.Render);
+#else
     public static VisualProperty DescriptionProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty<T>), nameof(Description), VisualPropertyInvalidateModes.Render);
+#endif
 
     /// <summary>
     /// The CLR type of the reflected property (<see cref="PropertyInfo.PropertyType"/>).
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty TypeProperty { get; } = VisualProperty.Add<Type>(typeof(PropertyGridProperty), nameof(Type), VisualPropertyInvalidateModes.Render);
+#else
     public static VisualProperty TypeProperty { get; } = VisualProperty.Add<Type>(typeof(PropertyGridProperty<T>), nameof(Type), VisualPropertyInvalidateModes.Render);
+#endif
 
     /// <summary>
     /// Category name used to group properties in the grid (from <see cref="CategoryAttribute"/> when present).
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty CategoryProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty), nameof(Category), VisualPropertyInvalidateModes.Render);
+#else
     public static VisualProperty CategoryProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty<T>), nameof(Category), VisualPropertyInvalidateModes.Render);
+#endif
 
     /// <summary>
     /// Initializes a new <see cref="PropertyGridProperty{T}"/> bound to a reflected property of the selected object.
     /// </summary>
     /// <param name="source">The property source owning this wrapper.</param>
     /// <param name="info">The reflected property to wrap.</param>
-    public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
+#if NETFRAMEWORK
+    public PropertyGridProperty(PropertyGridSource source, PropertyInfo info)
+#else
+public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(source);
-        ArgumentNullException.ThrowIfNull(info);
+        ExceptionExtensions.ThrowIfNull(source, nameof(source));
+        ExceptionExtensions.ThrowIfNull(info, nameof(info));
 
         Source = source;
         Info = info;
@@ -114,7 +166,11 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// <summary>
     /// Gets the owning <see cref="PropertyGridSource{T}"/> that provides the selected object.
     /// </summary>
+#if NETFRAMEWORK
+    public PropertyGridSource Source { get; }
+#else
     public PropertyGridSource<T> Source { get; }
+#endif
 
     /// <summary>
     /// Gets the reflected property information for the wrapped property.
@@ -219,11 +275,19 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
             return false;
         }
 
+#if NETFRAMEWORK
+        if (Conversions.TryChangeType(Value, Type, out value))
+            return true;
+
+        if (HasDefaultValue && Conversions.TryChangeType(DefaultValue, Type, out value))
+            return true;
+#else
         if (Conversions.TryChangeObjectType(Value, Type, out value))
             return true;
 
         if (HasDefaultValue && Conversions.TryChangeObjectType(DefaultValue, Type, out value))
             return true;
+#endif
 
         return false;
     }
@@ -337,7 +401,11 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// <param name="value">The value to assign (may be <see langword="null"/>).</param>
     protected virtual void SetDescriptorValue(object? value)
     {
+#if NETFRAMEWORK
+        var cv = Conversions.ChangeType(value, Info.PropertyType);
+#else
         var cv = Conversions.ChangeObjectType(value, Info.PropertyType);
+#endif
         Info.SetValue(Source.Value, cv);
     }
 
@@ -358,7 +426,11 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     {
         if (propertyName == null || propertyName == nameof(Value))
         {
+#if NETFRAMEWORK
+            if (Source.Value is IPropertyGridPropertyValidator validator)
+#else
             if (Source.Value is IPropertyGridPropertyValidator<T> validator)
+#endif
             {
                 foreach (var error in validator.ValidateValue(this))
                 {
@@ -374,7 +446,11 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     }
 
     /// <inheritdoc/>
+#if NETFRAMEWORK
+    int IComparable.CompareTo(object? obj) => CompareTo(obj as PropertyGridProperty);
+#else
     int IComparable.CompareTo(object? obj) => CompareTo(obj as PropertyGridProperty<T>);
+#endif
 
     /// <summary>
     /// Compares properties for display ordering: first by <see cref="SortOrder"/> descending,
@@ -382,10 +458,14 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// </summary>
     /// <param name="other">The other property to compare.</param>
     /// <returns>A negative, zero, or positive value according to comparison semantics.</returns>
+#if NETFRAMEWORK
+    public virtual int CompareTo(PropertyGridProperty? other)
+#else
     public virtual int CompareTo(PropertyGridProperty<T>? other)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(other);
-        var cmp = -SortOrder.CompareTo(other.SortOrder);
+        ExceptionExtensions.ThrowIfNull(other, nameof(other));
+        var cmp = -SortOrder.CompareTo(other!.SortOrder);
         if (cmp != 0)
             return cmp;
 

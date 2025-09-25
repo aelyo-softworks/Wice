@@ -48,7 +48,7 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
                 object child;
 
                 // Choose a specialized editor depending on whether the enum is flagged.
-                var flags = Conversions.IsFlagsEnum(value.Property.Type);
+                var flags = Conversions.IsFlagsEnum(value.Property.Type!);
                 if (flags)
                 {
                     var flb = new FlagsEnumListBox();

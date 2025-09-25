@@ -4,15 +4,23 @@
 /// Represents a visual element for displaying and editing a property within a <see cref="PropertyGrid{T}"/>.
 /// </summary>
 /// <typeparam name="T">The type of the object containing the property being displayed and edited.</typeparam>
+#if NETFRAMEWORK
+public partial class PropertyValueVisual : Border
+#else
 public partial class PropertyValueVisual<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : Border
+#endif
 {
     /// <summary>
     /// Initializes a new instance bound to the given property.
     /// </summary>
     /// <param name="property">The property metadata/value wrapper to display and edit.</param>
+#if NETFRAMEWORK
+    public PropertyValueVisual(PropertyGridProperty property)
+#else
     public PropertyValueVisual(PropertyGridProperty<T> property)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
 
         Property = property;
 
@@ -26,13 +34,21 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
     /// Gets the owning typed <see cref="PropertyGrid{T}"/> parent.
     /// </summary>
     [Browsable(false)]
+#if NETFRAMEWORK
+    public new PropertyGrid? Parent => (PropertyGrid?)base.Parent;
+#else
     public new PropertyGrid<T>? Parent => (PropertyGrid<T>?)base.Parent;
+#endif
 
     /// <summary>
     /// Gets the property represented by this visual.
     /// </summary>
     [Browsable(false)]
+#if NETFRAMEWORK
+    public PropertyGridProperty Property { get; }
+#else
     public PropertyGridProperty<T> Property { get; }
+#endif
 
     /// <summary>
     /// Gets the current editor instance (often a <see cref="Visual"/>, optionally an <see cref="EditorHost"/>),
@@ -45,7 +61,11 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
     /// Gets or sets the creator responsible for building/updating the editor instance.
     /// </summary>
     [Browsable(false)]
+#if NETFRAMEWORK
+    public IEditorCreator? EditorCreator { get; set; }
+#else
     public IEditorCreator<T>? EditorCreator { get; set; }
+#endif
 
     /// <inheritdoc/>
     public override string ToString() => base.ToString() + " | [" + Property.DisplayName + "='" + Property.TextValue + " ']";
@@ -76,6 +96,18 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
     /// <returns>
     /// A boolean, enum, or default editor creator depending on <see cref="Property"/>.
     /// </returns>
+#if NETFRAMEWORK
+    public virtual IEditorCreator CreateEditorCreator()
+    {
+        if (typeof(bool).IsAssignableFrom(Property.Type))
+            return new BooleanEditorCreator();
+
+        if (Property.Type.IsEnum && Property.IsReadWrite)
+            return new EnumEditorCreator();
+
+        return new DefaultEditorCreator();
+    }
+#else
     public virtual IEditorCreator<T> CreateEditorCreator()
     {
         if (typeof(bool).IsAssignableFrom(Property.Type))
@@ -86,6 +118,7 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
 
         return new DefaultEditorCreator<T>();
     }
+#endif
 
     /// <summary>
     /// Creates the default editor using the selected <see cref="EditorCreator"/>.

@@ -6,7 +6,11 @@
 /// <typeparam name="T">
 /// The selected object type. Annotated to preserve public properties for trimming/AOT so editors can reflect on them.
 /// </typeparam>
+#if NETFRAMEWORK
+public interface IEditorCreator
+#else
 public interface IEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>
+#endif
 {
     /// <summary>
     /// Creates a new editor instance for the specified property value visual.
@@ -15,7 +19,11 @@ public interface IEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <returns>
     /// The created editor instance, or <see langword="null" /> if no suitable editor can be created.
     /// </returns>
+#if NETFRAMEWORK
+    object? CreateEditor(PropertyValueVisual value);
+#else
     object? CreateEditor(PropertyValueVisual<T> value);
+#endif
 
     /// <summary>
     /// Updates the given editor instance for the specified property value visual or creates a new one if needed.
@@ -25,5 +33,9 @@ public interface IEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <returns>
     /// The updated editor instance (which may be the same instance, a replacement, or <see langword="null" /> if not applicable).
     /// </returns>
+#if NETFRAMEWORK
+    object? UpdateEditor(PropertyValueVisual value, object? editor);
+#else
     object? UpdateEditor(PropertyValueVisual<T> value, object? editor);
+#endif
 }

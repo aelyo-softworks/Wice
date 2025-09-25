@@ -8,32 +8,56 @@
 /// <typeparam name="T">
 /// The selected object type. Public properties are required for trimming via <see cref="DynamicallyAccessedMemberTypes.PublicProperties"/>.
 /// </typeparam>
+#if NETFRAMEWORK
+public partial class PropertyGrid : Grid
+#else
 public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : Grid
+#endif
 {
     /// <summary>
     /// Visual property backing <see cref="LiveSync"/>. When enabled, editors update in response to source property changes.
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty LiveSyncProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
+#else
     public static VisualProperty LiveSyncProperty { get; } = VisualProperty.Add(typeof(PropertyGrid<T>), nameof(LiveSync), VisualPropertyInvalidateModes.Render, false);
+#endif
 
     /// <summary>
     /// Visual property backing <see cref="IsReadOnly"/>. When true, editors render in a disabled state.
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty IsReadOnlyProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(IsReadOnly), VisualPropertyInvalidateModes.Render, false);
+#else
     public static VisualProperty IsReadOnlyProperty { get; } = VisualProperty.Add(typeof(PropertyGrid<T>), nameof(IsReadOnly), VisualPropertyInvalidateModes.Render, false);
+#endif
 
     /// <summary>
     /// Visual property backing <see cref="GroupByCategory"/>. When true, properties can be laid out by category.
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty GroupByCategoryProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(GroupByCategory), VisualPropertyInvalidateModes.Render, false);
+#else
     public static VisualProperty GroupByCategoryProperty { get; } = VisualProperty.Add(typeof(PropertyGrid<T>), nameof(GroupByCategory), VisualPropertyInvalidateModes.Render, false);
+#endif
 
     /// <summary>
     /// Visual property backing <see cref="SelectedObject"/>. Changing this rebuilds the grid layout (measure invalidation).
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty SelectedObjectProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGrid), nameof(SelectedObject), VisualPropertyInvalidateModes.Measure, null);
+#else
     public static VisualProperty SelectedObjectProperty { get; } = VisualProperty.Add<object?>(typeof(PropertyGrid<T>), nameof(SelectedObject), VisualPropertyInvalidateModes.Measure, null);
+#endif
 
     /// <summary>
     /// Visual property backing <see cref="CellMargin"/>. Controls the margin applied to both name and value cells.
     /// </summary>
+#if NETFRAMEWORK
+    public static VisualProperty CellMarginProperty { get; } = VisualProperty.Add(typeof(PropertyGrid), nameof(CellMargin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
+#else
     public static VisualProperty CellMarginProperty { get; } = VisualProperty.Add(typeof(PropertyGrid<T>), nameof(CellMargin), VisualPropertyInvalidateModes.Measure, new D2D_RECT_F());
+#endif
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PropertyGrid"/> class.
@@ -70,9 +94,17 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <summary>
     /// Gets a dictionary that maps property names to their corresponding visual representations.
     /// </summary>
+#if NETFRAMEWORK
+    protected IDictionary<string, PropertyVisuals> PropertyVisuals { get; } = new ConcurrentDictionary<string, PropertyVisuals>();
+#else
     protected IDictionary<string, PropertyVisuals<T>> PropertyVisuals { get; } = new ConcurrentDictionary<string, PropertyVisuals<T>>();
+#endif
 
+#if NETFRAMEWORK
+    private static IEnumerable<PropertyGridProperty> EnumerateSourceProperties(PropertyGrid grid)
+#else
     private static IEnumerable<PropertyGridProperty<T>> EnumerateSourceProperties(PropertyGrid<T> grid)
+#endif
     {
         var properties = grid.Source?.Properties ?? [];
         return properties.OrderBy(p => p.DisplayName);
@@ -81,7 +113,11 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <summary>
     /// Gets the function used to select and enumerate properties for the <see cref="PropertyGrid{T}"/>.
     /// </summary>
+#if NETFRAMEWORK
+    protected virtual Func<PropertyGrid, IEnumerable<PropertyGridProperty>>? PropertiesSelector { get; } = EnumerateSourceProperties;
+#else
     protected virtual Func<PropertyGrid<T>, IEnumerable<PropertyGridProperty<T>>>? PropertiesSelector { get; } = EnumerateSourceProperties;
+#endif
 
     /// <summary>
     /// Gets the splitter that resizes the name and value columns.
@@ -99,7 +135,11 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// Gets the current, flat property source for the selected object.
     /// </summary>
     [Browsable(false)]
+#if NETFRAMEWORK
+    public PropertyGridSource? Source { get; private set; }
+#else
     public PropertyGridSource<T>? Source { get; private set; }
+#endif
 
     /// <summary>
     /// Gets or sets a value indicating whether editing is disabled for all properties.
@@ -129,7 +169,11 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// Gets or sets the object whose properties are shown and edited by this grid.
     /// </summary>
     [Category(CategoryLive)]
+#if NETFRAMEWORK
+    public object? SelectedObject { get => GetPropertyValue(SelectedObjectProperty); set => SetPropertyValue(SelectedObjectProperty, value); }
+#else
     public T? SelectedObject { get => (T?)GetPropertyValue(SelectedObjectProperty); set => SetPropertyValue(SelectedObjectProperty, value); }
+#endif
 
     /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
@@ -202,9 +246,13 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// </summary>
     /// <param name="propertyName">The property name.</param>
     /// <returns>The visuals for that property, or null if not found.</returns>
+#if NETFRAMEWORK
+    public PropertyVisuals? GetVisuals(string propertyName)
+#else
     public PropertyVisuals<T>? GetVisuals(string propertyName)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(propertyName);
+        ExceptionExtensions.ThrowIfNull(propertyName, nameof(propertyName));
         PropertyVisuals.TryGetValue(propertyName, out var prop);
         return prop;
     }
@@ -213,7 +261,11 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// Creates the flat property source for the current <see cref="SelectedObject"/>.
     /// </summary>
     /// <returns>The created source.</returns>
+#if NETFRAMEWORK
+    protected virtual PropertyGridSource CreateSource() => new(this, SelectedObject);
+#else
     protected virtual PropertyGridSource<T> CreateSource() => new(this, SelectedObject);
+#endif
 
     /// <summary>
     /// Rebuilds sources and relays out the grid for the current <see cref="SelectedObject"/>.
@@ -232,9 +284,13 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// </summary>
     /// <param name="visual">The value visual.</param>
     /// <returns>An editor host ready to display the property's editor.</returns>
+#if NETFRAMEWORK
+    public virtual EditorHost CreateEditorHost(PropertyValueVisual visual)
+#else
     public virtual EditorHost CreateEditorHost(PropertyValueVisual<T> visual)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(visual);
+        ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
 
         var host = new EditorHost
         {
@@ -274,11 +330,19 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// </summary>
     /// <param name="property">The property descriptor.</param>
     /// <returns>The created value visual.</returns>
+#if NETFRAMEWORK
+    protected virtual PropertyValueVisual CreatePropertyValueVisual(PropertyGridProperty property)
+#else
     protected virtual PropertyValueVisual<T> CreatePropertyValueVisual(PropertyGridProperty<T> property)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
 
+#if NETFRAMEWORK
+        var value = new PropertyValueVisual(property)
+#else
         var value = new PropertyValueVisual<T>(property)
+#endif
         {
             Margin = CellMargin,
             RenderBrush = RenderBrush
@@ -292,9 +356,13 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// </summary>
     /// <param name="property">The property descriptor.</param>
     /// <returns>The created visual.</returns>
+#if NETFRAMEWORK
+    protected virtual Visual CreatePropertyTextVisual(PropertyGridProperty property)
+#else
     protected virtual Visual CreatePropertyTextVisual(PropertyGridProperty<T> property)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
 
         var text = new TextBox
         {
@@ -314,7 +382,7 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <returns>The created visual.</returns>
     protected virtual Visual CreateCategoryVisual(string category)
     {
-        ArgumentNullException.ThrowIfNull(category);
+        ExceptionExtensions.ThrowIfNull(category, nameof(category));
 
         var text = new TextBox
         {
@@ -386,7 +454,7 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// </summary>
     protected virtual int AddCategoryVisualsToRow(string category, int rowIndex)
     {
-        ArgumentNullException.ThrowIfNull(category);
+        ExceptionExtensions.ThrowIfNull(category, nameof(category));
         if (rowIndex > 0)
         {
             var row = new GridRow();
@@ -408,9 +476,13 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
     /// <param name="property">The property for which visual elements are to be created and added. Cannot be <see langword="null"/>.</param>
     /// <param name="rowIndex">The index of the row where the visual elements will be added. Must be a valid row index.</param>
     /// <returns>The number of rows added. Returns 1 or more if the operation is successful; otherwise, 0.</returns>
+#if NETFRAMEWORK
+    protected virtual int AddPropertyVisualsToRow(PropertyGridProperty property, int rowIndex)
+#else
     protected virtual int AddPropertyVisualsToRow(PropertyGridProperty<T> property, int rowIndex)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
         if (property.Name == null)
             return 0;
 
@@ -422,7 +494,11 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
 
         Rows[rowIndex].Size = float.NaN;
 
+#if NETFRAMEWORK
+        var visuals = new PropertyVisuals()
+#else
         var visuals = new PropertyVisuals<T>
+#endif
         {
             Text = CreatePropertyTextVisual(property) ?? throw new InvalidOperationException()
         };

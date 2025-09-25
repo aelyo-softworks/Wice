@@ -11,7 +11,6 @@ public static class CompositionUtilities
     /// <param name="brush">The <see cref="CompositionBrush"/> to clone. Can be <see langword="null"/>.</param>
     /// <returns>A new <see cref="CompositionBrush"/> instance that is a copy of the input brush, or <see langword="null"/> if
     /// <paramref name="brush"/> is <see langword="null"/>.</returns>
-    /// <exception cref="NotSupportedException">Thrown if the specified <see cref="CompositionBrush"/> type is not supported for cloning.</exception>
 #if NET
     [return: NotNullIfNotNull(nameof(brush))]
 #endif

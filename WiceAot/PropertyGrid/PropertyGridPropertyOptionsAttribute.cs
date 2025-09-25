@@ -14,20 +14,37 @@ public sealed class PropertyGridPropertyOptionsAttribute : Attribute
     /// <summary>
     /// Gets or sets an optional editor factory type used to create/update the editor for this property.
     /// </summary>
+#if NETFRAMEWORK
+#else
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+#endif
     public Type? EditorType { get; set; }
 
+#if NETFRAMEWORK
+    internal object? CreateEditor(PropertyValueVisual value)
+#else
     internal object? CreateEditor<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyValueVisual<T> value)
+#endif
     {
+#if NETFRAMEWORK
+        var creator = value.Property.Value as IEditorCreator;
+#else
         var creator = value.Property.Value as IEditorCreator<T>;
+#endif
         if (creator == null)
         {
             if (EditorType != null)
             {
                 var editorCreator = Activator.CreateInstance(EditorType);
+#if NETFRAMEWORK
+                creator = editorCreator as IEditorCreator;
+                if (creator == null)
+                    throw new WiceException("0024: type '" + EditorType.FullName + "' doesn't implement the " + nameof(IEditorCreator) + " interface.");
+#else
                 creator = editorCreator as IEditorCreator<T>;
                 if (creator == null)
                     throw new WiceException("0024: type '" + EditorType.FullName + "' doesn't implement the " + nameof(IEditorCreator<T>) + " interface.");
+#endif
             }
         }
 

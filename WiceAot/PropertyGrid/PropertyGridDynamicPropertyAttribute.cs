@@ -46,7 +46,11 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
     /// The nullified string (typically converts empty/whitespace to <see langword="null"/>) when present and a string;
     /// otherwise <see langword="null"/>.
     /// </returns>
+#if NETFRAMEWORK
+    public static string? GetNullifiedValueFromProperty(PropertyGridProperty property, string name)
+#else
     public static string? GetNullifiedValueFromProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyGridProperty<T> property, string name)
+#endif
     {
         var att = FromProperty(property, name);
         if (att == null)
@@ -59,23 +63,30 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
     }
 
     /// <summary>
-    /// Gets the value of a named dynamic property on the specified grid property, converted to <typeparamref name="T"/>.
+    /// Gets the value of a named dynamic property on the specified grid property, converted to <typeparamref name="TValue"/>.
     /// </summary>
     /// <typeparam name="T">
     /// The component type inspected by the <see cref="PropertyGridProperty{T}"/>, and the desired return type.
     /// Marked to preserve public properties under trimming/AOT.
     /// </typeparam>
+    /// <typeparam name="TValue">
+    /// The expected value or the default value.
+    /// </typeparam>
     /// <param name="property">The property wrapper to inspect for this attribute.</param>
     /// <param name="name">The dynamic property name (case-insensitive).</param>
     /// <param name="defaultValue">The value to return when the attribute is missing or conversion fails.</param>
     /// <returns>The converted value when available; otherwise <paramref name="defaultValue"/>.</returns>
-    public static T? GetValueFromProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyGridProperty<T> property, string name, T? defaultValue = default)
+#if NETFRAMEWORK
+    public static TValue? GetValueFromProperty<TValue>(PropertyGridProperty property, string name, TValue? defaultValue = default)
+#else
+    public static TValue? GetValueFromProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T, TValue>(PropertyGridProperty<T> property, string name, TValue? defaultValue = default)
+#endif
     {
         var att = FromProperty(property, name);
         if (att == null)
             return defaultValue;
 
-        if (!Conversions.TryChangeType<T>(att.Value, out var value))
+        if (!Conversions.TryChangeType<TValue>(att.Value, out var value))
             return defaultValue;
 
         return value;
@@ -92,9 +103,13 @@ public sealed class PropertyGridDynamicPropertyAttribute : Attribute
     /// <param name="property">The property wrapper whose reflected member is searched.</param>
     /// <param name="name">The dynamic property name to look up (case-insensitive).</param>
     /// <returns>The matching attribute instance, or <see langword="null"/> if not found.</returns>
+#if NETFRAMEWORK
+    public static PropertyGridDynamicPropertyAttribute? FromProperty(PropertyGridProperty property, string name)
+#else
     public static PropertyGridDynamicPropertyAttribute? FromProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyGridProperty<T> property, string name)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
         if (property.Info != null)
         {
             var att = property.Info

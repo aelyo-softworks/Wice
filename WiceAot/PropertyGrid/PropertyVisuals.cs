@@ -7,7 +7,11 @@
 /// The CLR type of the selected object the property belongs to. Public properties of <typeparamref name="T"/> are
 /// preserved for trimming via <see cref="DynamicallyAccessedMemberTypes.PublicProperties"/>.
 /// </typeparam>
+#if NETFRAMEWORK
+public class PropertyVisuals
+#else
 public class PropertyVisuals<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>
+#endif
 {
     /// <summary>
     /// Gets or sets the visual used to display the property's label or descriptive text.
@@ -15,7 +19,7 @@ public class PropertyVisuals<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
     /// <value>
     /// A <see cref="Visual"/> representing the textual header of the property; null when not created.
     /// </value>
-    public Visual? Text { get; set; }
+    public virtual Visual? Text { get; set; }
 
     /// <summary>
     /// Gets or sets the visual used to display and edit the property's value.
@@ -23,5 +27,9 @@ public class PropertyVisuals<[DynamicallyAccessedMembers(DynamicallyAccessedMemb
     /// <value>
     /// A <see cref="PropertyValueVisual{T}"/> hosting the editor for the value; null when not created.
     /// </value>
-    public PropertyValueVisual<T>? ValueVisual { get; set; }
+#if NETFRAMEWORK
+    public virtual PropertyValueVisual ValueVisual { get; set; }
+#else
+    public virtual PropertyValueVisual<T>? ValueVisual { get; set; }
+#endif
 }

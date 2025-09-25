@@ -144,26 +144,17 @@ public class SampleCustomer : AutoObject
     [Category("Enums")]
     public SampleStatus StatusColor { get => Status; set => Status = value; }
 
-#if NETFRAMEWORK
-    [PropertyGridPropertyOptions(IsEnum = true, EnumNames = new string[] { @"INVALID", @"VALID", "UNKNOWN" }, EnumValues = new object[] { SampleStatus.Invalid, SampleStatus.Valid, SampleStatus.Unknown })]
     [DisplayName("Status (enum as string list)")]
     [Category("Enums")]
+#if NETFRAMEWORK
     public string StatusColorString { get => Status.ToString(); set => Status = Conversions.ChangeType<SampleStatus>(value); }
 #else
-    [DisplayName("Status (enum as string list)")]
-    [Category("Enums")]
     public string StatusColorString { get => Status.ToString(); set => Status = DirectN.Extensions.Utilities.Conversions.ChangeType<SampleStatus>(value); }
 #endif
 
-#if NETFRAMEWORK
-    [PropertyGridPropertyOptions(IsEnum = true, IsFlagsEnum = true, EnumNames = new string[] { "First", "Second", "Third" })]
-#endif
     [Category("Enums")]
     public string? MultiEnumString { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
 
-#if NETFRAMEWORK
-    [PropertyGridPropertyOptions(IsEnum = true, IsFlagsEnum = true, EnumNames = new string[] { "None", "My First", "My Second", "My Third" }, EnumValues = new object[] { 0, 1, 2, 4 })]
-#endif
     [Category("Enums")]
     public string? MultiEnumStringWithDisplay { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
 
@@ -173,11 +164,13 @@ public class SampleCustomer : AutoObject
 
 
 #if NETFRAMEWORK
-    [Category("Security")]
     [PropertyGridPropertyOptions(EditorType = typeof(PasswordEditorCreator))]
+#else
+    [PropertyGridPropertyOptions(EditorType = typeof(PasswordEditorCreator<SampleCustomer>))]
+#endif
+    [Category("Security")]
     [DisplayName("Password")]
     public string? Password { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
-#endif
 
     [Browsable(false)]
     public string? NotBrowsable { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
@@ -330,13 +323,21 @@ public class SampleAddress : AutoObject
         var pos = text.LastIndexOfAny([' ']);
         if (pos >= 0)
         {
+#if NETFRAMEWORK
             zipText = text.Substring(pos + 1).Trim();
+#else
+            zipText = text[(pos + 1)..].Trim();
+#endif
         }
 
         if (!int.TryParse(zipText, out zip) || zip <= 0)
             return false;
 
+#if NETFRAMEWORK
         state = text.Substring(0, pos).Trim();
+#else
+        state = text[..pos].Trim();
+#endif
         return true;
     }
 
@@ -377,7 +378,11 @@ public class SampleAddress : AutoObject
             return;
 
         var s = sb.ToString();
+#if NETFRAMEWORK
         if (!s.EndsWith(" ") && !s.EndsWith(",") && !s.EndsWith(Environment.NewLine))
+#else
+        if (!s.EndsWith(' ') && !s.EndsWith(',') && !s.EndsWith(Environment.NewLine))
+#endif
         {
             sb.Append(sep);
         }

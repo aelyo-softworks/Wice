@@ -248,7 +248,17 @@
 	  <Compile Include="..\WiceAot\PropertyGrid\BooleanEditorCreator.cs" Link="PropertyGrid\BooleanEditorCreator.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\DefaultEditorCreator.cs" Link="PropertyGrid\DefaultEditorCreator.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\EnumEditorCreator.cs" Link="PropertyGrid\EnumEditorCreator.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\IEditorCreator.cs" Link="PropertyGrid\IEditorCreator.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\IPropertyGridPropertyValidator.cs" Link="PropertyGrid\IPropertyGridPropertyValidator.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\PasswordEditorCreator.cs" Link="PropertyGrid\PasswordEditorCreator.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGrid.cs" Link="PropertyGrid\PropertyGrid.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridDynamicPropertyAttribute.cs" Link="PropertyGrid\PropertyGridDynamicPropertyAttribute.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridItem.cs" Link="PropertyGrid\PropertyGridItem.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridProperty.cs" Link="PropertyGrid\PropertyGridProperty.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridPropertyOptionsAttribute.cs" Link="PropertyGrid\PropertyGridPropertyOptionsAttribute.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridSource.cs" Link="PropertyGrid\PropertyGridSource.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\PropertyValueVisual.cs" Link="PropertyGrid\PropertyValueVisual.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\PropertyVisuals.cs" Link="PropertyGrid\PropertyVisuals.cs" />
 	  <Compile Include="..\WiceAot\PropertyInvalidateReason.cs" Link="PropertyInvalidateReason.cs" />
 	  <Compile Include="..\WiceAot\RadialGradientBrush.cs" Link="RadialGradientBrush.cs" />
 	  <Compile Include="..\WiceAot\RadioButton.cs" Link="RadioButton.cs" />

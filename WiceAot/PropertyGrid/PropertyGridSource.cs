@@ -9,16 +9,24 @@
 /// The component type to inspect. Marked with <see cref="DynamicallyAccessedMemberTypes.PublicProperties"/>
 /// to preserve public properties under trimming/AOT.
 /// </typeparam>
+#if NETFRAMEWORK
+public partial class PropertyGridSource : BaseObject
+#else
 public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : BaseObject
+#endif
 {
     /// <summary>
     /// Initializes a new instance of <see cref="PropertyGridSource{T}"/> for the specified grid and value.
     /// </summary>
     /// <param name="grid">The owning property grid.</param>
     /// <param name="value">The selected object instance whose properties will be exposed.</param>
+#if NETFRAMEWORK
+    public PropertyGridSource(PropertyGrid grid, object? value)
+#else
     public PropertyGridSource(PropertyGrid<T> grid, T? value)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(grid);
+        ExceptionExtensions.ThrowIfNull(grid, nameof(grid));
 
         Grid = grid;
         Value = value;
@@ -29,23 +37,35 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     /// <summary>
     /// Gets the owning <see cref="PropertyGrid{T}"/>.
     /// </summary>
+#if NETFRAMEWORK
+    public PropertyGrid Grid { get; }
+#else
     public PropertyGrid<T> Grid { get; }
+#endif
 
     /// <summary>
     /// Gets the selected object instance being inspected.
     /// </summary>
-    public T? Value { get; }
+    public object? Value { get; }
 
     /// <summary>
     /// Gets the collection of grid-exposed properties built from <see cref="Value"/> and its type.
     /// The list is rebuilt by <see cref="AddProperties"/> and kept in sorted order.
     /// </summary>
+#if NETFRAMEWORK
+    public virtual ObservableCollection<PropertyGridProperty> Properties { get; } = [];
+#else
     public virtual ObservableCollection<PropertyGridProperty<T>> Properties { get; } = [];
+#endif
 
     /// <summary>
     /// Gets a value indicating whether all properties are valid.
     /// </summary>
+#if NETFRAMEWORK
+    public bool IsValid => !Properties.Cast<PropertyGridProperty>().Any(p => !p.IsValid);
+#else
     public bool IsValid => !Properties.Cast<PropertyGridProperty<T>>().Any(p => !p.IsValid);
+#endif
 
     /// <summary>
     /// Gets a value indicating whether at least one property is invalid.
@@ -94,7 +114,7 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     /// <param name="name">The property name.</param>
     public virtual void UpdatePropertyValue(string name)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        ExceptionExtensions.ThrowIfNull(name, nameof(name));
         var prop = GetProperty(name);
         if (prop == null)
             return;
@@ -107,9 +127,13 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     /// </summary>
     /// <param name="name">The property name to look up.</param>
     /// <returns>The <see cref="PropertyGridProperty{T}"/> if found; otherwise, null.</returns>
+#if NETFRAMEWORK
+    public PropertyGridProperty? GetProperty(string name)
+#else
     public PropertyGridProperty<T>? GetProperty(string name)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(name);
+        ExceptionExtensions.ThrowIfNull(name, nameof(name));
         return Properties.FirstOrDefault(p => string.Compare(p.Name, name, StringComparison.Ordinal) == 0);
     }
 
@@ -171,8 +195,14 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     /// <returns>A read-only list of <see cref="PropertyInfo"/>.</returns>
     protected IReadOnlyList<PropertyInfo> EnumerateProperties()
     {
+#if NETFRAMEWORK
+        var type = Value?.GetType() ?? typeof(object); // object has no property, it's fine
+        var list = new List<PropertyInfo>(Value.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
+        foreach (var info in type.GetProperties())
+#else
         var list = new List<PropertyInfo>(typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
         foreach (var info in typeof(T).GetProperties())
+#endif
         {
             if (list.Any(p => p.Name == info.Name))
                 continue;
@@ -192,7 +222,11 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
         if (Value == null)
             return;
 
+#if NETFRAMEWORK
+        var props = new List<PropertyGridProperty>();
+#else
         var props = new List<PropertyGridProperty<T>>();
+#endif
         foreach (var info in EnumerateProperties())
         {
             var browsable = info.GetCustomAttribute<BrowsableAttribute>();
@@ -214,9 +248,13 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     /// Raises change notifications for the specified property and all dependent computed flags.
     /// </summary>
     /// <param name="property">The changed property wrapper.</param>
+#if NETFRAMEWORK
+    public virtual void OnPropertyChanged(PropertyGridProperty property)
+#else
     public virtual void OnPropertyChanged(PropertyGridProperty<T> property)
+#endif
     {
-        ArgumentNullException.ThrowIfNull(property);
+        ExceptionExtensions.ThrowIfNull(property, nameof(property));
         OnPropertyChanged(this, new PropertyChangedEventArgs(property.Name));
         OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsValid)));
         OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsInvalid)));
@@ -232,5 +270,9 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     /// </summary>
     /// <param name="info">The reflection property metadata.</param>
     /// <returns>A new <see cref="PropertyGridProperty{T}"/> instance.</returns>
+#if NETFRAMEWORK
+    protected virtual PropertyGridProperty CreateProperty(PropertyInfo info) => new(this, info);
+#else
     protected virtual PropertyGridProperty<T> CreateProperty(PropertyInfo info) => new(this, info);
+#endif
 }
