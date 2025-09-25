@@ -36,7 +36,7 @@ Wice is always a work in progress. Please post an issue if you have a problem or
 * Wice.Tests: a test bench project. You shouldn't really use it.
 * Wice.DevTools: an internal tool that helps transform sample code into rtf colorizable texts.
 
-# .NET 9+ AOT-compatible:
+# .NET 9+ AOT publishing compatible:
 * **WiceAot**: this is the same as Wice but compiled for .NET 9, AOT friendly. Source has been adapted and project is using [DirectNAot](https://github.com/smourier/DirectNAot).
 * **WiceAot.Samples.Gallery**: a sample demo / gallery project. **===>** This is what you should try if you're new to Wice.
 * WiceAot.Tests: this is simple sample code for WiceAot. You shouldn't really use it.
@@ -55,6 +55,10 @@ Wice has **acrylic brush** to integrate with background nicely, here over the **
 A useful and extensible **Property Grid** visual to easily create editor interfaces like settings, etc.:
 
 ![Wice](Assets/wice_property_grid.jpg)
+
+Another PropertyGrid in edit Mode (you can write your own property editors):
+
+<img width="1117" height="1004" alt="PropertyGrid Visual" src="https://github.com/user-attachments/assets/2851bb0d-7977-4575-a9a9-e998fa8e228f" />
 
 You can build a **Multi-Windows** application:
 
@@ -88,9 +92,13 @@ A **WebView2** visual (WiceAOT only):
 
 ![image](https://github.com/user-attachments/assets/1a232fbe-aa9b-47dd-b141-f18db386297d)
 
-A **Pdf** visual
+A **Pdf** visual:
 
 ![image](https://github.com/user-attachments/assets/4e9c56da-4908-4ddc-a2c4-14f3e7ab14c0)
+
+A **MediaPlayer** visual (WiceAOT only):
+
+<img width="1390" height="889" alt="Media Playe Visual" src="https://github.com/user-attachments/assets/c63d8057-5d70-42a4-a2b4-957ecfac13bf" />
 
 # Hi-DPI support
 Wice now supports hi-dpi scaling. It's not 100% automatic, your code may have to react to dpi changes, but everything is prepared.
@@ -105,3 +113,4 @@ And last but not least, the "snoop"-like feature (press F9 anytime when compiled
 ![Wice](Assets/wice_snoop.jpg)
 
 Note: that sole part uses Winforms (another framework to avoid chicken and egg effect!) but you can remove that piece of code if you don't need it. It's not currently available in Wice AOT.
+
