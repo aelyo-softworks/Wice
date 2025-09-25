@@ -107,7 +107,7 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
 #endif
     {
         var properties = grid.Source?.Properties ?? [];
-        return properties.OrderBy(p => p.DisplayName);
+        return properties;
     }
 
     /// <summary>
@@ -434,7 +434,7 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
                     rowIndex += AddCategoryVisualsToRow(category.Key, rowIndex);
                 }
 
-                foreach (var property in category.OrderBy(p => p.DisplayName))
+                foreach (var property in category.OrderBy(p => p))
                 {
                     rowIndex += AddPropertyVisualsToRow(property, rowIndex);
                 }

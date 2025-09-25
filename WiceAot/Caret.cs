@@ -110,7 +110,6 @@ public partial class Caret : Border, IDisposable
 
     private void ArrangeWithParent()
     {
-        //Application.Trace(this + " Ds:" + DesiredSize);
         if (DesiredSize.IsInvalid)
             return;
 

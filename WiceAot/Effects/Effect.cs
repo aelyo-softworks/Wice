@@ -275,8 +275,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     /// <returns>S_OK if found; otherwise E_INVALIDARG.</returns>
     HRESULT IGraphicsEffectD2D1Interop.GetNamedPropertyMapping(PWSTR name, out uint index, out GRAPHICS_EFFECT_PROPERTY_MAPPING mapping)
     {
-        //Application.Trace(this + "name:" + name);
-
         var n = name.ToString();
         var defs = GetPropDefs(GetType());
         var def = defs.FirstOrDefault(p => p.Property.Name.EqualsIgnoreCase(n));
@@ -302,7 +300,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     {
         var defs = GetPropDefs(GetType());
         count = (uint)defs.Count;
-        //Application.Trace(this + " count:" + count);
         return WiceCommons.S_OK;
     }
 
@@ -316,7 +313,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     {
         try
         {
-            //Application.Trace(this + " index:" + index);
             var defs = GetPropDefs(GetType());
             if (index >= defs.Count)
             {
@@ -343,7 +339,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
     /// <returns>S_OK on success; E_BOUNDS when out of range.</returns>
     HRESULT IGraphicsEffectD2D1Interop.GetSource(uint index, out IGraphicsEffectSource? source)
     {
-        //Application.Trace(this + " index:" + index);
         if (index >= MaximumSourcesCount || index >= _sources.Count)
         {
             source = null;
@@ -370,7 +365,6 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
         {
             count = MaximumSourcesCount;
         }
-        //Application.Trace(this + " count:" + count);
         return WiceCommons.S_OK;
     }
 }

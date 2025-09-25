@@ -20,7 +20,7 @@ public abstract class GridDimension : BaseObject
     /// Backing property for <see cref="Size"/>. Validates non-negative values and disallows <see cref="float.PositiveInfinity"/>/<see cref="float.NegativeInfinity"/>.
     /// Allows <see cref="float.NaN"/> to represent Auto.
     /// </summary>
-    public static BaseObjectProperty SizeProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(Size), 0f, convert: ValidateSize); // TODO: float.nan?
+    public static BaseObjectProperty SizeProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(Size), 0f, convert: ValidateSize);
 
     /// <summary>
     /// Backing property for <see cref="MinSize"/>. Validates non-negative, finite values.

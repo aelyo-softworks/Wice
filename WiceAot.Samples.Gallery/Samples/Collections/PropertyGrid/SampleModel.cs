@@ -1,6 +1,10 @@
 ﻿#nullable enable
+
 namespace Wice.Samples.Gallery.Samples.Collections.PropertyGrid;
 
+#if !NETFRAMEWORK
+[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
+#endif
 public class AutoObject : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -49,26 +53,25 @@ public class SampleCustomer : AutoObject
     {
         Id = Guid.NewGuid();
         ListOfStrings = ["string 1", "string 2"];
-
         ArrayOfStrings = [.. ListOfStrings];
         CreationDateAndTime = DateTime.Now;
         DateOfBirth = new DateTime(1966, 03, 24);
-        Description = "press button to edit...";
         ByteArray1 = [1, 2, 3, 4, 5, 6, 7, 8];
         WebSite = "http://www.aelyo.com";
         Status = SampleStatus.Valid;
-        Addresses = [new SampleAddress { Line1 = "2018 156th Avenue NE", City = "Bellevue", State = "WA", ZipCode = 98007, Country = "USA" }];
         DaysOfWeek = SampleDaysOfWeek.WeekDays;
         PercentageOfSatisfaction = 50;
-        PreferredColorName = "DodgerBlue";
-        SampleNullableBooleanDropDownList = false;
-        SampleBooleanDropDownList = true;
-        MultiEnumString = "First, Second";
         SubObject = SampleAddress.Parse("1600 Amphitheatre Pkwy, Mountain View, CA 94043, USA");
-        LastName = "Héllo";
+        FirstName = "Héllo";
+        LastName = "World";
     }
 
-    [DisplayName("Guid (see menu on right-click)")]
+#if NETFRAMEWORK
+    [PropertyGridPropertyOptions(EditorCreatorType = typeof(GuidEditorCreator))]
+#else
+    [PropertyGridPropertyOptions(EditorCreatorType = typeof(GuidEditorCreator<SampleCustomer>))]
+#endif
+    [DisplayName("Guid (custom editor)")]
     public Guid Id { get => GetPropertyValue<Guid>(); set => SetPropertyValue(value); }
 
     [Category("Dates and Times")]
@@ -96,77 +99,30 @@ public class SampleCustomer : AutoObject
                     so.PropertyChanged += OnSubObjectPropertyChanged;
                 }
 
-                // these two properties are coupled
-                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(SubObjectAsObject)));
             }
         }
     }
 
-    private void OnSubObjectPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        OnPropertyChanged(sender, new PropertyChangedEventArgs(nameof(SubObject)));
-        OnPropertyChanged(sender, new PropertyChangedEventArgs(nameof(SubObjectAsObject)));
-    }
+    private void OnSubObjectPropertyChanged(object? sender, PropertyChangedEventArgs e) => OnPropertyChanged(sender, new PropertyChangedEventArgs(nameof(SubObject)));
 
-    [DisplayName("Sub Object (Address as Object)")]
-    public SampleAddress? SubObjectAsObject { get => SubObject; set => SubObject = value; }
-
-    [PropertyGridPropertyOptions(SortOrder = 10)]
     public string? FirstName { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
 
-    [PropertyGridPropertyOptions(SortOrder = 20)]
     public string? LastName { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
 
     [Category("Dates and Times")]
-    [PropertyGridPropertyOptions(SortOrder = 40)]
     public DateTime DateOfBirth { get => GetPropertyValue<DateTime>(); set => SetPropertyValue(value); }
 
     [Category("Enums")]
-    [PropertyGridPropertyOptions(SortOrder = 30)]
-    public SampleGender Gender { get => GetPropertyValue<SampleGender>(); set => SetPropertyValue(value); }
-
-    [Category("Enums")]
-    public SampleStatus Status
-    {
-        get => GetPropertyValue<SampleStatus>();
-        set
-        {
-            if (SetPropertyValue(value))
-            {
-                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(StatusColor)));
-                OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(StatusColorString)));
-            }
-        }
-    }
-
-    [DisplayName("Status (colored enum)")]
-    [ReadOnly(true)]
-    [Category("Enums")]
-    public SampleStatus StatusColor { get => Status; set => Status = value; }
-
-    [DisplayName("Status (enum as string list)")]
-    [Category("Enums")]
-#if NETFRAMEWORK
-    public string StatusColorString { get => Status.ToString(); set => Status = Conversions.ChangeType<SampleStatus>(value); }
-#else
-    public string StatusColorString { get => Status.ToString(); set => Status = DirectN.Extensions.Utilities.Conversions.ChangeType<SampleStatus>(value); }
-#endif
-
-    [Category("Enums")]
-    public string? MultiEnumString { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
-
-    [Category("Enums")]
-    public string? MultiEnumStringWithDisplay { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
+    public SampleStatus Status { get => GetPropertyValue<SampleStatus>(); set => SetPropertyValue(value); }
 
     [Category("Dates and Times")]
     [Description("This is the timespan tooltip")]
     public TimeSpan TimeSpan { get => GetPropertyValue<TimeSpan>(); set => SetPropertyValue(value); }
 
-
 #if NETFRAMEWORK
-    [PropertyGridPropertyOptions(EditorType = typeof(PasswordEditorCreator))]
+    [PropertyGridPropertyOptions(EditorCreatorType = typeof(PasswordEditorCreator))]
 #else
-    [PropertyGridPropertyOptions(EditorType = typeof(PasswordEditorCreator<SampleCustomer>))]
+    [PropertyGridPropertyOptions(EditorCreatorType = typeof(PasswordEditorCreator<SampleCustomer>))]
 #endif
     [Category("Security")]
     [DisplayName("Password")]
@@ -175,39 +131,28 @@ public class SampleCustomer : AutoObject
     [Browsable(false)]
     public string? NotBrowsable { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
 
-    [DisplayName("Description (multi-line)")]
-    [PropertyGridDynamicProperty(Name = "Foreground", Value = "White")]
-    [PropertyGridDynamicProperty(Name = "Background", Value = "Black")]
-    public string? Description { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
-
-    [PropertyGridDynamicProperty(Name = "Format", Value = "0x{0}")]
     [ReadOnly(true)]
-    [DisplayName("Byte Array (hex format)")]
+    [DisplayName("Byte Array")]
     public byte[]? ByteArray1 { get => GetPropertyValue<byte[]>(); set => SetPropertyValue(value); }
 
-    [ReadOnly(true)]
-    [DisplayName("Byte Array (press button for hex dump)")]
-    public byte[]? ByteArray2 { get => ByteArray1; set => ByteArray1 = value; }
-
-    [DisplayName("Web Site (custom sort order)")]
+    [DisplayName("Web Site (custom sort order, appears first)")]
+    [PropertyGridPropertyOptions(SortOrder = -1)]
     public string? WebSite { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
 
     [Category("Collections")]
+    [PropertyGridPropertyOptions(ListSeparator = ", ")]
     public string[]? ArrayOfStrings { get => GetPropertyValue<string[]>(); set => SetPropertyValue(value); }
 
     [Category("Collections")]
+    [PropertyGridPropertyOptions(ListSeparator = ", ")]
     public List<string>? ListOfStrings { get => GetPropertyValue<List<string>>(); set => SetPropertyValue(value); }
-
-    [DisplayName("Addresses (custom editor)")]
-    [Category("Collections")]
-    public ObservableCollection<SampleAddress>? Addresses { get => GetPropertyValue<ObservableCollection<SampleAddress>>(); set => SetPropertyValue(value); }
 
     [DisplayName("Days Of Week (multi-valued enum)")]
     [Category("Enums")]
     public SampleDaysOfWeek DaysOfWeek { get => GetPropertyValue<SampleDaysOfWeek>(); set => SetPropertyValue(value); }
 
     [DisplayName("Percentage Of Satisfaction (int)")]
-    public int PercentageOfSatisfactionInt { get => GetPropertyValue(0, "PercentageOfSatisfaction"); set => SetPropertyValue(value, nameof(PercentageOfSatisfaction)); }
+    public int PercentageOfSatisfactionInt { get => GetPropertyValue(0, nameof(PercentageOfSatisfaction)); set => SetPropertyValue(value, nameof(PercentageOfSatisfaction)); }
 
     [DisplayName("Percentage Of Satisfaction (double)")]
     public double PercentageOfSatisfaction
@@ -221,9 +166,6 @@ public class SampleCustomer : AutoObject
             }
         }
     }
-
-    [DisplayName("Preferred Color Name (custom editor)")]
-    public string? PreferredColorName { get => GetPropertyValue<string>(); set => SetPropertyValue(value); }
 
     [DisplayName("Point (auto type converter)")]
     public SamplePoint Point { get => GetPropertyValue<SamplePoint>(); set => SetPropertyValue(value); }
@@ -243,14 +185,6 @@ public class SampleCustomer : AutoObject
     [DisplayName("Boolean (Checkbox three states)")]
     [Category("Booleans")]
     public bool? SampleNullableBoolean { get => GetPropertyValue<bool?>(); set => SetPropertyValue(value); }
-
-    [DisplayName("Boolean (DropDownList)")]
-    [Category("Booleans")]
-    public bool SampleBooleanDropDownList { get => GetPropertyValue<bool>(); set => SetPropertyValue(value); }
-
-    [DisplayName("Boolean (DropDownList 3 states)")]
-    [Category("Booleans")]
-    public bool? SampleNullableBooleanDropDownList { get => GetPropertyValue<bool?>(); set => SetPropertyValue(value); }
 }
 
 [TypeConverter(typeof(SampleAddressConverter))]
@@ -471,5 +405,66 @@ public struct SamplePoint
     {
         X = x;
         Y = y;
+    }
+}
+
+#if NETFRAMEWORK
+public sealed class GuidEditorCreator : DefaultEditorCreator
+#else
+public sealed class GuidEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : DefaultEditorCreator<T>
+#endif
+{
+#if NETFRAMEWORK
+    public override object? CreateEditor(PropertyValueVisual value)
+#else
+    public override object? CreateEditor(PropertyValueVisual<T> value)
+#endif
+    {
+        ExceptionExtensions.ThrowIfNull(value, nameof(value));
+        var editor = base.CreateEditor(value);
+        if (editor is TextBox textBox)
+        {
+            var dock = new ValueableDock(textBox);
+            textBox.FontFamilyName = "Consolas";
+            textBox.VerticalAlignment = Alignment.Center;
+            dock.Children.Add(textBox);
+
+            var button = new Button { Margin = D2D_RECT_F.Thickness(4, 0, 0, 0), Height = 19, UpdateMargins = false };
+            button.Text.Text = "New";
+            button.Text.Margin = 0;
+            button.Text.FontSize = 10;
+            button.Click += (s, e) =>
+            {
+                var g = Guid.NewGuid();
+                textBox.Text = g.ToString();
+                textBox.CommitChanges();
+            };
+
+            dock.Children.Add(button);
+            return dock;
+        }
+        return editor;
+    }
+
+    // defer value get/set to inner text box
+    private sealed class ValueableDock : Dock, IValueable
+    {
+        public ValueableDock(IValueable inner)
+        {
+            Inner = inner;
+            Inner.ValueChanged += (s, e) => ValueChanged?.Invoke(this, e);
+        }
+
+        public IValueable Inner { get; }
+
+        public object? Value => Inner.Value;
+        public bool CanChangeValue { get => Inner.CanChangeValue; set => Inner.CanChangeValue = value; }
+        public bool TrySetValue(object? value) => Inner.TrySetValue(value);
+
+#if NETFRAMEWORK
+        public event EventHandler<ValueEventArgs>? ValueChanged;
+#else
+        public event EventHandler<DirectN.Extensions.Utilities.ValueEventArgs>? ValueChanged;
+#endif
     }
 }

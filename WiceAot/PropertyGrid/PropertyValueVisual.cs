@@ -102,6 +102,9 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
         if (typeof(bool).IsAssignableFrom(Property.Type))
             return new BooleanEditorCreator();
 
+        if (typeof(bool?).IsAssignableFrom(Property.Type))
+            return new NullableBooleanEditorCreator();
+
         if (Property.Type.IsEnum && Property.IsReadWrite)
             return new EnumEditorCreator();
 
@@ -112,6 +115,9 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
     {
         if (typeof(bool).IsAssignableFrom(Property.Type))
             return new BooleanEditorCreator<T>();
+
+        if (typeof(bool?).IsAssignableFrom(Property.Type))
+            return new NullableBooleanEditorCreator<T>();
 
         if (Property.Type?.IsEnum == true && Property.IsReadWrite)
             return new EnumEditorCreator<T>();
@@ -140,8 +146,14 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
     public virtual void CreateEditor()
     {
         var options = Property.Options ?? new PropertyGridPropertyOptionsAttribute();
-        var editor = options.CreateEditor(this);
-        AddEditor(editor);
+        var editorAndCreator = options.CreateEditor(this);
+#if NETFRAMEWORK
+        EditorCreator = editorAndCreator.Item2;
+        AddEditor(editorAndCreator.Item1);
+#else
+        EditorCreator = editorAndCreator.EditorCreator;
+        AddEditor(editorAndCreator.Editor);
+#endif
     }
 
     /// <summary>

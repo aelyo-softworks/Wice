@@ -109,15 +109,15 @@
     var sv = new ScrollViewer { Width = 800, Height = 500 };
     parent.Children.Add(sv);
 
-    var pg = new PropertyGrid.PropertyGrid
-    {
-        CellMargin = 5
-    };
-    {
+    var pg = new PropertyGrid.PropertyGrid();
+
+    pg.CellMargin = 5;
+    pg.GroupByCategory = true;
+    pg.LiveSync = true;
     sv.Viewer.Child = pg;
 
     // use a custom complex object for demonstration
-    var cus = new SampleCustomer();
+    var cus = SampleCustomer.Instance;
     pg.SelectedObject = cus;
 
 }</sample>
@@ -939,21 +939,96 @@ gma warning restore IDE0017 // Simplify object initialization
     grid.Rows.Add(new GridRow());
     grid.Rows.Add(new GridRow());
 
-    var cell0 = new Border();
-    grid.Children.Add(cell0);
-    cell0.Margin = parent.Window!.DipsToPixels(10);
-    cell0.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Purple.ToColor());
+    var cell00 = new TextBox() { Text = "Cell 0,0" };
+    grid.Children.Add(cell00);
+    cell00.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Purple.ToColor());
 
-    var cell1 = new Border();
-    grid.Children.Add(cell1);
-    cell1.Margin = parent.Window!.DipsToPixels(10);
-    cell1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
+    var cell22 = new TextBox()
+    {
+        Text = "Cell 2,2, spanning 2 rows, 2 columns",
+        ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_FAR,
+        Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_TRAILING
+    };
+    grid.Children.Add(cell22);
+    cell22.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.LightBlue.ToColor());
+    Grid.SetColumn(cell22, 1);
+    Grid.SetRow(cell22, 1);
+    Grid.SetColumnSpan(cell22, 2);
+    Grid.SetRowSpan(cell22, 2);
 
-    Grid.SetColumn(cell1, 2);
-    Grid.SetRow(cell1, 2);
+    var cell11 = new TextBox() { Text = "Cell 1,1, overwriting cell 2,2", Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER };
+    grid.Children.Add(cell11);
+    cell11.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
+
+    Grid.SetColumn(cell11, 1);
+    Grid.SetRow(cell11, 1);
+
+    var cellSpanRows = new TextBox() { Text = "Cell 0,1 spanning 2 rows", ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER };
+    grid.Children.Add(cellSpanRows);
+    cellSpanRows.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
+    Grid.SetColumn(cellSpanRows, 0);
+    Grid.SetRow(cellSpanRows, 1);
+    Grid.SetRowSpan(cellSpanRows, 2);
+
+    var cellSpanCols = new TextBox() { Text = "Cell 1,0 spanning 2 columns", ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER };
+    grid.Children.Add(cellSpanCols);
+    cellSpanCols.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+    Grid.SetColumn(cellSpanCols, 1);
+    Grid.SetRow(cellSpanCols, 0);
+    Grid.SetColumnSpan(cellSpanCols, 2);
 }</sample>
   <sample namespace="Samples.Layout.GridSplitter.SimpleGridSplitterSample">void Layout(Visual parent)
 {
+    // a new grid already has one column and one row by default
+    var grid = new Grid
+    {
+        Height = parent.Window!.DipsToPixels(100),
+        Width = parent.Window!.DipsToPixels(500)
+    };
+    parent.Children.Add(grid);
+
+    // configure first column and row (always there) to auto-size
+    grid.Columns[0].Size = float.NaN;
+    grid.Rows[0].Size = float.NaN;
+
+    // add splitter column
+    grid.Columns.Add(new GridColumn { Size = float.NaN });
+
+    // add second column
+    grid.Columns.Add(new GridColumn { Size = float.NaN });
+
+    // add two rows
+    grid.Rows.Add(new GridRow { Size = float.NaN });
+
+    // add splitter
+    var splitter = new GridSplitter();
+    splitter.RenderBrush = Compositor!.CreateColorBrush(parent.GetWindowTheme().SplitterColor.ToColor());
+    grid.Children.Add(splitter);
+    Grid.SetColumn(splitter, 1);
+
+    var cell00 = new TextBox() { Text = "Cell 0,0" };
+    grid.Children.Add(cell00);
+    cell00.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Purple.ToColor());
+    Grid.SetColumn(cell00, 0);
+    Grid.SetRow(cell00, 0);
+
+    var cell02 = new TextBox() { Text = "Cell 0,2" };
+    grid.Children.Add(cell02);
+    cell02.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
+    Grid.SetColumn(cell02, 2);
+    Grid.SetRow(cell02, 0);
+
+    var cell20 = new TextBox() { Text = "Cell 2,0" };
+    grid.Children.Add(cell20);
+    cell20.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+    Grid.SetColumn(cell20, 0);
+    Grid.SetRow(cell20, 1);
+
+    var cell22 = new TextBox() { Text = "Cell 2,2" };
+    grid.Children.Add(cell22);
+    cell22.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightBlue.ToColor());
+    Grid.SetColumn(cell22, 2);
+    Grid.SetRow(cell22, 1);
 }</sample>
   <sample namespace="Samples.Layout.ScrollViewer.ScrollViewerBasicSample">void Layout(Visual parent)
 {

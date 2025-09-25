@@ -13,6 +13,8 @@ public class DefaultEditorCreator : IEditorCreator
 public class DefaultEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : IEditorCreator<T>
 #endif
 {
+    private readonly TextBox _textBox = new();
+
     /// <summary>
     /// Creates a new <see cref="TextBox"/> editor for the specified property value visual.
     /// </summary>
@@ -28,27 +30,37 @@ public class DefaultEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
     {
         ExceptionExtensions.ThrowIfNull(value, nameof(value));
 
-        var text = new TextBox
-        {
+
 #if DEBUG
-            Name = "editorText",
+        _textBox.Name = "editorText";
 #endif
-            TextChangedTrigger = EventTrigger.LostFocus,
-            IsEditable = value.Property.IsReadWrite,
-            IsFocusable = true,
-            IsEnabled = value.Property.IsReadWrite,
-            TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER,
-            Text = value.Property.TextValue ?? string.Empty
+        _textBox.TextChangedTrigger = EventTrigger.LostFocus;
+        _textBox.IsEditable = value.Property.IsReadWrite;
+        _textBox.IsFocusable = true;
+        _textBox.IsEnabled = value.Property.IsReadWrite;
+        _textBox.AcceptsReturn = true; // allow multiline
+        _textBox.TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER;
+        _textBox.Text = value.Property.TextValue ?? string.Empty;
+
+        _textBox.KeyDown += (s, e) =>
+        {
+            // commit on enter (unless shift is down in which case it will create a new line inside textbox)
+            var shift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
+            if (e.Key == VIRTUAL_KEY.VK_RETURN && !shift)
+            {
+                _textBox.CommitChanges();
+                _textBox.Window?.MoveFocus(FocusDirection.Next);
+                e.Handled = true;
+            }
         };
 
-        text.ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, text.Text);
+        _textBox.ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, _textBox.Text);
         value.DoWhenAttachedToParent(() =>
         {
-            text.CopyFrom(value.Parent);
-            text.Margin = value.GetWindowTheme().HeaderPanelMargin;
+            _textBox.CopyFrom(value.Parent);
         });
 
-        return text;
+        return _textBox;
     }
 
     /// <summary>
@@ -66,11 +78,7 @@ public class DefaultEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
 #endif
     {
         ExceptionExtensions.ThrowIfNull(value, nameof(value));
-        if (editor is TextBox tb)
-        {
-            tb.Text = value.Property.TextValue ?? string.Empty;
-        }
-
+        _textBox.Text = value.Property.TextValue ?? string.Empty;
         return editor;
     }
 }

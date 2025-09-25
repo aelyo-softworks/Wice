@@ -124,7 +124,7 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
 #if NETFRAMEWORK
     public PropertyGridProperty(PropertyGridSource source, PropertyInfo info)
 #else
-public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
+    public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
 #endif
     {
         ExceptionExtensions.ThrowIfNull(source, nameof(source));
@@ -138,6 +138,8 @@ public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
         {
             SortOrder = options.SortOrder;
             Options = options;
+            ListSeparator = options.ListSeparator;
+            Format = options.Format;
         }
         else
         {
@@ -149,7 +151,7 @@ public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
         DisplayName = info.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName.Nullify();
         DisplayName ??= Conversions.Decamelize(Name);
         Description = info.GetCustomAttribute<DescriptionAttribute>()?.Description.Nullify();
-        IsReadOnly = !info.CanWrite;
+        IsReadOnly = !info.CanWrite || info.GetCustomAttribute<ReadOnlyAttribute>()?.IsReadOnly == true;
 
         var dva = info.GetCustomAttribute<DefaultValueAttribute>();
         if (dva != null)
@@ -158,9 +160,28 @@ public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
             DefaultValue = dva.Value;
         }
 
+        var tc = info.GetCustomAttribute<TypeConverterAttribute>()?.ConverterTypeName.Nullify();
+        tc ??= info.PropertyType.GetCustomAttribute<TypeConverterAttribute>()?.ConverterTypeName.Nullify();
+
+        if (!string.IsNullOrWhiteSpace(tc))
+        {
+#pragma warning disable IL2057
+            var type = Type.GetType(tc);
+#pragma warning restore IL2057
+            if (type != null)
+            {
+                TypeConverter = Activator.CreateInstance(type) as TypeConverter;
+            }
+        }
+
         Type = info.PropertyType;
         OriginalValue = Info.GetValue(Source.Value);
-        Value = OriginalValue;
+        SetPropertyValue(ValueProperty, OriginalValue, new ValueSetOptions
+        {
+            DontRaiseOnErrorsChanged = true,
+            DontRaiseOnPropertyChanged = true,
+            DontRaiseOnPropertyChanging = true
+        });
     }
 
     /// <summary>
@@ -176,6 +197,22 @@ public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
     /// Gets the reflected property information for the wrapped property.
     /// </summary>
     public PropertyInfo Info { get; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="TypeConverter"/> used to convert the value of the associated object to and from
+    /// other types.
+    /// </summary>  
+    public virtual TypeConverter? TypeConverter { get; set; }
+
+    /// <summary>
+    /// Gets or sets the string used to separate items in a list.
+    /// </summary>
+    public virtual string? ListSeparator { get; set; }
+
+    /// <summary>
+    /// Gets or sets the format string used to define the text output representation.
+    /// </summary>
+    public virtual string? Format { get; set; }
 
     /// <summary>
     /// Gets the last committed value read from the underlying object.
@@ -275,38 +312,191 @@ public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
             return false;
         }
 
+        var v = Value;
+
+        if (Type.IsNullable() && v == null || v is string s && string.IsNullOrWhiteSpace(s))
+        {
+            value = null;
+            return true;
+        }
+
+        var tc = TypeConverter;
+        if (tc != null)
+        {
+            if (v == null)
+            {
+                if (!Type.IsValueType)
+                {
+                    value = null;
+                    return true;
+                }
+
+                try
+                {
+#pragma warning disable IL2072
+                    value = Activator.CreateInstance(Type);
+#pragma warning restore IL2072
+                    if (value is not null)
+                        return true;
+                }
+                catch
+                {
+                    // continue
+                }
+
+                value = null;
+                return false;
+            }
+
+            if (tc.CanConvertTo(Type))
+            {
+                try
+                {
+                    value = tc.ConvertTo(v, Type);
+                    return true;
+                }
+                catch
+                {
+                    // continue
+                }
+            }
+
+            if (tc.CanConvertFrom(v.GetType()))
+            {
+                try
+                {
+                    value = tc.ConvertFrom(v);
+                    return true;
+                }
+                catch
+                {
+                    // continue
+                }
+            }
+        }
+
+        if (SimpleConvert(Type, HasDefaultValue, DefaultValue, v, out value))
+            return true;
+
 #if NETFRAMEWORK
-        if (Conversions.TryChangeType(Value, Type, out value))
+        if (Conversions.TryChangeType(v, Type, out value))
             return true;
 
         if (HasDefaultValue && Conversions.TryChangeType(DefaultValue, Type, out value))
             return true;
 #else
-        if (Conversions.TryChangeObjectType(Value, Type, out value))
+        if (Conversions.TryChangeObjectType(v, Type, out value))
             return true;
 
         if (HasDefaultValue && Conversions.TryChangeObjectType(DefaultValue, Type, out value))
             return true;
 #endif
 
+        if (v is string str)
+        {
+            var elementType = Type.GetEnumeratedType();
+            if (elementType != null)
+            {
+                if (ListSeparator != null)
+                {
+                    var parts = str.Split([ListSeparator], StringSplitOptions.RemoveEmptyEntries);
+                    try
+                    {
+                        if (Type.IsArray)
+                        {
+#pragma warning disable IL3050
+                            var array = Array.CreateInstance(elementType, parts.Length);
+#pragma warning restore IL3050
+                            if (array is null)
+                            {
+                                value = null;
+                                return false;
+                            }
+
+                            for (var i = 0; i < parts.Length; i++)
+                            {
+                                if (SimpleConvert(elementType, false, null, parts[i].Trim(), out var ev))
+                                {
+                                    array.SetValue(ev, i);
+                                }
+                            }
+                            value = array;
+                            return true;
+                        }
+
+                        if (typeof(IList).IsAssignableFrom(Type))
+                        {
+#pragma warning disable IL2072
+                            if (Activator.CreateInstance(Type) is IList list)
+#pragma warning restore IL2072
+                            {
+                                foreach (var part in parts)
+                                {
+                                    if (SimpleConvert(elementType, false, null, part.Trim(), out var ev))
+                                    {
+                                        list.Add(ev);
+                                    }
+                                }
+                                value = list;
+                                return true;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // continue
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static bool SimpleConvert(Type type, bool hasDefaultValue, object? defaultValue, object? v, out object? value)
+    {
+#if NETFRAMEWORK
+        if (Conversions.TryChangeType(v, type, out value))
+            return true;
+
+        if (hasDefaultValue && Conversions.TryChangeType(defaultValue, type, out value))
+            return true;
+#else
+        if (Conversions.TryChangeObjectType(v, type, out value))
+            return true;
+
+        if (hasDefaultValue && Conversions.TryChangeObjectType(defaultValue, type, out value))
+            return true;
+#endif
         return false;
     }
 
     /// <summary>
-    /// Attempts to convert the current <see cref="Value"/> to the specified <typeparamref name="TValue"/>.
-    /// Falls back to <see cref="DefaultValue"/> (when available) if conversion fails.
+    /// Attempts to retrieve the target value as the specified type.
     /// </summary>
-    /// <typeparam name="TValue">The desired target type.</typeparam>
-    /// <param name="value">The converted value when the method returns <see langword="true"/>; otherwise default.</param>
-    /// <returns><see langword="true"/> when conversion succeeds; otherwise <see langword="false"/>.</returns>
+    /// <typeparam name="TValue">The type to which the target value should be converted.</typeparam>
+    /// <param name="value">When this method returns, contains the target value converted to the specified type, if the conversion was
+    /// successful;  otherwise, the default value for the type <typeparamref name="TValue"/>.</param>
+    /// <returns><see langword="true"/> if the target value was successfully retrieved and converted to the specified type; 
+    /// otherwise, <see langword="false"/>.</returns>
     public bool TryGetTargetValue<TValue>(out TValue? value)
     {
-        if (Conversions.TryChangeType(Value, out value))
+        if (!TryGetTargetValue(out object? obj))
+        {
+            if (HasDefaultValue && Conversions.TryChangeType(DefaultValue, out value))
+                return true;
+
+            value = default;
+            return false;
+        }
+
+        if (Conversions.TryChangeType(obj, out value))
             return true;
 
         if (HasDefaultValue && Conversions.TryChangeType(DefaultValue, out value))
             return true;
 
+        value = default;
         return false;
     }
 
@@ -317,22 +507,52 @@ public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
     {
         get
         {
-            if (Value is string s)
+            var value = Value;
+            var tc = TypeConverter;
+            if (tc != null && tc.CanConvertTo(typeof(string)))
+            {
+                try
+                {
+                    return tc.ConvertToString(value);
+                }
+                catch
+                {
+                    // ignore and fall back to other conversions
+                }
+            }
+
+            if (value is string s)
                 return s;
 
-            if (Value is byte[] bytes)
+            if (Format != null && value != null)
+            {
+                try
+                {
+                    return string.Format(Format, value);
+                }
+                catch
+                {
+                    // ignore and fall back to other conversions
+                }
+            }
+
+            if (value is byte[] bytes)
                 return bytes.ToHexa(7, true);
 
-            if (Value is IEnumerable enumerable)
-                return string.Join(string.Empty, enumerable.Cast<object>());
+            if (value is IEnumerable enumerable)
+                return string.Join(ListSeparator ?? string.Empty, enumerable.Cast<object>());
 
-            return Conversions.ChangeType<string>(Value);
+            return Conversions.ChangeType<string>(value);
         }
         set => Value = value;
     }
 
     /// <inheritdoc/>
     public override string ToString() => Name + "=" + Value;
+
+    private sealed class ValueSetOptions : BaseObjectSetOptions
+    {
+    }
 
     /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
@@ -346,7 +566,7 @@ public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
             return true;
         }
 
-        if (property == ValueProperty)
+        if (property == ValueProperty && options is not ValueSetOptions)
         {
             Source.OnPropertyChanged(this);
             OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(TextValue)));
@@ -445,7 +665,6 @@ public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
         }
     }
 
-    /// <inheritdoc/>
 #if NETFRAMEWORK
     int IComparable.CompareTo(object? obj) => CompareTo(obj as PropertyGridProperty);
 #else
@@ -453,11 +672,16 @@ public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
 #endif
 
     /// <summary>
-    /// Compares properties for display ordering: first by <see cref="SortOrder"/> descending,
-    /// then by <see cref="DisplayName"/> ascending (case-insensitive).
+    /// Compares the current <see cref="PropertyGridProperty{T}"/> instance with another instance of the same type and
+    /// returns an integer that indicates their relative order.
     /// </summary>
-    /// <param name="other">The other property to compare.</param>
-    /// <returns>A negative, zero, or positive value according to comparison semantics.</returns>
+    /// <param name="other">The <see cref="PropertyGridProperty{T}"/> instance to compare with the current instance. Cannot be <see
+    /// langword="null"/>.</param>
+    /// <returns>A signed integer that indicates the relative order of the objects being compared: <list type="bullet">
+    /// <item><description>Less than zero if this instance precedes <paramref name="other"/> in the sort
+    /// order.</description></item> <item><description>Zero if this instance occurs in the same position as <paramref
+    /// name="other"/> in the sort order.</description></item> <item><description>Greater than zero if this instance
+    /// follows <paramref name="other"/> in the sort order.</description></item> </list></returns>
 #if NETFRAMEWORK
     public virtual int CompareTo(PropertyGridProperty? other)
 #else
@@ -465,7 +689,7 @@ public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
 #endif
     {
         ExceptionExtensions.ThrowIfNull(other, nameof(other));
-        var cmp = -SortOrder.CompareTo(other!.SortOrder);
+        var cmp = SortOrder.CompareTo(other!.SortOrder);
         if (cmp != 0)
             return cmp;
 

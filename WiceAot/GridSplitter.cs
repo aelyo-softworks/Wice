@@ -8,6 +8,7 @@ public partial class GridSplitter : Visual
     /// <summary>
     /// Gets the parent grid, if any.
     /// </summary>
+    [Browsable(false)]
     public new Grid? Parent => base.Parent as Grid;
 
     /// <summary>
@@ -65,7 +66,7 @@ public partial class GridSplitter : Visual
         if (Parent == null || !Orientation.HasValue)
             return;
 
-        var orientation = Orientation.GetValueOrDefault();
+        var orientation = Orientation;
         if (orientation == Wice.Orientation.Horizontal)
         {
             if (Parent.Rows.Count < 2)
@@ -79,6 +80,7 @@ public partial class GridSplitter : Visual
             {
                 Height = GetWindowTheme().DefaultSplitterSize;
             }
+            Dimension.Size = Height;
         }
         else
         {
@@ -93,10 +95,9 @@ public partial class GridSplitter : Visual
             {
                 Width = GetWindowTheme().DefaultSplitterSize;
             }
+            Dimension.Size = Width;
         }
 
-        // Force Auto size for the dimension the splitter sits on and center default alignment for children there.
-        Dimension.Size = float.NaN;
         Dimension.DefaultAlignment = Alignment.Center;
     }
 
@@ -135,22 +136,27 @@ public partial class GridSplitter : Visual
     /// <param name="e">Drag event args containing the <see cref="SplitDragState"/>.</param>
     protected virtual void OnMouseDrag(DragEventArgs e)
     {
-        var prev = Dimension?.Previous;
-        var next = Dimension?.Next;
-        if (prev == null || next == null)
+        var dimension = Dimension;
+        if (dimension == null)
+            return;
+
+        var prev = dimension.Previous;
+        var next = dimension.Next;
+        var parent = Parent;
+        if (prev == null || next == null || parent == null)
             return;
 
         if (!Orientation.HasValue)
             return;
 
-        var orientation = Orientation.GetValueOrDefault();
+        var orientation = Orientation;
         var state = (SplitDragState)e.State;
         var delta = orientation == Wice.Orientation.Horizontal ? state.DeltaY : state.DeltaX;
 
-        if (delta != 0 && prev.DesiredSize.HasValue)
+        if (delta != 0)
         {
-            var oldSize = state.NextRenderSize + state.PreviousRenderSize;
-            var newPrevSize = Math.Min(Math.Max(0, state.PreviousRenderSize + delta), oldSize);
+            var originalPrevAndNextSize = (state.NextRenderSize + state.PreviousRenderSize) ?? 0;
+            var newPrevSize = Math.Min(Math.Max(0, (state.PreviousRenderSize ?? 0) + delta), originalPrevAndNextSize);
 
             var prevMax = prev.MaxSize;
             if (prevMax.IsSet() && prevMax > 0)
@@ -164,7 +170,7 @@ public partial class GridSplitter : Visual
                 newPrevSize = Math.Max(newPrevSize, prevMin);
             }
 
-            var plannedNextSize = Math.Max(0, oldSize - newPrevSize);
+            var plannedNextSize = Math.Max(0, originalPrevAndNextSize - newPrevSize);
             var newNextSize = plannedNextSize;
             if (next.MaxSize.IsSet() && next.MaxSize > 0)
             {
@@ -181,32 +187,46 @@ public partial class GridSplitter : Visual
             }
 
             IEnumerable<GridDimension> dimensions;
-            if (Parent != null && Dimension != null)
+            if (orientation == Wice.Orientation.Horizontal)
             {
-                if (orientation == Wice.Orientation.Horizontal)
-                {
-                    dimensions = Parent.Rows;
-                }
-                else
-                {
-                    dimensions = Parent.Columns;
-                }
+                dimensions = parent.Rows;
+            }
+            else
+            {
+                dimensions = parent.Columns;
+            }
 
-                foreach (var dimension in dimensions)
+            foreach (var dim in dimensions)
+            {
+                if (dim == dimension)
+                    continue;
+
+                if (dim == dimension.Previous)
                 {
-                    if (dimension == Dimension.Previous)
+                    if (float.IsNaN(state.PreviousSize) || (state.PreviousSize != 0 && !float.IsInfinity(state.PreviousSize)))
                     {
-                        dimension.Stars = newPrevSize;
+                        dim.Size = newPrevSize;
                     }
-                    else if (dimension == Dimension.Next)
+                    else
                     {
-                        dimension.Stars = newNextSize;
+                        dim.Stars = newPrevSize;
                     }
-                    else if (dimension.HasStarSize)
+                }
+                else if (dim == dimension.Next)
+                {
+                    if (float.IsNaN(state.NextSize) || (state.NextSize != 0 && !float.IsInfinity(state.NextSize)))
                     {
-                        // Freeze other star dimensions to their current final size
-                        dimension.Stars = dimension.FinalSize!.Value;
+                        dim.Size = newNextSize;
                     }
+                    else
+                    {
+                        dim.Stars = newNextSize;
+                    }
+                }
+                else if (dim.HasStarSize)
+                {
+                    // Freeze other star dimensions to their current final size
+                    dim.Stars = dim.FinalSize!.Value;
                 }
             }
         }
@@ -288,7 +308,7 @@ public partial class GridSplitter : Visual
             {
                 PreviousSize = prev.Size;
                 PreviousStars = prev.Stars;
-                PreviousRenderSize = prev.DesiredSize.GetValueOrDefault();
+                PreviousRenderSize = prev.DesiredSize;
             }
 
             var next = visual.Dimension?.Next;
@@ -296,7 +316,7 @@ public partial class GridSplitter : Visual
             {
                 NextSize = next.Size;
                 NextStars = next.Stars;
-                NextRenderSize = next.DesiredSize.GetValueOrDefault();
+                NextRenderSize = next.DesiredSize;
             }
         }
 
@@ -313,7 +333,7 @@ public partial class GridSplitter : Visual
         /// <summary>
         /// Gets the render-time desired size of the previous dimension at drag start.
         /// </summary>
-        public virtual float PreviousRenderSize { get; protected set; }
+        public virtual float? PreviousRenderSize { get; protected set; }
 
         /// <summary>
         /// Gets the original fixed size of the next dimension (may be NaN for Auto).
@@ -328,6 +348,6 @@ public partial class GridSplitter : Visual
         /// <summary>
         /// Gets the render-time desired size of the next dimension at drag start.
         /// </summary>
-        public virtual float NextRenderSize { get; protected set; }
+        public virtual float? NextRenderSize { get; protected set; }
     }
 }

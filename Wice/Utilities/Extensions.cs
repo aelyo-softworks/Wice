@@ -198,4 +198,54 @@ public static class Extensions
         using var md5 = MD5.Create();
         return new Guid(md5.ComputeHash(Encoding.UTF8.GetBytes(text)));
     }
+
+    public static Type? GetEnumeratedType(this Type collectionType)
+    {
+        if (collectionType == null)
+            throw new ArgumentNullException(nameof(collectionType));
+
+        if (collectionType.IsArray)
+            return collectionType.GetElementType();
+
+        var etype = GetEnumeratedItemType(collectionType);
+        if (etype != null)
+            return etype;
+
+        foreach (var type in collectionType.GetInterfaces())
+        {
+            etype = GetEnumeratedItemType(type);
+            if (etype != null)
+                return etype;
+        }
+        return null;
+    }
+
+    private static Type? GetEnumeratedItemType(Type type)
+    {
+        if (!type.IsGenericType)
+            return null;
+
+        if (type.GetGenericArguments().Length != 1)
+            return null;
+
+        if (type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            return type.GetGenericArguments()[0];
+
+        if (type.GetGenericTypeDefinition() == typeof(ICollection<>))
+            return type.GetGenericArguments()[0];
+
+        if (type.GetGenericTypeDefinition() == typeof(IList<>))
+            return type.GetGenericArguments()[0];
+
+        if (type.GetGenericTypeDefinition() == typeof(ISet<>))
+            return type.GetGenericArguments()[0];
+
+        if (type.GetGenericTypeDefinition() == typeof(IReadOnlyCollection<>))
+            return type.GetGenericArguments()[0];
+
+        if (type.GetGenericTypeDefinition() == typeof(IReadOnlyList<>))
+            return type.GetGenericArguments()[0];
+
+        return null;
+    }
 }

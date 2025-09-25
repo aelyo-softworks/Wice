@@ -845,7 +845,6 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     HRESULT IDropSourceNotify.DragEnterTarget(HWND hwndTarget)
     {
         var win = new NativeWindow(hwndTarget);
-        Application.Trace("DragEnterTarget hwndTarget:" + win);
 
         var e = new DragDropTargetEventArgs(DragDropTargetEventType.Enter, hwndTarget);
         _dragDropTarget = hwndTarget;
@@ -856,7 +855,6 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     /// <inheritdoc />
     HRESULT IDropSourceNotify.DragLeaveTarget()
     {
-        Application.Trace("DragLeaveTarget");
         var e = new DragDropTargetEventArgs(DragDropTargetEventType.Leave, _dragDropTarget);
         DragDropTarget?.Invoke(this, e);
         return WiceCommons.S_OK;
@@ -865,8 +863,6 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     /// <inheritdoc />
     HRESULT IDropSource.QueryContinueDrag(BOOL escapePressed, MODIFIERKEYS_FLAGS flags)
     {
-        //Application.Trace("QueryContinueDrag escapePressed:" + escapePressed + " flags:" + flags);
-
         var mouseButtons = 0;
         mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_LBUTTON) ? 1 : 0;
         mouseButtons += flags.HasFlag(MODIFIERKEYS_FLAGS.MK_MBUTTON) ? 1 : 0;

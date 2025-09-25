@@ -193,15 +193,16 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
     /// on <typeparamref name="T"/> are listed first, followed by inherited ones without duplicates.
     /// </summary>
     /// <returns>A read-only list of <see cref="PropertyInfo"/>.</returns>
-    protected IReadOnlyList<PropertyInfo> EnumerateProperties()
+    protected virtual IReadOnlyList<PropertyInfo> EnumerateProperties()
     {
+        var flags = BindingFlags.Instance | BindingFlags.Public;
 #if NETFRAMEWORK
         var type = Value?.GetType() ?? typeof(object); // object has no property, it's fine
-        var list = new List<PropertyInfo>(Value.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
-        foreach (var info in type.GetProperties())
+        var list = new List<PropertyInfo>(Value.GetType().GetProperties(flags | BindingFlags.DeclaredOnly));
+        foreach (var info in type.GetProperties(flags))
 #else
-        var list = new List<PropertyInfo>(typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly));
-        foreach (var info in typeof(T).GetProperties())
+        var list = new List<PropertyInfo>(typeof(T).GetProperties(flags | BindingFlags.DeclaredOnly));
+        foreach (var info in typeof(T).GetProperties(flags ))
 #endif
         {
             if (list.Any(p => p.Name == info.Name))

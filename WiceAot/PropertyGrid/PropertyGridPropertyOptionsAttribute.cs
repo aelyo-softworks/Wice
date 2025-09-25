@@ -12,18 +12,28 @@ public sealed class PropertyGridPropertyOptionsAttribute : Attribute
     public int SortOrder { get; set; }
 
     /// <summary>
+    /// Gets or sets the string used to separate items in a list if the property is an enumerable instance.
+    /// </summary>
+    public string? ListSeparator { get; set; }
+
+    /// <summary>
+    /// Gets or sets the format string used to define the text output representation of a property value.
+    /// </summary>
+    public string? Format { get; set; }
+
+    /// <summary>
     /// Gets or sets an optional editor factory type used to create/update the editor for this property.
     /// </summary>
 #if NETFRAMEWORK
 #else
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
-    public Type? EditorType { get; set; }
+    public Type? EditorCreatorType { get; set; }
 
 #if NETFRAMEWORK
-    internal object? CreateEditor(PropertyValueVisual value)
+    internal (object?, IEditorCreator?) CreateEditor(PropertyValueVisual value)
 #else
-    internal object? CreateEditor<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyValueVisual<T> value)
+    internal (object? Editor, IEditorCreator<T>? EditorCreator) CreateEditor<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyValueVisual<T> value)
 #endif
     {
 #if NETFRAMEWORK
@@ -33,17 +43,17 @@ public sealed class PropertyGridPropertyOptionsAttribute : Attribute
 #endif
         if (creator == null)
         {
-            if (EditorType != null)
+            if (EditorCreatorType != null)
             {
-                var editorCreator = Activator.CreateInstance(EditorType);
+                var editorCreator = Activator.CreateInstance(EditorCreatorType);
 #if NETFRAMEWORK
                 creator = editorCreator as IEditorCreator;
                 if (creator == null)
-                    throw new WiceException("0024: type '" + EditorType.FullName + "' doesn't implement the " + nameof(IEditorCreator) + " interface.");
+                    throw new WiceException("0024: type '" + EditorCreatorType.FullName + "' doesn't implement the " + nameof(IEditorCreator) + " interface.");
 #else
                 creator = editorCreator as IEditorCreator<T>;
                 if (creator == null)
-                    throw new WiceException("0024: type '" + EditorType.FullName + "' doesn't implement the " + nameof(IEditorCreator<T>) + " interface.");
+                    throw new WiceException("0024: type '" + EditorCreatorType.FullName + "' doesn't implement the " + nameof(IEditorCreator<T>) + " interface.");
 #endif
             }
         }
@@ -52,10 +62,10 @@ public sealed class PropertyGridPropertyOptionsAttribute : Attribute
         {
             var editor = creator.CreateEditor(value);
             if (editor != null)
-                return editor;
+                return (editor, creator);
         }
 
         // fall back to default editor
-        return value.CreateDefaultEditor();
+        return (value.CreateDefaultEditor(), null);
     }
 }

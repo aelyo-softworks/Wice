@@ -51,7 +51,6 @@ public partial class SinglePropertyAnimation(PropertyAnimationArguments argument
         if (elapsedTicks >= durationTicks)
         {
             value = To;
-            //Application.Trace("ElapsedTicks: " + elapsedTicks + " To: " + durationTicks + " " + TargetPropertyName + " stop at " + value);
             return AnimationResult.Stop;
         }
 
@@ -59,7 +58,6 @@ public partial class SinglePropertyAnimation(PropertyAnimationArguments argument
         var normalizedTime = elapsedTicks / (float)durationTicks;
         var eased = EasingFunction.Ease(normalizedTime, EasingMode);
         value = From + eased * delta;
-        //Application.Trace("ElapsedTicks: " + elapsedTicks + " To: " + durationTicks + " " + TargetProperty.Name + " value: " + value);
         return AnimationResult.Set;
     }
 }

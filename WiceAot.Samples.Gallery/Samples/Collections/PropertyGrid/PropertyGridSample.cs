@@ -11,16 +11,14 @@ public class PropertyGridSample : Sample
         parent.Children.Add(sv);
 
 #if NETFRAMEWORK // remove from display
-        var pg = new Wice.PropertyGrid.PropertyGrid
-        {
-            CellMargin = 5
-        };
+        var pg = new Wice.PropertyGrid.PropertyGrid();
 #else // remove from display
-        var pg = new Wice.PropertyGrid.PropertyGrid<SampleCustomer> // remove from display
-        {
-            CellMargin = 5 // remove from display
-        }; // remove from display
+        var pg = new PropertyGrid<SampleCustomer>(); // remove from display
 #endif // remove from display
+
+        pg.CellMargin = 5;
+        pg.GroupByCategory = true;
+        pg.LiveSync = true;
         sv.Viewer.Child = pg;
 
         // use a custom complex object for demonstration

@@ -250,6 +250,7 @@
 	  <Compile Include="..\WiceAot\PropertyGrid\EnumEditorCreator.cs" Link="PropertyGrid\EnumEditorCreator.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\IEditorCreator.cs" Link="PropertyGrid\IEditorCreator.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\IPropertyGridPropertyValidator.cs" Link="PropertyGrid\IPropertyGridPropertyValidator.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\NullableBooleanEditorCreator.cs" Link="PropertyGrid\NullableBooleanEditorCreator.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\PasswordEditorCreator.cs" Link="PropertyGrid\PasswordEditorCreator.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGrid.cs" Link="PropertyGrid\PropertyGrid.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\PropertyGridDynamicPropertyAttribute.cs" Link="PropertyGrid\PropertyGridDynamicPropertyAttribute.cs" />

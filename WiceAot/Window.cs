@@ -3861,6 +3861,23 @@ public partial class Window : Canvas, ITitleBarParent
     }
 
     /// <summary>
+    /// Moves the focus to the next focusable visual element in the specified direction.
+    /// </summary>
+    /// <param name="direction">The direction in which to move the focus. This determines the next focusable element.</param>
+    public virtual void MoveFocus(FocusDirection direction)
+    {
+        var before = FocusedVisual;
+        if (before != null)
+        {
+            FocusedVisual = before.GetFocusable(direction);
+        }
+        else
+        {
+            FocusedVisual = GetFocusable(direction);
+        }
+    }
+
+    /// <summary>
     /// Handles the behavior of the Tab key press to move focus between focusable visuals.
     /// </summary>
     /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
@@ -3868,15 +3885,7 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual bool HandleTabKeyDown(KeyEventArgs e)
     {
         var shift = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
-        var before = FocusedVisual;
-        if (before != null)
-        {
-            FocusedVisual = before.GetFocusable(shift ? FocusDirection.Previous : FocusDirection.Next);
-        }
-        else
-        {
-            FocusedVisual = GetFocusable(shift ? FocusDirection.Previous : FocusDirection.Next);
-        }
+        MoveFocus(shift ? FocusDirection.Previous : FocusDirection.Next);
         return true;
     }
 

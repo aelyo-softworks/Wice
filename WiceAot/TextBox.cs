@@ -508,9 +508,16 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     }
 
     /// <summary>
-    /// Resets the "pending changes" flag. Useful when batching edits to avoid spurious <see cref="TextChanged"/>.
+    /// Commits any pending text changes and raises the <see cref="TextChanged"/> event if applicable.
     /// </summary>
-    public virtual void CommitChanges() => _textHasChanged = false;
+    public virtual void CommitChanges()
+    {
+        if (_textHasChanged && RaiseTextChanged)
+        {
+            OnTextChanged(this, new ValueEventArgs<string>(Text));
+        }
+        _textHasChanged = false;
+    }
 
     /// <summary>
     /// Internal text change handler honoring <see cref="RaiseTextChanged"/> and <see cref="TextChangedTrigger"/>.

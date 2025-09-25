@@ -40,6 +40,10 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
 
                 var fontSize = parentFontSize ?? value.GetWindowTheme().DefaultFontSize;
                 host.Header.Height = fontSize + 4;
+
+                var margin = host.Header.Panel.Margin;
+                margin.left = 0;
+                host.Header.Panel.Margin = margin;
             });
 
             // Populate the editor dialog lazily on open.

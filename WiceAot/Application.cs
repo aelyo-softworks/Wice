@@ -190,7 +190,7 @@ public partial class Application : IDisposable
         if (msg.message == WM_HOSTQUIT)
         {
 #if DEBUG
-            Trace("WM_HOSTQUIT was received.");
+            //Trace("WM_HOSTQUIT was received.");
 #endif
             return false;
         }

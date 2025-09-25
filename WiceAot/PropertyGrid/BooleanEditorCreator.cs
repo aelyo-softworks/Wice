@@ -60,7 +60,6 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
             toggle.Value = targetValue;
         }
 
-        toggle.Margin = value.GetWindowTheme().HeaderPanelMargin;
         return toggle;
     }
 

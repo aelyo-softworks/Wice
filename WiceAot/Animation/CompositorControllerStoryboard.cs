@@ -23,7 +23,6 @@ public partial class CompositorControllerStoryboard(Window window) : Storyboard(
 
     private async void Callback(object? state)
     {
-        //Application.Trace("t:" + Thread.CurrentThread.ManagedThreadId + " init");
         var controller = (CompositorController)state!;
         var smallCount = 0;
 
@@ -32,13 +31,13 @@ public partial class CompositorControllerStoryboard(Window window) : Storyboard(
             if (_stop)
                 return;
 
-            // Await completion of the previous compositor commit before attempting to tick.
+            // wait completion of the previous compositor commit before attempting to tick.
             await controller.EnsurePreviousCommitCompletedAsync().AsTask().ConfigureAwait(false);
 
             if (_stop)
                 return;
 
-            // Apply tick throttling if requested through TickDivider.
+            // apply tick throttling if requested through TickDivider.
             if (_tickDivider > 1)
             {
                 smallCount++;
@@ -48,7 +47,6 @@ public partial class CompositorControllerStoryboard(Window window) : Storyboard(
                 smallCount = 0;
             }
 
-            //Application.Trace("t:" + Thread.CurrentThread.ManagedThreadId + " tick");
             OnTick();
         }
         while (true);

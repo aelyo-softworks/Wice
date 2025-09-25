@@ -105,21 +105,15 @@ public abstract class PropertyAnimation : Animation
                 }
                 OnValueSet(this, new ValueEventArgs(value));
             }
-            //#if DEBUG
-            //                Application.Trace("Target: '" + target + "' (" + TargetProperty.Name + ") new value: " + ((IPropertyOwner)target).GetPropertyValue(TargetProperty));
-            //#endif
         }
     }
 
     /// <summary>
-    /// Computes the next value to apply and instructs the animation how to proceed.
+    /// Attempts to retrieve a value associated with the current animation context.
     /// </summary>
-    /// <param name="value">When this method returns with <see cref="AnimationResult.Set"/> or <see cref="AnimationResult.Stop"/>,
-    /// contains the value to assign to <see cref="TargetProperty"/>.</param>
-    /// <returns>
-    /// - <see cref="AnimationResult.Continue"/> to skip setting a value this tick but remain <see cref="AnimationState.Running"/>.<br/>
-    /// - <see cref="AnimationResult.Set"/> to set <paramref name="value"/> this tick and remain running.<br/>
-    /// - <see cref="AnimationResult.Stop"/> to set <paramref name="value"/> and transition to <see cref="AnimationState.Stopped"/>.
-    /// </returns>
+    /// <param name="value">When this method returns, contains the retrieved value if the operation succeeds; otherwise, <see
+    /// langword="null"/>.</param>
+    /// <returns>An <see cref="AnimationResult"/> indicating the outcome of the operation.  The result specifies whether the
+    /// value was successfully retrieved.</returns>
     protected abstract AnimationResult TryGetValue(out object value);
 }

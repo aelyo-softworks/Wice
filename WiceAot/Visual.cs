@@ -1399,12 +1399,10 @@ public partial class Visual : BaseObject
     protected virtual void IsMouseOverChanged(bool newValue)
     {
         OnMouseOverChanged(this, new ValueEventArgs<bool>(newValue));
-        //OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsMouseOver)));
 
         var hover = HoverRenderBrush;
         if (hover != null && !CompositionObjectEqualityComparer.Default.Equals(hover, RenderBrush))
         {
-            //Application.Trace("this: " + this + " newValue: " + newValue);
             Invalidate(VisualPropertyInvalidateModes.Render, new PropertyInvalidateReason(IsMouseOverProperty));
         }
     }
@@ -1415,7 +1413,6 @@ public partial class Visual : BaseObject
     /// <param name="newValue">True when focused; otherwise false.</param>
     protected virtual internal void IsFocusedChanged(bool newValue)
     {
-        //Application.Trace(this + " new: " + newValue);
         OnFocusedChanged(this, new ValueEventArgs<bool>(newValue));
         OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(IsFocused)));
     }
@@ -2677,7 +2674,6 @@ public partial class Visual : BaseObject
     /// </summary>
     protected virtual internal VisualPropertyInvalidateModes GetParentInvalidateModes(InvalidateMode mode, VisualPropertyInvalidateModes defaultParentModes, InvalidateReason reason)
     {
-        //Application.Trace(this + " mode:" + mode + " defp:" + defaultParentModes + " sizeset:" + IsSizeSet);
         if (IsSizeSet)
             return defaultParentModes;
 

@@ -64,7 +64,7 @@ public partial class Button : ButtonBase
     /// Gets or sets a value indicating whether margins are recomputed when the icon or text content changes.
     /// </summary>
     [Browsable(false)]
-    public bool UpdateMarginsOnPropertyChanged { get; set; } = true;
+    public bool UpdateMargins { get; set; } = true;
 
     /// <inheritdoc/>
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
@@ -89,22 +89,25 @@ public partial class Button : ButtonBase
     protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         UpdateStyle();
-        UpdateMargins();
+        if (UpdateMargins)
+        {
+            DoUpdateMargins();
+        }
     }
 
     private void OnIconPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == TextBox.TextProperty.Name && UpdateMarginsOnPropertyChanged)
+        if (e.PropertyName == TextBox.TextProperty.Name && UpdateMargins)
         {
-            UpdateMargins();
+            DoUpdateMargins();
         }
     }
 
     private void OnTextPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == TextBox.TextProperty.Name && UpdateMarginsOnPropertyChanged)
+        if (e.PropertyName == TextBox.TextProperty.Name && UpdateMargins)
         {
-            UpdateMargins();
+            DoUpdateMargins();
         }
     }
 
@@ -125,7 +128,7 @@ public partial class Button : ButtonBase
     /// <summary>
     /// Computes and applies margins for <see cref="Icon"/> and <see cref="Text"/> based on their content presence.
     /// </summary>
-    protected virtual void UpdateMargins()
+    protected virtual void DoUpdateMargins()
     {
         if (!string.IsNullOrEmpty(Icon.Text) && !string.IsNullOrEmpty(Text.Text))
         {

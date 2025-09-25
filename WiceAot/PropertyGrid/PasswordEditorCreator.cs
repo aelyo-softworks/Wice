@@ -26,13 +26,18 @@ public class PasswordEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccess
         ExceptionExtensions.ThrowIfNull(value, nameof(value));
 
         var editor = value.CreateDefaultEditor();
+        if (editor is RenderVisual rv)
+        {
+            rv.BackgroundColor = D3DCOLORVALUE.Red.ChangeAlpha(20);
+        }
+
         if (editor is IPasswordCapable pc)
         {
             pc.IsPasswordModeEnabled = true;
 #if NETFRAMEWORK
-            var pw = PropertyGridDynamicPropertyAttribute.GetValueFromProperty<char>(value.Property, "PasswordCharacter");
+            var pw = PropertyGridDynamicPropertyAttribute.GetValueFromProperty<char>(value.Property, nameof(TextBox.PasswordCharacter));
 #else
-            var pw = PropertyGridDynamicPropertyAttribute.GetValueFromProperty<T, char>(value.Property, "PasswordCharacter");
+            var pw = PropertyGridDynamicPropertyAttribute.GetValueFromProperty<T, char>(value.Property, nameof(TextBox.PasswordCharacter));
 #endif
             if (pw != 0)
             {

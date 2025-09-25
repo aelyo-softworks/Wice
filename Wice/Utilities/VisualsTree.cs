@@ -413,8 +413,8 @@ public partial class VisualsTree : Form
                 treeViewVisuals.BeginUpdate();
                 try
                 {
-                    node.Collapse();
-                    node.Expand();
+                    node?.Collapse();
+                    node?.Expand();
                 }
                 catch
                 {
