@@ -2481,6 +2481,10 @@ public partial class Visual : BaseObject
                     {
                         CancelDragMove(e);
                     }
+#if DEBUG
+                    else
+                        throw new InvalidOperationException();
+#endif
                 }
                 break;
 

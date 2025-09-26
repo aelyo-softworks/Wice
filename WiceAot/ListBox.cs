@@ -559,7 +559,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
             if (ds != null)
             {
                 var binder = DataBinder ?? new DataBinder();
-                binder.ItemVisualCreator ??= CreateItemVisual;
+                binder.ItemVisualAdder ??= AddItemVisual;
                 binder.DataItemVisualCreator ??= CreateDataItemVisual;
                 binder.DataItemVisualBinder ??= BindDataItemVisual;
                 var lbdb = binder as ListBoxDataBinder;
@@ -590,9 +590,9 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
                 {
                     var ctx = new ListBoxDataBindContext(data, Children.Count, isLast);
                     binder.DataItemVisualCreator(ctx);
-                    if (ctx.DataVisual != null && binder.ItemVisualCreator != null)
+                    if (ctx.DataVisual != null && binder.ItemVisualAdder != null)
                     {
-                        binder.ItemVisualCreator(ctx);
+                        binder.ItemVisualAdder(ctx);
                         var item = ctx.ItemVisual;
                         if (item != null)
                         {
@@ -657,17 +657,20 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     }
 
     /// <summary>
-    /// Factory method for new item visuals. Override to customize container type.
+    /// Creates a new instance of an <see cref="ItemVisual"/> to represent an item.
     /// </summary>
-    protected virtual ItemVisual NewItemVisual() => new();
+    /// <returns>A new instance of <see cref="ItemVisual"/> representing the item.</returns>
+    protected virtual ItemVisual CreateItemVisual() => new();
 
     /// <summary>
-    /// Default item container creator. Sets brushes, hooks events, and associates <see cref="DataBindContext.Data"/>.
+    /// Adds a new visual representation of an item to the control, binding it to the provided data context.
     /// </summary>
-    protected virtual void CreateItemVisual(DataBindContext context)
+    /// <param name="context">The data binding context that provides the data and receives the created visual item. Cannot be <see
+    /// langword="null"/>.</param>
+    protected virtual void AddItemVisual(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
-        var item = NewItemVisual();
+        var item = CreateItemVisual();
         if (item == null)
             return;
 
@@ -675,6 +678,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
         item.Name ??= nameof(ItemVisual) + string.Format(" '{0}'", context.Data);
 #endif
 
+        item.ReceivesInputEvenWithModalShown = ReceivesInputEvenWithModalShown;
         item.DataBinder = DataBinder;
         item.ColorAnimationDuration = GetWindowTheme().SelectionBrushAnimationDuration;
         item.RenderBrush = Compositor?.CreateColorBrush(GetWindowTheme().ListBoxItemColor.ToColor());
@@ -695,12 +699,6 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
             {
                 OnSelectionChanged();
             }
-
-            // review: do we really want to focus so early?
-            //if (mode == SelectionMode.Single)
-            //{
-            //    item.Focus();
-            //}
         }
         context.ItemVisual = item;
     }

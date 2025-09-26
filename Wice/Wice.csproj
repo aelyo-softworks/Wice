@@ -90,7 +90,6 @@
 	  <Compile Include="..\WiceAot\DragDropTargetEventType.cs" Link="DragDropTargetEventType.cs" />
 	  <Compile Include="..\WiceAot\DragEventArgs.cs" Link="DragEventArgs.cs" />
 	  <Compile Include="..\WiceAot\DragState.cs" Link="DragState.cs" />
-	  <Compile Include="..\WiceAot\EditorHost.cs" Link="EditorHost.cs" />
 	  <Compile Include="..\WiceAot\EditorMode.cs" Link="EditorMode.cs" />
 	  <Compile Include="..\WiceAot\Effects\AcrylicBrush.cs" Link="Effects\AcrylicBrush.cs" />
 	  <Compile Include="..\WiceAot\Effects\AffineTransformEffect.cs" Link="Effects\AffineTransformEffect.cs" />
@@ -247,6 +246,7 @@
 	  <Compile Include="..\WiceAot\Properties\AssemblyVersionInfo.cs" Link="Properties\AssemblyVersionInfo.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\BooleanEditorCreator.cs" Link="PropertyGrid\BooleanEditorCreator.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\DefaultEditorCreator.cs" Link="PropertyGrid\DefaultEditorCreator.cs" />
+	  <Compile Include="..\WiceAot\PropertyGrid\EditorHost.cs" Link="PropertyGrid\EditorHost.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\EnumEditorCreator.cs" Link="PropertyGrid\EnumEditorCreator.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\IEditorCreator.cs" Link="PropertyGrid\IEditorCreator.cs" />
 	  <Compile Include="..\WiceAot\PropertyGrid\IPropertyGridPropertyValidator.cs" Link="PropertyGrid\IPropertyGridPropertyValidator.cs" />

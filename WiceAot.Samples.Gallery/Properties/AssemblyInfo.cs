@@ -5,6 +5,7 @@
 #endif
 [assembly: AssemblyTitle("Wice AOT - Samples - Gallery")]
 [assembly: AssemblyCompany("Aelyo Softworks")]
+[assembly: AssemblyDescription("Windows Interface Composition Engine ('Wice') is a .NET UI engine for creating Windows application.")]
 [assembly: AssemblyProduct("Wice AOT")]
 [assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks 2020-2025. All rights reserved.")]
 [assembly: AssemblyCulture("")]

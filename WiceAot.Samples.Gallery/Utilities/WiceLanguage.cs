@@ -51,7 +51,6 @@ public class WiceLanguage : ILanguage
             nameof(DpiChangedEventArgs),
             nameof(DragEventArgs),
             nameof(DragState),
-            nameof(EditorHost),
             nameof(EditorMode),
             nameof(Ellipse),
             nameof(EnumListBox),
@@ -108,9 +107,7 @@ public class WiceLanguage : ILanguage
             nameof(Orientation),
             nameof(ParentUpgradeInvalidateReason),
             nameof(Path),
-#if !NETFRAMEWORK
             nameof(PdfView),
-#endif
             nameof(PlacementMode),
             nameof(PlacementParameters),
             nameof(PointerActivateEventArgs),
@@ -179,6 +176,7 @@ public class WiceLanguage : ILanguage
             nameof(VisualSetOptions),
 #if !NETFRAMEWORK
             nameof(WebView),
+            nameof(MediaPlayer),
 #endif
             nameof(WiceException),
             nameof(Window),

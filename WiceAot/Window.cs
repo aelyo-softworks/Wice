@@ -196,7 +196,6 @@ public partial class Window : Canvas, ITitleBarParent
     /// </summary>
     public Window()
     {
-        //EnableInvalidationStackDiagnostics = true;
         ManagedThreadId = Environment.CurrentManagedThreadId;
 
         _caret = new Lazy<Caret>(GetCaret, true);
@@ -319,6 +318,11 @@ public partial class Window : Canvas, ITitleBarParent
     /// Gets or sets a value indicating whether mouse event traces are enabled.
     /// </summary>
     public virtual bool EnableMouseEventTraces { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether key event traces are enabled.
+    /// </summary>
+    public virtual bool EnableKeyEventTraces { get; set; }
 
     /// <summary>
     /// Gets the flags used to configure the creation of the Direct3D 11 device.
@@ -2531,12 +2535,10 @@ public partial class Window : Canvas, ITitleBarParent
             return;
 
         var cv = visual.CompositionVisual;
-        if (cv == null)
-            return;
-
         var sindent = new string(' ', indent);
-        var line = sindent + visual.GetType().Name + "[" + visual.Id + "] '" + cv.Comment + "'" + " visible:" + cv.IsVisible + " size:" + cv.Size + " offset:" + cv.Offset + " scale:" + cv.Scale;
-        if (cv.Clip is InsetClip ic)
+        var visible = cv?.IsVisible == true ? null : " 😶‍🌫️";
+        var line = sindent + visual.GetType().Name + "[" + visual.Id + "]{" + visual.Parent?.Id + "}(" + visual.Level + ") '" + cv?.Comment + "'" + visible + " size:" + cv?.Size + " off:" + cv?.Offset + " scale:" + cv?.Scale;
+        if (cv?.Clip is InsetClip ic)
         {
             line += " clip:<" + ic.LeftInset + ", " + ic.TopInset + ", " + ic.RightInset + ", " + ic.BottomInset + ">";
         }
@@ -3234,11 +3236,12 @@ public partial class Window : Canvas, ITitleBarParent
         // enable this to understand who may be stealing input
         void processWithTraces()
         {
+            Application.Trace("processing mouse event " + msg + " at " + e.X + "/" + e.Y);
             var stack = GetIntersectingVisuals(rc);
             var i = 0;
             foreach (var st in stack)
             {
-                Application.Trace("stack[" + i + "]: " + st.Level + "/" + st.ZIndexOrDefault + " " + st.FullName);
+                Application.Trace(" stack[" + i + "]: " + st.Level + "/" + st.ZIndexOrDefault + " " + st.FullName);
                 i++;
             }
 
@@ -3938,6 +3941,12 @@ public partial class Window : Canvas, ITitleBarParent
     }
 
     /// <summary>
+    /// Retrieves the topmost modal visual based on its Z-index.
+    /// </summary>
+    /// <returns>The modal visual with the highest Z-index, or <see langword="null"/> if no modal visuals are present.</returns>
+    public virtual Visual? GetTopModal() => ModalVisuals.OrderBy(m => m.ZIndexOrDefault).LastOrDefault();
+
+    /// <summary>
     /// Determines whether the specified visual can receive input.
     /// </summary>
     /// <param name="visual">The visual to evaluate for input eligibility. Cannot be <see langword="null"/>.</param>
@@ -3948,11 +3957,15 @@ public partial class Window : Canvas, ITitleBarParent
         if (visual.ReceivesInputEvenWithModalShown)
             return true;
 
-        var topModal = ModalVisuals.OrderBy(m => m.ZIndexOrDefault).LastOrDefault();
+        var topModal = GetTopModal();
         if (topModal == null)
             return true;
 
-        return topModal == visual || topModal.IsChild(visual);
+        if (topModal == visual)
+            return true;
+
+        var isChild = topModal.IsChild(visual);
+        return isChild;
     }
 
     private bool OnKeyEvent(KeyEventArgs e, Visual visual)
@@ -3961,20 +3974,52 @@ public partial class Window : Canvas, ITitleBarParent
         if (children == null)
             return false;
 
-        foreach (var child in children)
+        if (EnableKeyEventTraces)
         {
-            if (!CanReceiveInput(child))
-                continue;
+            Application.Trace("processing key event " + e + " on " + visual.FullName);
+            foreach (var child in children)
+            {
+                if (!CanReceiveInput(child))
+                {
+                    Application.Trace(" skip (CanReceiveInput=false): " + child.Level + "/" + child.ZIndexOrDefault + " " + child.FullName);
+                    continue;
+                }
 
-            child.OnKeyEvent(e);
-            if (e.Handled)
-                return true;
+                child.OnKeyEvent(e);
+                if (e.Handled)
+                {
+                    Application.Trace(" handled by: " + child.Level + "/" + child.ZIndexOrDefault + " " + child.FullName);
+                    return true;
+                }
+            }
+
+            foreach (var child in children)
+            {
+                if (OnKeyEvent(e, child))
+                {
+                    Application.Trace(" handled by: " + child.Level + "/" + child.ZIndexOrDefault + " " + child.FullName);
+                    return true;
+                }
+            }
+            Application.Trace(" not handled");
         }
-
-        foreach (var child in children)
+        else
         {
-            if (OnKeyEvent(e, child))
-                return true;
+            foreach (var child in children)
+            {
+                if (!CanReceiveInput(child))
+                    continue;
+
+                child.OnKeyEvent(e);
+                if (e.Handled)
+                    return true;
+            }
+
+            foreach (var child in children)
+            {
+                if (OnKeyEvent(e, child))
+                    return true;
+            }
         }
         return false;
     }

@@ -865,7 +865,7 @@ public static class UIExtensions
         if (window == null)
             return false;
 
-        return window.ModalVisuals.OrderBy(m => m.ZIndexOrDefault).LastOrDefault() == visual;
+        return window.GetTopModal() == visual;
     }
 
     /// <summary>

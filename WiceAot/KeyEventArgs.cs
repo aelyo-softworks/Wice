@@ -64,6 +64,11 @@ public class KeyEventArgs(VIRTUAL_KEY vk, uint states) : HandledEventArgs
     /// </summary>
     public virtual bool WithMenu { get; set; } = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_MENU);
 
+    /// <summary>
+    /// Gets a value indicating whether no modifier keys are active.
+    /// </summary>
+    public bool WithoutAnyModifiers => !WithShift && !WithControl && !WithMenu;
+
     /// <inheritdoc/>
     public override string ToString()
     {

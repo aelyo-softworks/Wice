@@ -130,10 +130,10 @@ public partial class GridSplitter : Visual
     }
 
     /// <summary>
-    /// Adjusts star sizes of the two dimensions adjacent to the splitter while honoring Min/Max constraints.
-    /// Converts all other star dimensions in the same axis to their current final size to preserve layout ratios.
+    /// Handles the drag operation for resizing grid dimensions during a split operation.
     /// </summary>
-    /// <param name="e">Drag event args containing the <see cref="SplitDragState"/>.</param>
+    /// <param name="e">The <see cref="DragEventArgs"/> containing the state of the drag operation, including the delta movement and
+    /// current sizes.</param>
     protected virtual void OnMouseDrag(DragEventArgs e)
     {
         var dimension = Dimension;
@@ -285,6 +285,7 @@ public partial class GridSplitter : Visual
         if (e.Key == VIRTUAL_KEY.VK_ESCAPE)
         {
             CancelDrag(e);
+            e.Handled = true;
         }
         base.OnKeyDown(sender, e);
     }

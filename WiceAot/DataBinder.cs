@@ -6,9 +6,9 @@
 public class DataBinder
 {
     /// <summary>
-    /// Delegate that creates and/or configures the container <see cref="ItemVisual"/> for a data item.
+    /// Delegate that adds the item visual.
     /// </summary>
-    public Action<DataBindContext>? ItemVisualCreator { get; set; }
+    public Action<DataBindContext>? ItemVisualAdder { get; set; }
 
     /// <summary>
     /// Delegate that creates and/or configures the visual that represents the data item itself.

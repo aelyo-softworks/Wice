@@ -105,6 +105,21 @@ public static class Extensions
     }
 
     /// <summary>
+    /// Filters a sequence to exclude null values.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements in the sequence. Must be a reference type.</typeparam>
+    /// <param name="source">The sequence to filter. Can be <see langword="null"/>.</param>
+    /// <returns>An <see cref="IEnumerable{T}"/> containing only the non-null elements from the input sequence. If <paramref
+    /// name="source"/> is <see langword="null"/>, an empty sequence is returned.</returns>
+    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?>? source) where T : class
+    {
+        if (source == null)
+            return [];
+
+        return source.Where(item => item is not null)!;
+    }
+
+    /// <summary>
     /// Determines whether an array is null or empty.
     /// </summary>
     /// <typeparam name="T">The element type.</typeparam>

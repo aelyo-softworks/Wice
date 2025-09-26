@@ -108,7 +108,6 @@ public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISe
         if (Parent?.IsEnabled == false)
             return;
 
-        // e.Handled = true;
         IsSelected = !IsSelected;
         Child?.Focus();
         base.OnMouseButtonDown(sender, e);

@@ -34,26 +34,23 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
         _toggle.HorizontalAlignment = Alignment.Near;
         _toggle.CopyStyleFrom(value.Property.Source.Grid);
 
-        if (value.Property.Name != null)
+        var visuals = value.Property.Source.Grid.GetPropertyVisuals(value.Property.Name);
+        if (visuals?.Text is TextBox tb)
         {
-            var visuals = value.Property.Source.Grid.GetVisuals(value.Property.Name);
-            if (visuals?.Text is TextBox tb)
+            if (tb.FontSize.HasValue)
             {
-                if (tb.FontSize.HasValue)
-                {
-                    _toggle.AutoSize = false;
-                    _toggle.Height = tb.FontSize.Value;
-                    _toggle.Width = tb.FontSize.Value * 2; // Approximate width for toggle switch
-                }
+                _toggle.AutoSize = false;
+                _toggle.Height = tb.FontSize.Value;
+                _toggle.Width = tb.FontSize.Value * 2; // Approximate width for toggle switch
+            }
 
-                if (((IPropertyOwner)tb).TryGetPropertyValue(TextBox.ForegroundBrushProperty, out var foreground) &&
-                    foreground is SolidColorBrush color)
+            if (((IPropertyOwner)tb).TryGetPropertyValue(TextBox.ForegroundBrushProperty, out var foreground) &&
+                foreground is SolidColorBrush color)
+            {
+                _toggle.DoWhenAttachedToComposition(() =>
                 {
-                    _toggle.DoWhenAttachedToComposition(() =>
-                    {
-                        _toggle.OffPathBrush = _toggle.Compositor!.CreateColorBrush(color.Color.ToColor());
-                    });
-                }
+                    _toggle.OffPathBrush = _toggle.Compositor!.CreateColorBrush(color.Color.ToColor());
+                });
             }
         }
 

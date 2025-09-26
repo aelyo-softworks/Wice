@@ -10,6 +10,7 @@ public partial class AboutPage : Page
     private readonly TextBox _mouseInPointerText = new();
     private readonly RoundedButton _systemInfoButton = new();
     private readonly CheckBox _mouseInPointerCheck = new();
+    private ScrollViewer? _sv;
 
     public AboutPage()
     {
@@ -84,7 +85,11 @@ public partial class AboutPage : Page
 
             open = true;
             var dlg = new DialogBox();
-            dlg.Closed += (s2, e2) => open = false;
+            dlg.Closed += (s2, e2) =>
+            {
+                open = false;
+                _pg.SelectedObject = null;
+            };
             Children.Add(dlg);
 
             var tlb = new TitleBar();
@@ -92,19 +97,24 @@ public partial class AboutPage : Page
             tlb.MinButton!.IsVisible = false;
             dlg.Content.Children.Add(tlb);
 
+            _sv?.Dispose();
+            _sv = new ScrollViewer
+            {
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+            };
+            dlg.Content.Children.Add(_sv);
             //TextBox.FontSizeProperty.SetValue(_pg, 12f);
             _pg.GroupByCategory = true;
             _pg.LiveSync = true;
-            _pg.MaxWidth = DesiredSize.width * 2 / 3;
             _pg.CellMargin = ((GalleryTheme)GetWindowTheme()).AboutPagePropertyGridCellMargin;
             _pg.Margin = ((GalleryTheme)GetWindowTheme()).AboutPagePropertyGridMargin;
 
 #if NETFRAMEWORK
-            _pg.SelectedObject = new DiagnosticsInformation(null, Window);
+            _pg.SelectedObject = new DiagnosticsInformation(Assembly.GetExecutingAssembly(), Window);
 #else
-            _pg.SelectedObject = new SystemInformation(null, Window);
+            _pg.SelectedObject = new SystemInformation(Assembly.GetExecutingAssembly(), Window);
 #endif
-            dlg.Content.Children.Add(_pg);
+            _sv.Child = _pg;
         };
         SetDockType(_systemInfoButton, DockType.Top);
         Children.Add(_systemInfoButton);
@@ -115,6 +125,17 @@ public partial class AboutPage : Page
     public override string IconText => MDL2GlyphResource.Info;
     public override int SortOrder => int.MaxValue;
     public override DockType DockType => DockType.Bottom;
+
+    protected override void OnArranged(object? sender, EventArgs e)
+    {
+        base.OnArranged(sender, e);
+        var sv = _sv;
+        if (sv != null)
+        {
+            sv.MaxWidth = DesiredSize.width * .8f;
+            sv.MaxHeight = DesiredSize.height * .7f;
+        }
+    }
 
     protected override void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {

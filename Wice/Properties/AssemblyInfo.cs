@@ -6,6 +6,7 @@
 [assembly: AssemblyTitle("Windows Interface Composition Engine")]
 [assembly: AssemblyCompany("Aelyo Softworks")]
 [assembly: AssemblyProduct("Wice")]
+[assembly: AssemblyDescription("Windows Interface Composition Engine ('Wice') is a .NET UI engine for creating Windows application.")]
 [assembly: AssemblyCopyright("Copyright (©) Aelyo Softworks 2020-2025. All rights reserved.")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

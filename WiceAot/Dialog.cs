@@ -3,7 +3,7 @@
 /// <summary>
 /// Modal popup dialog visual.
 /// </summary>
-public partial class Dialog : Popup
+public partial class Dialog : Popup, IOneChildParent
 {
     private object? _closeButtonClickHandler;
     private Visual? _overlay;
@@ -79,6 +79,8 @@ public partial class Dialog : Popup
     /// </summary>
     [Category(CategoryBehavior)]
     public virtual bool? Result { get; set; }
+
+    Visual? IOneChildParent.Child => Content;
 
     /// <summary>
     /// Raises the <see cref="Closed"/> event.

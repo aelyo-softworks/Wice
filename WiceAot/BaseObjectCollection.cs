@@ -1,11 +1,5 @@
 ﻿namespace Wice;
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-
 /// <summary>
 /// A list-like collection of <see cref="BaseObject"/> descendants that raises both
 /// <see cref="INotifyCollectionChanged.CollectionChanged"/> and property change notifications.
@@ -22,6 +16,11 @@ public class BaseObjectCollection<T>(int maxChildrenCount = int.MaxValue) : Base
 
     /// <inheritdoc />
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
+
+    /// <summary>
+    /// Gets a value indicating whether the current node has reached its maximum capacity of children.
+    /// </summary>
+    public bool IsFull => Count >= MaxChildrenCount;
 
     /// <summary>
     /// Gets the maximum allowed number of elements in this collection.

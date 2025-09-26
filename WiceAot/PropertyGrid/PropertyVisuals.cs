@@ -1,18 +1,30 @@
 ﻿namespace Wice.PropertyGrid;
 
 /// <summary>
-/// Aggregates the visuals used to display and edit a single property entry in a PropertyGrid.
+/// Represents the visual elements associated with a property in a PropertyGrid control.    
 /// </summary>
-/// <typeparam name="T">
-/// The CLR type of the selected object the property belongs to. Public properties of <typeparamref name="T"/> are
-/// preserved for trimming via <see cref="DynamicallyAccessedMemberTypes.PublicProperties"/>.
-/// </typeparam>
+/// <param name="property">The property associated with the PropertyGrid control.</param>
+/// <param name="rowIndex">The zero-based index of the row.</param>
 #if NETFRAMEWORK
-public class PropertyVisuals
+public class PropertyVisuals(PropertyGridProperty property, int rowIndex)
 #else
-public class PropertyVisuals<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>
+public class PropertyVisuals<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(PropertyGridProperty<T> property, int rowIndex)
 #endif
 {
+    /// <summary>
+    /// Gets the property associated with the PropertyGrid control.
+    /// </summary>
+#if NETFRAMEWORK
+    public PropertyGridProperty Property { get; } = property;
+#else
+    public PropertyGridProperty<T> Property { get; } = property;
+#endif
+
+    /// <summary>
+    /// Gets the zero-based index of the row.
+    /// </summary>
+    public int RowIndex { get; } = rowIndex;
+
     /// <summary>
     /// Gets or sets the visual used to display the property's label or descriptive text.
     /// </summary>

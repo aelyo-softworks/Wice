@@ -17,7 +17,7 @@ public class DataBindContext(object? data)
 
     /// <summary>
     /// Gets or sets the container visual created for the item (e.g., a list item host).
-    /// Can be assigned by <see cref="DataBinder.ItemVisualCreator"/>.
+    /// Can be assigned by <see cref="DataBinder.ItemVisualAdded"/>.
     /// </summary>
     public virtual ItemVisual? ItemVisual { get; set; }
 

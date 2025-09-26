@@ -53,15 +53,6 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
 #endif
 
     /// <summary>
-    /// The CLR property name.
-    /// </summary>
-#if NETFRAMEWORK
-    public static VisualProperty NameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty), nameof(Name), VisualPropertyInvalidateModes.Render, null);
-#else
-    public static VisualProperty NameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty<T>), nameof(Name), VisualPropertyInvalidateModes.Render, null);
-#endif
-
-    /// <summary>
     /// Sort weight used when ordering properties in the grid. Higher values appear first.
     /// </summary>
 #if NETFRAMEWORK
@@ -80,8 +71,7 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
 #endif
 
     /// <summary>
-    /// Human-friendly name shown in the grid. Defaults to a de-camelized <see cref="Name"/> when not specified
-    /// via <see cref="DisplayNameAttribute"/>.
+    /// Gets the visual property that indicates whether the property has a default value.
     /// </summary>
 #if NETFRAMEWORK
     public static VisualProperty DisplayNameProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty), nameof(DisplayName), VisualPropertyInvalidateModes.Render);
@@ -198,6 +188,9 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// </summary>
     public PropertyInfo Info { get; }
 
+    ///  <inheritdoc/>
+    public override string Name { get => base.Name!; }
+
     /// <summary>
     /// Gets or sets the <see cref="TypeConverter"/> used to convert the value of the associated object to and from
     /// other types.
@@ -249,9 +242,6 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// Gets or sets the sort weight for display ordering (higher first).
     /// </summary>
     public int SortOrder { get => (int)GetPropertyValue(SortOrderProperty)!; set => SetPropertyValue(SortOrderProperty, value); }
-
-    /// <inheritdoc/>
-    public override string? Name { get => (string?)GetPropertyValue(NameProperty); set => SetPropertyValue(NameProperty, value); }
 
     /// <summary>
     /// Gets or sets a user-facing name for display purposes.
@@ -306,10 +296,6 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// <returns><see langword="true"/> when conversion succeeds; otherwise <see langword="false"/>.</returns>
     public virtual bool TryGetTargetValue(out object? value)
     {
-        if (Name == "Status")
-        {
-        }
-
         if (Type == null)
         {
             value = null;
@@ -578,10 +564,7 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
             if (LiveSync)
             {
                 CommitOrRollbackChanges();
-                if (Name != null)
-                {
-                    Source.Grid.GetVisuals(Name)?.ValueVisual?.UpdateEditor();
-                }
+                Source.Grid.GetPropertyVisuals(Name)?.ValueVisual?.UpdateEditor();
             }
             return true;
         }

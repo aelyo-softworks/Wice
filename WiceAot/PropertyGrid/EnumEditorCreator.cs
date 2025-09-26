@@ -86,9 +86,12 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
                     };
                 }
 
-                // Inject the picker visual into the dialog content.
                 if (child is Visual visual)
                 {
+                    // make sure the listbox and its item visuals can get focus and keyboard input even though the owner is not modal
+                    visual.ReceivesInputEvenWithModalShown = true;
+
+                    // inject the picker visual into the dialog content.
                     host.Dialog?.Content.Children.Add(visual);
                 }
 
@@ -97,8 +100,14 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
                 {
                     valueable.ValueChanged += (s2, e2) =>
                     {
+                        // kinda hacky: if the user *was* pressing a key don't close the dialog (in non-flags mode)
+                        var key = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_DOWN) ||
+                            NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_UP) ||
+                            NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_HOME) ||
+                            NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_END);
+
                         value.Property.Value = e2.Value;
-                        if (!flags)
+                        if (!flags && !key)
                         {
                             host.CloseDialog();
                         }

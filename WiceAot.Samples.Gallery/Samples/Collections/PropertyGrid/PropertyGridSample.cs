@@ -2,7 +2,7 @@
 
 public class PropertyGridSample : Sample
 {
-    public override string Description => "A property grid with a complex object selected.";
+    public override string Description => "A property grid with a complex object selected. Press Alt+Ctrl-C from a grid value to copy the whole grid into the clipboard.";
 
     public override void Layout(Visual parent)
     {
