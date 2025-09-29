@@ -32,11 +32,6 @@ public abstract class GridDimension : BaseObject
     /// </summary>
     public static BaseObjectProperty MaxSizeProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(MaxSize), float.MaxValue, convert: ValidateMinMaxSize);
 
-    /// <summary>
-    /// Backing property for <see cref="DefaultAlignment"/> applied to children when not explicitly set.
-    /// </summary>
-    public static BaseObjectProperty DefaultAlignmentProperty { get; } = BaseObjectProperty.Add(typeof(GridDimension), nameof(DefaultAlignment), typeof(Alignment?), null, null, null, null);
-
     private static object? ValidateStars(BaseObject obj, object? value)
     {
         var f = (float)value!;
@@ -127,32 +122,26 @@ public abstract class GridDimension : BaseObject
     /// A value of 0 disables star sizing. When set, <see cref="Size"/> is reset to 0.
     /// </summary>
     [Category(Visual.CategoryBehavior)]
-    public float Stars { get => (float)GetPropertyValue(StarsProperty)!; set => SetPropertyValue(StarsProperty, value); }
+    public virtual float Stars { get => (float)GetPropertyValue(StarsProperty)!; set => SetPropertyValue(StarsProperty, value); }
 
     /// <summary>
     /// Gets or sets the fixed size (width for columns, height for rows).
     /// Use <see cref="float.NaN"/> for Auto (stretch by content). When set, <see cref="Stars"/> is reset to 0.
     /// </summary>
     [Category(Visual.CategoryBehavior)]
-    public float Size { get => (float)GetPropertyValue(SizeProperty)!; set => SetPropertyValue(SizeProperty, value); }
+    public virtual float Size { get => (float)GetPropertyValue(SizeProperty)!; set => SetPropertyValue(SizeProperty, value); }
 
     /// <summary>
     /// Gets or sets the minimum size constraint applied to this dimension.
     /// </summary>
     [Category(Visual.CategoryBehavior)]
-    public float MinSize { get => (float)GetPropertyValue(MinSizeProperty)!; set => SetPropertyValue(MinSizeProperty, value); }
+    public virtual float MinSize { get => (float)GetPropertyValue(MinSizeProperty)!; set => SetPropertyValue(MinSizeProperty, value); }
 
     /// <summary>
     /// Gets or sets the maximum size constraint applied to this dimension.
     /// </summary>
     [Category(Visual.CategoryBehavior)]
-    public float MaxSize { get => (float)GetPropertyValue(MaxSizeProperty)!; set => SetPropertyValue(MaxSizeProperty, value); }
-
-    /// <summary>
-    /// Gets or sets the default child alignment used when a child does not specify its own alignment.
-    /// </summary>
-    [Category(Visual.CategoryBehavior)]
-    public Alignment? DefaultAlignment { get => (Alignment?)GetPropertyValue(DefaultAlignmentProperty); set => SetPropertyValue(DefaultAlignmentProperty, value); }
+    public virtual float MaxSize { get => (float)GetPropertyValue(MaxSizeProperty)!; set => SetPropertyValue(MaxSizeProperty, value); }
 
     /// <summary>
     /// Gets the resolved start position for this dimension within the arranged grid, if available.

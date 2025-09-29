@@ -2,12 +2,12 @@
 
 public class PropertyGridSample : Sample
 {
-    public override string Description => "A property grid with a complex object selected. Press Alt+Ctrl-C from a grid value to copy the whole grid into the clipboard.";
+    public override string Description => "A property grid with a complex object selected.";
 
     public override void Layout(Visual parent)
     {
         // wrap the property grid in a scroll viewer
-        var sv = new ScrollViewer { Width = 800, Height = 500 };
+        var sv = new ScrollViewer { HorizontalAlignment = Alignment.Near, Height = 500 };
         parent.Children.Add(sv);
 
 #if NETFRAMEWORK // remove from display

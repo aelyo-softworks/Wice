@@ -97,8 +97,6 @@ public partial class GridSplitter : Visual
             }
             Dimension.Size = Width;
         }
-
-        Dimension.DefaultAlignment = Alignment.Center;
     }
 
     /// <inheritdoc/>
@@ -155,8 +153,8 @@ public partial class GridSplitter : Visual
 
         if (delta != 0)
         {
-            var originalPrevAndNextSize = (state.NextRenderSize + state.PreviousRenderSize) ?? 0;
-            var newPrevSize = Math.Min(Math.Max(0, (state.PreviousRenderSize ?? 0) + delta), originalPrevAndNextSize);
+            var originalPrevAndNextSize = (state.NextDesiredSize + state.PreviousDesiredSize) ?? 0;
+            var newPrevSize = Math.Min(Math.Max(0, (state.PreviousDesiredSize ?? 0) + delta), originalPrevAndNextSize);
 
             var prevMax = prev.MaxSize;
             if (prevMax.IsSet() && prevMax > 0)
@@ -203,30 +201,19 @@ public partial class GridSplitter : Visual
 
                 if (dim == dimension.Previous)
                 {
-                    if (float.IsNaN(state.PreviousSize) || (state.PreviousSize != 0 && !float.IsInfinity(state.PreviousSize)))
-                    {
-                        dim.Size = newPrevSize;
-                    }
-                    else
-                    {
-                        dim.Stars = newPrevSize;
-                    }
+                    dim.Stars = newPrevSize;
                 }
                 else if (dim == dimension.Next)
                 {
-                    if (float.IsNaN(state.NextSize) || (state.NextSize != 0 && !float.IsInfinity(state.NextSize)))
-                    {
-                        dim.Size = newNextSize;
-                    }
-                    else
-                    {
-                        dim.Stars = newNextSize;
-                    }
+                    dim.Stars = newNextSize;
                 }
-                else if (dim.HasStarSize)
+                else
                 {
-                    // Freeze other star dimensions to their current final size
-                    dim.Stars = dim.FinalSize!.Value;
+                    // freeze other star dimensions to their current final size
+                    if (dim.DesiredSize.HasValue)
+                    {
+                        dim.Stars = dim.DesiredSize.Value;
+                    }
                 }
             }
         }
@@ -309,7 +296,7 @@ public partial class GridSplitter : Visual
             {
                 PreviousSize = prev.Size;
                 PreviousStars = prev.Stars;
-                PreviousRenderSize = prev.DesiredSize;
+                PreviousDesiredSize = prev.DesiredSize;
             }
 
             var next = visual.Dimension?.Next;
@@ -317,7 +304,7 @@ public partial class GridSplitter : Visual
             {
                 NextSize = next.Size;
                 NextStars = next.Stars;
-                NextRenderSize = next.DesiredSize;
+                NextDesiredSize = next.DesiredSize;
             }
         }
 
@@ -334,7 +321,7 @@ public partial class GridSplitter : Visual
         /// <summary>
         /// Gets the render-time desired size of the previous dimension at drag start.
         /// </summary>
-        public virtual float? PreviousRenderSize { get; protected set; }
+        public virtual float? PreviousDesiredSize { get; protected set; }
 
         /// <summary>
         /// Gets the original fixed size of the next dimension (may be NaN for Auto).
@@ -349,6 +336,6 @@ public partial class GridSplitter : Visual
         /// <summary>
         /// Gets the render-time desired size of the next dimension at drag start.
         /// </summary>
-        public virtual float? NextRenderSize { get; protected set; }
+        public virtual float? NextDesiredSize { get; protected set; }
     }
 }

@@ -7,55 +7,52 @@ public class SimpleGridSplitterSample : Sample
     public override void Layout(Visual parent)
     {
         // a new grid already has one column and one row by default
-        var grid = new Wice.Grid
-        {
-            Height = parent.Window!.DipsToPixels(100),
-            Width = parent.Window!.DipsToPixels(500)
-        };
+        var grid = new Wice.Grid();
         parent.Children.Add(grid);
         Wice.Dock.SetDockType(grid, DockType.Top); // remove from display
 
-        // configure first column and row (always there) to auto-size
-        grid.Columns[0].Size = float.NaN;
-        grid.Rows[0].Size = float.NaN;
+        // add 4 columns
+        grid.Columns.Add(new GridColumn());
+        grid.Columns.Add(new GridColumn()); // splitter column is here
+        grid.Columns.Add(new GridColumn());
+        grid.Columns.Add(new GridColumn());
+
+        var splitterColumn = grid.Columns.Count / 2;
+
+        // add second row
+        grid.Rows.Add(new GridRow());
 
         // add splitter column
-        grid.Columns.Add(new GridColumn { Size = float.NaN });
-
-        // add second column
-        grid.Columns.Add(new GridColumn { Size = float.NaN });
-
-        // add two rows
-        grid.Rows.Add(new GridRow { Size = float.NaN });
-
-        // add splitter
-        var splitter = new Wice.GridSplitter();
-        splitter.RenderBrush = Compositor!.CreateColorBrush(parent.GetWindowTheme().SplitterColor.ToColor());
+        var splitter = new Wice.GridSplitter { RenderBrush = Compositor!.CreateColorBrush(parent.GetWindowTheme().SplitterColor.ToColor()) };
         grid.Children.Add(splitter);
-        Wice.Grid.SetColumn(splitter, 1);
+        Wice.Grid.SetColumn(splitter, splitterColumn);
 
-        var cell00 = new TextBox() { Text = "Cell 0,0" };
-        grid.Children.Add(cell00);
-        cell00.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Purple.ToColor());
-        Wice.Grid.SetColumn(cell00, 0);
-        Wice.Grid.SetRow(cell00, 0);
+        var colors = new D3DCOLORVALUE[] {
+            D3DCOLORVALUE.Purple, D3DCOLORVALUE.Orange, D3DCOLORVALUE.Yellow, D3DCOLORVALUE.LightBlue,
+            D3DCOLORVALUE.Pink, D3DCOLORVALUE.LightGreen, D3DCOLORVALUE.LightCoral, D3DCOLORVALUE.LightCyan};
 
-        var cell02 = new TextBox() { Text = "Cell 0,2" };
-        grid.Children.Add(cell02);
-        cell02.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
-        Wice.Grid.SetColumn(cell02, 2);
-        Wice.Grid.SetRow(cell02, 0);
+        var colIndex = 0;
+        for (var row = 0; row < grid.Rows.Count; row++)
+        {
+            grid.Rows[row].Size = float.NaN; // auto-size rows
+            for (var col = 0; col < grid.Columns.Count; col++)
+            {
+                if (col == splitterColumn) // skip splitter column
+                    continue;
 
-        var cell20 = new TextBox() { Text = "Cell 2,0" };
-        grid.Children.Add(cell20);
-        cell20.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
-        Wice.Grid.SetColumn(cell20, 0);
-        Wice.Grid.SetRow(cell20, 1);
-
-        var cell22 = new TextBox() { Text = "Cell 2,2" };
-        grid.Children.Add(cell22);
-        cell22.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightBlue.ToColor());
-        Wice.Grid.SetColumn(cell22, 2);
-        Wice.Grid.SetRow(cell22, 1);
+                grid.Columns[col].Size = float.NaN; // auto-size columns
+                var cell = new TextBox
+                {
+                    Text = $"Cell {row},{col}",
+                    Padding = 5,
+                    Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
+                    ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+                    BackgroundColor = colors[colIndex++]
+                };
+                grid.Children.Add(cell);
+                Wice.Grid.SetColumn(cell, col);
+                Wice.Grid.SetRow(cell, row);
+            }
+        }
     }
 }

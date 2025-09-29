@@ -234,8 +234,11 @@ public partial class CompositionVisualTree : IDisposable
                 RunOnDedicatedThread(() =>
                 {
                     _rootVisual?.Dispose();
+                    _rootVisual = null;
                     _compositionTarget?.Dispose();
+                    _compositionTarget = null;
                     _compositionDevice?.Dispose();
+                    _compositionDevice = null;
                     _scheduler?.Dispose();
                 }, false, false, TaskCreationOptions.None, default);
             }

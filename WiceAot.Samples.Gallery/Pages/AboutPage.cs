@@ -3,14 +3,15 @@
 public partial class AboutPage : Page
 {
 #if NETFRAMEWORK
-    private readonly PropertyGrid.PropertyGrid _pg = new();
+    private PropertyGrid.PropertyGrid? _pg = new();
 #else
-    private readonly PropertyGrid.PropertyGrid<SystemInformation> _pg = new();
+    private PropertyGrid.PropertyGrid<SystemInformation>? _pg = new();
 #endif
     private readonly TextBox _mouseInPointerText = new();
     private readonly RoundedButton _systemInfoButton = new();
     private readonly CheckBox _mouseInPointerCheck = new();
     private ScrollViewer? _sv;
+    private DialogBox? _sysInfoDialog;
 
     public AboutPage()
     {
@@ -77,32 +78,34 @@ public partial class AboutPage : Page
         _systemInfoButton.VerticalAlignment = Alignment.Near;
         _systemInfoButton.HorizontalAlignment = Alignment.Near;
         _systemInfoButton.Text.Text = "System Info ...";
-        var open = false;
         _systemInfoButton.Click += (s, e) =>
         {
-            if (open)
+            if (_sysInfoDialog != null)
                 return;
 
-            open = true;
-            var dlg = new DialogBox();
-            dlg.Closed += (s2, e2) =>
+            _sysInfoDialog = new DialogBox();
+#if NETFRAMEWORK
+            _pg = new PropertyGrid.PropertyGrid();
+#else
+            _pg = new PropertyGrid<SystemInformation>();
+#endif
+            _sysInfoDialog.Closed += (s2, e2) =>
             {
-                open = false;
-                _pg.SelectedObject = null;
+                _sysInfoDialog = null;
             };
-            Children.Add(dlg);
+            Children.Add(_sysInfoDialog);
 
             var tlb = new TitleBar();
             tlb.MaxButton!.IsVisible = false;
             tlb.MinButton!.IsVisible = false;
-            dlg.Content.Children.Add(tlb);
+            _sysInfoDialog.Content.Children.Add(tlb);
 
             _sv?.Dispose();
             _sv = new ScrollViewer
             {
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
-            dlg.Content.Children.Add(_sv);
+            _sysInfoDialog.Content.Children.Add(_sv);
             //TextBox.FontSizeProperty.SetValue(_pg, 12f);
             _pg.GroupByCategory = true;
             _pg.LiveSync = true;
@@ -126,6 +129,18 @@ public partial class AboutPage : Page
     public override int SortOrder => int.MaxValue;
     public override DockType DockType => DockType.Bottom;
 
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        _sysInfoDialog?.Close();
+        _sysInfoDialog = null;
+        if (_pg != null)
+        {
+            _pg.SelectedObject = null;
+            _pg = null;
+        }
+    }
+
     protected override void OnArranged(object? sender, EventArgs e)
     {
         base.OnArranged(sender, e);
@@ -142,19 +157,22 @@ public partial class AboutPage : Page
         var theme = (GalleryTheme)GetWindowTheme();
         Window!.MonitorChanged += (s, e2) =>
         {
-            _pg.Source?.UpdatePropertiesValues();
+            _pg?.Source?.UpdatePropertiesValues();
         };
 
         _systemInfoButton.Height = theme.AboutPageSystemInfoButtonHeight;
         _mouseInPointerText.Padding = theme.AboutPageMouseInPointerTextBoxPadding;
         _systemInfoButton.Margin = theme.AboutPageSystemInfoButtonMargin;
 
-        _pg.CellMargin = theme.AboutPagePropertyGridCellMargin;
-        _pg.Margin = theme.AboutPagePropertyGridMargin;
-
-        if (_pg.SelectedObject != null)
+        if (_pg != null)
         {
-            _pg.Source?.UpdatePropertiesValues();
+            _pg.CellMargin = theme.AboutPagePropertyGridCellMargin;
+            _pg.Margin = theme.AboutPagePropertyGridMargin;
+
+            if (_pg.SelectedObject != null)
+            {
+                _pg.Source?.UpdatePropertiesValues();
+            }
         }
     }
 }

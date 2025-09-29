@@ -173,8 +173,15 @@ public partial class Dialog : Popup, IOneChildParent
     public virtual void Close() => Compositor?.RunScopedBatch(AnimateRemove, () =>
     {
         OnClosed(this, EventArgs.Empty);
-        Remove();
+        base.Remove();
     });
+
+    /// <inheritdoc/>
+    public override bool? Remove(bool deep = true)
+    {
+        Close();
+        return true;
+    }
 
     /// <summary>
     /// Wires the TitleBar CloseButton click handler when a <see cref="TitleBar"/> child is added to the content.
@@ -217,14 +224,14 @@ public partial class Dialog : Popup, IOneChildParent
 
     private void AnimateRemove()
     {
-        if (Compositor == null || CompositionVisual == null)
+        if (Compositor == null)
             return;
 
         var func = Compositor.EaseInCubic();
         var opacityAnimation = Compositor.CreateScalarKeyFrameAnimation();
         opacityAnimation.Duration = GetWindowTheme().DialogCloseAnimationDuration;
         opacityAnimation.InsertKeyFrame(1f, 0.5f, func);
-        CompositionVisual.StartAnimation(nameof(Windows.UI.Composition.Visual.Opacity), opacityAnimation);
+        CompositionVisual?.StartAnimation(nameof(Windows.UI.Composition.Visual.Opacity), opacityAnimation);
     }
 
     /// <summary>

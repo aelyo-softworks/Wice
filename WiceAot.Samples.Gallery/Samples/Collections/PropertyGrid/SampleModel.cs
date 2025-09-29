@@ -440,9 +440,10 @@ public sealed class GuidEditorCreator<[DynamicallyAccessedMembers(DynamicallyAcc
             textBox.VerticalAlignment = Alignment.Center;
             dock.Children.Add(textBox);
 
-            var button = new Button { Margin = D2D_RECT_F.Thickness(4, 0, 0, 0), Height = 19, UpdateMargins = false };
+            var button = new Button { Margin = D2D_RECT_F.Thickness(4, 0, 0, 0), Height = 19, Width = 50, UpdateMargins = false };
             button.Text.Text = "New";
-            button.Text.Margin = 0;
+            button.Text.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER;
+            button.Text.HorizontalAlignment = Alignment.Center;
             button.Text.FontSize = 10;
             button.Click += (s, e) =>
             {

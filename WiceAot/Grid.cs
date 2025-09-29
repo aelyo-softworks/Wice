@@ -549,30 +549,44 @@ public partial class Grid : Visual
             }
             else
             {
-                // find out the max size for each col and apply to others
-                var max = 0f;
-                var starsForMax = 0f;
-                foreach (var col in starCols)
+                if (Width.IsSet())
                 {
-                    if (!_childrenByDimensions.TryGetValue(col, out var list))
-                        continue;
-
-                    foreach (var child in list)
+                    // if grid's width is set, we need a ratio to apply to all star cols
+                    // first compute the size left from width - non star cols
+                    var left = Math.Max(0, Width - Columns.Where(d => !d.HasStarSize).Sum(d => d.DesiredSize!.Value));
+                    var totalStars = starCols.Sum(d => d.Stars);
+                    foreach (var col in starCols)
                     {
-                        col.DesiredSize = Math.Max(col.DesiredSize!.Value, child.DesiredSize.width);
-                    }
-
-                    if (col.DesiredSize!.Value > max)
-                    {
-                        max = col.DesiredSize.Value;
-                        starsForMax = col.Stars;
+                        col.DesiredSize = totalStars != 0 ? left * col.Stars / totalStars : 0;
                     }
                 }
-
-                // we may have max = 0 here (star cols w/o children)
-                foreach (var col in starCols)
+                else
                 {
-                    col.DesiredSize = starsForMax != 0 ? max * col.Stars / starsForMax : 0;
+                    // find out the max size for each col and apply to others
+                    var max = 0f;
+                    var starsForMax = 0f;
+                    foreach (var col in starCols)
+                    {
+                        if (!_childrenByDimensions.TryGetValue(col, out var list))
+                            continue;
+
+                        foreach (var child in list)
+                        {
+                            col.DesiredSize = Math.Max(col.DesiredSize!.Value, child.DesiredSize.width);
+                        }
+
+                        if (col.DesiredSize!.Value > max)
+                        {
+                            max = col.DesiredSize.Value;
+                            starsForMax = col.Stars;
+                        }
+                    }
+
+                    // we may have max = 0 here (ex: star cols w/o children)
+                    foreach (var col in starCols)
+                    {
+                        col.DesiredSize = starsForMax != 0 ? max * col.Stars / starsForMax : 0;
+                    }
                 }
             }
         }
@@ -598,30 +612,44 @@ public partial class Grid : Visual
             }
             else
             {
-                // find out the max size for each row and apply to others
-                var max = 0f;
-                var starsForMax = 0f;
-                foreach (var row in starRows)
+                if (Height.IsSet())
                 {
-                    if (!_childrenByDimensions.TryGetValue(row, out var list))
-                        continue;
-
-                    foreach (var child in list)
+                    // if grid's height is set, we need a ratio to apply to all star rows
+                    // first compute the size left from height - non star rows
+                    var left = Math.Max(0, Height - Rows.Where(d => !d.HasStarSize).Sum(d => d.DesiredSize!.Value));
+                    var totalStars = starRows.Sum(d => d.Stars);
+                    foreach (var row in starRows)
                     {
-                        row.DesiredSize = Math.Max(row.DesiredSize!.Value, child.DesiredSize.height);
-                    }
-
-                    if (row.DesiredSize!.Value > max)
-                    {
-                        max = row.DesiredSize.Value;
-                        starsForMax = row.Stars;
+                        row.DesiredSize = totalStars != 0 ? left * row.Stars / totalStars : 0;
                     }
                 }
-
-                // we may have max = 0 here (star rows w/o children)
-                foreach (var row in starRows)
+                else
                 {
-                    row.DesiredSize = starsForMax != 0 ? max * row.Stars / starsForMax : 0;
+                    // find out the max size for each row and apply to others
+                    var max = 0f;
+                    var starsForMax = 0f;
+                    foreach (var row in starRows)
+                    {
+                        if (!_childrenByDimensions.TryGetValue(row, out var list))
+                            continue;
+
+                        foreach (var child in list)
+                        {
+                            row.DesiredSize = Math.Max(row.DesiredSize!.Value, child.DesiredSize.height);
+                        }
+
+                        if (row.DesiredSize!.Value > max)
+                        {
+                            max = row.DesiredSize.Value;
+                            starsForMax = row.Stars;
+                        }
+                    }
+
+                    // we may have max = 0 here (star rows w/o children)
+                    foreach (var row in starRows)
+                    {
+                        row.DesiredSize = starsForMax != 0 ? max * row.Stars / starsForMax : 0;
+                    }
                 }
             }
         }
@@ -695,41 +723,15 @@ public partial class Grid : Visual
                 rect.right = Math.Min(finalSize.width, rect.right);
                 rect.bottom = Math.Min(finalSize.height, rect.bottom);
 
-                Alignment horizontalAlignment;
-                if (((IPropertyOwner)child).IsPropertyValueSet(HorizontalAlignmentProperty))
-                {
-                    horizontalAlignment = child.HorizontalAlignment;
-                }
-                else if (gs.Col.DefaultAlignment.HasValue)
-                {
-                    horizontalAlignment = gs.Col.DefaultAlignment.Value;
-                }
-                else
-                {
-                    horizontalAlignment = child.HorizontalAlignment;
-                }
-
+                var horizontalAlignment = child.HorizontalAlignment;
                 // if width is set, don't use Stretch
                 if (horizontalAlignment == Alignment.Stretch && child.Width.IsSet())
                 {
                     horizontalAlignment = Alignment.Near;
                 }
 
-                Alignment verticalAlignment;
-                if (((IPropertyOwner)child).IsPropertyValueSet(VerticalAlignmentProperty))
-                {
-                    verticalAlignment = child.VerticalAlignment;
-                }
-                else if (gs.Row.DefaultAlignment.HasValue)
-                {
-                    verticalAlignment = gs.Row.DefaultAlignment.Value;
-                }
-                else
-                {
-                    verticalAlignment = child.VerticalAlignment;
-                }
-
-                // if width is set, don't use Stretch
+                var verticalAlignment = child.VerticalAlignment;
+                // if height is set, don't use Stretch
                 if (verticalAlignment == Alignment.Stretch && child.Height.IsSet())
                 {
                     verticalAlignment = Alignment.Near;

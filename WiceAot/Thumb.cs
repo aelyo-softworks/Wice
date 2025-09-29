@@ -72,7 +72,7 @@ public partial class Thumb : RoundedRectangle
     }
 
     /// <inheritdoc/>
-    protected override DragState? CancelDragMove(EventArgs e)
+    protected internal override DragState? CancelDragMove(EventArgs e)
     {
         ExceptionExtensions.ThrowIfNull(e, nameof(e));
         var state = base.CancelDragMove(e);

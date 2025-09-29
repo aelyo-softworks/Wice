@@ -710,6 +710,15 @@ public partial class Visual : BaseObject
         get => _dragState;
         private set
         {
+            if (value != null)
+            {
+                var win = Window;
+                if (win != null)
+                {
+                    win.DraggingVisual = this;
+                }
+            }
+
             if (_dragState == value)
                 return;
 
@@ -1372,7 +1381,7 @@ public partial class Visual : BaseObject
     /// <returns>
     /// True when removed; false when not found; null when no parent.
     /// </returns>
-    public bool? Remove(bool deep = true)
+    public virtual bool? Remove(bool deep = true)
     {
         if (this is Window)
             throw new InvalidOperationException();
@@ -2135,6 +2144,17 @@ public partial class Visual : BaseObject
         if (visual == null)
             return;
 
+        try
+        {
+            _ = visual.Parent;
+        }
+        catch (ObjectDisposedException)
+        {
+#if DEBUG
+            throw;
+#endif
+        }
+
         visual.Parent?.Children.Remove(visual);
         if (visual is ContainerVisual cv)
         {
@@ -2159,12 +2179,12 @@ public partial class Visual : BaseObject
 
         Window = null;
 
+        var visual = CompositionVisual;
+        CompositionVisual = null;
         if (includeComposition)
         {
-            RemoveCompositionVisual(CompositionVisual);
+            RemoveCompositionVisual(visual);
         }
-
-        CompositionVisual = null;
 
         OnDetachedFromComposition(this, EventArgs.Empty);
 
@@ -3560,13 +3580,19 @@ public partial class Visual : BaseObject
     /// <summary>
     /// Cancels the current drag move operation and releases mouse capture.
     /// </summary>
-    protected virtual DragState? CancelDragMove(EventArgs e)
+    protected internal virtual DragState? CancelDragMove(EventArgs e)
     {
         var state = DragState;
         Window.ReleaseMouseCapture();
         if (DragState is IDisposable disp)
         {
             disp.Dispose();
+        }
+
+        var win = Window;
+        if (win != null)
+        {
+            win.DraggingVisual = null;
         }
 
         DragState = null;

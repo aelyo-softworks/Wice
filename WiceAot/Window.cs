@@ -495,6 +495,12 @@ public partial class Window : Canvas, ITitleBarParent
     public virtual bool CreateOnCursorMonitor { get; set; }
 
     /// <summary>
+    /// Gets the visual element that represents the item being dragged during a drag operation.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public Visual? DraggingVisual { get; internal set; }
+
+    /// <summary>
     /// Gets the visual that currently has focus within the control.
     /// </summary>
     [Browsable(false)]
@@ -3045,6 +3051,9 @@ public partial class Window : Canvas, ITitleBarParent
         }
         else
         {
+            var dv = DraggingVisual;
+            DraggingVisual = null;
+            dv?.CancelDragMove(new ValueEventArgs<HWND>(hwnd));
             OnDeactivated(this, EventArgs.Empty);
         }
     }
