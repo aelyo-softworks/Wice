@@ -4636,7 +4636,7 @@ public partial class Window : Canvas, ITitleBarParent
                 if (!pwe.Handled)
                 {
                     var winfo = pwe.PointerInfo;
-                    var mwe = new MouseWheelEventArgs(pt.x, pt.y, (POINTER_MOD)winfo.dwKeyStates, wParam.Value.SignedHIWORD(), orientation) { SourcePointerEvent = pwe }; win.OnMouseWheelEvent(mwe);
+                    var mwe = new MouseWheelEventArgs(pt.x, pt.y, (POINTER_MOD)winfo.dwKeyStates, wParam.Value.SignedHIWORD(), orientation) { SourcePointerEvent = pwe };
                     win.OnMouseWheelEvent(mwe);
                 }
                 break;
