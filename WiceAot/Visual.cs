@@ -2146,22 +2146,20 @@ public partial class Visual : BaseObject
 
         try
         {
-            _ = visual.Parent;
+            visual.Parent?.Children.Remove(visual);
+            if (visual is ContainerVisual cv)
+            {
+                foreach (var child in cv.Children)
+                {
+                    RemoveCompositionVisual(child);
+                }
+            }
         }
         catch (ObjectDisposedException)
         {
 #if DEBUG
             throw;
 #endif
-        }
-
-        visual.Parent?.Children.Remove(visual);
-        if (visual is ContainerVisual cv)
-        {
-            foreach (var child in cv.Children)
-            {
-                RemoveCompositionVisual(child);
-            }
         }
         visual.Dispose();
     }

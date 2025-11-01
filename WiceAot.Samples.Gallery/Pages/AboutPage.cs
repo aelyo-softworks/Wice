@@ -132,7 +132,7 @@ public partial class AboutPage : Page
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);
-        _sysInfoDialog?.Close();
+        //_sysInfoDialog?.Close();
         _sysInfoDialog = null;
         if (_pg != null)
         {

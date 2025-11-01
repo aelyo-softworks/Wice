@@ -9,14 +9,14 @@
       "DirectN/1.4.1": {
         "dependencies": {
           "Microsoft.DotNet.ILCompiler": "9.0.9",
-          "Microsoft.NET.ILLink.Tasks": "9.0.9"
+          "Microsoft.NET.ILLink.Tasks": "9.0.10"
         },
         "runtime": {
           "DirectN.dll": {}
         }
       },
       "Microsoft.DotNet.ILCompiler/9.0.9": {},
-      "Microsoft.NET.ILLink.Tasks/9.0.9": {}
+      "Microsoft.NET.ILLink.Tasks/9.0.10": {}
     }
   },
   "libraries": {
@@ -32,12 +32,12 @@
       "path": "microsoft.dotnet.ilcompiler/9.0.9",
       "hashPath": "microsoft.dotnet.ilcompiler.9.0.9.nupkg.sha512"
     },
-    "Microsoft.NET.ILLink.Tasks/9.0.9": {
+    "Microsoft.NET.ILLink.Tasks/9.0.10": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-cHi1os/s6aobEgNkbOh/jW+ru//rHuedvj4PmTh2mMY7et/mJjqphBeXeKCesDvMd0+E2JyX9EPZZC4VRKslXg==",
-      "path": "microsoft.net.illink.tasks/9.0.9",
-      "hashPath": "microsoft.net.illink.tasks.9.0.9.nupkg.sha512"
+      "sha512": "sha512-sseaSJcBxKEpkc59hnB00b3NmJdGvJLfj74HK+nucHxERxbZSUREuWKjC9ywc+HdzJvJyiP2eiyEOROaGSfcPw==",
+      "path": "microsoft.net.illink.tasks/9.0.10",
+      "hashPath": "microsoft.net.illink.tasks.9.0.10.nupkg.sha512"
     }
   }
 }
