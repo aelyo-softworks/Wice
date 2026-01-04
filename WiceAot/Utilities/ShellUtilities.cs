@@ -7,7 +7,7 @@ namespace Wice.Utilities;
 /// <summary>
 /// Windows Shell interop helpers.
 /// Provides APIs to create an <see cref="IDataObject"/> that represents one or more shell items (e.g., file system paths),
-/// using Win32 shell APIs. This type supports both .NET Framework 4.7.2 and .NET 9 via conditional compilation.
+/// using Win32 shell APIs. This type supports both .NET Framework 4.7.2 and .NET 9+ via conditional compilation.
 /// </summary>
 public static partial class ShellUtilities
 {

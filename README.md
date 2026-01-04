@@ -7,7 +7,7 @@ The **Windows Interface Composition Engine** ("Wice") is a .NET UI engine for cr
 Here are the key points for Wice:
 
 * It's available for the .NET Framework 4.7.2 and higher (use the "Wice" project).
-* It's available for .NET 9+ if you use the "WiceAot" project.
+* It's available for .NET 10+ if you use the "WiceAot" project.
 * It requires Windows 10 version 1809 ("Redstone 5"). Some parts may have higher or other requirements.
 * It's not cross-platform and was never intended to be.
 * It's not dependent on WPF nor WinForms, nor WinUI 2 nor 3, nor Windows XAML, nor UWP, **it's another UI Framework**. The way it works is somewhat inspired by WPF, but there is no technical dependency over it.
@@ -23,7 +23,7 @@ But... why Wice?
 * It's more modern than Winforms (GDI/GDI+) and WPF (which is still based on DirectX 9 and that causes lots of issues).
 * It has **no sandbox like UWP** and **doesn't require Win2D** (it's too complex to use and requires all sort of painful MSVC dependencies).
 * It **compiles much faster than UWP or WinUI3** projects because the tooling is the "standard" .NET tooling we all love and cherish.
-* It has no external dependencies, so it's **free from deployment pain** (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" my apps at all?`</rant>`). Using .NET 5/6/7/8/9+, you can even publish your app as a *really single* zero-dependency .exe, and if you use WiceAOT and .NET 9 it's even better. Check out the **Samples Gallery** sample in the [Releases](https://github.com/aelyo-softworks/Wice/releases) section, it's just one .exe!
+* It has no external dependencies, so it's **free from deployment pain** (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" my apps at all?`</rant>`). Using .NET 5/6/7/8/9+, you can even publish your app as a *really single* zero-dependency .exe, and if you use WiceAOT and .NET 10 it's even better. Check out the **Samples Gallery** sample in the [Releases](https://github.com/aelyo-softworks/Wice/releases) section, it's just one .exe!
 * It has Windows Acrylic (no hack!) brush w/o the need for UWP or WinAppSDK.
 * Unless you use WiceAOT, Wice ships with an integrated in-process (Snoop-like for people familiar with WPF) visual "Spy" utility (just press F9 in debug mode, actually, this sole part uses Winforms, but it's not necessary for Wice, it's more like an external embedded tool).
 
@@ -36,8 +36,8 @@ Wice is always a work in progress. Please post an issue if you have a problem or
 * Wice.Tests: a test bench project. You shouldn't really use it.
 * Wice.DevTools: an internal tool that helps transform sample code into rtf colorizable texts.
 
-# .NET 9+ AOT publishing compatible:
-* **WiceAot**: this is the same as Wice but compiled for .NET 9, AOT friendly. Source has been adapted and project is using [DirectNAot](https://github.com/smourier/DirectNAot).
+# .NET 10+ AOT publishing compatible:
+* **WiceAot**: this is the same as Wice but compiled for .NET 10, AOT friendly. Source has been adapted and project is using [DirectNAot](https://github.com/smourier/DirectNAot).
 * **WiceAot.Samples.Gallery**: a sample demo / gallery project. **===>** This is what you should try if you're new to Wice.
 * WiceAot.Tests: this is simple sample code for WiceAot. You shouldn't really use it.
 

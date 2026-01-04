@@ -3,7 +3,7 @@
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Wice.Tests")]
-[assembly: AssemblyCopyright("Copyright ©  2020-2025")]
+[assembly: AssemblyCopyright("Copyright ©  2020-2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

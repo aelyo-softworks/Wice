@@ -14,6 +14,7 @@ public class TestWindow : Window
         Style |= WS.WS_THICKFRAME | WS.WS_CAPTION | WS.WS_SYSMENU | WS.WS_MAXIMIZEBOX | WS.WS_MINIMIZEBOX;
         //SizeToContent = DimensionOptions.WidthAndHeight;
         //Native.EnableBlurBehind();
+        //Opacity = 0.5f;
         RenderBrush = AcrylicBrush.CreateAcrylicBrush(
             CompositionDevice,
             D3DCOLORVALUE.White,
