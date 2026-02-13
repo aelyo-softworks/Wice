@@ -2,12 +2,6 @@
 
 /// <summary>
 /// A binary on/off toggle control composed of a path track and a circular button (knob).
-/// - Visual tree: a <see cref="Canvas"/> hosting a <see cref="Path"/> (track) and an <see cref="Ellipse"/> (knob).
-/// - Interaction: clicking toggles <see cref="Value"/> via <see cref="OnClick(object?, EventArgs)"/>.
-/// - Styling: exposes brushes for on/off states for both the track and the knob.
-/// - Selection: implements <see cref="ISelectable"/>; <see cref="ISelectable.IsSelected"/> mirrors <see cref="Value"/>.
-/// - Data: implements <see cref="IValueable"/> for generic value handling and notifications.
-/// - Layout: when <see cref="AutoSize"/> is true, resizes itself based on current theme box size and DPI.
 /// </summary>
 public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
 {

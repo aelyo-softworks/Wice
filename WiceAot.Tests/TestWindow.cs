@@ -1,6 +1,5 @@
 ﻿using WebView2;
 using Wice.Interop;
-using Wice.PropertyGrid;
 using Wice.Samples.Gallery.Samples.Collections.PropertyGrid;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
@@ -32,7 +31,8 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
-        AddPropertyGrid();
+        AddSliders();
+        //AddPropertyGrid();
         //AddLogVisual();
         //AddFastLogVisual();
         //ShowTabs();
@@ -74,6 +74,19 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void AddSliders()
+    {
+        var sl1 = new Slider<int> { Margin = D2D_RECT_F.Thickness(10, 10, 10, 10), Value = 33 };
+        sl1.Height = 20;
+        sl1.Thumb.Height = 10;
+        sl1.Thumb.Width = 10;
+        sl1.Thumb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGreen.ToColor());
+        sl1.MaxValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightBlue.ToColor());
+        sl1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+        sl1.MinValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
+        Children.Add(sl1);
     }
 
     public void AddPropertyGrid()

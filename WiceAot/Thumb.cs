@@ -2,8 +2,6 @@
 
 /// <summary>
 /// Draggable handle visual that raises drag lifecycle events when the user performs a left-button drag.
-/// Inherits from <see cref="RoundedRectangle"/> and uses the base <see cref="Visual"/> drag infrastructure
-/// (<see cref="Visual.DragMove(MouseButtonEventArgs)"/> / <see cref="Visual.CancelDragMove(System.EventArgs)"/>).
 /// </summary>
 public partial class Thumb : RoundedRectangle
 {
