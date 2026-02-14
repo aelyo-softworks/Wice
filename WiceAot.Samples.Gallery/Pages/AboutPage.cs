@@ -134,11 +134,8 @@ public partial class AboutPage : Page
         base.OnDetachingFromComposition(sender, e);
         //_sysInfoDialog?.Close();
         _sysInfoDialog = null;
-        if (_pg != null)
-        {
-            _pg.SelectedObject = null;
-            _pg = null;
-        }
+        _pg?.SelectedObject = null;
+        _pg = null;
     }
 
     protected override void OnArranged(object? sender, EventArgs e)

@@ -63,10 +63,7 @@ public sealed partial class GalleryWindow : Window, IDisposable
             _grid.Rows[0].Size = MainTitleBar!.Height;
         }
 
-        if (_pageHolder != null)
-        {
-            _pageHolder.Margin = Theme.DocumentMargin;
-        }
+        _pageHolder?.Margin = Theme.DocumentMargin;
 
         foreach (var header in _headers)
         {

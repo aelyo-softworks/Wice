@@ -15,13 +15,7 @@ public class DefaultEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
 {
     private readonly TextBox _textBox = new();
 
-    /// <summary>
-    /// Creates a new <see cref="TextBox"/> editor for the specified property value visual.
-    /// </summary>
-    /// <param name="value">The property value visual requesting an editor.</param>
-    /// <returns>
-    /// A configured <see cref="TextBox"/> instance, or <see langword="null"/> when creation is not applicable.
-    /// </returns>
+    /// <inheritdoc/>
 #if NETFRAMEWORK
     public virtual object? CreateEditor(PropertyValueVisual value)
 #else
@@ -63,14 +57,7 @@ public class DefaultEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
         return _textBox;
     }
 
-    /// <summary>
-    /// Updates the provided editor instance with the latest property value or returns it unchanged.
-    /// </summary>
-    /// <param name="value">The property value visual that owns the editor.</param>
-    /// <param name="editor">The current editor instance to update, or <see langword="null"/>.</param>
-    /// <returns>
-    /// The updated editor instance (same reference when applicable), or <see langword="null"/> when no editor is available.
-    /// </returns>
+    /// <inheritdoc/>
 #if NETFRAMEWORK
     public virtual object? UpdateEditor(PropertyValueVisual value, object? editor)
 #else

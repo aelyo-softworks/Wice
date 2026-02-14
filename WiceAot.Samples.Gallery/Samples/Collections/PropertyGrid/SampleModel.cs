@@ -86,18 +86,12 @@ public class SampleCustomer : AutoObject
             // because it's a sub object we want to update the property grid
             // when inner properties change
             var so = SubObject;
-            if (so != null)
-            {
-                so.PropertyChanged -= OnSubObjectPropertyChanged;
-            }
+            so?.PropertyChanged -= OnSubObjectPropertyChanged;
 
             if (SetPropertyValue(value))
             {
                 so = SubObject;
-                if (so != null)
-                {
-                    so.PropertyChanged += OnSubObjectPropertyChanged;
-                }
+                so?.PropertyChanged += OnSubObjectPropertyChanged;
 
             }
         }
@@ -196,6 +190,16 @@ public class SampleCustomer : AutoObject
     [DisplayName("Boolean (Checkbox three states)")]
     [Category("Booleans")]
     public bool? SampleNullableBoolean { get => GetPropertyValue<bool?>(); set => SetPropertyValue(value); }
+
+#if !NETFRAMEWORK
+    [PropertyGridPropertyOptions(EditorCreatorType = typeof(HorizontalSliderEditorCreator<SampleCustomer, int>))]
+    [Category("Sliders")]
+    public int Int32 { get => GetPropertyValue<int>(); set => SetPropertyValue(value); }
+
+    [PropertyGridPropertyOptions(EditorCreatorType = typeof(HorizontalSliderEditorCreator<SampleCustomer, float>))]
+    [Category("Sliders")]
+    public float Single { get => GetPropertyValue<float>(); set => SetPropertyValue(value); }
+#endif
 }
 
 [TypeConverter(typeof(SampleAddressConverter))]

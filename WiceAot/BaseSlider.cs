@@ -103,7 +103,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// maximum values, as well as the track visuals.
     /// </summary>
     /// <param name="orientation">The orientation of the slider, which determines the layout of the visuals and the direction of value changes.</param>
-    protected BaseSlider(Orientation orientation)
+    public BaseSlider(Orientation orientation)
     {
         Orientation = orientation;
         IsFocusable = true;
@@ -456,7 +456,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <param name="result">When this method returns, contains the converted single-precision floating-point value if the conversion
     /// succeeded; otherwise, zero.</param>
     /// <returns>true if the value was successfully converted to a single-precision floating-point number; otherwise, false.</returns>
-    protected virtual bool TryConvertToSingle(T value, out float result) => Conversions.TryChangeType<float>(value, out result);
+    public virtual bool TryConvertToSingle(T value, out float result) => Conversions.TryChangeType<float>(value, out result);
 
     /// <summary>
     /// Attempts to convert the specified single-precision floating-point value to the target type.
@@ -464,7 +464,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <param name="value">The single-precision floating-point number to convert.</param>
     /// <param name="result">When this method returns, contains the converted value if the conversion succeeded; otherwise, null.</param>
     /// <returns>true if the conversion was successful; otherwise, false.</returns>
-    protected virtual bool TryConvertFromSingle(float value, [NotNullWhen(true)] out T? result) => Conversions.TryChangeType(value, out result);
+    public virtual bool TryConvertFromSingle(float value, [NotNullWhen(true)] out T? result) => Conversions.TryChangeType(value, out result);
 
     /// <inheritdoc/>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)

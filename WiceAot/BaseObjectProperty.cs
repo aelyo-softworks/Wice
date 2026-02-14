@@ -160,7 +160,7 @@ public class BaseObjectProperty : IEquatable<BaseObjectProperty>
 #if !NETFRAMEWORK
         [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
-    Type type,
+        Type type,
         object? defaultValue = null,
         ConvertDelegate? convert = null,
         ChangingDelegate? changing = null,

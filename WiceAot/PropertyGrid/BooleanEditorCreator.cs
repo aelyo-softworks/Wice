@@ -16,13 +16,7 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
 {
     private readonly ToggleSwitch _toggle = new();
 
-    /// <summary>
-    /// Creates a new <see cref="ToggleSwitch"/> editor for the given property value visual.
-    /// </summary>
-    /// <param name="value">The property value visual requesting an editor.</param>
-    /// <returns>
-    /// A <see cref="ToggleSwitch"/> initialized from the underlying boolean property when available.
-    /// </returns>
+    /// <inheritdoc/>
 #if NETFRAMEWORK
     public virtual object? CreateEditor(PropertyValueVisual value)
 #else
@@ -62,12 +56,7 @@ public class BooleanEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccesse
         return _toggle;
     }
 
-    /// <summary>
-    /// Updates the existing editor instance. This implementation is a no-op and returns the provided editor unchanged.
-    /// </summary>
-    /// <param name="value">The property value visual that owns the editor.</param>
-    /// <param name="editor">The current editor instance.</param>
-    /// <returns>The same editor instance that was provided.</returns>
+    /// <inheritdoc/>
 #if NETFRAMEWORK
     public virtual object? UpdateEditor(PropertyValueVisual value, object? editor)
 #else

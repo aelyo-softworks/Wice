@@ -67,7 +67,6 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
 #if DEBUG
         Columns[0].Name = "namesCol";
 #endif
-        Columns[0].Size = float.NaN;
         var column = new GridColumn();
 #if DEBUG
         column.Name = "splitterCol";
@@ -79,7 +78,6 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
 #if DEBUG
             Name = "valuesCol",
 #endif
-            Size = float.NaN
         };
         Columns.Add(column);
 

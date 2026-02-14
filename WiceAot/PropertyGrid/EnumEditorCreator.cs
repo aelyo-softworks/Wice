@@ -12,13 +12,7 @@ public class EnumEditorCreator : IEditorCreator
 public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : IEditorCreator<T>
 #endif
 {
-    /// <summary>
-    /// Creates and wires an editor host that lets the user pick a value for an enum (or [Flags] enum) property.
-    /// </summary>
-    /// <param name="value">The value visual hosting the editor for a single grid property.</param>
-    /// <returns>
-    /// The created editor host instance, or null when the grid declined to create one.
-    /// </returns>
+    /// <inheritdoc/>
 #if NETFRAMEWORK
     public virtual object? CreateEditor(PropertyValueVisual value)
 #else
@@ -118,12 +112,7 @@ public class EnumEditorCreator<[DynamicallyAccessedMembers(DynamicallyAccessedMe
         return host;
     }
 
-    /// <summary>
-    /// Updates an existing editor instance for the provided <paramref name="value"/>.
-    /// </summary>
-    /// <param name="value">The host value visual.</param>
-    /// <param name="editor">The current editor instance.</param>
-    /// <returns>The same <paramref name="editor"/> instance (no-op).</returns>
+    /// <inheritdoc/>
 #if NETFRAMEWORK
     public virtual object? UpdateEditor(PropertyValueVisual value, object? editor)
 #else
