@@ -31,7 +31,7 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
-        AddSliders();
+        AddSlider();
         //AddPropertyGrid();
         //AddLogVisual();
         //AddFastLogVisual();
@@ -76,10 +76,11 @@ internal partial class TestWindow : Window
         }, null, 0, 1000);
     }
 
-    public void AddSliders()
+    public void AddSlider()
     {
         //EnableMouseEventTraces = true;
-        var sl1 = new HorizontalSlider<int> { Margin = 10, Value = 1 };
+        //var sl1 = new HorizontalSlider<float> { Margin = 10, Value = .33f };
+        var sl1 = new HorizontalSlider<int> { Margin = 10, Value = 20, MinValue = 10 };
         //var sl1 = new VerticalSlider<int> { Margin = 10, Value = 1 };
         //var sl1 = new EllipseSlider { Margin = 10, Value = 1 };
         //((TextBox)sl1.MaxValueVisual).ReadingDirection = DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM;

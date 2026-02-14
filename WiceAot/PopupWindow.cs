@@ -280,16 +280,16 @@ public partial class PopupWindow : Window
         {
             D2D_POINT_2F leftTop;
             D2D_POINT_2F rightBottom;
-            var tr = target.AbsoluteRenderRect;
+            var arr = target.AbsoluteRenderRect;
             if (parameters.UseScreenCoordinates && target.Window != null)
             {
-                leftTop = target.Window.ClientToScreen(tr.LeftTop.ToPOINT()).ToD2D_POINT_2F();
-                rightBottom = target.Window.ClientToScreen(tr.RightBottom.ToPOINT()).ToD2D_POINT_2F();
+                leftTop = target.Window.ClientToScreen(arr.LeftTop.ToPOINT()).ToD2D_POINT_2F();
+                rightBottom = target.Window.ClientToScreen(arr.RightBottom.ToPOINT()).ToD2D_POINT_2F();
             }
             else
             {
-                leftTop = tr.LeftTop;
-                rightBottom = tr.RightBottom;
+                leftTop = arr.LeftTop;
+                rightBottom = arr.RightBottom;
             }
 
             D2D_RECT_F visualBounds;
@@ -305,8 +305,8 @@ public partial class PopupWindow : Window
             switch (parameters.Mode)
             {
                 case PlacementMode.Center:
-                    left = leftTop.x + (tr.Width - visualBounds.Width) / 2;
-                    top = leftTop.y + (tr.Height - visualBounds.Height) / 2;
+                    left = leftTop.x + (arr.Width - visualBounds.Width) / 2;
+                    top = leftTop.y + (arr.Height - visualBounds.Height) / 2;
                     break;
 
                 case PlacementMode.OuterBottomLeft:
@@ -350,7 +350,7 @@ public partial class PopupWindow : Window
                     break;
 
                 case PlacementMode.OuterTopCenter:
-                    left = leftTop.x + (tr.Width - visualBounds.Width) / 2;
+                    left = leftTop.x + (arr.Width - visualBounds.Width) / 2;
                     top = leftTop.y - visualBounds.Height;
                     break;
 
@@ -360,7 +360,7 @@ public partial class PopupWindow : Window
                     break;
 
                 case PlacementMode.OuterRightCenter:
-                    top = leftTop.y + (tr.Height - visualBounds.Height) / 2;
+                    top = leftTop.y + (arr.Height - visualBounds.Height) / 2;
                     left = rightBottom.x;
                     break;
 
@@ -370,7 +370,7 @@ public partial class PopupWindow : Window
                     break;
 
                 case PlacementMode.OuterBottomCenter:
-                    left = leftTop.x + (tr.Width - visualBounds.Width) / 2;
+                    left = leftTop.x + (arr.Width - visualBounds.Width) / 2;
                     top = rightBottom.y;
                     break;
 
@@ -380,7 +380,7 @@ public partial class PopupWindow : Window
                     break;
 
                 case PlacementMode.OuterLeftCenter:
-                    top = leftTop.y + (tr.Height - visualBounds.Height) / 2;
+                    top = leftTop.y + (arr.Height - visualBounds.Height) / 2;
                     left = leftTop.x - visualBounds.Width;
                     break;
 
@@ -390,7 +390,7 @@ public partial class PopupWindow : Window
                     break;
 
                 case PlacementMode.InnerTopCenter:
-                    left = leftTop.x + (tr.Width - visualBounds.Width) / 2;
+                    left = leftTop.x + (arr.Width - visualBounds.Width) / 2;
                     top = leftTop.y;
                     break;
 
@@ -401,12 +401,12 @@ public partial class PopupWindow : Window
 
                 case PlacementMode.InnerLeftCenter:
                     left = leftTop.x;
-                    top = leftTop.y + (tr.Height - visualBounds.Height) / 2;
+                    top = leftTop.y + (arr.Height - visualBounds.Height) / 2;
                     break;
 
                 case PlacementMode.InnerRightCenter:
                     left = rightBottom.x - visualBounds.Width;
-                    top = leftTop.y + (tr.Height - visualBounds.Height) / 2;
+                    top = leftTop.y + (arr.Height - visualBounds.Height) / 2;
                     break;
 
                 case PlacementMode.InnerBottomLeft:
@@ -415,7 +415,7 @@ public partial class PopupWindow : Window
                     break;
 
                 case PlacementMode.InnerBottomCenter:
-                    left = leftTop.x + (tr.Width - visualBounds.Width) / 2;
+                    left = leftTop.x + (arr.Width - visualBounds.Width) / 2;
                     top = rightBottom.y - visualBounds.Height;
                     break;
 

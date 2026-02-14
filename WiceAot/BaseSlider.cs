@@ -61,13 +61,13 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     private static T GetDefaultStepValue()
     {
         if (typeof(T) == typeof(float))
-            return (T)(object).1f;
+            return (T)(object).01f;
 
         if (typeof(T) == typeof(double))
-            return (T)(object).1d;
+            return (T)(object).01d;
 
         if (typeof(T) == typeof(decimal))
-            return (T)(object).1m;
+            return (T)(object).01m;
 
         return T.One;
     }
@@ -98,9 +98,8 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         return false;
     }
 
-    private ToolTip? _tt;
-    private TextBox? _ttText;
-    private Timer? _hideKeyTooltip;
+    private SliderValueWindow? _valueWindow;
+    private Timer? _hideValueWindow;
 
     /// <summary>
     /// Initializes a new instance of the Slider class and sets up the visual elements representing the minimum and
@@ -234,11 +233,32 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     [Category(CategoryBehavior)]
     public virtual bool AutoSize { get; set; } = true;
 
+
+    // max│                   x      
+    //    │                   x      
+    //    │                   x
+    //  v │                   x
+    //  a │                   x
+    //  l │                  x
+    //  u │                xx
+    //  e │              xx          
+    //    │           xxx            
+    //    │        xxxx
+    // min│ xxxxxxx                 
+    //    └────────────────────      
+    //     0     mouse pos    1
     /// <summary>
-    /// Gets or sets the duration, in milliseconds, before a tooltip is automatically hidden.
+    /// Gets or sets a function that transforms the tracking position (normalized beween 0 and 1) to Value, normalized 0 (MinValue) and 1 (MaxValue).
+    /// By default, the function is linear.
+    /// </summary>
+    [Browsable(false)]
+    public virtual Func<float, float>? ValueFunc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the duration, in milliseconds, before the value window is automatically hidden.
     /// </summary>
     [Category(CategoryBehavior)]
-    public int ToolTipHideTimeout { get; set; } = 2000;
+    public int ValueWindowHideTimeout { get; set; } = 2000;
 
     /// <summary>
     /// Gets or sets the format string that determines how the value is converted to its string representation.
@@ -247,11 +267,11 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     public string? ValueStringFormat { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether a tooltip displaying the current value is shown when the control is
+    /// Gets or sets a value indicating whether a window displaying the current value is shown when the control is
     /// hovered over.
     /// </summary>
     [Category(CategoryBehavior)]
-    public virtual bool EnableValueToolTip { get; set; } = true;
+    public virtual bool EnableValueWindow { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the factor that determines the size of large incremental changes when interacting with the visual.
@@ -447,80 +467,39 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     }
 
     /// <summary>
-    /// Displays a tooltip at the appropriate location relative to the control, using the current orientation and theme
+    /// Creates a new instance of the SliderValueWindow used to display the current value of the slider.
+    /// </summary>
+    /// <returns>A new instance of SliderValueWindow that represents the window for displaying slider values.</returns>
+    protected virtual SliderValueWindow CreateValueWindow() => new(this);
+
+    /// <summary>
+    /// Displays a value window at the appropriate location relative to the control, using the current orientation and theme
     /// settings.
     /// </summary>
-    protected virtual void ShowToolTip()
+    protected virtual void ShowValueWindow()
     {
-        if (_tt != null)
+        if (_valueWindow != null)
             return;
 
-        _tt = new ToolTip
-        {
-            FollowPlacementTarget = true,
-            PlacementTarget = Thumb ?? this,
-            PlacementMode = PlacementMode.Center,
-            IsFocusable = false
-        };
-
-        var theme = GetWindowTheme();
-        var boxSize = theme.BoxSize * 3 / 2;
-        if (Orientation == Orientation.Horizontal)
-        {
-            _tt.VerticalOffset = -boxSize;
-            _tt.HorizontalOffset = 0;
-        }
-        else
-        {
-            _tt.HorizontalOffset = boxSize;
-            _tt.VerticalOffset = 0;
-        }
-
-        CreateToolTipContent(_tt);
-        _tt.Show();
-    }
-
-    /// <summary>
-    /// Updates the tooltip text to display the current value of the slider.
-    /// </summary>
-    protected virtual void UpdateToolTip()
-    {
-        _ttText?.Text = GetValueString(SliderValueContext.ToolTip, Value);
-    }
-
-    /// <summary>
-    /// Closes the currently displayed tooltip and releases any associated resources.
-    /// </summary>
-    protected virtual void CloseToolTip()
-    {
-        _tt?.Close();
-        _tt = null;
-        _ttText = null;
-    }
-
-    /// <summary>
-    /// Creates and customizes the content displayed in the specified tooltip instance.
-    /// </summary>
-    protected virtual void CreateToolTipContent(ToolTip tt)
-    {
-        if (tt == null)
+        _valueWindow = CreateValueWindow();
+        if (_valueWindow == null)
             return;
 
-        // note we must use the tooltip's compositor, not our window's compositor
-        // as the tooltip has its own window
-        var theme = GetWindowTheme();
-        var hsv = Hsv.From(theme.SliderThumbColor);
-        hsv.Value *= 1.3f; // lighten the thumb color
-        tt.Content.RenderBrush = tt.Compositor!.CreateColorBrush(hsv.ToD3DCOLORVALUE().ToColor());
+        _valueWindow.Show();
+    }
 
-        var boxSize = theme.BoxSize * 3 / 2;
-        _ttText = new TextBox
-        {
-            Text = GetValueString(SliderValueContext.Unspecified, Value),
-            ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White),
-            Margin = boxSize / 4
-        };
-        tt.Content.Children.Add(_ttText);
+    /// <summary>
+    /// Updates the value window text to display the current value of the slider.
+    /// </summary>
+    protected virtual void UpdateValueWindow() => _valueWindow?.Update();
+
+    /// <summary>
+    /// Closes the currently displayed value window, if any, and releases any associated resources.
+    /// </summary>
+    protected virtual void CloseValueWindow()
+    {
+        _valueWindow?.Close();
+        _valueWindow = null;
     }
 
     /// <inheritdoc/>
@@ -529,8 +508,8 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         base.IsFocusedChanged(newValue);
         if (!newValue)
         {
-            _hideKeyTooltip?.Dispose();
-            _hideKeyTooltip = null;
+            _hideValueWindow?.Dispose();
+            _hideValueWindow = null;
         }
     }
 
@@ -539,7 +518,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// </summary>
     /// <param name="sender">The source of the event, typically the thumb control that was dragged.</param>
     /// <param name="e">An object that contains the event data.</param>
-    protected virtual void OnThumbDragCompleted(object? sender, EventArgs e) => CloseToolTip();
+    protected virtual void OnThumbDragCompleted(object? sender, EventArgs e) => CloseValueWindow();
 
     /// <summary>
     /// Invoked when a drag operation on the thumb visual begins, allowing derived classes to handle the start of the
@@ -549,15 +528,15 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <param name="e">A DragEventArgs object that contains the event data for the drag operation.</param>
     protected virtual void OnThumbDragStarted(object? sender, DragEventArgs e)
     {
-        _hideKeyTooltip?.Dispose();
+        _hideValueWindow?.Dispose();
         Focus();
         if (!TryConvertToSingle(Value - MinValue, out var value))
             return;
 
         e.State.Tag = value;
-        if (EnableValueToolTip)
+        if (EnableValueWindow)
         {
-            ShowToolTip();
+            ShowValueWindow();
         }
     }
 
@@ -590,13 +569,23 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         }
 
         var deltaPos = Orientation == Orientation.Horizontal ? e.State.DeltaX : e.State.DeltaY;
-        var newValue = startValue + deltaPos * range / trackSize;
+
+        // use ValueFunc if provided to transform the linear delta position to a non-linear value, otherwise use the linear mapping
+        var valueFunc = ValueFunc ?? linear;
+
+        var normPos = (startValue / range) + (deltaPos / trackSize);
+        var pos = valueFunc(normPos);
+        pos = Math.Min(1, Math.Max(0, pos));
+        var newValue = pos * range;
 
         if (!TryConvertFromSingle(newValue, out var newValueT))
             return;
 
         Value = MinValue + newValueT;
+
     }
+
+    private static float linear(float p) => p;
 
     /// <summary>
     /// Attempts to convert the specified value to a single-precision floating-point number.
@@ -653,21 +642,18 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
                 break;
         }
 
-        if (e.Handled)
+        if (e.Handled && EnableValueWindow)
         {
-            if (EnableValueToolTip)
+            ShowValueWindow();
+            _hideValueWindow?.Dispose();
+            if (ValueWindowHideTimeout > 0)
             {
-                ShowToolTip();
-                _hideKeyTooltip?.Dispose();
-                if (ToolTipHideTimeout > 0)
+                _hideValueWindow = new Timer(_ =>
                 {
-                    _hideKeyTooltip = new Timer(_ =>
-                    {
-                        CloseToolTip();
-                        _hideKeyTooltip?.Dispose();
-                        _hideKeyTooltip = null;
-                    }, null, ToolTipHideTimeout, Timeout.Infinite);
-                }
+                    CloseValueWindow();
+                    _hideValueWindow?.Dispose();
+                    _hideValueWindow = null;
+                }, null, ValueWindowHideTimeout, Timeout.Infinite);
             }
         }
         base.OnKeyDown(sender, e);
@@ -707,14 +693,15 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     {
         ValueChanged?.Invoke(sender, e);
         _valueChanged?.Invoke(sender, e);
-        UpdateToolTip();
+        UpdateValueWindow();
     }
 
     private static bool IsVerticalText(Visual visual)
     {
-        if (visual is TextBox tb)
-            return tb.ReadingDirection is DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM or DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_BOTTOM_TO_TOP;
-        return false;
+        if (visual is not TextBox tb)
+            return false;
+
+        return tb.ReadingDirection is DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM or DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_BOTTOM_TO_TOP;
     }
 
     /// <inheritdoc />
@@ -978,8 +965,129 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
                 maxR.RenderOffset = new Vector3(0, -theme.RoundedButtonCornerRadius, 0);
             }
 
-
             maxR.ZIndex = -1;
+        }
+    }
+
+    /// <summary>
+    /// Represents a popup window that displays the current value of a slider control.
+    /// </summary>
+    protected partial class SliderValueWindow : PopupWindow, IContentParent
+    {
+        private readonly TextBox _text = new();
+
+        /// <summary>
+        /// Initializes a new instance of the SliderValueWindow class, which displays the current value of a slider
+        /// control in a separate window.
+        /// </summary>
+        /// <param name="slider">The slider control associated with this window. Cannot be null.</param>
+        public SliderValueWindow(BaseSlider<T> slider)
+        {
+            ArgumentNullException.ThrowIfNull(slider);
+            Slider = slider;
+
+            MeasureToContent = DimensionOptions.WidthAndHeight;
+            FrameSize = 0;
+            ClickThrough = true;
+            FollowPlacementTarget = true;
+            PlacementTarget = slider.Thumb ?? slider;
+            PlacementMode = PlacementMode.Center;
+            IsFocusable = false;
+
+            var theme = GetWindowTheme();
+            var hsv = Hsv.From(theme.SliderThumbColor);
+            hsv.Value *= 1.3f; // lighten the thumb color
+
+            Content = CreateContent();
+            if (Content == null)
+                throw new InvalidOperationException();
+
+            var shadow = Compositor!.CreateDropShadow();
+            shadow.BlurRadius = GetWindowTheme().ToolTipShadowBlurRadius;
+            Content.RenderShadow = shadow;
+            Content.RenderBrush = Compositor!.CreateColorBrush(hsv.ToD3DCOLORVALUE().ToColor());
+            Content.Margin = 0;
+
+            Children.Add(Content);
+
+            var boxSize = theme.BoxSize * 3 / 2;
+            _text = new TextBox
+            {
+                ForegroundBrush = new SolidColorBrush(theme.UnselectedColor),
+                Margin = boxSize / 4
+            };
+            Content.Children.Add(_text);
+
+            Update();
+        }
+
+        /// <summary>
+        /// Gets the slider control that enables selection of a value within a specified range.
+        /// </summary>
+        public BaseSlider<T> Slider { get; }
+
+        /// <summary>
+        /// Gets the single content visual hosted by the window.
+        /// Derived types can override <see cref="CreateContent"/> to customize the visual.
+        /// </summary>
+        [Browsable(false)]
+        public Visual Content { get; }
+
+        /// <inheritdoc/>
+        protected override bool HasCaret => false;
+
+        /// <inheritdoc/>
+        protected override MA OnMouseActivate(HWND parentWindowHandle, int mouseMessage, HT hitTest) => MA.MA_NOACTIVATE;
+
+        /// <inheritdoc/>
+        protected override void OnHandleCreated(object? sender, EventArgs e)
+        {
+            unsafe
+            {
+                // works only on Windows 11, does nothing on Windows 10, so we don't check error
+                var corner = DWM_WINDOW_CORNER_PREFERENCE.DWMWCP_ROUNDSMALL;
+                Functions.DwmSetWindowAttribute(Handle, (uint)DWMWINDOWATTRIBUTE.DWMWA_WINDOW_CORNER_PREFERENCE, (nint)(&corner), 4);
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override void ExtendFrame(HWND handle)
+        {
+            // don't extend frame
+            //base.ExtendFrame(handle);
+        }
+
+        /// <summary>
+        /// Creates the content visual for the tooltip.
+        /// The default is a <see cref="Canvas"/> measuring to its content.
+        /// </summary>
+        /// <returns>The visual to host inside the tooltip; never null.</returns>
+        protected virtual Visual CreateContent() => new Canvas { MeasureToContent = DimensionOptions.WidthAndHeight };
+
+        /// <summary>
+        /// Updates the displayed text to reflect the current value of the slider.
+        /// </summary>
+        public virtual void Update() => _text.Text = Slider.GetValueString(SliderValueContext.Unspecified, Slider.Value);
+
+        /// <inheritdoc/>
+        protected override PlacementParameters CreatePlacementParameters()
+        {
+            var parameters = base.CreatePlacementParameters();
+
+            var theme = GetWindowTheme();
+            var boxSize = theme.BoxSize * 3 / 2;
+
+            if (Slider.Orientation == Orientation.Horizontal)
+            {
+                parameters.VerticalOffset = -boxSize;
+                parameters.HorizontalOffset = 0;
+            }
+            else
+            {
+                parameters.HorizontalOffset = boxSize;
+                parameters.VerticalOffset = 0;
+            }
+            return parameters;
         }
     }
 }
