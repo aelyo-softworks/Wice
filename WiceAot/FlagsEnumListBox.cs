@@ -81,10 +81,7 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, EnumListBox.IB
                         foreach (var bv in ds)
                         {
                             var item = Items.FirstOrDefault(i => bv.Equals(i.Data));
-                            if (item != null)
-                            {
-                                item.IsSelected = bv.IsSelected;
-                            }
+                            item?.IsSelected = bv.IsSelected;
                         }
                     }
                 }

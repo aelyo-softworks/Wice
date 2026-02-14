@@ -1,7 +1,7 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// Defines the contract for a parent that exposes title bar related state to consumers,
+/// Defines the contract for a parent visual that exposes title bar related state to consumers,
 /// such as the current window title and whether the window is maximized.
 /// </summary>
 public interface ITitleBarParent

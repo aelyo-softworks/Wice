@@ -133,10 +133,20 @@ public partial class PopupWindow : Window
             var win = PlacementTarget?.Window;
             if (win != null)
             {
+                //Application.Trace($"PopupWindow received mouse event {e}. Clicking through to target window '{win}'");
                 var winRect = win.WindowRect;
                 var thisRect = WindowRect;
-                var winEvt = new MouseButtonEventArgs(e.X + (thisRect.left - winRect.left), e.Y + (thisRect.top - winRect.top), e.Keys, e.Button);
+
+                var x = e.X + (thisRect.left - winRect.left);
+                var y = e.Y + (thisRect.top - winRect.top);
+
+                var pt = win.ClientToScreen(new POINT(0, 0));
+                x -= pt.x - winRect.left;
+                y -= pt.y - winRect.top; ;
+                var winEvt = new MouseButtonEventArgs(x, y, e.Keys, e.Button);
+
                 win.OnMouseButtonEvent(msg, winEvt);
+                //Application.Trace($"Forwarded mouse event {winEvt}.");
             }
         }
     }
@@ -190,10 +200,7 @@ public partial class PopupWindow : Window
         target.Arranged -= OnTargetArranged;
         target.DoWhenDetachingFromComposition(() =>
         {
-            if (target.Window != null)
-            {
-                target.Window.Moved -= OnTargetWindowMoved;
-            }
+            target.Window?.Moved -= OnTargetWindowMoved;
         });
     }
 
@@ -206,10 +213,7 @@ public partial class PopupWindow : Window
         target.Arranged += OnTargetArranged;
         target.DoWhenDetachingFromComposition(() =>
         {
-            if (target.Window != null)
-            {
-                target.Window.Moved += OnTargetWindowMoved;
-            }
+            target.Window?.Moved += OnTargetWindowMoved;
         });
     }
 

@@ -87,10 +87,7 @@ public partial class ScrollBarButton : ButtonBase
     protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         var theme = GetWindowTheme();
-        if (Child.Shape != null)
-        {
-            Child.Shape.StrokeThickness = theme.ScrollBarButtonStrokeThickness;
-        }
+        Child.Shape?.StrokeThickness = theme.ScrollBarButtonStrokeThickness;
         Child.Margin = theme.ScrollBarArrowMargin; // TODO: vary per scrollbar width/height?
         Child.StrokeBrush = Compositor!.CreateColorBrush(theme.ScrollBarButtonStrokeColor.ToColor());
         Child.RenderBrush = Child.StrokeBrush;

@@ -1,7 +1,7 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// Defines a contract for controls or containers that can receive and react to access key invocations.
+/// Defines a contract for visuals or containers that can receive and react to access key invocations.
 /// Implement this interface to participate in access key processing (keyboard shortcuts/accelerators).
 /// </summary>
 public interface IAccessKeyParent

@@ -68,17 +68,11 @@ public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISe
         }
         else if (property == DataProperty)
         {
-            if (_notifyPropertyChanged != null)
-            {
-                _notifyPropertyChanged.PropertyChanged -= OnDataPropertyChanged;
-                _notifyPropertyChanged = null;
-            }
+            _notifyPropertyChanged?.PropertyChanged -= OnDataPropertyChanged;
+            _notifyPropertyChanged = null;
 
             _notifyPropertyChanged = value as INotifyPropertyChanged;
-            if (_notifyPropertyChanged != null)
-            {
-                _notifyPropertyChanged.PropertyChanged += OnDataPropertyChanged;
-            }
+            _notifyPropertyChanged?.PropertyChanged += OnDataPropertyChanged;
         }
 
         return true;

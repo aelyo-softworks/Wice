@@ -44,6 +44,11 @@ public class DragState
     /// </summary>
     public virtual int DeltaY { get; set; }
 
+    /// <summary>
+    /// Gets or sets an object that contains data associated with the state.
+    /// </summary>
+    public virtual object? Tag { get; set; }
+
     /// <inheritdoc/>
     public override string ToString() => Button + " Start: " + StartX + " x " + StartY + " Delta: " + DeltaX + " x " + DeltaY;
 }

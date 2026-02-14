@@ -2,8 +2,9 @@
 
 /// <summary>
 /// Draggable handle visual that raises drag lifecycle events when the user performs a left-button drag.
+/// Based on a <see cref="RoundedRectangle"/> shape.
 /// </summary>
-public partial class Thumb : RoundedRectangle
+public partial class Thumb : RoundedRectangle, IThumb
 {
     /// <summary>
     /// Occurs when a drag gesture is initiated (left mouse button pressed and drag move started).

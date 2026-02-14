@@ -78,17 +78,31 @@ internal partial class TestWindow : Window
 
     public void AddSliders()
     {
-        var sl1 = new Slider<int> { Margin = 10, Value = 1 };
+        //EnableMouseEventTraces = true;
+        var sl1 = new HorizontalSlider<int> { Margin = 10, Value = 1 };
+        //var sl1 = new EllipseSlider { Margin = 10, Value = 1 };
+        //((TextBox)sl1.MaxValueVisual).ReadingDirection = DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM;
+        //((TextBox)sl1.MinValueVisual).ReadingDirection = DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM;
+        //((TextBox)sl1.MaxValueVisual).FlowDirection = DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT;
+        //((TextBox)sl1.MinValueVisual).FlowDirection = DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT;
+
         //sl1.AutoSize = false;
         //sl1.Height = 40;
         //sl1.MinValueVisual.Margin = D2D_RECT_F.Thickness(10, 0);
         //sl1.MaxValueVisual.Margin = D2D_RECT_F.Thickness(10, 0);
-        sl1.Thumb.Width = 30;
         //sl1.Thumb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGreen.ToColor());
         //sl1.MaxValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightBlue.ToColor());
         //sl1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
         //sl1.MinValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
         Children.Add(sl1);
+    }
+
+    private sealed class EllipseSlider : HorizontalSlider<int>
+    {
+        protected override Visual CreateThumb()
+        {
+            return new EllipseThumb();
+        }
     }
 
     public void AddPropertyGrid()

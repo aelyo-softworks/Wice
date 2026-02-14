@@ -28,10 +28,7 @@ public partial class DialogBox : Dialog
 
         TitleBar = CreateTitleBar();
 #if DEBUG
-        if (TitleBar != null)
-        {
-            TitleBar.Name ??= "titleBar";
-        }
+        TitleBar?.Name ??= "titleBar";
 #endif
 
         if (TitleBar != null)
@@ -49,10 +46,7 @@ public partial class DialogBox : Dialog
 
         ButtonsPanel = CreateButtonsPanel();
 #if DEBUG
-        if (ButtonsPanel != null)
-        {
-            ButtonsPanel.Name ??= "buttonsPanel";
-        }
+        ButtonsPanel?.Name ??= "buttonsPanel";
 #endif
         if (ButtonsPanel != null)
         {
@@ -70,10 +64,7 @@ public partial class DialogBox : Dialog
         set
         {
             var title = TitleBar?.Title;
-            if (title != null)
-            {
-                title.Text = value;
-            }
+            title?.Text = value;
         }
     }
 
@@ -160,15 +151,9 @@ public partial class DialogBox : Dialog
             bar.Title.Margin = D2D_RECT_F.Thickness(margin, 0, margin, 0);
         }
 
-        if (bar.MaxButton != null)
-        {
-            bar.MaxButton.IsVisible = false;
-        }
+        bar.MaxButton?.IsVisible = false;
 
-        if (bar.MinButton != null)
-        {
-            bar.MinButton.IsVisible = false;
-        }
+        bar.MinButton?.IsVisible = false;
 
         if (bar.CloseButton is IClickable clickable)
         {

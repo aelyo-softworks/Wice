@@ -322,17 +322,11 @@ public partial class Tabs : Dock
                 if (!page.Header.Equals(sender) || !page.IsSelectable)
                 {
                     page.Header.IsSelected = false;
-                    if (page.Content != null)
-                    {
-                        page.Content.IsVisible = false;
-                    }
+                    page.Content?.IsVisible = false;
                 }
                 else
                 {
-                    if (page.Content != null)
-                    {
-                        page.Content.IsVisible = true;
-                    }
+                    page.Content?.IsVisible = true;
                 }
             }
             OnSelectionChanged(sender, e);

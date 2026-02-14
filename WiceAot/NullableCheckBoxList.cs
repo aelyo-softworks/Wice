@@ -12,10 +12,7 @@ public partial class NullableCheckBoxList : StateButtonListBox
         var ncb = new NullableCheckBox();
         ncb.Click += (s, e) =>
         {
-            if (context.ItemVisual != null)
-            {
-                context.ItemVisual.IsSelected = ncb.Value == true;
-            }
+            context.ItemVisual?.IsSelected = ncb.Value == true;
         };
         return ncb;
     }

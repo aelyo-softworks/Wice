@@ -60,10 +60,7 @@ public abstract partial class StateButtonListBox : ListBox
             return;
 
         var tb = dock.Children.OfType<TextBox>().FirstOrDefault();
-        if (tb != null)
-        {
-            tb.Text = context.GetDisplayName();
-        }
+        tb?.Text = context.GetDisplayName();
     }
 
     /// <inheritdoc/>

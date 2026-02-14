@@ -80,10 +80,7 @@ public partial class EditorHost<T> : HeaderedContent
         set
         {
             base.Name = value;
-            if (Dialog != null)
-            {
-                Dialog.Name = "dialog" + Name.CapitalizeFirst();
-            }
+            Dialog?.Name = "dialog" + Name.CapitalizeFirst();
         }
     }
 #endif

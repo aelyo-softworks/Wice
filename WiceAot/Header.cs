@@ -423,9 +423,6 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
         var theme = GetWindowTheme();
         Selection.Width = theme.HeaderSelectionWidth;
         Panel.Margin = theme.HeaderPanelMargin;
-        if (CloseButton != null)
-        {
-            CloseButton.Margin = theme.HeaderCloseButtonMargin;
-        }
+        CloseButton?.Margin = theme.HeaderCloseButtonMargin;
     }
 }

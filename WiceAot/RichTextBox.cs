@@ -730,10 +730,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
         if (property == BackgroundColorProperty)
         {
             var host = _host;
-            if (host != null)
-            {
-                host.BackColor = TextHost.ToColor((D3DCOLORVALUE)value!);
-            }
+            host?.BackColor = TextHost.ToColor((D3DCOLORVALUE)value!);
             return true;
         }
 

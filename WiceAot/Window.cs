@@ -2857,12 +2857,8 @@ public partial class Window : Canvas, ITitleBarParent
 
         Application.RemoveWindow(this, false);
         _compositionTarget?.Dispose();
-
-        if (FrameVisual != null)
-        {
-            FrameVisual.Dispose();
-            FrameVisual = null;
-        }
+        FrameVisual?.Dispose();
+        FrameVisual = null;
 
         if (_compositorController.IsValueCreated)
         {
@@ -3245,7 +3241,7 @@ public partial class Window : Canvas, ITitleBarParent
         // enable this to understand who may be stealing input
         void processWithTraces()
         {
-            Application.Trace("processing mouse event " + msg + " at " + e.X + "/" + e.Y);
+            Application.Trace($"processing mouse event '{WiceCommons.MsgToString(msg)}' {e}");
             var stack = GetIntersectingVisuals(rc);
             var i = 0;
             foreach (var st in stack)
@@ -3256,6 +3252,7 @@ public partial class Window : Canvas, ITitleBarParent
 
             foreach (var visual in GetIntersectingVisuals(rc))
             {
+                Application.Trace(" trying " + visual.Level + "/" + visual.ZIndexOrDefault + " " + visual.FullName);
                 if (visual.DisablePointerEvents)
                 {
                     Application.Trace(" skip (DisablePointerEvents): " + visual.Level + "/" + visual.ZIndexOrDefault + " " + visual.FullName);
@@ -3281,6 +3278,8 @@ public partial class Window : Canvas, ITitleBarParent
                     Application.Trace(" handled by: " + visual.Level + "/" + visual.ZIndexOrDefault + " " + visual.FullName);
                     break;
                 }
+
+                Application.Trace(" unhandled by: " + visual.Level + "/" + visual.ZIndexOrDefault + " " + visual.FullName);
             }
         }
 

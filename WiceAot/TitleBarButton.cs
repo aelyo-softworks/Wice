@@ -90,10 +90,7 @@ public partial class TitleBarButton : ButtonBase
     protected override void OnAttachedToComposition(object? sender, EventArgs e)
     {
         base.OnAttachedToComposition(sender, e);
-        if (Path.Shape != null)
-        {
-            Path.Shape.StrokeThickness = _strokeThickness;
-        }
+        Path.Shape?.StrokeThickness = _strokeThickness;
 
         Path.StrokeBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Black.ToColor());
     }

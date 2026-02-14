@@ -1,7 +1,7 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// Defines a component that exposes a value which can be observed for changes and,
+/// Defines a visual that exposes a value which can be observed for changes and,
 /// when allowed, updated via <see cref="TrySetValue(object?)"/>.
 /// </summary>
 public interface IValueable

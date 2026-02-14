@@ -22,4 +22,7 @@ public class MouseButtonEventArgs(int x, int y, POINTER_MOD vk, MouseButton butt
     /// after <see cref="RepeatDelay"/> has elapsed for a button down event.
     /// </summary>
     public virtual uint RepeatInterval { get; set; } // if > 0, for mouse button down events only
+
+    /// <inheritdoc/>
+    public override string ToString() => $"{base.ToString()} B:{Button} RptD:{RepeatDelay} RptI:{RepeatInterval}";
 }

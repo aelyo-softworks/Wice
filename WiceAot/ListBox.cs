@@ -563,10 +563,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
                 binder.DataItemVisualCreator ??= CreateDataItemVisual;
                 binder.DataItemVisualBinder ??= BindDataItemVisual;
                 var lbdb = binder as ListBoxDataBinder;
-                if (lbdb != null)
-                {
-                    lbdb.SeparatorVisualCreator ??= CreateSeparatorVisual;
-                }
+                lbdb?.SeparatorVisualCreator ??= CreateSeparatorVisual;
 
                 var options = new DataSourceEnumerateOptions { Member = DataItemMember, Format = DataItemFormat };
                 object? last = null;

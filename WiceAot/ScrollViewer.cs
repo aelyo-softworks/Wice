@@ -77,8 +77,12 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
 #if DEBUG
         VerticalScrollBar.Name = nameof(VerticalScrollBar);
 #endif
-        VerticalScrollBar.Thumb.DragDelta += OnVerticalScrollBarThumbDragDelta;
-        VerticalScrollBar.Thumb.DragStarted += (s, e) => { _verticalOffsetStart = VerticalOffset; };
+
+        if (VerticalScrollBar.Thumb is IThumb vth)
+        {
+            vth.DragDelta += OnVerticalScrollBarThumbDragDelta;
+            vth.DragStarted += (s, e) => { _verticalOffsetStart = VerticalOffset; };
+        }
         Children.Add(VerticalScrollBar);
 
         HorizontalScrollBar = CreateHorizontalScrollBar();
@@ -94,8 +98,12 @@ public partial class ScrollViewer : Dock, IOneChildParent, IViewerParent, IDispo
 #if DEBUG
         HorizontalScrollBar.Name = nameof(HorizontalScrollBar);
 #endif
-        HorizontalScrollBar.Thumb.DragDelta += OnHorizontalScrollBarThumbDragDelta;
-        HorizontalScrollBar.Thumb.DragStarted += (s, e) => { _horizontalOffsetStart = HorizontalOffset; };
+
+        if (HorizontalScrollBar.Thumb is IThumb hth)
+        {
+            hth.DragDelta += OnHorizontalScrollBarThumbDragDelta;
+            hth.DragStarted += (s, e) => { _horizontalOffsetStart = HorizontalOffset; };
+        }
         Children.Add(HorizontalScrollBar);
 
         // viewer is the last (fill)

@@ -28,10 +28,7 @@ public abstract class HwndVisual : Visual
 
             _handle = value;
             _nativeWindow = NativeWindow.FromHandle(value);
-            if (_nativeWindow != null)
-            {
-                _nativeWindow.ManagedThreadId = Environment.CurrentManagedThreadId;
-            }
+            _nativeWindow?.ManagedThreadId = Environment.CurrentManagedThreadId;
         }
     }
 

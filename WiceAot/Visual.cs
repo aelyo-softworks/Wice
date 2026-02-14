@@ -582,10 +582,7 @@ public partial class Visual : BaseObject
 
             base.Name = value;
             var cv = CompositionVisual;
-            if (cv != null)
-            {
-                cv.Comment = Name;
-            }
+            cv?.Comment = Name;
         }
     }
 
@@ -713,10 +710,7 @@ public partial class Visual : BaseObject
             if (value != null)
             {
                 var win = Window;
-                if (win != null)
-                {
-                    win.DraggingVisual = this;
-                }
+                win?.DraggingVisual = this;
             }
 
             if (_dragState == value)
@@ -2480,6 +2474,7 @@ public partial class Visual : BaseObject
                 {
                     Focus();
                 }
+
                 //Application.Trace("Down [" + this + "]: " + e.ToString());
                 OnMouseButtonDown(this, e);
                 Window?.HandleMouseDownRepeats(this, msg, e);
@@ -3588,10 +3583,7 @@ public partial class Visual : BaseObject
         }
 
         var win = Window;
-        if (win != null)
-        {
-            win.DraggingVisual = null;
-        }
+        win?.DraggingVisual = null;
 
         DragState = null;
         return state;

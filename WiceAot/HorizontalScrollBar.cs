@@ -35,9 +35,6 @@ public partial class HorizontalScrollBar : ScrollBar
     protected override ButtonBase CreateLargeIncrease() => new();
 
     /// <inheritdoc/>
-    protected override Thumb CreateThumb() => new();
-
-    /// <inheritdoc/>
     protected override void OnRendered(object? sender, EventArgs e)
     {
         base.OnRendered(sender, e);

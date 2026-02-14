@@ -104,7 +104,7 @@ public abstract class ScrollBar : Dock
     /// Gets the draggable thumb that represents the viewport position/size.
     /// </summary>
     [Browsable(false)]
-    public Thumb Thumb { get; }
+    public Visual Thumb { get; }
 
     /// <summary>
     /// Gets the large "increase" clickable segment (track area after the thumb).
@@ -145,7 +145,7 @@ public abstract class ScrollBar : Dock
     /// Creates the draggable <see cref="Thumb"/>. Called once by the constructor.
     /// </summary>
     /// <returns>A non-null thumb instance.</returns>
-    protected abstract Thumb CreateThumb();
+    protected virtual Visual CreateThumb() => new Thumb();
 
     /// <summary>
     /// Creates the large "increase" clickable segment. Called once by the constructor.
@@ -219,7 +219,11 @@ public abstract class ScrollBar : Dock
         {
             RenderBrush = compositor.CreateColorBrush(D3DCOLORVALUE.Transparent.ToColor());
             Thumb.RenderBrush = compositor.CreateColorBrush(theme.ScrollBarOverlayThumbColor.ToColor());
-            Thumb.CornerRadius = new Vector2(theme.ScrollBarOverlayCornerRadius);
+            if (Thumb is RoundedRectangle rr)
+            {
+                rr.CornerRadius = new Vector2(theme.ScrollBarOverlayCornerRadius);
+            }
+
             SmallDecrease.IsVisible = false;
             SmallIncrease.IsVisible = false;
         }
@@ -227,7 +231,12 @@ public abstract class ScrollBar : Dock
         {
             RenderBrush = compositor.CreateColorBrush(theme.ScrollBarBackgroundColor.ToColor());
             Thumb.RenderBrush = compositor.CreateColorBrush(theme.ScrollBarThumbColor.ToColor());
-            Thumb.CornerRadius = new Vector2(0);
+
+            if (Thumb is RoundedRectangle rr)
+            {
+                rr.CornerRadius = new Vector2(0);
+            }
+
             SmallDecrease.IsVisible = true;
             SmallIncrease.IsVisible = true;
         }

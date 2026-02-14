@@ -700,10 +700,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         if (IsFocused && IsEditable && IsEnabled)
         {
             var caret = Window?.Caret;
-            if (caret != null)
-            {
-                caret.IsShown = true;
-            }
+            caret?.IsShown = true;
         }
     }
 
@@ -711,10 +708,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     protected virtual void HideCaret()
     {
         var caret = Window?.Caret;
-        if (caret != null)
-        {
-            caret.IsShown = false;
-        }
+        caret?.IsShown = false;
     }
 
     /// <summary>Stops edit mode (currently hides the caret).</summary>

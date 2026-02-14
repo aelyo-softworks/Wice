@@ -1,7 +1,7 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// Defines selection behavior for controls that support item selection.
+/// Defines selection behavior for visuals that support item selection.
 /// </summary>
 public enum SelectionMode
 {

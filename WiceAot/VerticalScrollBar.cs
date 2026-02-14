@@ -52,9 +52,6 @@ public partial class VerticalScrollBar : ScrollBar
     /// <inheritdoc/>
     protected override ButtonBase CreateLargeIncrease() => new();
 
-    /// <inheritdoc/>
-    protected override Thumb CreateThumb() => new();
-
     /// <summary>
     /// Creates the corner visual shown when both scrollbars are visible.
     /// </summary>

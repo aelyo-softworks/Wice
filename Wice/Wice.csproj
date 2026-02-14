@@ -159,6 +159,7 @@
 	  <Compile Include="..\WiceAot\Effects\VignetteEffect.cs" Link="Effects\VignetteEffect.cs" />
 	  <Compile Include="..\WiceAot\Effects\WhiteLevelAdjustmentEffect.cs" Link="Effects\WhiteLevelAdjustmentEffect.cs" />
 	  <Compile Include="..\WiceAot\Ellipse.cs" Link="Ellipse.cs" />
+	  <Compile Include="..\WiceAot\EllipseThumb.cs" Link="EllipseThumb.cs" />
 	  <Compile Include="..\WiceAot\EnumListBox.cs" Link="EnumListBox.cs" />
 	  <Compile Include="..\WiceAot\EventTrigger.cs" Link="EventTrigger.cs" />
 	  <Compile Include="..\WiceAot\FastTextBox.cs" Link="FastTextBox.cs" />
@@ -207,6 +208,7 @@
 	  <Compile Include="..\WiceAot\ItemVisual.cs" Link="ItemVisual.cs" />
 	  <Compile Include="..\WiceAot\ITextBoxProperties.cs" Link="ITextBoxProperties.cs" />
 	  <Compile Include="..\WiceAot\ITextFormat.cs" Link="ITextFormat.cs" />
+	  <Compile Include="..\WiceAot\IThumb.cs" Link="IThumb.cs" />
 	  <Compile Include="..\WiceAot\ITitleBarParent.cs" Link="ITitleBarParent.cs" />
 	  <Compile Include="..\WiceAot\IValueable.cs" Link="IValueable.cs" />
 	  <Compile Include="..\WiceAot\IViewerParent.cs" Link="IViewerParent.cs" />
@@ -229,6 +231,7 @@
 	  <Compile Include="..\WiceAot\Orientation.cs" Link="Orientation.cs" />
 	  <Compile Include="..\WiceAot\ParentUpgradeInvalidateReason.cs" Link="ParentUpgradeInvalidateReason.cs" />
 	  <Compile Include="..\WiceAot\Path.cs" Link="Path.cs" />
+	  <Compile Include="..\WiceAot\PathThumb.cs" Link="PathThumb.cs" />
 	  <Compile Include="..\WiceAot\PdfView.cs" Link="PdfView.cs" />
 	  <Compile Include="..\WiceAot\PlacementMode.cs" Link="PlacementMode.cs" />
 	  <Compile Include="..\WiceAot\PlacementParameters.cs" Link="PlacementParameters.cs" />

@@ -13,10 +13,7 @@ public partial class CheckBoxList : StateButtonListBox
         var cb = new CheckBox();
         cb.Click += (s, e) =>
         {
-            if (context.ItemVisual != null)
-            {
-                context.ItemVisual.IsSelected = cb.Value;
-            }
+            context.ItemVisual?.IsSelected = cb.Value;
         };
         return cb;
     }
@@ -27,10 +24,7 @@ public partial class CheckBoxList : StateButtonListBox
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
         var changed = base.UpdateItemSelection(visual, select);
         var cb = visual.AllChildren.OfType<CheckBox>().FirstOrDefault();
-        if (cb != null)
-        {
-            cb.Value = visual.IsSelected;
-        }
+        cb?.Value = visual.IsSelected;
         return changed;
     }
 }

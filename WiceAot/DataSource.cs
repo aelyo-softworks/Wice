@@ -24,16 +24,10 @@ public class DataSource
 
         // TODO: when should we close? WeakRef?
         _notifyCollectionChanged = source as INotifyCollectionChanged;
-        if (_notifyCollectionChanged != null)
-        {
-            _notifyCollectionChanged.CollectionChanged += OnSourceCollectionChanged;
-        }
+        _notifyCollectionChanged?.CollectionChanged += OnSourceCollectionChanged;
 
         _notifyPropertyChanged = source as INotifyPropertyChanged;
-        if (_notifyPropertyChanged != null)
-        {
-            _notifyPropertyChanged.PropertyChanged += OnSourcePropertyChanged;
-        }
+        _notifyPropertyChanged?.PropertyChanged += OnSourcePropertyChanged;
     }
 
     /// <summary>
