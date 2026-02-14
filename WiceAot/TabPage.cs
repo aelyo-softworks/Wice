@@ -91,14 +91,14 @@ public partial class TabPage : BaseObject
     /// Called when this page is removed from the specified <paramref name="tabs"/>.
     /// Override to perform cleanup related to the owning tabs instance.
     /// </summary>
-    /// <param name="tabs">The tabs control this page was removed from.</param>
+    /// <param name="tabs">The tabs visual this page was removed from.</param>
     protected internal void RemovedFromTabs(Tabs tabs) => ExceptionExtensions.ThrowIfNull(tabs, nameof(tabs));
 
     /// <summary>
     /// Called when this page is added to the specified <paramref name="tabs"/>.
     /// Override to perform initialization related to the owning tabs instance.
     /// </summary>
-    /// <param name="tabs">The tabs control this page was added to.</param>
+    /// <param name="tabs">The tabs visual this page was added to.</param>
     protected internal void AddedToTabs(Tabs tabs) => ExceptionExtensions.ThrowIfNull(tabs, nameof(tabs));
 #pragma warning restore CA1822 // Mark members as static
 

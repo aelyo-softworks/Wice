@@ -1,7 +1,7 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// Represents a scroll bar control that provides a user interface for scrolling content.
+/// Represents a scroll bar visual that provides a user interface for scrolling content.
 /// </summary>
 public abstract class ScrollBar : Dock
 {

@@ -101,14 +101,14 @@ public partial class Tabs : Dock
     protected virtual Canvas CreatePagesContent() => new();
 
     /// <summary>
-    /// Called after a page has been added to the control and initialized.
+    /// Called after a page has been added to the visual and initialized.
     /// </summary>
     /// <param name="sender">The source of the event, typically this control.</param>
     /// <param name="e">The added page.</param>
     protected virtual void OnPageAdded(object sender, ValueEventArgs<TabPage> e) => PageAdded?.Invoke(sender, e);
 
     /// <summary>
-    /// Called after a page has been removed from the control and detached.
+    /// Called after a page has been removed from the visual and detached.
     /// </summary>
     /// <param name="sender">The source of the event, typically this control.</param>
     /// <param name="e">The removed page.</param>

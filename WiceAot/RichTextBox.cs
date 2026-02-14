@@ -517,7 +517,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
     }
 
     /// <summary>
-    /// Invalidates the control and notifies property change hooks.
+    /// Invalidates the visual and notifies property change hooks.
     /// </summary>
     /// <param name="modes">Which invalidation modes to trigger (defaults to Measure).</param>
     /// <param name="propertyName">The property name triggering the invalidation.</param>
@@ -768,7 +768,7 @@ public partial class RichTextBox : RenderVisual, IDisposable
     }
 
     /// <summary>
-    /// Disposes the control and suppresses finalization.
+    /// Disposes the visual and suppresses finalization.
     /// </summary>
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 

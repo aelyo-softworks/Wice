@@ -55,7 +55,7 @@ public class KeyEventArgs(VIRTUAL_KEY vk, uint states) : HandledEventArgs
     public virtual bool WithShift { get; set; } = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_SHIFT);
 
     /// <summary>
-    /// Gets or sets a value indicating whether the Control modifier was pressed at the time of the event.
+    /// Gets or sets a value indicating whether the visual modifier was pressed at the time of the event.
     /// </summary>
     public virtual bool WithControl { get; set; } = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
 

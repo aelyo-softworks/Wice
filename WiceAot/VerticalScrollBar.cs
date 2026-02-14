@@ -1,8 +1,8 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// Represents a vertical scrollbar control that provides scrolling functionality for content within a <see
-/// cref="ScrollViewer"/>. This control is docked to the right edge of the parent container and includes a customizable
+/// Represents a vertical scrollbar visual that provides scrolling functionality for content within a <see
+/// cref="ScrollViewer"/>. This visual is docked to the right edge of the parent container and includes a customizable
 /// corner visual for scenarios where both horizontal and vertical scrollbars are visible.
 /// </summary>
 public partial class VerticalScrollBar : ScrollBar

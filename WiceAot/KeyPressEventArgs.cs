@@ -71,7 +71,7 @@ public class KeyPressEventArgs : HandledEventArgs
     public virtual bool WithShift { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the Control key was pressed when the event was created.
+    /// Gets or sets a value indicating whether the visual key was pressed when the event was created.
     /// </summary>
     public virtual bool WithControl { get; set; }
 

@@ -43,7 +43,7 @@ public class AccessKey
     public virtual bool WithShift { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the Control (Ctrl) modifier must be pressed.
+    /// Gets or sets a value indicating whether the visual (Ctrl) modifier must be pressed.
     /// </summary>
     public virtual bool WithControl { get; set; }
 

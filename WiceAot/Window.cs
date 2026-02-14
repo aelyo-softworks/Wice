@@ -1089,7 +1089,7 @@ public partial class Window : Canvas, ITitleBarParent
     /// <summary>
     /// Creates and applies default tooltip content to the specified <see cref="ToolTip"/> control.
     /// </summary>
-    /// <param name="parent">The <see cref="ToolTip"/> control to which the content will be added. Cannot be <see langword="null"/>.</param>
+    /// <param name="parent">The <see cref="ToolTip"/> visual to which the content will be added. Cannot be <see langword="null"/>.</param>
     /// <param name="text">The text to display in the tooltip. If <see langword="null"/>, no text content will be added.</param>
     public static void CreateDefaultToolTipContent(ToolTip parent, string text)
     {
@@ -1772,7 +1772,7 @@ public partial class Window : Canvas, ITitleBarParent
     /// <summary>
     /// Raises the <see cref="PreviewKeyDown"/> event.
     /// </summary>
-    /// <param name="sender">The source of the event, typically the control that received the key input.</param>
+    /// <param name="sender">The source of the event, typically the visual that received the key input.</param>
     /// <param name="e">A <see cref="KeyEventArgs"/> that contains the event data, including information about the key that was pressed.</param>
     protected virtual void OnPreviewKeyDown(object? sender, KeyEventArgs e) => PreviewKeyDown?.Invoke(sender, e);
 

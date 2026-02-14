@@ -11,7 +11,7 @@ public class NullableBooleanEditorCreator<[DynamicallyAccessedMembers(Dynamicall
 #endif
 {
     /// <summary>
-    /// Creates and returns an editor control for the specified property value.
+    /// Creates and returns an editor visual for the specified property value.
     /// </summary>
     /// <param name="value">The property value for which the editor is being created. This parameter cannot be <see langword="null"/>.</param>
     /// <returns>An editor control, typically a <see cref="NullableCheckBox"/>, configured to represent the specified property

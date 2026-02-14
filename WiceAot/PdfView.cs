@@ -392,7 +392,7 @@ public partial class PdfView : RenderVisual, IDisposable
     protected virtual void OnDocumentLoadError(object sender, EventArgs args) => DocumentLoadError?.Invoke(sender, args);
 
     /// <summary>
-    /// Disposes managed state and resets the control to defaults.
+    /// Disposes managed state and resets the visual to defaults.
     /// </summary>
     /// <param name="disposing">true if called from <see cref="Dispose()"/>; false if from finalizer.</param>
     protected virtual void Dispose(bool disposing)

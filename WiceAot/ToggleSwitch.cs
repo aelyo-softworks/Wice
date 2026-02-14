@@ -1,7 +1,7 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// A binary on/off toggle control composed of a path track and a circular button (knob).
+/// A binary on/off toggle visual composed of a path track and a circular button (knob).
 /// </summary>
 public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
 {
@@ -74,13 +74,6 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
     bool ISelectable.IsSelected { get => Value; set => Value = value; }
 
     /// <summary>
-    /// Gets or sets whether the control sizes itself based on theme metrics on DPI/theme changes.
-    /// Default is true.
-    /// </summary>
-    [Category(CategoryBehavior)]
-    public virtual bool AutoSize { get; set; } = true;
-
-    /// <summary>
     /// Initializes a new instance of <see cref="ToggleSwitch"/>.
     /// Sets up child visuals, geometry updates on arrange, default alignment and tooltip content (On/Off).
     /// </summary>
@@ -131,6 +124,13 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
 
         ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, Value ? on : off);
     }
+
+    /// <summary>
+    /// Gets or sets whether the visual sizes itself based on theme metrics on DPI/theme changes.
+    /// Default is true.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public virtual bool AutoSize { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the current on/off state of the control.

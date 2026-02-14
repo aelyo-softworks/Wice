@@ -38,7 +38,7 @@ public partial class FastTextBox : TextBox
     protected override string RenderedText => _renderedText ?? string.Empty;
 
     /// <summary>
-    /// True when the control uses base <see cref="TextBox"/> logic (fallback mode). False when using the fast viewported renderer.
+    /// True when the visual uses base <see cref="TextBox"/> logic (fallback mode). False when using the fast viewported renderer.
     /// </summary>
     protected virtual bool HasFallback { get; set; } // true if we're using TextBox code
 
@@ -136,7 +136,7 @@ public partial class FastTextBox : TextBox
     }
 
     /// <summary>
-    /// Line count threshold below which the control falls back to base <see cref="TextBox"/> rendering.
+    /// Line count threshold below which the visual falls back to base <see cref="TextBox"/> rendering.
     /// </summary>
     [Category(CategoryBehavior)]
     public virtual int FallbackLineCountThreshold { get; set; } = 5000; // for less than 5000 lines, we fallback to base TextBox

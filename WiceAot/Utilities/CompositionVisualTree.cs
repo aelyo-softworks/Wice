@@ -246,7 +246,7 @@ public partial class CompositionVisualTree : IDisposable
     }
 
     /// <summary>
-    /// Disposes the control and suppresses finalization.
+    /// Disposes the visual and suppresses finalization.
     /// </summary>
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 }

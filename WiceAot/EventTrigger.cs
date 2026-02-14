@@ -16,12 +16,12 @@ public enum EventTrigger
     ValueChanged,
 
     /// <summary>
-    /// Triggers when the control loses keyboard focus.
+    /// Triggers when the visual loses keyboard focus.
     /// </summary>
     LostFocus,
 
     /// <summary>
-    /// Triggers when the control loses focus or when the Return/Enter key is pressed.
+    /// Triggers when the visual loses focus or when the Return/Enter key is pressed.
     /// </summary>
     LostFocusOrReturnPressed,
 }

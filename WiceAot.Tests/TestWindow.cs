@@ -78,14 +78,16 @@ internal partial class TestWindow : Window
 
     public void AddSliders()
     {
-        var sl1 = new Slider<int> { Margin = D2D_RECT_F.Thickness(10, 10, 10, 10), Value = 33 };
-        sl1.Height = 20;
-        sl1.Thumb.Height = 10;
-        sl1.Thumb.Width = 10;
-        sl1.Thumb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGreen.ToColor());
-        sl1.MaxValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightBlue.ToColor());
-        sl1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
-        sl1.MinValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
+        var sl1 = new Slider<int> { Margin = 10, Value = 1 };
+        //sl1.AutoSize = false;
+        //sl1.Height = 40;
+        //sl1.MinValueVisual.Margin = D2D_RECT_F.Thickness(10, 0);
+        //sl1.MaxValueVisual.Margin = D2D_RECT_F.Thickness(10, 0);
+        sl1.Thumb.Width = 30;
+        //sl1.Thumb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGreen.ToColor());
+        //sl1.MaxValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightBlue.ToColor());
+        //sl1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+        //sl1.MinValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
         Children.Add(sl1);
     }
 

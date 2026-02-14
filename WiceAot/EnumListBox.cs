@@ -1,12 +1,12 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// Represents a specialized <see cref="ListBox"/> control for selecting values from an enumeration.
+/// Represents a specialized <see cref="ListBox"/> visual for selecting values from an enumeration.
 /// </summary>
 public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
 {
     /// <summary>
-    /// Gets the visual property representing the value of the control.
+    /// Gets the visual property representing the value of the visual.
     /// </summary>
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add<object>(typeof(EnumListBox), nameof(Value), VisualPropertyInvalidateModes.Measure, convert: EnumTypeCheck);
 
@@ -41,7 +41,7 @@ public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
     }
 
     /// <summary>
-    /// Gets or sets the current enum value represented by this control.
+    /// Gets or sets the current enum value represented by this visual.
     /// Assigning a new enum type schedules a rebind of the <see cref="ListBox.DataSource"/>.
     /// </summary>
     [Category(CategoryBehavior)]

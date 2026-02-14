@@ -237,8 +237,31 @@ public class Theme
     /// </summary>
     public virtual float StateButtonListPadding { get; set; } = 5;
 
+#if !NETFRAMEWORK
     /// <summary>
-    /// Gets or sets the default caret color for editable controls.
+    /// Gets or sets the padding around sliders.
+    /// </summary>
+    public virtual float SliderPadding { get; set; } = 5;
+
+    /// <summary>
+    /// Gets or sets the slider near track color.
+    /// </summary>
+    public virtual D3DCOLORVALUE SliderNearColor { get; set; } = ColorUtilities.GetSysColor(SYS_COLOR_INDEX.COLOR_GRADIENTACTIVECAPTION);
+
+    /// <summary>
+    /// Gets or sets the slider far track color.
+    /// </summary>
+    public virtual D3DCOLORVALUE SliderFarColor { get; set; } = ColorUtilities.GetSysColor(SYS_COLOR_INDEX.COLOR_GRADIENTACTIVECAPTION).ChangeAlpha(.2f);
+
+    /// <summary>
+    /// Gets or sets the slider thumb color.
+    /// </summary>
+    public virtual D3DCOLORVALUE SliderThumbColor { get; set; } = new D3DCOLORVALUE(0xFF0078D7); // blue;
+
+#endif
+
+    /// <summary>
+    /// Gets or sets the default caret color for editable visuals.
     /// </summary>
     public virtual D3DCOLORVALUE CaretColor { get; set; } = D3DCOLORVALUE.Blue;
 

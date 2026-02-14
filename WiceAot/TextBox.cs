@@ -1,7 +1,7 @@
 ﻿namespace Wice;
 
 /// <summary>
-/// Represents a control that allows the user to input, edit, and display text.
+/// Represents a visual that allows the user to input, edit, and display text.
 /// </summary>
 public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IValueable, IPasswordCapable, IDisposable, IImmVisual
 {
@@ -82,7 +82,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public static VisualProperty AntiAliasingModeProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(AntiAliasingMode), VisualPropertyInvalidateModes.Render, D2D1_TEXT_ANTIALIAS_MODE.D2D1_TEXT_ANTIALIAS_MODE_DEFAULT);
 
     /// <summary>
-    /// Gets or sets whether the control is editable. When true, caret, selection and input are enabled.
+    /// Gets or sets whether the visual is editable. When true, caret, selection and input are enabled.
     /// </summary>
     public static VisualProperty IsEditableProperty { get; } = VisualProperty.Add(typeof(TextBox), nameof(IsEditable), VisualPropertyInvalidateModes.Render, false);
 
@@ -111,7 +111,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public static VisualProperty PasswordCharProperty { get; } = VisualProperty.Add<char?>(typeof(TextBox), nameof(PasswordCharacter), VisualPropertyInvalidateModes.Measure);
 
     /// <summary>
-    /// Gets or sets whether the text rendering is clipped to the control bounds (padding-aware).
+    /// Gets or sets whether the text rendering is clipped to the visual bounds (padding-aware).
     /// </summary>
     public static VisualProperty ClipTextProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(ClipText), VisualPropertyInvalidateModes.Render, true);
 
@@ -330,7 +330,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     [Category(CategoryLayout)]
     public bool IsLastLineWrappingEnabled { get => (bool)GetPropertyValue(IsLastLineWrappingEnabledProperty)!; set => SetPropertyValue(IsLastLineWrappingEnabledProperty, value); }
 
-    /// <summary>Gets or sets whether the control is editable.</summary>
+    /// <summary>Gets or sets whether the visual is editable.</summary>
     [Category(CategoryBehavior)]
     public virtual bool IsEditable { get => (bool)GetPropertyValue(IsEditableProperty)!; set => SetPropertyValue(IsEditableProperty, value); }
 
@@ -360,7 +360,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     [Category(CategoryBehavior)]
     public char? PasswordCharacter { get => (char?)GetPropertyValue(PasswordCharProperty); set => SetPropertyValue(PasswordCharProperty, value); }
 
-    /// <summary>Gets or sets whether text rendering is clipped to the control bounds.</summary>
+    /// <summary>Gets or sets whether text rendering is clipped to the visual bounds.</summary>
     [Category(CategoryRender)]
     public bool ClipText { get => (bool)GetPropertyValue(ClipTextProperty)!; set => SetPropertyValue(ClipTextProperty, value); }
 
@@ -3294,7 +3294,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     }
 
     /// <summary>
-    /// Disposes the control and suppresses finalization.
+    /// Disposes the visual and suppresses finalization.
     /// </summary>
     public void Dispose() { Dispose(disposing: true); GC.SuppressFinalize(this); }
 }
