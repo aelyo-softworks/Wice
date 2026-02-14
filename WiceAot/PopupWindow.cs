@@ -225,20 +225,16 @@ public partial class PopupWindow : Window
     /// Derived types can override to amend parameters before placement is computed.
     /// </summary>
     /// <returns>A fully populated <see cref="PlacementParameters"/> instance for this popup.</returns>
-    protected virtual PlacementParameters CreatePlacementParameters()
+    protected virtual PlacementParameters CreatePlacementParameters() => new(this)
     {
-        var parameters = new PlacementParameters(this)
-        {
-            UseScreenCoordinates = UseScreenCoordinates,
-            CustomFunc = CustomPlacementFunc,
-            HorizontalOffset = HorizontalOffset,
-            VerticalOffset = VerticalOffset,
-            Mode = PlacementMode,
-            Target = PlacementTarget,
-            UseRounding = UseRounding
-        };
-        return parameters;
-    }
+        UseScreenCoordinates = UseScreenCoordinates,
+        CustomFunc = CustomPlacementFunc,
+        HorizontalOffset = HorizontalOffset,
+        VerticalOffset = VerticalOffset,
+        Mode = PlacementMode,
+        Target = PlacementTarget,
+        UseRounding = UseRounding
+    };
 
     /// <inheritdoc/>
     protected override void OnRendered(object? sender, EventArgs e)
@@ -437,6 +433,9 @@ public partial class PopupWindow : Window
                     throw new NotSupportedException();
             }
         }
+
+        left += parameters.HorizontalOffset;
+        top += parameters.VerticalOffset;
 
         if (parameters.UseRounding)
             return new D2D_POINT_2F(left.Round(), top.Round());

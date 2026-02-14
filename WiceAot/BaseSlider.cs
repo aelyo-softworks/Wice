@@ -98,6 +98,10 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         return false;
     }
 
+    private ToolTip? _tt;
+    private TextBox? _ttText;
+    private Timer? _hideKeyTooltip;
+
     /// <summary>
     /// Initializes a new instance of the Slider class and sets up the visual elements representing the minimum and
     /// maximum values, as well as the track visuals.
@@ -164,8 +168,10 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
             {
                 th.DragDelta += OnThumbDragDelta;
                 th.DragStarted += OnThumbDragStarted;
+                th.DragCompleted += OnThumbDragCompleted;
             }
 
+            Thumb.IsFocusable = false;
             Thumb.ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, Value?.ToString() ?? string.Empty);
         }
 
@@ -227,6 +233,19 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// </summary>
     [Category(CategoryBehavior)]
     public virtual bool AutoSize { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the duration, in milliseconds, before a tooltip is automatically hidden.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public int ToolTipHideTimeout { get; set; } = 2000;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether a tooltip displaying the current value is shown when the control is
+    /// hovered over.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public virtual bool EnableValueToolTip { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the factor that determines the size of large incremental changes when interacting with the visual.
@@ -399,6 +418,101 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     }
 
     /// <summary>
+    /// Displays a tooltip at the appropriate location relative to the control, using the current orientation and theme
+    /// settings.
+    /// </summary>
+    protected virtual void ShowToolTip()
+    {
+        if (_tt != null)
+            return;
+
+        _tt = new ToolTip
+        {
+            FollowPlacementTarget = true,
+            PlacementTarget = Thumb ?? this,
+            PlacementMode = PlacementMode.Center,
+            IsFocusable = false
+        };
+
+        var theme = GetWindowTheme();
+        var boxSize = theme.BoxSize * 3 / 2;
+        if (Orientation == Orientation.Horizontal)
+        {
+            _tt.VerticalOffset = -boxSize;
+            _tt.HorizontalOffset = 0;
+        }
+        else
+        {
+            _tt.HorizontalOffset = boxSize;
+            _tt.VerticalOffset = 0;
+        }
+
+        CreateToolTipContent(_tt);
+        _tt.Show();
+    }
+
+    /// <summary>
+    /// Updates the tooltip text to display the current value of the slider.
+    /// </summary>
+    protected virtual void UpdateToolTip()
+    {
+        _ttText?.Text = Value.ToString() ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Closes the currently displayed tooltip and releases any associated resources.
+    /// </summary>
+    protected virtual void CloseToolTip()
+    {
+        _tt?.Close();
+        _tt = null;
+        _ttText = null;
+    }
+
+    /// <summary>
+    /// Creates and customizes the content displayed in the specified tooltip instance.
+    /// </summary>
+    protected virtual void CreateToolTipContent(ToolTip tt)
+    {
+        if (tt == null)
+            return;
+
+        // note we must use the tooltip's compositor, not our window's compositor
+        // as the tooltip has its own window
+        var theme = GetWindowTheme();
+        var hsv = Hsv.From(theme.SliderThumbColor);
+        hsv.Value *= 1.3f; // lighten the thumb color
+        tt.Content.RenderBrush = tt.Compositor!.CreateColorBrush(hsv.ToD3DCOLORVALUE().ToColor());
+
+        var boxSize = theme.BoxSize * 3 / 2;
+        _ttText = new TextBox
+        {
+            Text = Value.ToString() ?? string.Empty,
+            ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White),
+            Margin = boxSize / 4
+        };
+        tt.Content.Children.Add(_ttText);
+    }
+
+    /// <inheritdoc/>
+    protected internal override void IsFocusedChanged(bool newValue)
+    {
+        base.IsFocusedChanged(newValue);
+        if (!newValue)
+        {
+            _hideKeyTooltip?.Dispose();
+            _hideKeyTooltip = null;
+        }
+    }
+
+    /// <summary>
+    /// Invoked when a drag operation on the thumb control is completed.
+    /// </summary>
+    /// <param name="sender">The source of the event, typically the thumb control that was dragged.</param>
+    /// <param name="e">An object that contains the event data.</param>
+    protected virtual void OnThumbDragCompleted(object? sender, EventArgs e) => CloseToolTip();
+
+    /// <summary>
     /// Invoked when a drag operation on the thumb visual begins, allowing derived classes to handle the start of the
     /// drag event.
     /// </summary>
@@ -406,10 +520,16 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <param name="e">A DragEventArgs object that contains the event data for the drag operation.</param>
     protected virtual void OnThumbDragStarted(object? sender, DragEventArgs e)
     {
+        _hideKeyTooltip?.Dispose();
+        Focus();
         if (!TryConvertToSingle(Value - MinValue, out var value))
             return;
 
         e.State.Tag = value;
+        if (EnableValueToolTip)
+        {
+            ShowToolTip();
+        }
     }
 
     /// <summary>
@@ -504,6 +624,23 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
                 break;
         }
 
+        if (e.Handled)
+        {
+            if (EnableValueToolTip)
+            {
+                ShowToolTip();
+                _hideKeyTooltip?.Dispose();
+                if (ToolTipHideTimeout > 0)
+                {
+                    _hideKeyTooltip = new Timer(_ =>
+                    {
+                        CloseToolTip();
+                        _hideKeyTooltip?.Dispose();
+                        _hideKeyTooltip = null;
+                    }, null, ToolTipHideTimeout, Timeout.Infinite);
+                }
+            }
+        }
         base.OnKeyDown(sender, e);
     }
 
@@ -541,6 +678,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     {
         ValueChanged?.Invoke(sender, e);
         _valueChanged?.Invoke(sender, e);
+        UpdateToolTip();
     }
 
     private static bool IsVerticalText(Visual visual)
