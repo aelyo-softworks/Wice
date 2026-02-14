@@ -241,6 +241,12 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     public int ToolTipHideTimeout { get; set; } = 2000;
 
     /// <summary>
+    /// Gets or sets the format string that determines how the value is converted to its string representation.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public string? ValueStringFormat { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether a tooltip displaying the current value is shown when the control is
     /// hovered over.
     /// </summary>
@@ -316,6 +322,29 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     public Visual? TicksVisual { get; set; }
 
     /// <summary>
+    /// Formats the specified value as a string using the defined format or a default format for numeric types.
+    /// </summary>
+    /// <returns>A string representation of the specified value, formatted according to the defined or default format.</returns>
+    protected virtual string GetValueString(SliderValueContext context, T value)
+    {
+        var format = ValueStringFormat;
+        if (format == null)
+        {
+            if (typeof(T) == typeof(float) ||
+                typeof(T) == typeof(double) ||
+                typeof(T) == typeof(decimal))
+            {
+                format = "{0:0.##}";
+            }
+            else
+            {
+                format = "{0}";
+            }
+        }
+        return string.Format(format, value);
+    }
+
+    /// <summary>
     /// Creates a visual representation of the minimum value. By default, it's using a TextBox visual.
     /// </summary>
     /// <remarks>This method is intended to be overridden in derived classes to provide custom visualizations
@@ -325,7 +354,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     {
         var tb = new TextBox
         {
-            Text = MinValue.ToString() ?? string.Empty,
+            Text = GetValueString(SliderValueContext.MinValue, MinValue),
             HorizontalAlignment = Alignment.Center,
             VerticalAlignment = Alignment.Center,
             Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
@@ -395,7 +424,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     {
         var tb = new TextBox
         {
-            Text = MaxValue.ToString() ?? string.Empty,
+            Text = GetValueString(SliderValueContext.MaxValue, MaxValue),
             HorizontalAlignment = Alignment.Center,
             VerticalAlignment = Alignment.Center,
             Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
@@ -456,7 +485,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// </summary>
     protected virtual void UpdateToolTip()
     {
-        _ttText?.Text = Value.ToString() ?? string.Empty;
+        _ttText?.Text = GetValueString(SliderValueContext.ToolTip, Value);
     }
 
     /// <summary>
@@ -487,7 +516,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         var boxSize = theme.BoxSize * 3 / 2;
         _ttText = new TextBox
         {
-            Text = Value.ToString() ?? string.Empty,
+            Text = GetValueString(SliderValueContext.Unspecified, Value),
             ForegroundBrush = new SolidColorBrush(D3DCOLORVALUE.White),
             Margin = boxSize / 4
         };
@@ -807,6 +836,11 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         {
             valueable.TrySetValue(MinValue);
         }
+
+        if (MinValueVisual is TextBox tb)
+        {
+            tb.Text = GetValueString(SliderValueContext.MinValue, MinValue);
+        }
     }
 
     /// <summary>
@@ -828,6 +862,11 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         if (MaxValueVisual is IValueable valueable)
         {
             valueable.TrySetValue(MaxValue);
+        }
+
+        if (MaxValueVisual is TextBox tb)
+        {
+            tb.Text = GetValueString(SliderValueContext.MaxValue, MaxValue);
         }
     }
 
