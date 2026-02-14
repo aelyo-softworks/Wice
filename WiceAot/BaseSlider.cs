@@ -250,9 +250,18 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <summary>
     /// Gets or sets a function that transforms the tracking position (normalized beween 0 and 1) to Value, normalized 0 (MinValue) and 1 (MaxValue).
     /// By default, the function is linear.
+    /// If this is set, InverseValueFunc should also be set.
     /// </summary>
     [Browsable(false)]
     public virtual Func<float, float>? ValueFunc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the function used to compute the inverse value for a given float input.
+    /// By default, the function is linear.
+    /// If this is set, ValueFunc should also be set.
+    /// </summary>
+    [Browsable(false)]
+    public virtual Func<float, float>? InverseValueFunc { get; set; }
 
     /// <summary>
     /// Gets or sets the duration, in milliseconds, before the value window is automatically hidden.
@@ -551,7 +560,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         if (e.State.Tag is not float startValue)
             return;
 
-        if (!TryConvertToSingle(MaxValue - MinValue, out var range))
+        if (!TryConvertToSingle(MaxValue - MinValue, out var range) || range == 0)
             return;
 
         float trackSize;
@@ -570,22 +579,32 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 
         var deltaPos = Orientation == Orientation.Horizontal ? e.State.DeltaX : e.State.DeltaY;
 
-        // use ValueFunc if provided to transform the linear delta position to a non-linear value, otherwise use the linear mapping
         var valueFunc = ValueFunc ?? linear;
+        var inverseFunc = InverseValueFunc ?? inverseLinear;
 
-        var normPos = (startValue / range) + (deltaPos / trackSize);
-        var pos = valueFunc(normPos);
-        pos = Math.Min(1, Math.Max(0, pos));
-        var newValue = pos * range;
+        // Convert starting normalized value to starting position using inverse function
+        var startNormalizedValue = Math.Min(1, Math.Max(0, startValue / range));
+        var startPosition = inverseFunc(startNormalizedValue);
+
+        // Add delta to position
+        var normPos = startPosition + (deltaPos / trackSize);
+        normPos = Math.Min(1, Math.Max(0, normPos));
+
+        // Apply value function to convert position to normalized value
+        var normalizedValue = valueFunc(normPos);
+        normalizedValue = Math.Min(1, Math.Max(0, normalizedValue));
+        var newValue = normalizedValue * range;
 
         if (!TryConvertFromSingle(newValue, out var newValueT))
             return;
 
         Value = MinValue + newValueT;
-
     }
 
+    //private static float linear(float p) => p * p;
+    //private static float inverseLinear(float p) => MathF.Sqrt(p);
     private static float linear(float p) => p;
+    private static float inverseLinear(float p) => p;
 
     /// <summary>
     /// Attempts to convert the specified value to a single-precision floating-point number.
