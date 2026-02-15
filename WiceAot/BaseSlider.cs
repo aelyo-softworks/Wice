@@ -216,6 +216,14 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 #if DEBUG
             TicksVisual.Name = nameof(TicksVisual);
 #endif
+            if (orientation == Orientation.Horizontal)
+            {
+                SetDockType(TicksVisual, DockType.Bottom);
+            }
+            else
+            {
+                SetDockType(TicksVisual, DockType.Right);
+            }
             Children.Add(TicksVisual);
         }
     }
@@ -423,7 +431,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
             HorizontalAlignment = Alignment.Center,
             VerticalAlignment = Alignment.Center,
         };
-
         return th;
     }
 
@@ -473,6 +480,12 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     protected virtual Visual CreateTicksVisual()
     {
         return null!;
+        //var cv = new Canvas
+        //{
+        //    HorizontalAlignment = Alignment.Center,
+        //    VerticalAlignment = Alignment.Center,
+        //};
+        //return cv;
     }
 
     /// <summary>
@@ -566,14 +579,14 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         float trackSize;
         if (Orientation == Orientation.Horizontal)
         {
-            var minValueSize = MinValueVisual?.ArrangedRect.Width ?? 0;
-            var maxValueSize = MaxValueVisual?.ArrangedRect.Width ?? 0;
+            var minValueSize = (MinValueVisual?.ArrangedRect.Width).ToZeroIfNotSet();
+            var maxValueSize = (MaxValueVisual?.ArrangedRect.Width).ToZeroIfNotSet();
             trackSize = ArrangedRect.Width - minValueSize - maxValueSize;
         }
         else
         {
-            var minValueSize = MinValueVisual?.ArrangedRect.Height ?? 0;
-            var maxValueSize = MaxValueVisual?.ArrangedRect.Height ?? 0;
+            var minValueSize = (MinValueVisual?.ArrangedRect.Height).ToZeroIfNotSet();
+            var maxValueSize = (MaxValueVisual?.ArrangedRect.Height).ToZeroIfNotSet();
             trackSize = ArrangedRect.Height - minValueSize - maxValueSize;
         }
 
@@ -681,6 +694,12 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <inheritdoc />
     protected override void Render()
     {
+        //if (TicksVisual != null)
+        //{
+        //    TicksVisual.RenderOffset = new Vector3(-MinTrackVisual.CompositionVisual.Size.X - Thumb.CompositionVisual.Size.X - MaxValueVisual.CompositionVisual.Size.X, 20, 0);
+        //    TicksVisual.CompositionVisual.Size = CompositionVisual.Size;
+        //}
+
         base.Render();
 
         if (Compositor == null)
@@ -734,16 +753,18 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
             MinValueVisual.Measure(constraint);
             if (!IsVerticalText(MinValueVisual))
             {
-                if (MinValueVisual.DesiredSize.width.IsSet() && MinValueVisual.DesiredSize.width > width)
+                var w = MinValueVisual.GetDesiredWidthIfSet();
+                if (w > width)
                 {
-                    width = MinValueVisual.DesiredSize.width;
+                    width = w;
                 }
             }
             else
             {
-                if (MinValueVisual.DesiredSize.height.IsSet() && MinValueVisual.DesiredSize.height > height)
+                var h = MinValueVisual.GetDesiredHeightIfSet();
+                if (h > height)
                 {
-                    height = MinValueVisual.DesiredSize.height;
+                    height = h;
                 }
             }
         }
@@ -753,16 +774,18 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
             MaxValueVisual.Measure(constraint);
             if (!IsVerticalText(MaxValueVisual))
             {
-                if (MaxValueVisual.DesiredSize.width.IsSet() && MaxValueVisual.DesiredSize.width > width)
+                var w = MaxValueVisual.GetDesiredWidthIfSet();
+                if (w > width)
                 {
-                    width = MaxValueVisual.DesiredSize.width;
+                    width = w;
                 }
             }
             else
             {
-                if (MaxValueVisual.DesiredSize.height.IsSet() && MaxValueVisual.DesiredSize.height > height)
+                var h = MaxValueVisual.GetDesiredHeightIfSet();
+                if (h > height)
                 {
-                    height = MaxValueVisual.DesiredSize.height;
+                    height = h;
                 }
             }
         }
@@ -782,11 +805,11 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
             float totalTrackSize;
             if (Orientation == Orientation.Horizontal)
             {
-                totalTrackSize = constraint.width - (MinValueVisual?.DesiredSize.width ?? 0) - (MaxValueVisual?.DesiredSize.width ?? 0) - (Thumb?.DesiredSize.width ?? 0);
+                totalTrackSize = constraint.width - MinValueVisual.GetDesiredWidthIfSet() - MaxValueVisual.GetDesiredWidthIfSet() - Thumb.GetDesiredWidthIfSet();
             }
             else
             {
-                totalTrackSize = constraint.height - (MinValueVisual?.DesiredSize.height ?? 0) - (MaxValueVisual?.DesiredSize.height ?? 0) - (Thumb?.DesiredSize.height ?? 0);
+                totalTrackSize = constraint.height - MinValueVisual.GetDesiredHeightIfSet() - MaxValueVisual.GetDesiredHeightIfSet() - Thumb.GetDesiredHeightIfSet();
             }
 
             var minTrackSize = Math.Max(0, totalTrackSize * (value - minValue) / range);
@@ -796,11 +819,13 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
             {
                 MinTrackVisual?.Width = minTrackSize;
                 MaxTrackVisual?.Width = maxTrackSize;
+                //TicksVisual?.Width = minTrackSize + Thumb.GetDesiredWidthIfSet() + maxTrackSize;
             }
             else
             {
                 MinTrackVisual?.Height = minTrackSize;
                 MaxTrackVisual?.Height = maxTrackSize;
+                //TicksVisual?.Height = minTrackSize + Thumb.GetDesiredHeightIfSet() + maxTrackSize;
             }
         }
 
@@ -809,6 +834,10 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 
     private void OnValueChanged()
     {
+        // avoid oscillating between min and max when they are set to invalid values (stack overflow)
+        if (MinValue > MaxValue)
+            return;
+
         if (Value < MinValue)
         {
             Value = MinValue;
@@ -857,7 +886,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     {
         if (Value > MaxValue)
         {
-            MaxValue = Value;
+            Value = MaxValue;
         }
 
         if (MaxValue < MinValue)
@@ -904,19 +933,27 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         var theme = GetWindowTheme();
         var boxSize = theme.BoxSize;
 
+        //if (TicksVisual != null)
+        //{
+        //    ClipChildren = false;
+        //    ClipFromParent = false;
+        //}
+
         if (Orientation == Orientation.Horizontal)
         {
+            //TicksVisual?.Height = boxSize;
             Height = boxSize;
         }
         else
         {
+            //TicksVisual?.Width = boxSize;
             Width = boxSize;
         }
 
         if (Thumb != null)
         {
             Thumb.Height = boxSize;
-            Thumb.Width = boxSize;
+            Thumb.Width = boxSize * 4;
         }
 
         if (Thumb is RoundedRectangle rr)

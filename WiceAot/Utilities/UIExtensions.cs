@@ -111,6 +111,51 @@ public static class UIExtensions
         }
     }
 
+    /// <summary>
+    /// Returns the specified float value if it is set; otherwise, returns zero.
+    /// </summary>
+    /// <param name="value">The float value to evaluate. If the value is not set, it will be converted to zero.</param>
+    /// <returns>The original float value if it is set; otherwise, zero.</returns>
+    public static float ToZeroIfNotSet(this float value) => value.IsSet() ? value : 0;
+
+    /// <summary>
+    /// Returns zero if the specified nullable float value is not set; otherwise, returns the value itself.
+    /// </summary>
+    /// <param name="value">The nullable float value to evaluate. If <see langword="null"/>, the method returns zero.</param>
+    /// <returns>A float representing the value of the input if set; otherwise, zero.</returns>
+    public static float ToZeroIfNotSet(this float? value)
+    {
+        if (value == null)
+            return 0;
+
+        return value.Value.ToZeroIfNotSet();
+    }
+
+    /// <summary>
+    /// Returns the desired width of the specified visual element if it is set and the element is visible.
+    /// </summary>
+    /// <returns>The desired width of the visual if it is set and the visual is visible; otherwise, 0.</returns>
+    public static float GetDesiredWidthIfSet(this Visual? visual)
+    {
+        if (visual == null || !visual.IsVisible)
+            return 0;
+
+        return visual.DesiredSize.width.ToZeroIfNotSet();
+    }
+
+    /// <summary>
+    /// Returns the desired height of the specified visual element if it is set and the element is visible.
+    /// </summary>
+    /// <returns>The desired height of the visual if it is set and the visual is visible; otherwise, 0.</returns>
+    public static float GetDesiredHeightIfSet(this Visual? visual)
+    {
+        if (visual == null || !visual.IsVisible)
+            return 0;
+
+        return visual.DesiredSize.height.ToZeroIfNotSet();
+    }
+
+
 #if !NETFRAMEWORK
     /// <summary>
     /// Gets the SVG viewBox from a <see cref="ID2D1SvgDocument"/> if present.
