@@ -246,7 +246,7 @@ public class Theme
     /// <summary>
     /// Gets or sets the sliders tick thickness.
     /// </summary>
-    public virtual float SliderTickThickness { get; set; } = 4;
+    public virtual float SliderTickThickness { get; set; } = 1;
 
     /// <summary>
     /// Gets or sets the sliders tick size.

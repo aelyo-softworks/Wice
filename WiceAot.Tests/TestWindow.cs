@@ -230,11 +230,11 @@ internal partial class TestWindow : Window
         //EnableMouseEventTraces = true;
         //var sl1 = new HorizontalSlider<float> { Margin = 10, Value = .33f };
         var sl1 = new Slider<int> { Margin = 10, Value = 0, MinValue = 0, MaxValue = 100 };
-        //var sl1 = new Slider<float> { Margin = 10 };
+        //var sl1 = new Slider<float> { Margin = 10, MinValue = 1000, MaxValue = 10000, TicksStep = 1000 };
         //sl1.TicksStep = 10;
-        //sl1.TicksOptions |= SliderTicksOptions.ShowTickValues;
+        sl1.TicksOptions |= SliderTicksOptions.ShowTickValues;
         sl1.SnapToTicks = true;
-        //sl1.Orientation = Orientation.Vertical;
+        sl1.Orientation = Orientation.Vertical;
         //sl1.TextOrientation = Orientation.Vertical;
 
         //var sl1 = new VerticalSlider<int> { Margin = 10, Value = 10 };
@@ -251,7 +251,7 @@ internal partial class TestWindow : Window
         //sl1.MaxValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightBlue.ToColor());
         //sl1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
         //sl1.MinValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
-        //sl1.TicksVisual?.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+        sl1.TicksVisual?.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
         Children.Add(sl1);
         //sl1.VerticalAlignment = Alignment.Stretch;
     }

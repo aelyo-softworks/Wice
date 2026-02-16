@@ -14,10 +14,10 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(Value), VisualPropertyInvalidateModes.Measure, T.Zero, changed: OnValueChanged);
 
     /// <summary>
-    /// Dynamic property descriptor for <see cref="Step"/>.
+    /// Dynamic property descriptor for <see cref="KeyboardStep"/>.
     /// Default value is determined by the type T, with floating-point types defaulting to 0.1 and other numeric types defaulting to 1.
     /// </summary>
-    public static VisualProperty StepProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(Step), VisualPropertyInvalidateModes.Render, GetDefaultStepValue());
+    public static VisualProperty KeyboardStepProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(KeyboardStep), VisualPropertyInvalidateModes.Render, GetDefaultStepValue());
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="TicksStep"/>.
@@ -314,10 +314,10 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     public T[]? TicksSteps { get => (T[]?)GetPropertyValue(TicksStepsProperty); set => SetPropertyValue(TicksStepsProperty, value); }
 
     /// <summary>
-    /// Gets or sets the step value of the visual.
+    /// Gets or sets the keyboard step value of the visual.
     /// </summary>
     [Category(CategoryBehavior)]
-    public T Step { get => (T)GetPropertyValue(StepProperty)!; set => SetPropertyValue(StepProperty, value); }
+    public T KeyboardStep { get => (T)GetPropertyValue(KeyboardStepProperty)!; set => SetPropertyValue(KeyboardStepProperty, value); }
 
     /// <summary>
     /// Gets or sets the ticks options of the visual.
@@ -763,7 +763,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         if (!IsEnabled || !IsFocused)
             return;
 
-        var step = Step;
+        var step = KeyboardStep;
         if (!SnapToTicks)
         {
             var ctrl = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
@@ -877,13 +877,16 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         var size = base.MeasureCore(constraint);
         if (IsTicksVisible() && SliderVisual != null)
         {
+            var theme = GetWindowTheme();
             if (Orientation == Orientation.Horizontal)
             {
-                TicksVisual.Width = Math.Max(0, SliderVisual.GetDesiredWidthIfSet() - MinValueVisual.GetDesiredWidthIfSet() - MaxValueVisual.GetDesiredWidthIfSet());
+                var w = SliderVisual.GetDesiredWidthIfSet() - MinValueVisual.GetDesiredWidthIfSet() - MaxValueVisual.GetDesiredWidthIfSet();
+                TicksVisual.Width = Math.Max(0, w - theme.SliderPadding * 2 - theme.RoundedButtonCornerRadius * 2);
             }
             else
             {
-                TicksVisual.Height = Math.Max(0, SliderVisual.GetDesiredHeightIfSet() - MinValueVisual.GetDesiredHeightIfSet() - MaxValueVisual.GetDesiredHeightIfSet());
+                var h = SliderVisual.GetDesiredHeightIfSet() - MinValueVisual.GetDesiredHeightIfSet() - MaxValueVisual.GetDesiredHeightIfSet();
+                TicksVisual.Height = Math.Max(0, h - theme.SliderPadding * 2 - theme.RoundedButtonCornerRadius * 2);
             }
 
             if (TicksVisual is Ticks ticks)
@@ -900,16 +903,17 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         base.ArrangeCore(finalRect);
         if (IsTicksVisible())
         {
+            var theme = GetWindowTheme();
             var arr = TicksVisual.ArrangedRect;
             if (Orientation == Orientation.Horizontal)
             {
                 var ar = MinValueVisual.GetArrangedRightIfSet();
-                arr = new D2D_RECT_F(ar, arr.top, ar + arr.Width, arr.bottom);
+                arr = new D2D_RECT_F(ar + theme.SliderPadding + theme.RoundedButtonCornerRadius, arr.top, ar + arr.Width, arr.bottom);
             }
             else
             {
                 var ab = MinValueVisual.GetArrangedBottomIfSet();
-                arr = new D2D_RECT_F(arr.left, ab, arr.right, ab + arr.Height);
+                arr = new D2D_RECT_F(arr.left, ab + theme.SliderPadding + theme.RoundedButtonCornerRadius, arr.right, ab + arr.Height);
             }
 
             if (arr.IsValid)
@@ -983,8 +987,6 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         {
             tb.Text = GetValueString(SliderValueContext.MinValue, MinValue);
         }
-
-        //TicksVisual?.Invalidate(VisualPropertyInvalidateModes.Measure);
     }
 
     /// <summary>
@@ -1012,8 +1014,6 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         {
             tb.Text = GetValueString(SliderValueContext.MaxValue, MaxValue);
         }
-
-        //TicksVisual?.Invalidate(VisualPropertyInvalidateModes.Measure);
     }
 
     [MemberNotNullWhen(true, nameof(TicksVisual))]
@@ -1356,9 +1356,9 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         /// </summary>
         public virtual void UpdateStyle()
         {
+            var theme = GetWindowTheme();
             if (ValueVisual is TextBox tb)
             {
-                var theme = GetWindowTheme();
                 tb.FontSize = theme.SliderTickValueFontSize;
 
                 tb.ReadingDirection = Slider.TextOrientation == Orientation.Horizontal
@@ -1372,8 +1372,6 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
 
             if (TickVisual is RoundedRectangle rr)
             {
-                var theme = GetWindowTheme();
-
                 if (Slider.Orientation == Orientation.Horizontal)
                 {
                     rr.Width = theme.SliderTickThickness;
@@ -1460,7 +1458,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         /// tick.</param>
         protected virtual void UpdateTickPosition(Tick tick, float range)
         {
-            if (!Slider.TryConvertToSingle(tick.Value, out var stepValue))
+            if (!Slider.TryConvertToSingle(tick.Value - Slider.MinValue, out var stepValue))
                 return;
 
             if (Orientation == Orientation.Horizontal)
@@ -1475,15 +1473,14 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
             }
 
             var theme = GetWindowTheme();
-            var size = theme.SliderTickThickness;
             if (Orientation == Orientation.Horizontal)
             {
-                SetLeft(tick, stepValue * Width / range - size / 2);
+                SetLeft(tick, stepValue * (Width - theme.SliderPadding - theme.RoundedButtonCornerRadius) / range);
                 SetTop(tick, theme.SliderPadding);
             }
             else
             {
-                SetTop(tick, stepValue * Height / range - size / 2);
+                SetTop(tick, stepValue * (Height - theme.SliderPadding - theme.RoundedButtonCornerRadius) / range);
                 SetLeft(tick, theme.SliderPadding);
             }
         }
@@ -1509,14 +1506,10 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
 
             foreach (var step in Slider.GetSteps())
             {
-                //if (!Slider.TryConvertToSingle(step - Slider.MinValue, out var stepValue))
-                //    continue;
-
                 var tick = CreateTick(step);
                 if (tick == null)
                     continue;
 
-                //UpdateTickPosition(tick, range);
                 Children.Add(tick);
             }
 

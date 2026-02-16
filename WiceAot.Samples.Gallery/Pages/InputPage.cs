@@ -20,6 +20,9 @@ public partial class InputPage : SampleListPage
             yield return new RadioButtonSampleList();
             yield return new StateButtonSampleList();
             yield return new ToggleSwitchSampleList();
+#if !NETFRAMEWORK
+            yield return new SliderSampleList();
+#endif
         }
     }
 }

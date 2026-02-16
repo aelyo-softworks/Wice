@@ -523,6 +523,74 @@
 
     btn.Click += (s, e) =&gt; { results.Text = "RadioButton is " + (btn.Value ? "Checked" : "Unchecked"); };
 }</sample>
+  <sample namespace="Samples.Input.Slider.SimpleSliderSample">void Layout(Visual parent)
+{
+    // stack radio button and textbox
+    var stack = new Stack { Orientation = Orientation.Horizontal };
+    parent.Children.Add(stack);
+
+    // add slider for Int32
+    var slider = new Slider&lt;int&gt;();
+    slider.Width = parent.Window!.DipsToPixels(400);
+    stack.Children.Add(slider);
+
+    // add results textbox
+    var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0) };
+    stack.Children.Add(results);
+
+    slider.ValueChanged += (s, e) =&gt; { results.Text = "Value is " + slider.Value; };
+}</sample>
+  <sample namespace="Samples.Input.Slider.SingleSliderSample">void Layout(Visual parent)
+{
+    // stack radio button and textbox
+    var stack = new Stack { Orientation = Orientation.Horizontal };
+    parent.Children.Add(stack);
+
+    // add slider for Single
+    var slider = new Slider&lt;float&gt; { Width = parent.Window!.DipsToPixels(400) };
+    slider.TicksOptions |= SliderTicksOptions.ShowTickValues;
+    stack.Children.Add(slider);
+
+    // add results textbox
+    var results = new TextBox { Margin = D2D_RECT_F.Thickness(parent.Window!.DipsToPixels(10), 0) };
+    stack.Children.Add(results);
+
+    slider.ValueChanged += (s, e) =&gt; { results.Text = "Value is " + slider.Value; };
+}</sample>
+  <sample namespace="Samples.Input.Slider.VerticalSliderSample">void Layout(Visual parent)
+{
+    // stack radio button and textbox
+    var stack = new Stack
+    {
+        Orientation = Orientation.Horizontal,
+        Spacing = new D2D_SIZE_F(20, 20)
+    };
+    parent.Children.Add(stack);
+
+    // add vertical slider for Decimal
+    var slider1 = new Slider&lt;decimal&gt;
+    {
+        Height = parent.Window!.DipsToPixels(400),
+        Orientation = Orientation.Vertical,
+
+        // change range
+        MinValue = 1000,
+        MaxValue = 10000,
+        TicksStep = 1000,
+    };
+    slider1.TicksOptions |= SliderTicksOptions.ShowTickValues;
+    stack.Children.Add(slider1);
+
+    // add vertical slider for Single
+    var slider2 = new Slider&lt;double&gt;
+    {
+        Height = parent.Window!.DipsToPixels(400),
+        Orientation = Orientation.Vertical
+    };
+    slider2.TicksOptions |= SliderTicksOptions.ShowTickValues;
+    slider2.TextOrientation = Orientation.Vertical;
+    stack.Children.Add(slider2);
+}</sample>
   <sample namespace="Samples.Input.StateButton.CheckBoxStateButtonSample">void Layout(Visual parent)
 {
     // stack state button and textbox
