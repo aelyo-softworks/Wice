@@ -174,7 +174,10 @@ public partial class Stack : Visual
                 finalSize.height = Math.Max(0, finalSize.height - rc.Height);
             }
 
-            child.Arrange(childRect);
+            if (childRect.IsSet)
+            {
+                child.Arrange(childRect);
+            }
         }
     }
 }

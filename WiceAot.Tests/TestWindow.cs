@@ -33,6 +33,7 @@ internal partial class TestWindow : Window
 
         //AddDocks();
         AddSlider();
+        //AddTicks();
         //AddPropertyGrid();
         //AddLogVisual();
         //AddFastLogVisual();
@@ -92,48 +93,72 @@ internal partial class TestWindow : Window
             Height = 100;
             DoWhenAttachedToComposition(() => RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()));
 
-            _tbLeft = new TextBox { Height = 50, Text = "Left" };
-            _tbLeft.VerticalAlignment = Alignment.Near;
-            _tbLeft.HorizontalAlignment = Alignment.Near;
-            _tbLeft.Padding = 10;
-            _tbLeft.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+            _tbLeft = new TextBox
+            {
+                Height = 50,
+                Text = "Left",
+                VerticalAlignment = Alignment.Near,
+                HorizontalAlignment = Alignment.Near,
+                Padding = 10,
+                ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER
+            };
             SetDockType(_tbLeft, DockType.Left);
             _tbLeft.DoWhenAttachedToComposition(() => _tbLeft.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor()));
             Children.Add(_tbLeft);
 
-            var b1 = new Border { Width = 50, Height = 50 };
-            b1.VerticalAlignment = Alignment.Near;
-            b1.HorizontalAlignment = Alignment.Near;
+            var b1 = new Border
+            {
+                Width = 50,
+                Height = 50,
+                VerticalAlignment = Alignment.Near,
+                HorizontalAlignment = Alignment.Near
+            };
             SetDockType(b1, DockType.Left);
             b1.DoWhenAttachedToComposition(() => b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Violet.ToColor()));
             Children.Add(b1);
 
-            _th = new Border { Width = 50, Height = 50 };
-            _th.VerticalAlignment = Alignment.Near;
-            _th.HorizontalAlignment = Alignment.Near;
+            _th = new Border
+            {
+                Width = 50,
+                Height = 50,
+                VerticalAlignment = Alignment.Near,
+                HorizontalAlignment = Alignment.Near
+            };
             SetDockType(_th, DockType.Left);
             _th.DoWhenAttachedToComposition(() => _th.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor()));
             Children.Add(_th);
 
-            _tbRight = new TextBox { Height = 50, Text = "Right" };
-            _tbRight.VerticalAlignment = Alignment.Near;
-            _tbRight.HorizontalAlignment = Alignment.Far;
-            _tbRight.Padding = 10;
-            _tbRight.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+            _tbRight = new TextBox
+            {
+                Height = 50,
+                Text = "Right",
+                VerticalAlignment = Alignment.Near,
+                HorizontalAlignment = Alignment.Far,
+                Padding = 10,
+                ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER
+            };
             SetDockType(_tbRight, DockType.Right);
             _tbRight.DoWhenAttachedToComposition(() => _tbRight.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor()));
             Children.Add(_tbRight);
 
-            var b2 = new Border { Width = 50, Height = 50 };
-            b2.VerticalAlignment = Alignment.Near;
-            b2.HorizontalAlignment = Alignment.Far;
+            var b2 = new Border
+            {
+                Width = 50,
+                Height = 50,
+                VerticalAlignment = Alignment.Near,
+                HorizontalAlignment = Alignment.Far
+            };
             SetDockType(b2, DockType.Right);
             b2.DoWhenAttachedToComposition(() => b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor()));
             Children.Add(b2);
 
-            _ticks = new Border { Height = 50, Width = 2000 };
-            _ticks.VerticalAlignment = Alignment.Far;
-            _ticks.HorizontalAlignment = Alignment.Near;
+            _ticks = new Border
+            {
+                Height = 50,
+                Width = 2000,
+                VerticalAlignment = Alignment.Far,
+                HorizontalAlignment = Alignment.Near
+            };
             SetDockType(_ticks, DockType.Bottom);
             _ticks.Rendered += (s, e) =>
             {
@@ -169,6 +194,27 @@ internal partial class TestWindow : Window
         Children.Add(dock);
     }
 
+    public void AddTicks()
+    {
+        var cv = new Canvas();
+        Children.Add(cv);
+        cv.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+
+        for (var i = 0; i < 10; i++)
+        {
+            var tick = new Border
+            {
+                Width = 2,
+                Height = 50,
+                RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor())
+            };
+            cv.Children.Add(tick);
+
+            SetLeft(tick, i * 20);
+            //SetRight(tick, 2 + i * 20);
+        }
+    }
+
     public void AddSlider()
     {
         //var s = new Stack { Orientation = Orientation.Vertical };
@@ -183,8 +229,13 @@ internal partial class TestWindow : Window
         //return;
         //EnableMouseEventTraces = true;
         //var sl1 = new HorizontalSlider<float> { Margin = 10, Value = .33f };
-        var sl1 = new Slider<int> { Margin = 10, Value = 0, MinValue = 0, MaxValue = 1000 };
-        //sl1.Orientation = sl1.TextOrientation = Orientation.Vertical;
+        var sl1 = new Slider<int> { Margin = 10, Value = 0, MinValue = 0, MaxValue = 100 };
+        //var sl1 = new Slider<float> { Margin = 10 };
+        //sl1.TicksStep = 10;
+        //sl1.TicksOptions |= SliderTicksOptions.ShowTickValues;
+        sl1.SnapToTicks = true;
+        //sl1.Orientation = Orientation.Vertical;
+        //sl1.TextOrientation = Orientation.Vertical;
 
         //var sl1 = new VerticalSlider<int> { Margin = 10, Value = 10 };
         //var sl1 = new EllipseSlider { Margin = 10, Value = 1 };
@@ -198,9 +249,9 @@ internal partial class TestWindow : Window
         //sl1.MaxValueVisual.Margin = D2D_RECT_F.Thickness(10, 0);
         //sl1.Thumb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGreen.ToColor());
         //sl1.MaxValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightBlue.ToColor());
-        sl1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+        //sl1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
         //sl1.MinValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
-        sl1.TicksVisual?.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
+        //sl1.TicksVisual?.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
         Children.Add(sl1);
         //sl1.VerticalAlignment = Alignment.Stretch;
     }

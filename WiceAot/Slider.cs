@@ -10,42 +10,57 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
 {
     /// <summary>
     /// Dynamic property descriptor for <see cref="Value"/>.
-    /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
     /// </summary>
     public static VisualProperty ValueProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(Value), VisualPropertyInvalidateModes.Measure, T.Zero, changed: OnValueChanged);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="Step"/>.
-    /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
     /// Default value is determined by the type T, with floating-point types defaulting to 0.1 and other numeric types defaulting to 1.
     /// </summary>
-    public static VisualProperty StepProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(Step), VisualPropertyInvalidateModes.Render, GetDefaultStepValue(), changed: OnMinValueChanged);
+    public static VisualProperty StepProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(Step), VisualPropertyInvalidateModes.Render, GetDefaultStepValue());
+
+    /// <summary>
+    /// Dynamic property descriptor for <see cref="TicksStep"/>.
+    /// Default value is determined by the type T, with floating-point types defaulting to 0.1 and other numeric types defaulting to 1.
+    /// </summary>
+    public static VisualProperty TicksStepProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(TicksStep), VisualPropertyInvalidateModes.Render, GetDefaultTicksStepValue());
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="MinValue"/>.
-    /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
     /// </summary>
     public static VisualProperty MinValueProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(MinValue), VisualPropertyInvalidateModes.Measure, T.Zero, changed: OnMinValueChanged);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="MaxValue"/>.
-    /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
     /// Default value is determined by the type T, with numeric types defaulting to 100 (integer types) or 1 (floating types), and other types defaulting to T.MaxValue.
     /// </summary>
     public static VisualProperty MaxValueProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(MaxValue), VisualPropertyInvalidateModes.Measure, GetDefaultMaxValue(), changed: OnMaxValueChanged);
 
     /// <summary>
     /// Attached property backing <see cref="Orientation"/>.
-    /// Default: <see cref="Orientation.Vertical"/>. Triggers a new measure pass on change.
     /// </summary>
     // note the name *must* be different than base class name
     public static new VisualProperty OrientationProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(Slider<>) + nameof(Orientation), VisualPropertyInvalidateModes.Measure, Orientation.Horizontal);
 
     /// <summary>
-    /// Attached property backing <see cref="Orientation"/>.
-    /// Default: <see cref="Orientation.Vertical"/>. Triggers a new measure pass on change.
+    /// Attached property backing <see cref="TextOrientation"/>.
     /// </summary>
     public static VisualProperty TextOrientationProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(TextOrientation), VisualPropertyInvalidateModes.Measure, Orientation.Horizontal);
+
+    /// <summary>
+    /// Dynamic property descriptor for <see cref="TicksSteps"/>.
+    /// </summary>
+    public static VisualProperty TicksStepsProperty { get; } = VisualProperty.Add<T[]>(typeof(Slider<T>), nameof(TicksSteps), VisualPropertyInvalidateModes.Render, null);
+
+    /// <summary>
+    /// Dynamic property descriptor for <see cref="TicksOptions"/>.
+    /// </summary>
+    public static VisualProperty TicksOptionsProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(TicksOptions), VisualPropertyInvalidateModes.Measure, SliderTicksOptions.ShowTicks);
+
+    /// <summary>
+    /// Dynamic property descriptor for <see cref="SnapToTicks"/>.
+    /// </summary>
+    public static VisualProperty SnapToTicksProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(SnapToTicks), VisualPropertyInvalidateModes.Render, false);
 
     private static void OnValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnValueChanged();
     private static void OnMinValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnMinValueChanged();
@@ -83,6 +98,19 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
             return (T)(object).01m;
 
         return T.One;
+    }
+
+    private static T GetDefaultTicksStepValue()
+    {
+        var step = GetDefaultStepValue();
+        try
+        {
+            return T.MultiplyAddEstimate(step, T.CreateChecked(10), T.Zero);
+        }
+        catch
+        {
+            return step;
+        }
     }
 
     /// <summary>
@@ -280,10 +308,34 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     public T Value { get => (T)GetPropertyValue(ValueProperty)!; set => SetPropertyValue(ValueProperty, value); }
 
     /// <summary>
+    /// Gets or sets the array of steps for the ticks visual.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public T[]? TicksSteps { get => (T[]?)GetPropertyValue(TicksStepsProperty); set => SetPropertyValue(TicksStepsProperty, value); }
+
+    /// <summary>
     /// Gets or sets the step value of the visual.
     /// </summary>
     [Category(CategoryBehavior)]
     public T Step { get => (T)GetPropertyValue(StepProperty)!; set => SetPropertyValue(StepProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the ticks options of the visual.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public SliderTicksOptions TicksOptions { get => (SliderTicksOptions)GetPropertyValue(TicksOptionsProperty)!; set => SetPropertyValue(TicksOptionsProperty, value); }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the control aligns its value to the nearest tick mark on the axis.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public bool SnapToTicks { get => (bool)GetPropertyValue(SnapToTicksProperty)!; set => SetPropertyValue(SnapToTicksProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the step value of the visual.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public T TicksStep { get => (T)GetPropertyValue(TicksStepProperty)!; set => SetPropertyValue(TicksStepProperty, value); }
 
     /// <summary>
     /// Gets or sets the minimum value of the visual.
@@ -379,8 +431,6 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         var tb = new TextBox
         {
             Text = GetValueString(SliderValueContext.MinValue, MinValue),
-            Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
-            ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER
         };
         return tb;
     }
@@ -433,8 +483,6 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         var tb = new TextBox
         {
             Text = GetValueString(SliderValueContext.MaxValue, MaxValue),
-            Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
-            ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
         };
         return tb;
     }
@@ -445,16 +493,10 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// <returns>A visual representing the ticks.</returns>
     protected virtual Visual CreateTicksVisual()
     {
-        return null!;
-        //var cv = new Border
-        //{
-        //    Width = 50,
-        //    Height = 50
-        //};
-
-        //cv.DoWhenAttachedToComposition(() => cv.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()));
-
-        //return cv;
+        var cv = new Ticks(this)
+        {
+        };
+        return cv;
     }
 
     /// <summary>
@@ -509,7 +551,23 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// </summary>
     /// <param name="sender">The source of the event, typically the thumb visual that was dragged.</param>
     /// <param name="e">An object that contains the event data.</param>
-    protected virtual void OnThumbDragCompleted(object? sender, EventArgs e) => CloseValueWindow();
+    protected virtual void OnThumbDragCompleted(object? sender, EventArgs e)
+    {
+        if (SnapToTicks)
+        {
+            var steps = GetSteps();
+            if (steps.Count <= 1)
+                return;
+
+            var nearest = steps.OrderBy(s => T.Abs(s - Value)).FirstOrDefault();
+            if (nearest == null)
+                return;
+
+            Value = nearest;
+        }
+
+        CloseValueWindow();
+    }
 
     /// <summary>
     /// Invoked when a drag operation on the thumb visual begins, allowing derived classes to handle the start of the
@@ -595,7 +653,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// <param name="result">When this method returns, contains the converted single-precision floating-point value if the conversion
     /// succeeded; otherwise, zero.</param>
     /// <returns>true if the value was successfully converted to a single-precision floating-point number; otherwise, false.</returns>
-    public virtual bool TryConvertToSingle(T value, out float result) => Conversions.TryChangeType<float>(value, out result);
+    public virtual bool TryConvertToSingle(T value, out float result) => Conversions.TryChangeType(value, out result);
 
     /// <summary>
     /// Attempts to convert the specified single-precision floating-point value to the target type.
@@ -622,6 +680,42 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
             VerticalAlignment = Alignment.Stretch;
             HorizontalAlignment = Alignment.Center;
         }
+
+        if (MinValueVisual is TextBox min)
+        {
+            min.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER;
+            min.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+        }
+
+        if (MaxValueVisual is TextBox max)
+        {
+            max.Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER;
+            max.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+        }
+    }
+
+    /// <summary>
+    /// Generates a sequence of steps based on the defined step size and range constraints.
+    /// </summary>
+    /// <returns>An IReadOnlyList containing the generated steps. If no steps are defined, an empty list is returned.</returns>
+    protected virtual IReadOnlyList<T> GetSteps()
+    {
+        var steps = TicksSteps;
+        if (steps != null && steps.Length > 0)
+            return steps;
+
+        var step = TicksStep;
+        if (T.IsNegative(step) || step.Equals(T.Zero))
+            return [MinValue, MaxValue];
+
+        var list = new List<T>();
+        for (var t = MinValue; t < MaxValue; t = T.MultiplyAddEstimate(t, T.MultiplicativeIdentity, step))
+        {
+            list.Add(t);
+        }
+
+        list.Add(MaxValue);
+        return list;
     }
 
     /// <inheritdoc/>
@@ -670,23 +764,57 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
             return;
 
         var step = Step;
-        var ctrl = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
-        if (ctrl && TryConvertFromSingle(LargeStepFactor, out var large))
+        if (!SnapToTicks)
         {
-            step *= large;
+            var ctrl = NativeWindow.IsKeyPressed(VIRTUAL_KEY.VK_CONTROL);
+            if (ctrl && TryConvertFromSingle(LargeStepFactor, out var large))
+            {
+                step *= large;
+            }
         }
 
         switch (e.Key)
         {
             case VIRTUAL_KEY.VK_LEFT:
             case VIRTUAL_KEY.VK_UP:
-                Value -= step;
+                if (SnapToTicks)
+                {
+                    var steps = GetSteps();
+                    var s = steps.Where(s => s < Value).OrderDescending().ToArray();
+                    var nearest = steps.Where(s => s < Value).OrderDescending().FirstOrDefault();
+                    if (nearest == null) // probably zero
+                        break;
+
+                    if (nearest > Value)
+                        break;
+
+                    Value = nearest;
+                }
+                else
+                {
+                    Value -= step;
+                }
                 e.Handled = true;
                 break;
 
             case VIRTUAL_KEY.VK_RIGHT:
             case VIRTUAL_KEY.VK_DOWN:
-                Value += step;
+                if (SnapToTicks)
+                {
+                    var steps = GetSteps();
+                    var nearest = steps.Where(s => s > Value).Order().FirstOrDefault();
+                    if (nearest == null) // probably zero
+                        break;
+
+                    if (nearest < Value)
+                        break;
+
+                    Value = nearest;
+                }
+                else
+                {
+                    Value += step;
+                }
                 e.Handled = true;
                 break;
 
@@ -740,6 +868,54 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         if (Thumb is Shape thumb)
         {
             thumb.FillBrush = Compositor.CreateColorBrush(theme.SliderThumbColor.ToColor());
+        }
+    }
+
+    /// <inheritdoc />
+    protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
+    {
+        var size = base.MeasureCore(constraint);
+        if (IsTicksVisible() && SliderVisual != null)
+        {
+            if (Orientation == Orientation.Horizontal)
+            {
+                TicksVisual.Width = Math.Max(0, SliderVisual.GetDesiredWidthIfSet() - MinValueVisual.GetDesiredWidthIfSet() - MaxValueVisual.GetDesiredWidthIfSet());
+            }
+            else
+            {
+                TicksVisual.Height = Math.Max(0, SliderVisual.GetDesiredHeightIfSet() - MinValueVisual.GetDesiredHeightIfSet() - MaxValueVisual.GetDesiredHeightIfSet());
+            }
+
+            if (TicksVisual is Ticks ticks)
+            {
+                ticks.Update();
+            }
+        }
+        return size;
+    }
+
+    /// <inheritdoc />
+    protected override void ArrangeCore(D2D_RECT_F finalRect)
+    {
+        base.ArrangeCore(finalRect);
+        if (IsTicksVisible())
+        {
+            var arr = TicksVisual.ArrangedRect;
+            if (Orientation == Orientation.Horizontal)
+            {
+                var ar = MinValueVisual.GetArrangedRightIfSet();
+                arr = new D2D_RECT_F(ar, arr.top, ar + arr.Width, arr.bottom);
+            }
+            else
+            {
+                var ab = MinValueVisual.GetArrangedBottomIfSet();
+                arr = new D2D_RECT_F(arr.left, ab, arr.right, ab + arr.Height);
+            }
+
+            if (arr.IsValid)
+            {
+                TicksVisual.Arrange(arr);
+            }
         }
     }
 
@@ -807,6 +983,8 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         {
             tb.Text = GetValueString(SliderValueContext.MinValue, MinValue);
         }
+
+        //TicksVisual?.Invalidate(VisualPropertyInvalidateModes.Measure);
     }
 
     /// <summary>
@@ -834,6 +1012,24 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         {
             tb.Text = GetValueString(SliderValueContext.MaxValue, MaxValue);
         }
+
+        //TicksVisual?.Invalidate(VisualPropertyInvalidateModes.Measure);
+    }
+
+    [MemberNotNullWhen(true, nameof(TicksVisual))]
+    private bool IsTicksVisible()
+    {
+        if (TicksVisual == null)
+            return false;
+
+        var steps = GetSteps();
+        if (steps.Count < 2)
+            return false;
+
+        if (TicksOptions == SliderTicksOptions.None)
+            return false;
+
+        return true;
     }
 
     /// <inheritdoc/>
@@ -851,6 +1047,21 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         Window!.ThemeDpiEvent -= OnThemeDpiEvent;
     }
 
+    private float MeasureText(string text, float fontSize)
+    {
+        var theme = GetWindowTheme();
+        var format = Application.CurrentResourceManager.GetTextFormat(theme,
+            null,
+            fontSize,
+            DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+            DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER
+            )!;
+
+        using var layout = Application.CurrentResourceManager.CreateTextLayout(format, text);
+        var metrics = layout.GetMetrics1();
+        return metrics.Base.width;
+    }
+
     /// <summary>
     /// Applies automatic sizing based on current theme metrics when <see cref="AutoSize"/> is true.
     /// </summary>
@@ -860,35 +1071,45 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     {
         var theme = GetWindowTheme();
         var boxSize = theme.BoxSize;
+        var ticksSize = 0f;
+        if (IsTicksVisible())
+        {
+            if (TicksOptions.HasFlag(SliderTicksOptions.ShowTickValues))
+            {
+                // If the text orientation is different from the slider orientation, we measure the text size and add padding.
+                // We assume the MaxValue text is the largest.
+                if (TextOrientation != Orientation)
+                {
+                    // we add a small padding after the text to avoid the text being too close to the tick's edge
+                    ticksSize = MeasureText(GetValueString(SliderValueContext.MaxValue, MaxValue), theme.SliderTickValueFontSize) + theme.SliderPadding / 2;
+                }
+                else
+                {
+                    ticksSize += theme.SliderTickValueFontSize;
+                }
+                ticksSize += theme.SliderPadding;
+            }
+
+            if (TicksOptions.HasFlag(SliderTicksOptions.ShowTicks))
+            {
+                ticksSize += theme.SliderTickSize + theme.SliderPadding;
+            }
+        }
 
         if (Orientation == Orientation.Horizontal)
         {
             if (Height.IsNotSet() && VerticalAlignment != Alignment.Stretch)
             {
-                Height = boxSize;
-            }
-
-            if (TicksVisual != null)
-            {
-                if (TicksVisual.Height.IsNotSet())
-                {
-                    TicksVisual.Height = Height;
-                }
+                Height = boxSize + ticksSize;
+                SliderVisual?.Height = boxSize;
             }
         }
         else
         {
             if (Width.IsNotSet() && HorizontalAlignment != Alignment.Stretch)
             {
-                Width = boxSize;
-            }
-
-            if (TicksVisual != null)
-            {
-                if (TicksVisual.Width.IsNotSet())
-                {
-                    TicksVisual.Width = Width;
-                }
+                Width = boxSize + ticksSize;
+                SliderVisual?.Width = boxSize;
             }
         }
 
@@ -1018,16 +1239,304 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
                 }
             }
         }
+
+        if (TicksVisual is Ticks ticks)
+        {
+            ticks.OnThemeDpiEvent(sender, e);
+        }
     }
 
     /// <summary>
-    /// Represents a dock visual that integrates a slider for selecting a value within a specified range.
+    /// Represents a visual that displays a tick for the slider.
+    /// </summary>
+    protected partial class Tick : Stack
+    {
+        /// <summary>
+        /// Initializes a new instance of the Ticks class with the specified slider.
+        /// </summary>
+        /// <param name="ticks">The Ticks visual that this tick belongs to, providing context for the tick's position and value within the slider.</param>
+        /// <param name="value">The value associated with this tick, which will be displayed as a visual reference on the slider.</param>
+        public Tick(Ticks ticks, T value)
+        {
+            ArgumentNullException.ThrowIfNull(ticks);
+
+            Ticks = ticks;
+            Value = value;
+
+            // stack orientation is inverted from slider
+            if (Slider.Orientation == Orientation.Horizontal)
+            {
+                Orientation = Orientation.Vertical;
+                HorizontalAlignment = Alignment.Center;
+            }
+            else
+            {
+                Orientation = Orientation.Horizontal;
+                VerticalAlignment = Alignment.Center;
+            }
+
+            if (Slider.TicksOptions.HasFlag(SliderTicksOptions.ShowTicks))
+            {
+                TickVisual = CreateTickVisual();
+                if (TickVisual != null)
+                {
+                    Children.Add(TickVisual);
+                }
+            }
+
+            if (Slider.TicksOptions.HasFlag(SliderTicksOptions.ShowTickValues))
+            {
+                ValueVisual = CreateValueVisual();
+                if (ValueVisual != null)
+                {
+                    Children.Add(ValueVisual);
+                }
+            }
+
+            UpdateStyle();
+        }
+
+        /// <summary>
+        /// Gets the number of ticks that represent the time interval.
+        /// </summary>
+        public Ticks Ticks { get; }
+
+        /// <summary>
+        /// Gets the slider visual that enables selection of a value within a specified range.
+        /// </summary>
+        public Slider<T> Slider => Ticks.Slider;
+
+        /// <summary>
+        /// Gets the value stored in the current instance.
+        /// </summary>
+        public T Value { get; }
+
+        /// <summary>
+        /// Gets the visual representation used to display the tick mark in the control.
+        /// </summary>
+        public Visual? TickVisual { get; }
+
+        /// <summary>
+        /// Gets the visual element that represents the current value of the slider.
+        /// </summary>
+        public Visual? ValueVisual { get; }
+
+        /// <inheritdoc/>
+        public override string ToString() => Value?.ToString() ?? string.Empty;
+
+        /// <summary>
+        /// Creates a visual element that represents a tick mark for the slider control.
+        /// </summary>
+        /// <remarks>Override this method in a derived class to provide a custom visual representation for
+        /// tick marks.</remarks>
+        /// <returns>A <see cref="Visual"/> object that represents the visual appearance of a tick mark.</returns>
+        protected virtual Visual CreateTickVisual()
+        {
+            var rr = new RoundedRectangle
+            {
+            };
+            return rr;
+        }
+
+        /// <summary>
+        /// Creates a visual element that displays the current value of the slider.
+        /// </summary>
+        /// <returns>A <see cref="Visual"/> object that shows the formatted value of the slider.</returns>
+        protected virtual Visual CreateValueVisual()
+        {
+            var tb = new TextBox
+            {
+                Text = Slider.GetValueString(SliderValueContext.Tick, Value),
+            };
+            return tb;
+        }
+
+        /// <summary>
+        /// Updates the visual style of the slider's value display and tick marks to match the current window theme.
+        /// </summary>
+        public virtual void UpdateStyle()
+        {
+            if (ValueVisual is TextBox tb)
+            {
+                var theme = GetWindowTheme();
+                tb.FontSize = theme.SliderTickValueFontSize;
+
+                tb.ReadingDirection = Slider.TextOrientation == Orientation.Horizontal
+                    ? DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_LEFT_TO_RIGHT
+                    : DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM;
+
+                tb.FlowDirection = Slider.TextOrientation == Orientation.Horizontal ?
+                    DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_TOP_TO_BOTTOM :
+                    DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT;
+            }
+
+            if (TickVisual is RoundedRectangle rr)
+            {
+                var theme = GetWindowTheme();
+
+                if (Slider.Orientation == Orientation.Horizontal)
+                {
+                    rr.Width = theme.SliderTickThickness;
+                    rr.Height = theme.SliderTickSize;
+                }
+                else
+                {
+                    rr.Width = theme.SliderTickSize;
+                    rr.Height = theme.SliderTickThickness;
+                }
+
+                var radius = theme.RoundedButtonCornerRadius / 2;
+                rr.CornerRadius = new Vector2(radius, radius);
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override void Render()
+        {
+            base.Render();
+
+            var theme = GetWindowTheme();
+            if (TickVisual is Shape ticks)
+            {
+                ticks.FillBrush = Compositor!.CreateColorBrush(theme.SliderThumbColor.ToColor());
+            }
+        }
+    }
+
+    /// <summary>
+    /// Represents a visual that displays ticks for the slider, providing a visual reference for the values along the slider's range.
+    /// </summary>
+    protected partial class Ticks : Canvas
+    {
+        private Orientation Orientation => Slider.Orientation;
+        private T? _minValue;
+        private T? _maxValue;
+        private SliderTicksOptions _options;
+
+        /// <summary>
+        /// Initializes a new instance of the Ticks class with the specified slider.
+        /// </summary>
+        /// <param name="slider">The slider for which the ticks are being created.</param>
+        public Ticks(Slider<T> slider)
+        {
+            ArgumentNullException.ThrowIfNull(slider);
+            Slider = slider;
+
+            // to be able to show max value tick
+            ClipChildren = false;
+            ClipFromParent = false;
+        }
+
+        /// <summary>
+        /// Gets the slider visual that enables selection of a value within a specified range.
+        /// </summary>
+        public Slider<T> Slider { get; }
+
+        /// <summary>
+        /// Creates a new Tick instance initialized with the specified value.
+        /// </summary>
+        /// <param name="value">The value to initialize the Tick instance with.</param>
+        /// <returns>A new Tick instance initialized with the provided value.</returns>
+        protected virtual Tick CreateTick(T value) => new(this, value);
+
+        /// <summary>
+        /// Applies automatic sizing based on current theme metrics when <see cref="AutoSize"/> is true.
+        /// </summary>
+        /// <param name="sender">Event source (window).</param>
+        /// <param name="e">Theme/DPI event args.</param>
+        public virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
+        {
+            foreach (var tick in Children.OfType<Tick>())
+            {
+                tick.UpdateStyle();
+            }
+        }
+
+        /// <summary>
+        /// Updates the position of the specified tick based on the current orientation and size of the slider.
+        /// </summary>
+        /// <param name="tick">The tick to position within the slider. Represents a specific value on the slider's scale.</param>
+        /// <param name="range">The total range of values represented by the slider. Used to calculate the proportional position of the
+        /// tick.</param>
+        protected virtual void UpdateTickPosition(Tick tick, float range)
+        {
+            if (!Slider.TryConvertToSingle(tick.Value, out var stepValue))
+                return;
+
+            if (Orientation == Orientation.Horizontal)
+            {
+                if (Width.IsNotSet())
+                    return;
+            }
+            else
+            {
+                if (Height.IsNotSet())
+                    return;
+            }
+
+            var theme = GetWindowTheme();
+            var size = theme.SliderTickThickness;
+            if (Orientation == Orientation.Horizontal)
+            {
+                SetLeft(tick, stepValue * Width / range - size / 2);
+                SetTop(tick, theme.SliderPadding);
+            }
+            else
+            {
+                SetTop(tick, stepValue * Height / range - size / 2);
+                SetLeft(tick, theme.SliderPadding);
+            }
+        }
+
+        /// <summary>
+        /// Updates visual to reflect the current value of the slider.
+        /// </summary>
+        public virtual void Update()
+        {
+            if (!Slider.TryConvertToSingle(Slider.MaxValue - Slider.MinValue, out var range))
+                return;
+
+            if (_minValue == Slider.MinValue && _maxValue == Slider.MaxValue && _options == Slider.TicksOptions)
+            {
+                foreach (var tick in Children.OfType<Tick>())
+                {
+                    UpdateTickPosition(tick, range);
+                }
+                return;
+            }
+
+            Children.Clear();
+
+            foreach (var step in Slider.GetSteps())
+            {
+                //if (!Slider.TryConvertToSingle(step - Slider.MinValue, out var stepValue))
+                //    continue;
+
+                var tick = CreateTick(step);
+                if (tick == null)
+                    continue;
+
+                //UpdateTickPosition(tick, range);
+                Children.Add(tick);
+            }
+
+            _minValue = Slider.MinValue;
+            _maxValue = Slider.MaxValue;
+            _options = Slider.TicksOptions;
+        }
+    }
+
+    /// <summary>
+    /// Represents a visual that integrates a slider for selecting a value within a specified range.
     /// </summary>
     protected partial class SliderDock : Dock
     {
+        private Orientation Orientation => Slider.Orientation;
+
         /// <summary>
         /// Initializes a new instance of the SliderDock class with the specified slider.
         /// </summary>
+        /// <param name="slider">The slider visual that this dock will contain and manage.</param>
         public SliderDock(Slider<T> slider)
         {
             ArgumentNullException.ThrowIfNull(slider);
@@ -1038,8 +1547,6 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         /// Gets the slider visual that enables selection of a value within a specified range.
         /// </summary>
         public Slider<T> Slider { get; }
-
-        private Orientation Orientation => Slider.Orientation;
 
         /// <summary>
         /// Configures the docking positions of the slider's visual components based on the current orientation.
@@ -1310,9 +1817,20 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         protected virtual Visual CreateContent() => new Canvas { MeasureToContent = DimensionOptions.WidthAndHeight };
 
         /// <summary>
-        /// Updates the displayed text to reflect the current value of the slider.
+        /// Updates window to reflect the current value of the slider.
         /// </summary>
-        public virtual void Update() => _text.Text = Slider.GetValueString(SliderValueContext.Unspecified, Slider.Value);
+        public virtual void Update()
+        {
+            _text.Text = Slider.GetValueString(SliderValueContext.Unspecified, Slider.Value);
+
+            _text.ReadingDirection = Slider.TextOrientation == Orientation.Horizontal
+                ? DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_LEFT_TO_RIGHT
+                : DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM;
+
+            _text.FlowDirection = Slider.TextOrientation == Orientation.Horizontal ?
+                DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_TOP_TO_BOTTOM :
+                DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT;
+        }
 
         /// <inheritdoc/>
         protected override PlacementParameters CreatePlacementParameters()

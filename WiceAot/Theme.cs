@@ -75,12 +75,12 @@ public class Theme
     /// <summary>
     /// Gets the default font size used when <see cref="DefaultFontSize"/> is not set (&lt;= 0).
     /// </summary>
-    public float DefaultDefaultFontSize { get; protected set; } = 14f;
+    public float DefaultDefaultFontSize { get; protected set; } = 14;
 
     /// <summary>
     /// Gets the default splitter size used when <see cref="DefaultSplitterSize"/> is not set (&lt;= 0).
     /// </summary>
-    public float DefaultDefaultSplitterSize { get; protected set; } = 5f;
+    public float DefaultDefaultSplitterSize { get; protected set; } = 5;
 
     /// <summary>
     /// Gets the current DPI this theme is scaled for. 96 represents 100% scaling.
@@ -190,12 +190,12 @@ public class Theme
     /// <summary>
     /// Gets or sets the focus adorner offset (negative values draw inward).
     /// </summary>
-    public virtual float FocusOffset { get; set; } = -2f;
+    public virtual float FocusOffset { get; set; } = -2;
 
     /// <summary>
     /// Gets or sets the focus adorner line thickness.
     /// </summary>
-    public virtual float FocusThickness { get; set; } = 1f;
+    public virtual float FocusThickness { get; set; } = 1;
 
     /// <summary>
     /// Gets or sets the dash pattern used for focus adorners.
@@ -244,6 +244,16 @@ public class Theme
     public virtual float SliderPadding { get; set; } = 5;
 
     /// <summary>
+    /// Gets or sets the sliders tick thickness.
+    /// </summary>
+    public virtual float SliderTickThickness { get; set; } = 4;
+
+    /// <summary>
+    /// Gets or sets the sliders tick size.
+    /// </summary>
+    public virtual float SliderTickSize { get; set; } = 12;
+
+    /// <summary>
     /// Gets or sets the slider near track color.
     /// </summary>
     public virtual D3DCOLORVALUE SliderNearColor { get; set; } = ColorUtilities.GetSysColor(SYS_COLOR_INDEX.COLOR_GRADIENTACTIVECAPTION);
@@ -257,6 +267,11 @@ public class Theme
     /// Gets or sets the slider thumb color.
     /// </summary>
     public virtual D3DCOLORVALUE SliderThumbColor { get; set; } = new D3DCOLORVALUE(0xFF0078D7); // blue;
+
+    /// <summary>
+    /// Gets the default slider font size for tick values.
+    /// </summary>
+    public float SliderTickValueFontSize { get; protected set; } = 10;
 
 #endif
 

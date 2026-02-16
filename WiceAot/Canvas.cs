@@ -264,7 +264,10 @@ public partial class Canvas : Visual
         foreach (var child in children.Where(c => c.Parent != null))
         {
             var childRect = GetRect(finalSize, child);
-            child.Arrange(childRect);
+            if (childRect.IsSet)
+            {
+                child.Arrange(childRect);
+            }
         }
     }
 

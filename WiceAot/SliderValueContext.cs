@@ -25,4 +25,9 @@ public enum SliderValueContext
     /// The slider is working with a value displayed in the tooltip.
     /// </summary>
     ToolTip,
+
+    /// <summary>
+    /// The slider is working with a value displayed as a tick.
+    /// </summary>  
+    Tick,
 }
