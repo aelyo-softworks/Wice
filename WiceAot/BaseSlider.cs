@@ -116,15 +116,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 #if DEBUG
             MinValueVisual.Name = nameof(MinValueVisual);
 #endif
-            if (orientation == Orientation.Horizontal)
-            {
-                SetDockType(MinValueVisual, DockType.Left);
-            }
-            else
-            {
-                SetDockType(MinValueVisual, DockType.Top);
-            }
-
             Children.Add(MinValueVisual);
         }
 
@@ -134,15 +125,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 #if DEBUG
             MinTrackVisual.Name = nameof(MinTrackVisual);
 #endif
-            if (orientation == Orientation.Horizontal)
-            {
-                SetDockType(MinTrackVisual, DockType.Left);
-            }
-            else
-            {
-                SetDockType(MinTrackVisual, DockType.Top);
-            }
-
             Children.Add(MinTrackVisual);
         }
 
@@ -152,15 +134,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 #if DEBUG
             Thumb.Name = nameof(Thumb);
 #endif
-            if (orientation == Orientation.Horizontal)
-            {
-                SetDockType(Thumb, DockType.Left);
-            }
-            else
-            {
-                SetDockType(Thumb, DockType.Top);
-            }
-
             Children.Add(Thumb);
 
             if (Thumb is IThumb th)
@@ -169,9 +142,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
                 th.DragStarted += OnThumbDragStarted;
                 th.DragCompleted += OnThumbDragCompleted;
             }
-
-            Thumb.IsFocusable = false;
-            Thumb.ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, Value?.ToString() ?? string.Empty);
         }
 
         MaxValueVisual = CreateMaxValueVisual();
@@ -180,15 +150,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 #if DEBUG
             MaxValueVisual.Name = nameof(MaxValueVisual);
 #endif
-            if (orientation == Orientation.Horizontal)
-            {
-                SetDockType(MaxValueVisual, DockType.Right);
-            }
-            else
-            {
-                SetDockType(MaxValueVisual, DockType.Bottom);
-            }
-
             Children.Add(MaxValueVisual);
         }
 
@@ -198,15 +159,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 #if DEBUG
             MaxTrackVisual.Name = nameof(MaxTrackVisual);
 #endif
-            if (orientation == Orientation.Horizontal)
-            {
-                SetDockType(MaxTrackVisual, DockType.Right);
-            }
-            else
-            {
-                SetDockType(MaxTrackVisual, DockType.Bottom);
-            }
-
             Children.Add(MaxTrackVisual);
         }
 
@@ -392,11 +344,20 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         var tb = new TextBox
         {
             Text = GetValueString(SliderValueContext.MinValue, MinValue),
-            HorizontalAlignment = Alignment.Center,
-            VerticalAlignment = Alignment.Center,
+            HorizontalAlignment = Alignment.Near,
+            VerticalAlignment = Alignment.Near,
             Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER
         };
+
+        if (Orientation == Orientation.Horizontal)
+        {
+            SetDockType(tb, DockType.Left);
+        }
+        else
+        {
+            SetDockType(tb, DockType.Top);
+        }
         return tb;
     }
 
@@ -410,9 +371,18 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     {
         var rr = new RoundedRectangle
         {
-            HorizontalAlignment = Alignment.Center,
+            HorizontalAlignment = Alignment.Near,
             VerticalAlignment = Alignment.Center,
         };
+
+        if (Orientation == Orientation.Horizontal)
+        {
+            SetDockType(rr, DockType.Left);
+        }
+        else
+        {
+            SetDockType(rr, DockType.Top);
+        }
         return rr;
     }
 
@@ -428,9 +398,20 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     {
         var th = new Thumb
         {
-            HorizontalAlignment = Alignment.Center,
-            VerticalAlignment = Alignment.Center,
+            HorizontalAlignment = Alignment.Near,
+            VerticalAlignment = Alignment.Near,
+            IsFocusable = false,
+            ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, Value?.ToString() ?? string.Empty)
         };
+
+        if (Orientation == Orientation.Horizontal)
+        {
+            SetDockType(th, DockType.Left);
+        }
+        else
+        {
+            SetDockType(th, DockType.Top);
+        }
         return th;
     }
 
@@ -444,9 +425,18 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     {
         var rr = new RoundedRectangle
         {
-            HorizontalAlignment = Alignment.Center,
+            HorizontalAlignment = Alignment.Far,
             VerticalAlignment = Alignment.Center,
         };
+
+        if (Orientation == Orientation.Horizontal)
+        {
+            SetDockType(rr, DockType.Right);
+        }
+        else
+        {
+            SetDockType(rr, DockType.Bottom);
+        }
         return rr;
     }
 
@@ -461,8 +451,8 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         var tb = new TextBox
         {
             Text = GetValueString(SliderValueContext.MaxValue, MaxValue),
-            HorizontalAlignment = Alignment.Center,
-            VerticalAlignment = Alignment.Center,
+            HorizontalAlignment = Alignment.Far,
+            VerticalAlignment = Alignment.Near,
             Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
 
@@ -470,6 +460,15 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
             //ReadingDirection = DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM,
             //FlowDirection = DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT
         };
+
+        if (Orientation == Orientation.Horizontal)
+        {
+            SetDockType(tb, DockType.Right);
+        }
+        else
+        {
+            SetDockType(tb, DockType.Bottom);
+        }
         return tb;
     }
 

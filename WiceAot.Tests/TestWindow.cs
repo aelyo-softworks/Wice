@@ -31,6 +31,7 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
+        //AddDocks();
         AddSlider();
         //AddPropertyGrid();
         //AddLogVisual();
@@ -74,6 +75,98 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    private sealed class MyDock : Dock
+    {
+        private readonly TextBox _tbLeft;
+        private readonly TextBox _tbRight;
+        private readonly Border _th;
+        private readonly Border _ticks;
+
+        public MyDock()
+        {
+            ClipChildren = false;
+            //dock.ClipFromParent = false;
+
+            Height = 100;
+            DoWhenAttachedToComposition(() => RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()));
+
+            _tbLeft = new TextBox { Height = 50, Text = "Left" };
+            _tbLeft.VerticalAlignment = Alignment.Near;
+            _tbLeft.HorizontalAlignment = Alignment.Near;
+            _tbLeft.Padding = 10;
+            _tbLeft.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+            SetDockType(_tbLeft, DockType.Left);
+            _tbLeft.DoWhenAttachedToComposition(() => _tbLeft.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor()));
+            Children.Add(_tbLeft);
+
+            var b1 = new Border { Width = 50, Height = 50 };
+            b1.VerticalAlignment = Alignment.Near;
+            b1.HorizontalAlignment = Alignment.Near;
+            SetDockType(b1, DockType.Left);
+            b1.DoWhenAttachedToComposition(() => b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Violet.ToColor()));
+            Children.Add(b1);
+
+            _th = new Border { Width = 50, Height = 50 };
+            _th.VerticalAlignment = Alignment.Near;
+            _th.HorizontalAlignment = Alignment.Near;
+            SetDockType(_th, DockType.Left);
+            _th.DoWhenAttachedToComposition(() => _th.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor()));
+            Children.Add(_th);
+
+            _tbRight = new TextBox { Height = 50, Text = "Right" };
+            _tbRight.VerticalAlignment = Alignment.Near;
+            _tbRight.HorizontalAlignment = Alignment.Far;
+            _tbRight.Padding = 10;
+            _tbRight.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+            SetDockType(_tbRight, DockType.Right);
+            _tbRight.DoWhenAttachedToComposition(() => _tbRight.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor()));
+            Children.Add(_tbRight);
+
+            var b2 = new Border { Width = 50, Height = 50 };
+            b2.VerticalAlignment = Alignment.Near;
+            b2.HorizontalAlignment = Alignment.Far;
+            SetDockType(b2, DockType.Right);
+            b2.DoWhenAttachedToComposition(() => b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor()));
+            Children.Add(b2);
+
+            _ticks = new Border { Height = 50, Width = 2000 };
+            _ticks.VerticalAlignment = Alignment.Far;
+            _ticks.HorizontalAlignment = Alignment.Near;
+            SetDockType(_ticks, DockType.Bottom);
+            _ticks.Rendered += (s, e) =>
+            {
+                //_ticks.CompositionVisual.Offset = new Vector3(tbLeft.CompositionVisual.Size.X, 50, 0);
+                //_ticks.CompositionVisual.Size = new Vector2(
+                //    CompositionVisual.Size.X - tbLeft.CompositionVisual.Size.X - tbRight.CompositionVisual.Size.X, _ticks.CompositionVisual.Size.Y);
+            };
+            _ticks.DoWhenAttachedToComposition(() => _ticks.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor()));
+            Children.Add(_ticks);
+        }
+
+        protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
+        {
+            var size = base.MeasureCore(constraint);
+            //_th.Width = 100;
+            return size;
+        }
+
+        protected override void ArrangeCore(D2D_RECT_F finalRect)
+        {
+            base.ArrangeCore(finalRect);
+            var ar = _ticks.ArrangedRect;
+            _ticks.Width = Math.Max(0, _tbRight.ArrangedRect.left - _tbLeft.ArrangedRect.right);
+            ar.left = _tbLeft.ArrangedRect.right;
+            ar.right = _tbRight.ArrangedRect.left;
+            _ticks.Arrange(ar);
+        }
+    }
+
+    public void AddDocks()
+    {
+        var dock = new MyDock();
+        Children.Add(dock);
     }
 
     public void AddSlider()
