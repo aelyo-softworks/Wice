@@ -171,21 +171,26 @@ internal partial class TestWindow : Window
 
     public void AddSlider()
     {
+        //var s = new Stack { Orientation = Orientation.Vertical };
+        //var b0 = new Border { Width = 50, Height = 50 };
+        //b0.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
+        //s.Children.Add(b0);
+
+        //var b1 = new Border { Width = 50, Height = 50 };
+        //b1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor());
+        //s.Children.Add(b1);
+        //Children.Add(s);
+        //return;
         //EnableMouseEventTraces = true;
         //var sl1 = new HorizontalSlider<float> { Margin = 10, Value = .33f };
         var sl1 = new Slider<int> { Margin = 10, Value = 0, MinValue = 0, MaxValue = 1000 };
-        //sl1.Orientation = Orientation.Vertical;
-        //sl1.Width = 200;
+        //sl1.Orientation = sl1.TextOrientation = Orientation.Vertical;
 
         //var sl1 = new VerticalSlider<int> { Margin = 10, Value = 10 };
         //var sl1 = new EllipseSlider { Margin = 10, Value = 1 };
 
         //sl1.MinValueVisual.IsVisible = false;
         //sl1.MaxValueVisual.IsVisible = false;
-        //((TextBox)sl1.MaxValueVisual).ReadingDirection = DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM;
-        //((TextBox)sl1.MinValueVisual).ReadingDirection = DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM;
-        //((TextBox)sl1.MaxValueVisual).FlowDirection = DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT;
-        //((TextBox)sl1.MinValueVisual).FlowDirection = DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT;
 
         //sl1.AutoSize = false;
         //sl1.Height = 40;
@@ -193,10 +198,11 @@ internal partial class TestWindow : Window
         //sl1.MaxValueVisual.Margin = D2D_RECT_F.Thickness(10, 0);
         //sl1.Thumb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightGreen.ToColor());
         //sl1.MaxValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.LightBlue.ToColor());
-        //sl1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
+        sl1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor());
         //sl1.MinValueVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
-        //sl1.TicksVisual.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
+        sl1.TicksVisual?.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Orange.ToColor());
         Children.Add(sl1);
+        //sl1.VerticalAlignment = Alignment.Stretch;
     }
 
     private sealed class EllipseSlider : Slider<int>

@@ -41,6 +41,12 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     // note the name *must* be different than base class name
     public static new VisualProperty OrientationProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(Slider<>) + nameof(Orientation), VisualPropertyInvalidateModes.Measure, Orientation.Horizontal);
 
+    /// <summary>
+    /// Attached property backing <see cref="Orientation"/>.
+    /// Default: <see cref="Orientation.Vertical"/>. Triggers a new measure pass on change.
+    /// </summary>
+    public static VisualProperty TextOrientationProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(TextOrientation), VisualPropertyInvalidateModes.Measure, Orientation.Horizontal);
+
     private static void OnValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnValueChanged();
     private static void OnMinValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnMinValueChanged();
     private static void OnMaxValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnMaxValueChanged();
@@ -114,6 +120,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// </summary>
     public Slider()
     {
+        SetAlignments();
         IsFocusable = true;
         SliderVisual = CreateSliderDock();
         if (SliderVisual != null)
@@ -229,10 +236,16 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     public virtual Func<float, float>? InverseValueFunc { get; set; }
 
     /// <summary>
-    /// Gets or sets the slider direction.
+    /// Gets or sets the slider orientation.
     /// </summary>
     [Category(CategoryLayout)]
     public new Orientation Orientation { get => (Orientation)GetPropertyValue(OrientationProperty)!; set => SetPropertyValue(OrientationProperty, value); }
+
+    /// <summary>
+    /// Gets or sets the slider texts orientation.
+    /// </summary>
+    [Category(CategoryLayout)]
+    public Orientation TextOrientation { get => (Orientation)GetPropertyValue(TextOrientationProperty)!; set => SetPropertyValue(TextOrientationProperty, value); }
 
     /// <summary>
     /// Gets or sets the duration, in milliseconds, before the value window is automatically hidden.
@@ -422,10 +435,6 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
             Text = GetValueString(SliderValueContext.MaxValue, MaxValue),
             Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
-
-            // vertical text would be configured like this
-            //ReadingDirection = DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM,
-            //FlowDirection = DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT
         };
         return tb;
     }
@@ -439,8 +448,8 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         return null!;
         //var cv = new Border
         //{
-        //    HorizontalAlignment = Alignment.Near,
-        //    VerticalAlignment = Alignment.Far,
+        //    Width = 50,
+        //    Height = 50
         //};
 
         //cv.DoWhenAttachedToComposition(() => cv.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()));
@@ -596,6 +605,25 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// <returns>true if the conversion was successful; otherwise, false.</returns>
     public virtual bool TryConvertFromSingle(float value, [NotNullWhen(true)] out T? result) => Conversions.TryChangeType(value, out result);
 
+    /// <summary>
+    /// Adjusts the alignments of the element based on its current orientation. When the orientation is horizontal, sets
+    /// the vertical alignment to center and the horizontal alignment to stretch; when vertical, sets the vertical
+    /// alignment to stretch and the horizontal alignment to center.
+    /// </summary>
+    protected virtual void SetAlignments()
+    {
+        if (Orientation == Orientation.Horizontal)
+        {
+            VerticalAlignment = Alignment.Center;
+            HorizontalAlignment = Alignment.Stretch;
+        }
+        else
+        {
+            VerticalAlignment = Alignment.Stretch;
+            HorizontalAlignment = Alignment.Center;
+        }
+    }
+
     /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
     {
@@ -611,7 +639,25 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
             {
                 dock.SetDockTypesAndAlignments();
             }
+
+            SetAlignments();
             return true;
+        }
+
+        if (property == TextOrientationProperty)
+        {
+            var orientation = (Orientation)value!;
+            if (MinValueVisual is TextBox minTb)
+            {
+                minTb.ReadingDirection = orientation == Orientation.Horizontal ? DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_LEFT_TO_RIGHT : DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM;
+                minTb.FlowDirection = orientation == Orientation.Horizontal ? DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_TOP_TO_BOTTOM : DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT;
+            }
+
+            if (MaxValueVisual is TextBox maxTb)
+            {
+                maxTb.ReadingDirection = orientation == Orientation.Horizontal ? DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_LEFT_TO_RIGHT : DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM;
+                maxTb.FlowDirection = orientation == Orientation.Horizontal ? DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_TOP_TO_BOTTOM : DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT;
+            }
         }
 
         return true;
@@ -817,18 +863,32 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
 
         if (Orientation == Orientation.Horizontal)
         {
-            //TicksVisual?.Height = boxSize;
-            if (Height.IsNotSet())
+            if (Height.IsNotSet() && VerticalAlignment != Alignment.Stretch)
             {
                 Height = boxSize;
+            }
+
+            if (TicksVisual != null)
+            {
+                if (TicksVisual.Height.IsNotSet())
+                {
+                    TicksVisual.Height = Height;
+                }
             }
         }
         else
         {
-            //TicksVisual?.Width = boxSize;
-            if (Width.IsNotSet())
+            if (Width.IsNotSet() && HorizontalAlignment != Alignment.Stretch)
             {
                 Width = boxSize;
+            }
+
+            if (TicksVisual != null)
+            {
+                if (TicksVisual.Width.IsNotSet())
+                {
+                    TicksVisual.Width = Width;
+                }
             }
         }
 
