@@ -168,14 +168,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 #if DEBUG
             TicksVisual.Name = nameof(TicksVisual);
 #endif
-            if (orientation == Orientation.Horizontal)
-            {
-                SetDockType(TicksVisual, DockType.Bottom);
-            }
-            else
-            {
-                SetDockType(TicksVisual, DockType.Right);
-            }
             Children.Add(TicksVisual);
         }
     }
@@ -479,11 +471,22 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     protected virtual Visual CreateTicksVisual()
     {
         return null!;
-        //var cv = new Canvas
+        //var cv = new Border
         //{
-        //    HorizontalAlignment = Alignment.Center,
-        //    VerticalAlignment = Alignment.Center,
+        //    HorizontalAlignment = Alignment.Near,
+        //    VerticalAlignment = Alignment.Far,
         //};
+
+        //cv.DoWhenAttachedToComposition(() => cv.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()));
+
+        //if (Orientation == Orientation.Horizontal)
+        //{
+        //    SetDockType(cv, DockType.Bottom);
+        //}
+        //else
+        //{
+        //    SetDockType(cv, DockType.Right);
+        //}
         //return cv;
     }
 
@@ -693,12 +696,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <inheritdoc />
     protected override void Render()
     {
-        //if (TicksVisual != null)
-        //{
-        //    TicksVisual.RenderOffset = new Vector3(-MinTrackVisual.CompositionVisual.Size.X - Thumb.CompositionVisual.Size.X - MaxValueVisual.CompositionVisual.Size.X, 20, 0);
-        //    TicksVisual.CompositionVisual.Size = CompositionVisual.Size;
-        //}
-
         base.Render();
 
         if (Compositor == null)
@@ -818,13 +815,11 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
             {
                 MinTrackVisual?.Width = minTrackSize;
                 MaxTrackVisual?.Width = maxTrackSize;
-                //TicksVisual?.Width = minTrackSize + Thumb.GetDesiredWidthIfSet() + maxTrackSize;
             }
             else
             {
                 MinTrackVisual?.Height = minTrackSize;
                 MaxTrackVisual?.Height = maxTrackSize;
-                //TicksVisual?.Height = minTrackSize + Thumb.GetDesiredHeightIfSet() + maxTrackSize;
             }
         }
 
@@ -932,12 +927,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         var theme = GetWindowTheme();
         var boxSize = theme.BoxSize;
 
-        //if (TicksVisual != null)
-        //{
-        //    ClipChildren = false;
-        //    ClipFromParent = false;
-        //}
-
         if (Orientation == Orientation.Horizontal)
         {
             //TicksVisual?.Height = boxSize;
@@ -952,7 +941,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         if (Thumb != null)
         {
             Thumb.Height = boxSize;
-            Thumb.Width = boxSize * 4;
+            Thumb.Width = boxSize;
         }
 
         if (Thumb is RoundedRectangle rr)

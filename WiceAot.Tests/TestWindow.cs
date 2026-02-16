@@ -86,7 +86,7 @@ internal partial class TestWindow : Window
 
         public MyDock()
         {
-            ClipChildren = false;
+            //ClipChildren = false;
             //dock.ClipFromParent = false;
 
             Height = 100;

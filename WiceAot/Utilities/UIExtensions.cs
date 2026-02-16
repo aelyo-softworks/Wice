@@ -132,6 +132,78 @@ public static class UIExtensions
     }
 
     /// <summary>
+    /// Returns the arranged left of the specified visual element if it is set and the element is visible.
+    /// </summary>
+    /// <returns>The arranged left of the visual if it is set and the visual is visible; otherwise, 0.</returns>
+    public static float GetArrangedLeftIfSet(this Visual? visual)
+    {
+        if (visual == null || !visual.IsVisible)
+            return 0;
+
+        return visual.ArrangedRect.left.ToZeroIfNotSet();
+    }
+
+    /// <summary>
+    /// Returns the arranged top of the specified visual element if it is set and the element is visible.
+    /// </summary>
+    /// <returns>The arranged top of the visual if it is set and the visual is visible; otherwise, 0.</returns>
+    public static float GetArrangedTopIfSet(this Visual? visual)
+    {
+        if (visual == null || !visual.IsVisible)
+            return 0;
+
+        return visual.ArrangedRect.top.ToZeroIfNotSet();
+    }
+
+    /// <summary>
+    /// Returns the arranged right of the specified visual element if it is set and the element is visible.
+    /// </summary>
+    /// <returns>The arranged right of the visual if it is set and the visual is visible; otherwise, 0.</returns>
+    public static float GetArrangedRightIfSet(this Visual? visual)
+    {
+        if (visual == null || !visual.IsVisible)
+            return 0;
+
+        return visual.ArrangedRect.right.ToZeroIfNotSet();
+    }
+
+    /// <summary>
+    /// Returns the arranged bottom of the specified visual element if it is set and the element is visible.
+    /// </summary>
+    /// <returns>The arranged bottom of the visual if it is set and the visual is visible; otherwise, 0.</returns>
+    public static float GetArrangedBottomIfSet(this Visual? visual)
+    {
+        if (visual == null || !visual.IsVisible)
+            return 0;
+
+        return visual.ArrangedRect.bottom.ToZeroIfNotSet();
+    }
+
+    /// <summary>
+    /// Returns the arranged width of the specified visual element if it is set and the element is visible.
+    /// </summary>
+    /// <returns>The arranged width of the visual if it is set and the visual is visible; otherwise, 0.</returns>
+    public static float GetArrangedWidthIfSet(this Visual? visual)
+    {
+        if (visual == null || !visual.IsVisible)
+            return 0;
+
+        return visual.ArrangedRect.Width.ToZeroIfNotSet();
+    }
+
+    /// <summary>
+    /// Returns the arranged height of the specified visual element if it is set and the element is visible.
+    /// </summary>
+    /// <returns>The arranged height of the visual if it is set and the visual is visible; otherwise, 0.</returns>
+    public static float GetArrangedHeightIfSet(this Visual? visual)
+    {
+        if (visual == null || !visual.IsVisible)
+            return 0;
+
+        return visual.ArrangedRect.Height.ToZeroIfNotSet();
+    }
+
+    /// <summary>
     /// Returns the desired width of the specified visual element if it is set and the element is visible.
     /// </summary>
     /// <returns>The desired width of the visual if it is set and the visual is visible; otherwise, 0.</returns>
