@@ -173,7 +173,9 @@ internal partial class TestWindow : Window
     {
         //EnableMouseEventTraces = true;
         //var sl1 = new HorizontalSlider<float> { Margin = 10, Value = .33f };
-        var sl1 = new HorizontalSlider<int> { Margin = 10, Value = 0, MinValue = 0, MaxValue = 1000 };
+        var sl1 = new Slider<int> { Margin = 10, Value = 0, MinValue = 0, MaxValue = 1000 };
+        //sl1.Orientation = Orientation.Vertical;
+        //sl1.Width = 200;
 
         //var sl1 = new VerticalSlider<int> { Margin = 10, Value = 10 };
         //var sl1 = new EllipseSlider { Margin = 10, Value = 1 };
@@ -197,7 +199,7 @@ internal partial class TestWindow : Window
         Children.Add(sl1);
     }
 
-    private sealed class EllipseSlider : HorizontalSlider<int>
+    private sealed class EllipseSlider : Slider<int>
     {
         protected override Visual CreateThumb()
         {

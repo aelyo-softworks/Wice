@@ -14,7 +14,7 @@ public class BaseSliderEditorCreator<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Tn>(Orientation orientation) : IEditorCreator<T> where Tn : INumber<Tn>, IMinMaxValue<Tn>
 {
-    private readonly BaseSlider<Tn> _slider = new(orientation);
+    private readonly Slider<Tn> _slider = new() { Orientation = orientation };
 
     /// <inheritdoc/>
     public object? CreateEditor(PropertyValueVisual<T> value) => _slider;

@@ -6,37 +6,44 @@
 /// otherwise you should override at least the TryConvertToSingle and TryConvertFromSingle methods.
 /// </summary>
 /// <typeparam name="T">The type of the value that the slider can represent, constrained to types that implement the INumber interface.</typeparam>
-public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] T> : Dock, IValueable where T : INumber<T>, IMinMaxValue<T>
+public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] T> : Stack, IValueable where T : INumber<T>, IMinMaxValue<T>
 {
     /// <summary>
     /// Dynamic property descriptor for <see cref="Value"/>.
     /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
     /// </summary>
-    public static VisualProperty ValueProperty { get; } = VisualProperty.Add(typeof(BaseSlider<T>), nameof(Value), VisualPropertyInvalidateModes.Measure, T.Zero, changed: OnValueChanged);
+    public static VisualProperty ValueProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(Value), VisualPropertyInvalidateModes.Measure, T.Zero, changed: OnValueChanged);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="Step"/>.
     /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
     /// Default value is determined by the type T, with floating-point types defaulting to 0.1 and other numeric types defaulting to 1.
     /// </summary>
-    public static VisualProperty StepProperty { get; } = VisualProperty.Add(typeof(BaseSlider<T>), nameof(Step), VisualPropertyInvalidateModes.Render, GetDefaultStepValue(), changed: OnMinValueChanged);
+    public static VisualProperty StepProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(Step), VisualPropertyInvalidateModes.Render, GetDefaultStepValue(), changed: OnMinValueChanged);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="MinValue"/>.
     /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
     /// </summary>
-    public static VisualProperty MinValueProperty { get; } = VisualProperty.Add(typeof(BaseSlider<T>), nameof(MinValue), VisualPropertyInvalidateModes.Measure, T.Zero, changed: OnMinValueChanged);
+    public static VisualProperty MinValueProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(MinValue), VisualPropertyInvalidateModes.Measure, T.Zero, changed: OnMinValueChanged);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="MaxValue"/>.
     /// Changing this property invalidates rendering (<see cref="VisualPropertyInvalidateModes.Render"/>).
     /// Default value is determined by the type T, with numeric types defaulting to 100 (integer types) or 1 (floating types), and other types defaulting to T.MaxValue.
     /// </summary>
-    public static VisualProperty MaxValueProperty { get; } = VisualProperty.Add(typeof(BaseSlider<T>), nameof(MaxValue), VisualPropertyInvalidateModes.Measure, GetDefaultMaxValue(), changed: OnMaxValueChanged);
+    public static VisualProperty MaxValueProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(MaxValue), VisualPropertyInvalidateModes.Measure, GetDefaultMaxValue(), changed: OnMaxValueChanged);
 
-    private static void OnValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((BaseSlider<T>)obj).OnValueChanged();
-    private static void OnMinValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((BaseSlider<T>)obj).OnMinValueChanged();
-    private static void OnMaxValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((BaseSlider<T>)obj).OnMaxValueChanged();
+    /// <summary>
+    /// Attached property backing <see cref="Orientation"/>.
+    /// Default: <see cref="Orientation.Vertical"/>. Triggers a new measure pass on change.
+    /// </summary>
+    // note the name *must* be different than base class name
+    public static new VisualProperty OrientationProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(Slider<>) + nameof(Orientation), VisualPropertyInvalidateModes.Measure, Orientation.Horizontal);
+
+    private static void OnValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnValueChanged();
+    private static void OnMinValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnMinValueChanged();
+    private static void OnMaxValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnMaxValueChanged();
 
     private static T GetDefaultMaxValue()
     {
@@ -105,61 +112,68 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// Initializes a new instance of the Slider class and sets up the visual elements representing the minimum and
     /// maximum values, as well as the track visuals.
     /// </summary>
-    /// <param name="orientation">The orientation of the slider, which determines the layout of the visuals and the direction of value changes.</param>
-    public BaseSlider(Orientation orientation)
+    public Slider()
     {
-        Orientation = orientation;
         IsFocusable = true;
-        MinValueVisual = CreateMinValueVisual();
-        if (MinValueVisual != null)
+        SliderVisual = CreateSliderDock();
+        if (SliderVisual != null)
         {
 #if DEBUG
-            MinValueVisual.Name = nameof(MinValueVisual);
+            SliderVisual.Name = nameof(SliderVisual);
 #endif
-            Children.Add(MinValueVisual);
-        }
+            Children.Add(SliderVisual);
 
-        MinTrackVisual = CreateMinTrackVisual();
-        if (MinTrackVisual != null)
-        {
-#if DEBUG
-            MinTrackVisual.Name = nameof(MinTrackVisual);
-#endif
-            Children.Add(MinTrackVisual);
-        }
-
-        Thumb = CreateThumb();
-        if (Thumb != null)
-        {
-#if DEBUG
-            Thumb.Name = nameof(Thumb);
-#endif
-            Children.Add(Thumb);
-
-            if (Thumb is IThumb th)
+            MinValueVisual = CreateMinValueVisual();
+            if (MinValueVisual != null)
             {
-                th.DragDelta += OnThumbDragDelta;
-                th.DragStarted += OnThumbDragStarted;
-                th.DragCompleted += OnThumbDragCompleted;
+#if DEBUG
+                MinValueVisual.Name = nameof(MinValueVisual);
+#endif
+                SliderVisual.Children.Add(MinValueVisual);
             }
-        }
 
-        MaxValueVisual = CreateMaxValueVisual();
-        if (MaxValueVisual != null)
-        {
+            MinTrackVisual = CreateMinTrackVisual();
+            if (MinTrackVisual != null)
+            {
 #if DEBUG
-            MaxValueVisual.Name = nameof(MaxValueVisual);
+                MinTrackVisual.Name = nameof(MinTrackVisual);
 #endif
-            Children.Add(MaxValueVisual);
-        }
+                SliderVisual.Children.Add(MinTrackVisual);
+            }
 
-        MaxTrackVisual = CreateMaxTrackVisual();
-        if (MaxTrackVisual != null)
-        {
+            Thumb = CreateThumb();
+            if (Thumb != null)
+            {
 #if DEBUG
-            MaxTrackVisual.Name = nameof(MaxTrackVisual);
+                Thumb.Name = nameof(Thumb);
 #endif
-            Children.Add(MaxTrackVisual);
+                SliderVisual.Children.Add(Thumb);
+
+                if (Thumb is IThumb th)
+                {
+                    th.DragDelta += OnThumbDragDelta;
+                    th.DragStarted += OnThumbDragStarted;
+                    th.DragCompleted += OnThumbDragCompleted;
+                }
+            }
+
+            MaxValueVisual = CreateMaxValueVisual();
+            if (MaxValueVisual != null)
+            {
+#if DEBUG
+                MaxValueVisual.Name = nameof(MaxValueVisual);
+#endif
+                SliderVisual.Children.Add(MaxValueVisual);
+            }
+
+            MaxTrackVisual = CreateMaxTrackVisual();
+            if (MaxTrackVisual != null)
+            {
+#if DEBUG
+                MaxTrackVisual.Name = nameof(MaxTrackVisual);
+#endif
+                SliderVisual.Children.Add(MaxTrackVisual);
+            }
         }
 
         TicksVisual = CreateTicksVisual();
@@ -170,13 +184,12 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 #endif
             Children.Add(TicksVisual);
         }
-    }
 
-    /// <summary>
-    /// Gets the visual direction.
-    /// </summary>
-    [Category(CategoryLayout)]
-    public Orientation Orientation { get; }
+        if (SliderVisual is SliderDock dock)
+        {
+            dock.SetDockTypesAndAlignments();
+        }
+    }
 
     /// <summary>
     /// Gets or sets whether the visual sizes itself based on theme metrics on DPI/theme changes.
@@ -216,6 +229,12 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     public virtual Func<float, float>? InverseValueFunc { get; set; }
 
     /// <summary>
+    /// Gets or sets the slider direction.
+    /// </summary>
+    [Category(CategoryLayout)]
+    public new Orientation Orientation { get => (Orientation)GetPropertyValue(OrientationProperty)!; set => SetPropertyValue(OrientationProperty, value); }
+
+    /// <summary>
     /// Gets or sets the duration, in milliseconds, before the value window is automatically hidden.
     /// </summary>
     [Category(CategoryBehavior)]
@@ -228,7 +247,7 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     public string? ValueStringFormat { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether a window displaying the current value is shown when the control is
+    /// Gets or sets a value indicating whether a window displaying the current value is shown when the visual is
     /// hovered over.
     /// </summary>
     [Category(CategoryBehavior)]
@@ -265,6 +284,13 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// </summary>
     [Category(CategoryBehavior)]
     public T MaxValue { get => (T)GetPropertyValue(MaxValueProperty)!; set => SetPropertyValue(MaxValueProperty, value); }
+
+    /// <summary>
+    /// Gets the visual representation associated with the slider.
+    /// By default, this is the visual that contains all other visuals for the slider, except the ticks visual.
+    /// </summary>
+    [Browsable(false)]
+    public Visual? SliderVisual { get; }
 
     /// <summary>
     /// Gets the visual representation associated with the minimum value of the visual.
@@ -326,55 +352,35 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     }
 
     /// <summary>
+    /// Creates a new visual element that represents the slider component for the current context.
+    /// </summary>
+    /// <returns>A <see cref="SliderDock "/> instance that provides the visual representation of the slider.</returns>
+    protected virtual Visual CreateSliderDock() => new SliderDock(this);
+
+    /// <summary>
     /// Creates a visual representation of the minimum value. By default, it's using a TextBox visual.
     /// </summary>
-    /// <remarks>This method is intended to be overridden in derived classes to provide custom visualizations
-    /// of the minimum value. The returned visual can be styled or modified further as needed.</remarks>
     /// <returns>A visual displaying the minimum value as text.</returns>
     protected virtual Visual CreateMinValueVisual()
     {
         var tb = new TextBox
         {
             Text = GetValueString(SliderValueContext.MinValue, MinValue),
-            HorizontalAlignment = Alignment.Near,
-            VerticalAlignment = Alignment.Near,
             Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER
         };
-
-        if (Orientation == Orientation.Horizontal)
-        {
-            SetDockType(tb, DockType.Left);
-        }
-        else
-        {
-            SetDockType(tb, DockType.Top);
-        }
         return tb;
     }
 
     /// <summary>
     /// Creates a visual representation of the minimum track. By default, it's using a RoundedRectangle visual.
     /// </summary>
-    /// <remarks>This method is intended to be overridden in derived classes to provide custom visualizations
-    /// of the minimum track. The returned visual can be styled or modified further as needed.</remarks>
     /// <returns>A visual displaying the minimum track as text.</returns>
     protected virtual Visual CreateMinTrackVisual()
     {
         var rr = new RoundedRectangle
         {
-            HorizontalAlignment = Alignment.Near,
-            VerticalAlignment = Alignment.Center,
         };
-
-        if (Orientation == Orientation.Horizontal)
-        {
-            SetDockType(rr, DockType.Left);
-        }
-        else
-        {
-            SetDockType(rr, DockType.Top);
-        }
         return rr;
     }
 
@@ -382,69 +388,38 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// Creates a new instance of the Thumb visual that is configured to handle drag operations and is vertically
     /// centered.
     /// </summary>
-    /// <remarks>Derived classes can override this method to customize the creation and configuration of the
-    /// Thumb visual. The returned Thumb has its DragDelta event attached to the OnThumbDragDelta handler, enabling
-    /// drag functionality.</remarks>
     /// <returns>A Thumb visual that responds to drag events and is aligned to the vertical center.</returns>
     protected virtual Visual CreateThumb()
     {
         var th = new Thumb
         {
-            HorizontalAlignment = Alignment.Near,
-            VerticalAlignment = Alignment.Near,
             IsFocusable = false,
             ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, Value?.ToString() ?? string.Empty)
         };
-
-        if (Orientation == Orientation.Horizontal)
-        {
-            SetDockType(th, DockType.Left);
-        }
-        else
-        {
-            SetDockType(th, DockType.Top);
-        }
         return th;
     }
 
     /// <summary>
     /// Creates a visual representation of the maximum track. By default, it's using a RoundedRectangle visual.
     /// </summary>
-    /// <remarks>This method is intended to be overridden in derived classes to provide custom visualizations
-    /// of the maximum track. The returned visual can be styled or modified further as needed.</remarks>
     /// <returns>A visual displaying the maximum track as text.</returns>
     protected virtual Visual CreateMaxTrackVisual()
     {
         var rr = new RoundedRectangle
         {
-            HorizontalAlignment = Alignment.Far,
-            VerticalAlignment = Alignment.Center,
         };
-
-        if (Orientation == Orientation.Horizontal)
-        {
-            SetDockType(rr, DockType.Right);
-        }
-        else
-        {
-            SetDockType(rr, DockType.Bottom);
-        }
         return rr;
     }
 
     /// <summary>
     /// Creates a visual representation of the maximum value. By default, it's using a TextBox visual.
     /// </summary>
-    /// <remarks>This method is intended to be overridden in derived classes to provide custom visualizations
-    /// of the maximum value. The returned visual can be styled or modified further as needed.</remarks>
     /// <returns>A visual displaying the maximum value as text.</returns>
     protected virtual Visual CreateMaxValueVisual()
     {
         var tb = new TextBox
         {
             Text = GetValueString(SliderValueContext.MaxValue, MaxValue),
-            HorizontalAlignment = Alignment.Far,
-            VerticalAlignment = Alignment.Near,
             Alignment = DWRITE_TEXT_ALIGNMENT.DWRITE_TEXT_ALIGNMENT_CENTER,
             ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
 
@@ -452,15 +427,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
             //ReadingDirection = DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM,
             //FlowDirection = DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT
         };
-
-        if (Orientation == Orientation.Horizontal)
-        {
-            SetDockType(tb, DockType.Right);
-        }
-        else
-        {
-            SetDockType(tb, DockType.Bottom);
-        }
         return tb;
     }
 
@@ -479,14 +445,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 
         //cv.DoWhenAttachedToComposition(() => cv.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()));
 
-        //if (Orientation == Orientation.Horizontal)
-        //{
-        //    SetDockType(cv, DockType.Bottom);
-        //}
-        //else
-        //{
-        //    SetDockType(cv, DockType.Right);
-        //}
         //return cv;
     }
 
@@ -538,9 +496,9 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     }
 
     /// <summary>
-    /// Invoked when a drag operation on the thumb control is completed.
+    /// Invoked when a drag operation on the thumb visual is completed.
     /// </summary>
-    /// <param name="sender">The source of the event, typically the thumb control that was dragged.</param>
+    /// <param name="sender">The source of the event, typically the thumb visual that was dragged.</param>
     /// <param name="e">An object that contains the event data.</param>
     protected virtual void OnThumbDragCompleted(object? sender, EventArgs e) => CloseValueWindow();
 
@@ -637,6 +595,27 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <param name="result">When this method returns, contains the converted value if the conversion succeeded; otherwise, null.</param>
     /// <returns>true if the conversion was successful; otherwise, false.</returns>
     public virtual bool TryConvertFromSingle(float value, [NotNullWhen(true)] out T? result) => Conversions.TryChangeType(value, out result);
+
+    /// <inheritdoc/>
+    protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
+    {
+        if (!base.SetPropertyValue(property, value, options))
+            return false;
+
+        // slider orientation is inverted because the default slider dock layout is vertical, so when orientation is vertical we want to use horizontal layout and vice versa
+        if (property == OrientationProperty)
+        {
+            var orientation = (Orientation)value!;
+            base.Orientation = orientation == Orientation.Horizontal ? Orientation.Vertical : Orientation.Horizontal;
+            if (SliderVisual is SliderDock dock)
+            {
+                dock.SetDockTypesAndAlignments();
+            }
+            return true;
+        }
+
+        return true;
+    }
 
     /// <inheritdoc/>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
@@ -738,94 +717,6 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         return tb.ReadingDirection is DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM or DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_BOTTOM_TO_TOP;
     }
 
-    /// <inheritdoc />
-    protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
-    {
-        // handle texts verticality to properly measure width and height, since vertical text would swap those
-        var width = Width;
-        var height = Height;
-        if (MinValueVisual != null)
-        {
-            MinValueVisual.Measure(constraint);
-            if (!IsVerticalText(MinValueVisual))
-            {
-                var w = MinValueVisual.GetDesiredWidthIfSet();
-                if (w > width)
-                {
-                    width = w;
-                }
-            }
-            else
-            {
-                var h = MinValueVisual.GetDesiredHeightIfSet();
-                if (h > height)
-                {
-                    height = h;
-                }
-            }
-        }
-
-        if (MaxValueVisual != null)
-        {
-            MaxValueVisual.Measure(constraint);
-            if (!IsVerticalText(MaxValueVisual))
-            {
-                var w = MaxValueVisual.GetDesiredWidthIfSet();
-                if (w > width)
-                {
-                    width = w;
-                }
-            }
-            else
-            {
-                var h = MaxValueVisual.GetDesiredHeightIfSet();
-                if (h > height)
-                {
-                    height = h;
-                }
-            }
-        }
-        Width = width;
-        Height = height;
-
-        // determine track sizes based on value position
-        if (TryConvertToSingle(MaxValue - MinValue, out var range) &&
-            range != 0 &&
-            TryConvertToSingle(MinValue, out var minValue) &&
-            TryConvertToSingle(Value, out var value))
-        {
-            MinValueVisual?.Measure(constraint);
-            MaxValueVisual?.Measure(constraint);
-            Thumb?.Measure(constraint);
-
-            float totalTrackSize;
-            if (Orientation == Orientation.Horizontal)
-            {
-                totalTrackSize = constraint.width - MinValueVisual.GetDesiredWidthIfSet() - MaxValueVisual.GetDesiredWidthIfSet() - Thumb.GetDesiredWidthIfSet();
-            }
-            else
-            {
-                totalTrackSize = constraint.height - MinValueVisual.GetDesiredHeightIfSet() - MaxValueVisual.GetDesiredHeightIfSet() - Thumb.GetDesiredHeightIfSet();
-            }
-
-            var minTrackSize = Math.Max(0, totalTrackSize * (value - minValue) / range);
-            var maxTrackSize = Math.Max(0, totalTrackSize - minTrackSize);
-
-            if (Orientation == Orientation.Horizontal)
-            {
-                MinTrackVisual?.Width = minTrackSize;
-                MaxTrackVisual?.Width = maxTrackSize;
-            }
-            else
-            {
-                MinTrackVisual?.Height = minTrackSize;
-                MaxTrackVisual?.Height = maxTrackSize;
-            }
-        }
-
-        return base.MeasureCore(constraint);
-    }
-
     private void OnValueChanged()
     {
         // avoid oscillating between min and max when they are set to invalid values (stack overflow)
@@ -921,95 +812,345 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
     /// <param name="e">Theme/DPI event args.</param>
     protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
-        if (!AutoSize)
-            return;
-
         var theme = GetWindowTheme();
         var boxSize = theme.BoxSize;
 
         if (Orientation == Orientation.Horizontal)
         {
             //TicksVisual?.Height = boxSize;
-            Height = boxSize;
+            if (Height.IsNotSet())
+            {
+                Height = boxSize;
+            }
         }
         else
         {
             //TicksVisual?.Width = boxSize;
-            Width = boxSize;
+            if (Width.IsNotSet())
+            {
+                Width = boxSize;
+            }
         }
 
         if (Thumb != null)
         {
-            Thumb.Height = boxSize;
-            Thumb.Width = boxSize;
+            if (Thumb.Height.IsNotSet())
+            {
+                Thumb.Height = boxSize;
+            }
+
+            if (Thumb.Width.IsNotSet())
+            {
+                Thumb.Width = boxSize;
+            }
         }
 
-        if (Thumb is RoundedRectangle rr)
+        if (AutoSize)
         {
-            rr.CornerRadius = new Vector2(theme.RoundedButtonCornerRadius);
+            if (Thumb is RoundedRectangle rr)
+            {
+                rr.CornerRadius = new Vector2(theme.RoundedButtonCornerRadius);
+            }
+
+            if (MinValueVisual != null)
+            {
+                if (Orientation == Orientation.Horizontal)
+                {
+                    MinValueVisual.Margin = D2D_RECT_F.Thickness(0, 0, theme.SliderPadding, 0);
+                }
+                else
+                {
+                    MinValueVisual.Margin = D2D_RECT_F.Thickness(0, 0, 0, theme.SliderPadding);
+                }
+            }
+
+            if (MaxValueVisual != null)
+            {
+                if (Orientation == Orientation.Horizontal)
+                {
+                    MaxValueVisual.Margin = D2D_RECT_F.Thickness(theme.SliderPadding, 0, 0, 0);
+                }
+                else
+                {
+                    MaxValueVisual.Margin = D2D_RECT_F.Thickness(0, theme.SliderPadding, 0, 0);
+                }
+            }
+
+            if (MinTrackVisual is RoundedRectangle minR)
+            {
+                minR.CornerRadius = new Vector2(theme.RoundedButtonCornerRadius);
+            }
+
+            if (MinTrackVisual != null)
+            {
+                if (Orientation == Orientation.Horizontal)
+                {
+                    MinTrackVisual.Height = boxSize / 2;
+                    MinTrackVisual.RenderOffset = new Vector3(theme.RoundedButtonCornerRadius, 0, 0);
+                }
+                else
+                {
+                    MinTrackVisual.Width = boxSize / 2;
+                    MinTrackVisual.RenderOffset = new Vector3(0, theme.RoundedButtonCornerRadius, 0);
+                }
+
+                // to be consistent with max track
+                MinTrackVisual.ZIndex = -1;
+            }
+
+            if (MaxTrackVisual is RoundedRectangle maxR)
+            {
+                maxR.CornerRadius = new Vector2(theme.RoundedButtonCornerRadius);
+            }
+
+            if (MaxTrackVisual != null)
+            {
+
+                // we don't want to see the rounded corner on the top side of the max track,
+                // so we offset it to the top by the corner radius and set ZIndex to -1 to render it behind the thumb
+                if (Orientation == Orientation.Horizontal)
+                {
+                    MaxTrackVisual.Height = boxSize / 2;
+                    MaxTrackVisual.RenderOffset = new Vector3(-theme.RoundedButtonCornerRadius, 0, 0);
+                }
+                else
+                {
+                    MaxTrackVisual.Width = boxSize / 2;
+                    MaxTrackVisual.RenderOffset = new Vector3(0, -theme.RoundedButtonCornerRadius, 0);
+                }
+
+                MaxTrackVisual.ZIndex = -1;
+            }
         }
 
-        if (MinValueVisual is TextBox minTb)
+        if (MinTrackVisual != null)
         {
             if (Orientation == Orientation.Horizontal)
             {
-                minTb.Margin = D2D_RECT_F.Thickness(0, 0, theme.SliderPadding, 0);
+                if (MinTrackVisual.Height.IsNotSet())
+                {
+                    MinTrackVisual.Height = boxSize / 2;
+                }
             }
             else
             {
-                minTb.Margin = D2D_RECT_F.Thickness(0, 0, 0, theme.SliderPadding);
+                if (MinTrackVisual.Width.IsNotSet())
+                {
+                    MinTrackVisual.Width = boxSize / 2;
+                }
             }
         }
 
-        if (MaxValueVisual is TextBox maxTb)
+        if (MaxTrackVisual != null)
         {
             if (Orientation == Orientation.Horizontal)
             {
-                maxTb.Margin = D2D_RECT_F.Thickness(theme.SliderPadding, 0, 0, 0);
+                if (MaxTrackVisual.Height.IsNotSet())
+                {
+                    MaxTrackVisual.Height = boxSize / 2;
+                }
             }
             else
             {
-                maxTb.Margin = D2D_RECT_F.Thickness(0, theme.SliderPadding, 0, 0);
+                if (MaxTrackVisual.Width.IsNotSet())
+                {
+                    MaxTrackVisual.Width = boxSize / 2;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Represents a dock visual that integrates a slider for selecting a value within a specified range.
+    /// </summary>
+    protected partial class SliderDock : Dock
+    {
+        /// <summary>
+        /// Initializes a new instance of the SliderDock class with the specified slider.
+        /// </summary>
+        public SliderDock(Slider<T> slider)
+        {
+            ArgumentNullException.ThrowIfNull(slider);
+            Slider = slider;
+        }
+
+        /// <summary>
+        /// Gets the slider visual that enables selection of a value within a specified range.
+        /// </summary>
+        public Slider<T> Slider { get; }
+
+        private Orientation Orientation => Slider.Orientation;
+
+        /// <summary>
+        /// Configures the docking positions of the slider's visual components based on the current orientation.
+        /// </summary>
+        public virtual void SetDockTypesAndAlignments()
+        {
+            if (Orientation == Orientation.Horizontal)
+            {
+                if (Slider.MinValueVisual != null)
+                {
+                    SetDockType(Slider.MinValueVisual, DockType.Left);
+                    Slider.MinValueVisual.HorizontalAlignment = Alignment.Near;
+                    Slider.MinValueVisual.VerticalAlignment = Alignment.Center;
+                }
+
+                if (Slider.MinTrackVisual != null)
+                {
+                    SetDockType(Slider.MinTrackVisual, DockType.Left);
+                    Slider.MinTrackVisual.HorizontalAlignment = Alignment.Near;
+                    Slider.MinTrackVisual.VerticalAlignment = Alignment.Center;
+                }
+
+                if (Slider.Thumb != null)
+                {
+                    SetDockType(Slider.Thumb, DockType.Left);
+                    Slider.Thumb.HorizontalAlignment = Alignment.Near;
+                    Slider.Thumb.VerticalAlignment = Alignment.Center;
+                }
+
+                if (Slider.MaxValueVisual != null)
+                {
+                    SetDockType(Slider.MaxValueVisual, DockType.Right);
+                    Slider.MaxValueVisual.HorizontalAlignment = Alignment.Far;
+                    Slider.MaxValueVisual.VerticalAlignment = Alignment.Center;
+                }
+
+                if (Slider.MaxTrackVisual != null)
+                {
+                    SetDockType(Slider.MaxTrackVisual, DockType.Right);
+                    Slider.MaxTrackVisual.HorizontalAlignment = Alignment.Far;
+                    Slider.MaxTrackVisual.VerticalAlignment = Alignment.Center;
+                }
+            }
+            else
+            {
+                if (Slider.MinValueVisual != null)
+                {
+                    SetDockType(Slider.MinValueVisual, DockType.Top);
+                    Slider.MinValueVisual.HorizontalAlignment = Alignment.Center;
+                    Slider.MinValueVisual.VerticalAlignment = Alignment.Near;
+                }
+
+                if (Slider.MinTrackVisual != null)
+                {
+                    SetDockType(Slider.MinTrackVisual, DockType.Top);
+                    Slider.MinTrackVisual.HorizontalAlignment = Alignment.Center;
+                    Slider.MinTrackVisual.VerticalAlignment = Alignment.Near;
+                }
+
+                if (Slider.Thumb != null)
+                {
+                    SetDockType(Slider.Thumb, DockType.Top);
+                    Slider.Thumb.HorizontalAlignment = Alignment.Center;
+                    Slider.Thumb.VerticalAlignment = Alignment.Near;
+                }
+
+                if (Slider.MaxValueVisual != null)
+                {
+                    SetDockType(Slider.MaxValueVisual, DockType.Bottom);
+                    Slider.MaxValueVisual.HorizontalAlignment = Alignment.Center;
+                    Slider.MaxValueVisual.VerticalAlignment = Alignment.Far;
+                }
+
+                if (Slider.MaxTrackVisual != null)
+                {
+                    SetDockType(Slider.MaxTrackVisual, DockType.Bottom);
+                    Slider.MaxTrackVisual.HorizontalAlignment = Alignment.Center;
+                    Slider.MaxTrackVisual.VerticalAlignment = Alignment.Far;
+                }
             }
         }
 
-        if (MinTrackVisual is RoundedRectangle minR)
+        /// <inheritdoc />
+        protected override D2D_SIZE_F MeasureCore(D2D_SIZE_F constraint)
         {
-            minR.CornerRadius = new Vector2(theme.RoundedButtonCornerRadius);
-
-            if (Orientation == Orientation.Horizontal)
+            // handle texts verticality to properly measure width and height, since vertical text would swap those
+            var width = Width;
+            var height = Height;
+            if (Slider.MinValueVisual != null)
             {
-                minR.Height = boxSize / 2;
-                minR.RenderOffset = new Vector3(theme.RoundedButtonCornerRadius, 0, 0);
-            }
-            else
-            {
-                minR.Width = boxSize / 2;
-                minR.RenderOffset = new Vector3(0, theme.RoundedButtonCornerRadius, 0);
-            }
-
-            // to be consistent with max track
-            minR.ZIndex = -1;
-        }
-
-        if (MaxTrackVisual is RoundedRectangle maxR)
-        {
-            maxR.CornerRadius = new Vector2(theme.RoundedButtonCornerRadius);
-
-            // we don't want to see the rounded corner on the top side of the max track,
-            // so we offset it to the top by the corner radius and set ZIndex to -1 to render it behind the thumb
-            if (Orientation == Orientation.Horizontal)
-            {
-                maxR.Height = boxSize / 2;
-                maxR.RenderOffset = new Vector3(-theme.RoundedButtonCornerRadius, 0, 0);
-            }
-            else
-            {
-                maxR.Width = boxSize / 2;
-                maxR.RenderOffset = new Vector3(0, -theme.RoundedButtonCornerRadius, 0);
+                Slider.MinValueVisual.Measure(constraint);
+                if (!IsVerticalText(Slider.MinValueVisual))
+                {
+                    var w = Slider.MinValueVisual.GetDesiredWidthIfSet();
+                    if (w > width)
+                    {
+                        width = w;
+                    }
+                }
+                else
+                {
+                    var h = Slider.MinValueVisual.GetDesiredHeightIfSet();
+                    if (h > height)
+                    {
+                        height = h;
+                    }
+                }
             }
 
-            maxR.ZIndex = -1;
+            if (Slider.MaxValueVisual != null)
+            {
+                Slider.MaxValueVisual.Measure(constraint);
+                if (!IsVerticalText(Slider.MaxValueVisual))
+                {
+                    var w = Slider.MaxValueVisual.GetDesiredWidthIfSet();
+                    if (w > width)
+                    {
+                        width = w;
+                    }
+                }
+                else
+                {
+                    var h = Slider.MaxValueVisual.GetDesiredHeightIfSet();
+                    if (h > height)
+                    {
+                        height = h;
+                    }
+                }
+            }
+            Width = width;
+            Height = height;
+
+            // determine track sizes based on value position
+            if (Slider.TryConvertToSingle(Slider.MaxValue - Slider.MinValue, out var range) &&
+                range != 0 &&
+                Slider.TryConvertToSingle(Slider.MinValue, out var minValue) &&
+                Slider.TryConvertToSingle(Slider.Value, out var value))
+            {
+                Slider.MinValueVisual?.Measure(constraint);
+                Slider.MaxValueVisual?.Measure(constraint);
+                Slider.Thumb?.Measure(constraint);
+
+                float totalTrackSize;
+                if (Orientation == Orientation.Horizontal)
+                {
+                    totalTrackSize = constraint.width - Slider.MinValueVisual.GetDesiredWidthIfSet() - Slider.MaxValueVisual.GetDesiredWidthIfSet() - Slider.Thumb.GetDesiredWidthIfSet();
+                }
+                else
+                {
+                    totalTrackSize = constraint.height - Slider.MinValueVisual.GetDesiredHeightIfSet() - Slider.MaxValueVisual.GetDesiredHeightIfSet() - Slider.Thumb.GetDesiredHeightIfSet();
+                }
+
+                if (totalTrackSize.IsSet())
+                {
+                    var minTrackSize = Math.Max(0, totalTrackSize * (value - minValue) / range);
+                    var maxTrackSize = Math.Max(0, totalTrackSize - minTrackSize);
+
+                    if (Orientation == Orientation.Horizontal)
+                    {
+                        Slider.MinTrackVisual?.Width = minTrackSize;
+                        Slider.MaxTrackVisual?.Width = maxTrackSize;
+                    }
+                    else
+                    {
+                        Slider.MinTrackVisual?.Height = minTrackSize;
+                        Slider.MaxTrackVisual?.Height = maxTrackSize;
+                    }
+                }
+            }
+
+            return base.MeasureCore(constraint);
         }
     }
 
@@ -1022,10 +1163,10 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
 
         /// <summary>
         /// Initializes a new instance of the SliderValueWindow class, which displays the current value of a slider
-        /// control in a separate window.
+        /// visual in a separate window.
         /// </summary>
-        /// <param name="slider">The slider control associated with this window. Cannot be null.</param>
-        public SliderValueWindow(BaseSlider<T> slider)
+        /// <param name="slider">The slider visual associated with this window. Cannot be null.</param>
+        public SliderValueWindow(Slider<T> slider)
         {
             ArgumentNullException.ThrowIfNull(slider);
             Slider = slider;
@@ -1066,9 +1207,9 @@ public partial class BaseSlider<[DynamicallyAccessedMembers(DynamicallyAccessedM
         }
 
         /// <summary>
-        /// Gets the slider control that enables selection of a value within a specified range.
+        /// Gets the slider visual that enables selection of a value within a specified range.
         /// </summary>
-        public BaseSlider<T> Slider { get; }
+        public Slider<T> Slider { get; }
 
         /// <summary>
         /// Gets the single content visual hosted by the window.
