@@ -396,6 +396,14 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     public Visual? TicksVisual { get; set; }
 
     /// <summary>
+    /// Creates a new Tick instance initialized with the specified value.
+    /// </summary>
+    /// <param name="ticks">The Ticks visual that the Tick instance will be associated with.</param>
+    /// <param name="value">The value to initialize the Tick instance with.</param>
+    /// <returns>A new Tick instance initialized with the provided value.</returns>
+    protected virtual Tick CreateTick(Ticks ticks, T value) => new(ticks, value);
+
+    /// <summary>
     /// Formats the specified value as a string using the defined format or a default format for numeric types.
     /// </summary>
     /// <returns>A string representation of the specified value, formatted according to the defined or default format.</returns>
@@ -434,6 +442,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         {
             Text = GetValueString(SliderValueContext.MinValue, MinValue),
         };
+        tb.CopyFrom(this);
         return tb;
     }
 
@@ -486,6 +495,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         {
             Text = GetValueString(SliderValueContext.MaxValue, MaxValue),
         };
+        tb.CopyFrom(this);
         return tb;
     }
 
@@ -1421,6 +1431,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
             {
                 Text = Slider.GetValueString(SliderValueContext.Tick, Value),
             };
+            tb.CopyFrom(Slider);
             return tb;
         }
 
@@ -1504,13 +1515,6 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         public Slider<T> Slider { get; }
 
         /// <summary>
-        /// Creates a new Tick instance initialized with the specified value.
-        /// </summary>
-        /// <param name="value">The value to initialize the Tick instance with.</param>
-        /// <returns>A new Tick instance initialized with the provided value.</returns>
-        protected virtual Tick CreateTick(T value) => new(this, value);
-
-        /// <summary>
         /// Applies automatic sizing based on current theme metrics when <see cref="AutoSize"/> is true.
         /// </summary>
         /// <param name="sender">Event source (window).</param>
@@ -1571,6 +1575,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
                 foreach (var tick in Children.OfType<Tick>())
                 {
                     UpdateTickPosition(tick, range);
+                    tick.UpdateStyle();
                 }
                 return;
             }
@@ -1579,7 +1584,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
 
             foreach (var step in Slider.GetSteps())
             {
-                var tick = CreateTick(step);
+                var tick = Slider.CreateTick(this, step);
                 if (tick == null)
                     continue;
 
@@ -1792,7 +1797,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// </summary>
     protected partial class SliderValueWindow : PopupWindow, IContentParent
     {
-        private readonly TextBox _text = new();
+        private readonly TextBox _text;
 
         /// <summary>
         /// Initializes a new instance of the SliderValueWindow class, which displays the current value of a slider
@@ -1834,6 +1839,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
                 ForegroundBrush = new SolidColorBrush(theme.UnselectedColor),
                 Margin = boxSize / 4
             };
+            _text.CopyFrom(Slider);
             Content.Children.Add(_text);
 
             Update();

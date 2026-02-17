@@ -209,6 +209,9 @@ public partial class Canvas : Visual
             }
         }
 
+        if (left.IsNotSet() || top.IsNotSet() || size.IsInvalid)
+            return D2D_RECT_F.Invalid;
+
         return new D2D_RECT_F(left, top, size);
     }
 

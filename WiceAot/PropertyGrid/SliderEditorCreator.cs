@@ -16,11 +16,13 @@ public class SliderEditorCreator<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T,
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Tn>(Orientation orientation) : IEditorCreator<T> where Tn : INumber<Tn>, IMinMaxValue<Tn>
 {
-    private readonly Slider<Tn> _slider = new() { Orientation = orientation };
+    private Slider<Tn>? _slider;
 
     /// <inheritdoc/>
-    public object? CreateEditor(PropertyValueVisual<T> value)
+    public virtual object? CreateEditor(PropertyValueVisual<T> value)
     {
+        _slider ??= new() { Orientation = orientation };
+
         var range = value.Property.Info.GetCustomAttribute<RangeAttribute>();
         if (range != null)
         {
@@ -95,5 +97,5 @@ public class SliderEditorCreator<
     }
 
     /// <inheritdoc/>
-    public object? UpdateEditor(PropertyValueVisual<T> value, object? editor) => editor;
+    public virtual object? UpdateEditor(PropertyValueVisual<T> value, object? editor) => editor;
 }

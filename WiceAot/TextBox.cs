@@ -115,6 +115,43 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     /// </summary>
     public static VisualProperty ClipTextProperty { get; } = VisualProperty.Add(typeof(Visual), nameof(ClipText), VisualPropertyInvalidateModes.Render, true);
 
+    /// <summary>
+    /// Copies all relevant text formatting and rendering attributes from the specified source object to the target
+    /// object.
+    /// </summary>
+    /// <param name="source">The source object from which attributes are copied. This parameter cannot be null.</param>
+    /// <param name="target">The target object to which attributes are copied. This parameter cannot be null.</param>
+    public static void CopyAttributes(BaseObject source, BaseObject target)
+    {
+        ExceptionExtensions.ThrowIfNull(source, nameof(source));
+        ExceptionExtensions.ThrowIfNull(target, nameof(target));
+        if (ReferenceEquals(source, target))
+            return;
+
+        // make sure this is consistent with UIExtensions.CopyFrom(this TextBox? target, BaseObject? source)
+
+        // ITextBoxProperties
+        AntiAliasingModeProperty.CopyValue(source, target);
+        DrawOptionsProperty.CopyValue(source, target);
+        TextRenderingParametersProperty.CopyValue(source, target);
+
+        // IIextFormat
+        FontFamilyNameProperty.CopyValue(source, target);
+        FontCollectionProperty.CopyValue(source, target);
+        FontSizeProperty.CopyValue(source, target);
+        FontWeightProperty.CopyValue(source, target);
+        FontStyleProperty.CopyValue(source, target);
+        FontStretchProperty.CopyValue(source, target);
+        ParagraphAlignmentProperty.CopyValue(source, target);
+        AlignmentProperty.CopyValue(source, target);
+        FlowDirectionProperty.CopyValue(source, target);
+        ReadingDirectionProperty.CopyValue(source, target);
+        WordWrappingProperty.CopyValue(source, target);
+        TrimmingGranularityProperty.CopyValue(source, target);
+
+        ForegroundBrushProperty.CopyValue(source, target);
+    }
+
     private readonly Lock _rangesLock = new();
     private readonly ConcurrentDictionary<FontRangeType, FontRanges> _ranges = new();
 

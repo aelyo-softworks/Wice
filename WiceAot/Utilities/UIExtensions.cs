@@ -431,6 +431,8 @@ public static class UIExtensions
         if (target == null || source == null)
             return;
 
+        // make sure this is consistent with TextBox.CopyAttributes(BaseObject source, BaseObject target)
+
         CopyFrom((ITextBoxProperties)target, source);
         CopyFrom((ITextFormat)target, source);
 
