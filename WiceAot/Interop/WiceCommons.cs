@@ -214,6 +214,9 @@ public static partial class WiceCommons
     public static extern BOOL IsWindow(HWND hWnd);
 
     [DllImport("user32")]
+    public static extern BOOL IsIconic(HWND hWnd);
+
+    [DllImport("user32")]
     public static extern HWND CreateWindowExW(WINDOW_EX_STYLE dwExStyle, PWSTR lpClassName, PWSTR lpWindowName, WINDOW_STYLE dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, nint /* optional void* */ lpParam);
 
     [DllImport("user32")]
@@ -494,6 +497,7 @@ public static partial class WiceCommons
     public static BOOL ShowWindow(HWND hWnd, SHOW_WINDOW_CMD nCmdShow) => Functions.ShowWindow(hWnd, nCmdShow);
     public static BOOL DestroyWindow(HWND hWnd) => Functions.DestroyWindow(hWnd);
     public static BOOL IsZoomed(HWND hWnd) => Functions.IsZoomed(hWnd);
+    public static BOOL IsIconic(HWND hWnd) => Functions.IsIconic(hWnd);
     public static HRESULT RevokeDragDrop(HWND hwnd) => Functions.RevokeDragDrop(hwnd);
     public static HRESULT RegisterDragDrop(HWND hwnd, IDropTarget pDropTarget) => Functions.RegisterDragDrop(hwnd, pDropTarget);
     public static HRESULT OleInitialize(nint pvReserved) => Functions.OleInitialize(pvReserved);

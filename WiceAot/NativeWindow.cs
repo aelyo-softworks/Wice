@@ -403,9 +403,14 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     public bool Equals(NativeWindow? other) => other != null && Handle.Value == other.Handle.Value;
 
     /// <summary>
-    /// Returns whether the window is maximized (IsZoomed).
+    /// Returns whether the window is maximized.
     /// </summary>
     public bool IsZoomed() => WiceCommons.IsZoomed(Handle);
+
+    /// <summary>
+    /// Returns whether the window is minimized.
+    /// </summary>
+    public bool IsIconic() => WiceCommons.IsIconic(Handle);
 
     /// <summary>
     /// Destroys the window (DestroyWindow).

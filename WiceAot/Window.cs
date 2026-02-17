@@ -465,6 +465,12 @@ public partial class Window : Canvas, ITitleBarParent
     public bool IsZoomed => NativeIfCreated?.IsZoomed() == true;
 
     /// <summary>
+    /// Gets a value indicating whether the current view is minimized.
+    /// </summary>
+    [Category(CategoryLive)]
+    public bool IsIconic => NativeIfCreated?.IsIconic() == true;
+
+    /// <summary>
     /// Gets the native window handle.
     /// </summary>
     public HWND Handle => _native?.IsValueCreated == true ? _native.Value.Handle : HWND.Null;
