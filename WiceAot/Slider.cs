@@ -50,7 +50,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// <summary>
     /// Dynamic property descriptor for <see cref="TicksSteps"/>.
     /// </summary>
-    public static VisualProperty TicksStepsProperty { get; } = VisualProperty.Add<T[]>(typeof(Slider<T>), nameof(TicksSteps), VisualPropertyInvalidateModes.Render, null);
+    public static VisualProperty TicksStepsProperty { get; } = VisualProperty.Add<T[]>(typeof(Slider<T>), nameof(TicksSteps), VisualPropertyInvalidateModes.Render, null, changed: OnTicksStepsChanged);
 
     /// <summary>
     /// Dynamic property descriptor for <see cref="TicksOptions"/>.
@@ -60,11 +60,13 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// <summary>
     /// Dynamic property descriptor for <see cref="SnapToTicks"/>.
     /// </summary>
-    public static VisualProperty SnapToTicksProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(SnapToTicks), VisualPropertyInvalidateModes.Render, false);
+    public static VisualProperty SnapToTicksProperty { get; } = VisualProperty.Add(typeof(Slider<T>), nameof(SnapToTicks), VisualPropertyInvalidateModes.Render, false, changed: OnSnapToTicksChanged);
 
     private static void OnValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnValueChanged();
     private static void OnMinValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnMinValueChanged();
     private static void OnMaxValueChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnMaxValueChanged();
+    private static void OnTicksStepsChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnTicksStepsChanged();
+    private static void OnSnapToTicksChanged(BaseObject obj, object? newValue, object? oldValue) => ((Slider<T>)obj).OnSnapToTicksChanged();
 
     private static T GetDefaultMaxValue()
     {
@@ -326,13 +328,13 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     public SliderTicksOptions TicksOptions { get => (SliderTicksOptions)GetPropertyValue(TicksOptionsProperty)!; set => SetPropertyValue(TicksOptionsProperty, value); }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the control aligns its value to the nearest tick mark on the axis.
+    /// Gets or sets a value indicating whether the visual aligns its value to the nearest tick mark on the axis.
     /// </summary>
     [Category(CategoryBehavior)]
     public bool SnapToTicks { get => (bool)GetPropertyValue(SnapToTicksProperty)!; set => SetPropertyValue(SnapToTicksProperty, value); }
 
     /// <summary>
-    /// Gets or sets the step value of the visual.
+    /// Gets or sets the step value of the ticks.
     /// </summary>
     [Category(CategoryBehavior)]
     public T TicksStep { get => (T)GetPropertyValue(TicksStepProperty)!; set => SetPropertyValue(TicksStepProperty, value); }
@@ -506,7 +508,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     protected virtual SliderValueWindow CreateValueWindow() => new(this);
 
     /// <summary>
-    /// Displays a value window at the appropriate location relative to the control, using the current orientation and theme
+    /// Displays a value window at the appropriate location relative to the visual, using the current orientation and theme
     /// settings.
     /// </summary>
     protected virtual void ShowValueWindow()
@@ -1016,6 +1018,77 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         }
     }
 
+    private void OnSnapToTicksChanged()
+    {
+        if (!SnapToTicks)
+            return;
+
+        var min = T.MaxValue;
+        var max = T.MinValue;
+        foreach (var value in GetSteps())
+        {
+            if (value > max)
+            {
+                max = value;
+            }
+
+            if (value < min)
+            {
+                min = value;
+            }
+        }
+
+        if (Value < min)
+        {
+            Value = min;
+            return;
+        }
+
+        if (Value > max)
+        {
+            Value = max;
+            return;
+        }
+    }
+
+    private void OnTicksStepsChanged()
+    {
+        var newValue = TicksSteps;
+        if (newValue == null || newValue.Length == 0)
+            return;
+
+        var min = T.MaxValue;
+        var max = T.MinValue;
+        foreach (var value in newValue)
+        {
+            if (value < MinValue || value > MaxValue)
+                throw new WiceException($"0038: TicksSteps array contains a value ({value}) that is not between MinValue ({MinValue}) and MaxValue ({MaxValue}).");
+
+            if (value > max)
+            {
+                max = value;
+            }
+
+            if (value < min)
+            {
+                min = value;
+            }
+        }
+
+        if (SnapToTicks)
+        {
+            if (Value < min)
+            {
+                Value = min;
+            }
+
+            if (Value > max)
+            {
+                Value = max;
+            }
+        }
+    }
+
     [MemberNotNullWhen(true, nameof(TicksVisual))]
     private bool IsTicksVisible()
     {
@@ -1312,7 +1385,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         public T Value { get; }
 
         /// <summary>
-        /// Gets the visual representation used to display the tick mark in the control.
+        /// Gets the visual representation used to display the tick mark in the visual.
         /// </summary>
         public Visual? TickVisual { get; }
 
@@ -1325,7 +1398,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         public override string ToString() => Value?.ToString() ?? string.Empty;
 
         /// <summary>
-        /// Creates a visual element that represents a tick mark for the slider control.
+        /// Creates a visual element that represents a tick mark for the slider visual.
         /// </summary>
         /// <remarks>Override this method in a derived class to provide a custom visual representation for
         /// tick marks.</remarks>
@@ -1715,7 +1788,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     }
 
     /// <summary>
-    /// Represents a popup window that displays the current value of a slider control.
+    /// Represents a popup window that displays the current value of a slider visual.
     /// </summary>
     protected partial class SliderValueWindow : PopupWindow, IContentParent
     {

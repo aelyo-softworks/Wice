@@ -24,7 +24,8 @@ public class VisualProperty : BaseObjectProperty
 #if !NETFRAMEWORK
        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
 #endif
-    T>(Type declaringType, string name, VisualPropertyInvalidateModes modes, T? defaultValue = default, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null, BaseObjectPropertyOptions options = BaseObjectPropertyOptions.WriteRequiresMainThread) => Add(declaringType, name, typeof(T), modes, defaultValue, convert, changing, changed, options);
+    T>(Type declaringType, string name, VisualPropertyInvalidateModes modes, T? defaultValue = default, ConvertDelegate? convert = null, ChangingDelegate? changing = null, ChangedDelegate? changed = null, BaseObjectPropertyOptions options = BaseObjectPropertyOptions.WriteRequiresMainThread)
+        => Add(declaringType, name, typeof(T), modes, defaultValue, convert, changing, changed, options);
 
     /// <summary>
     /// Registers a new <see cref="VisualProperty"/> for <paramref name="declaringType"/> using the provided <paramref name="type"/>.

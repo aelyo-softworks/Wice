@@ -14,7 +14,7 @@ public partial class ApplicationWithScheduler : Application
     {
         Scheduler = CreateApplicationScheduler();
         if (Scheduler == null)
-            throw new WiceException("0033: Scheduler cannot be null.");
+            throw new WiceException("0035: Scheduler cannot be null.");
     }
 
     /// <summary>

@@ -9,7 +9,7 @@
 /// IMinMaxValue.</typeparam>
 public class HorizontalSliderEditorCreator<
     [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T,
-    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Tn> : BaseSliderEditorCreator<T, Tn> where Tn : INumber<Tn>, IMinMaxValue<Tn>
+    [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] Tn> : SliderEditorCreator<T, Tn> where Tn : INumber<Tn>, IMinMaxValue<Tn>
 {
     /// <summary>
     /// Initializes a new instance of the HorizontalSliderEditorCreator class with a horizontal orientation.
