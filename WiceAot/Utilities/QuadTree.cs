@@ -52,29 +52,17 @@ public class QuadTree<T> : IQuadTree<T> where T : notnull
     /// <inheritdoc />
     public override string ToString() => Bounds.ToString();
 
-#if DEBUG
-    /// <summary>
-    /// Returns a human-readable dump of the nodes stored in the tree (for debugging).
-    /// </summary>
-    public string Dump()
-    {
-        using var sw = new StringWriter();
-        Dump(sw);
-        return sw.ToString();
-    }
-
     /// <summary>
     /// Writes a human-readable dump of the nodes stored in the tree to the given <paramref name="writer"/> (for debugging).
     /// </summary>
     /// <param name="writer">The text writer that receives the dump.</param>
-    public void Dump(TextWriter writer)
+    public virtual void Dump(TextWriter writer)
     {
         foreach (var node in _root.AllNodes)
         {
             writer.WriteLine("N: " + node);
         }
     }
-#endif
 
     /// <summary>
     /// Inserts an item into the quadtree with the specified <paramref name="bounds"/>.

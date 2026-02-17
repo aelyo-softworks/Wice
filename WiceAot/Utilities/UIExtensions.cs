@@ -112,6 +112,23 @@ public static class UIExtensions
     }
 
     /// <summary>
+    /// Generates a string representation of the contents of the specified quadtree.
+    /// </summary>
+    /// <typeparam name="T">The type of elements stored in the quadtree.</typeparam>
+    /// <param name="quadtree">The quadtree instance to serialize. Cannot be null.</param>
+    /// <returns>A string containing the serialized representation of the quadtree. Returns an empty string if the quadtree is
+    /// null.</returns>
+    public static string Dump<T>(this IQuadTree<T> quadtree) where T : notnull
+    {
+        if (quadtree == null)
+            return string.Empty;
+
+        using var sw = new StringWriter();
+        quadtree.Dump(sw);
+        return sw.ToString();
+    }
+
+    /// <summary>
     /// Returns the specified float value if it is set; otherwise, returns zero.
     /// </summary>
     /// <param name="value">The float value to evaluate. If the value is not set, it will be converted to zero.</param>

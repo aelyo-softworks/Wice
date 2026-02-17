@@ -18,10 +18,18 @@ public class SliderEditorCreator<
 {
     private Slider<Tn>? _slider;
 
+    /// <summary>
+    /// Creates a new instance of the Slider class with the specified orientation.
+    /// </summary>
+    /// <returns>A Slider instance configured with the current orientation.</returns>
+    protected virtual Slider<Tn> CreateSlider() => new() { Orientation = orientation };
+
     /// <inheritdoc/>
     public virtual object? CreateEditor(PropertyValueVisual<T> value)
     {
-        _slider ??= new() { Orientation = orientation };
+        _slider ??= CreateSlider();
+        if (_slider == null)
+            throw new InvalidOperationException();
 
         var range = value.Property.Info.GetCustomAttribute<RangeAttribute>();
         if (range != null)

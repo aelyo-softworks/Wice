@@ -57,7 +57,7 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
 #if NETFRAMEWORK
     public PropertyVisuals Visuals { get; }
 #else
-    public PropertyVisuals<T> Visuals{ get; }
+    public PropertyVisuals<T> Visuals { get; }
 #endif
 
     /// <summary>
@@ -186,7 +186,7 @@ public partial class PropertyValueVisual<[DynamicallyAccessedMembers(Dynamically
 #else
                 creator = editorCreator as IEditorCreator<T>;
                 if (creator == null)
-                    throw new WiceException("0024: type '" + type.FullName + "' doesn't implement the " + nameof(IEditorCreator<T>) + " interface.");
+                    throw new WiceException("0024: type '" + type.FullName + "' doesn't implement the " + nameof(IEditorCreator<>) + " interface.");
 #endif
             }
         }

@@ -61,20 +61,10 @@ public class ConcurrentQuadTree<T> : IQuadTree<T> where T : notnull
     public override string ToString() => Bounds.ToString();
 
     /// <summary>
-    /// Returns a human-readable dump of the nodes stored in the tree (for debugging).
-    /// </summary>
-    public string Dump()
-    {
-        using var sw = new StringWriter();
-        Dump(sw);
-        return sw.ToString();
-    }
-
-    /// <summary>
     /// Writes a human-readable dump of the nodes stored in the tree to the given <paramref name="writer"/> (for debugging).
     /// </summary>
     /// <param name="writer">The text writer that receives the dump.</param>
-    public void Dump(TextWriter writer)
+    public virtual void Dump(TextWriter writer)
     {
         foreach (var node in _root.AllNodes)
         {
