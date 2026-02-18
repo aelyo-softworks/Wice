@@ -912,23 +912,44 @@ public partial class Window : Canvas, ITitleBarParent
     /// <summary>
     /// Converts a measurement in device-independent pixels (DIPs) to pixels based on the window DPI setting.
     /// </summary>
-    /// <param name="dips">The measurement in device-independent pixels (DIPs) to convert. Must be a non-negative value.</param>
-    /// <returns>The equivalent measurement in pixels, rounded to the nearest integer.</returns>
+    /// <param name="dips">The measurement in device-independent pixels (DIPs) to convert.</param>
+    /// <returns>The equivalent measurement in pixels.</returns>
     public int DipsToPixels(int dips) => (int)(dips * Dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI);
 
     /// <summary>
-    /// Converts a value in device-independent pixels (DIPs) to physical pixels based on the window DPI setting.
+    /// Converts a measurement in device-independent pixels (DIPs) to pixels based on the window DPI setting.
     /// </summary>
-    /// <param name="dips">The value in device-independent pixels (DIPs) to convert.</param>
-    /// <returns>The equivalent value in physical pixels.</returns>
+    /// <param name="dips">The measurement in device-independent pixels (DIPs) to convert.</param>
+    /// <returns>The equivalent measurement in pixels.</returns>
     public uint DipsToPixels(uint dips) => dips * Dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI;
 
     /// <summary>
-    /// Converts a value in device-independent pixels (DIPs) to physical pixels based on the window DPI.
+    /// Converts a measurement in device-independent pixels (DIPs) to pixels based on the window DPI setting.
     /// </summary>
-    /// <param name="dips">The value in device-independent pixels (DIPs) to convert.</param>
-    /// <returns>The equivalent value in physical pixels.</returns>
+    /// <param name="dips">The measurement in device-independent pixels (DIPs) to convert.</param>
+    /// <returns>The equivalent measurement in pixels.</returns>
     public float DipsToPixels(float dips) => dips * Dpi / WiceCommons.USER_DEFAULT_SCREEN_DPI;
+
+    /// <summary>
+    /// Converts a value in pixels to device-independent pixels (DIPs) based on the current screen DPI.
+    /// </summary>
+    /// <param name="pixels">The number of pixels to convert to DIPs.</param>
+    /// <returns>The equivalent value in device-independent pixels (DIPs).</returns>
+    public int PixelsToDips(int pixels) => (int)(pixels * WiceCommons.USER_DEFAULT_SCREEN_DPI / Dpi);
+
+    /// <summary>
+    /// Converts a value in pixels to device-independent pixels (DIPs) based on the current screen DPI.
+    /// </summary>
+    /// <param name="pixels">The number of pixels to convert to DIPs.</param>
+    /// <returns>The equivalent value in device-independent pixels (DIPs).</returns>
+    public uint PixelsToDips(uint pixels) => pixels * WiceCommons.USER_DEFAULT_SCREEN_DPI / Dpi;
+
+    /// <summary>
+    /// Converts a value in pixels to device-independent pixels (DIPs) based on the current screen DPI.
+    /// </summary>
+    /// <param name="pixels">The number of pixels to convert to DIPs.</param>
+    /// <returns>The equivalent value in device-independent pixels (DIPs).</returns>
+    public float PixelsToDips(float pixels) => pixels * WiceCommons.USER_DEFAULT_SCREEN_DPI / Dpi;
 
     private void RemoveFocusVisual()
     {
