@@ -268,14 +268,14 @@ public partial class TitleBar : Dock
         var buttonSize = size.ToD2D_SIZE_F();
         Height = buttonSize.height;
 
-        if (CloseButton != null)
+        if (CloseButton != null && (CloseButton is not ButtonBase bb || bb.UpdateFromTitleBar))
         {
             CloseButton.Height = buttonSize.height;
             CloseButton.Width = buttonSize.width;
             CloseButton.HoverRenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Red.ToColor());
         }
 
-        if (MinButton != null)
+        if (MinButton != null && (MinButton is not ButtonBase bb1 || bb1.UpdateFromTitleBar))
         {
             MinButton.Height = buttonSize.height;
             MinButton.Width = buttonSize.width;
@@ -300,7 +300,7 @@ public partial class TitleBar : Dock
             Title.FontSize = GetWindowTheme().TitleBarFontSize;
         }
 
-        if (MaxButton != null)
+        if (MaxButton != null && (MaxButton is not ButtonBase bb2 || bb2.UpdateFromTitleBar))
         {
             MaxButton.Height = buttonSize.height;
             MaxButton.Width = buttonSize.width;

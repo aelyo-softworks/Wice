@@ -48,7 +48,7 @@ public partial class ButtonBase : Border, IAccessKeyParent, IClickable
     /// Gets or sets whether this element should update aspects of its appearance when hosted in a title bar.
     /// </summary>
     [Browsable(false)]
-    public bool UpdateFromTitleBar { get; set; } = true;
+    public virtual bool UpdateFromTitleBar { get; set; } = true;
 
     /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)
