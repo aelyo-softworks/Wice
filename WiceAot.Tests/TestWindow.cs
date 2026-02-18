@@ -234,7 +234,7 @@ internal partial class TestWindow : Window
         //sl1.TicksStep = 10;
         sl1.TicksOptions |= SliderTicksOptions.ShowTickValues;
         sl1.SnapToTicks = true;
-        sl1.Orientation = Orientation.Vertical;
+        //sl1.Orientation = Orientation.Vertical;
         //sl1.TextOrientation = Orientation.Vertical;
 
         //var sl1 = new VerticalSlider<int> { Margin = 10, Value = 10 };

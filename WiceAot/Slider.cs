@@ -770,6 +770,42 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     }
 
     /// <inheritdoc/>
+    protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
+    {
+        base.OnMouseButtonDown(sender, e);
+
+        if (!TryConvertToSingle(MaxValue - MinValue, out var range) || range == 0)
+            return;
+
+        var theme = GetWindowTheme();
+        float totalLength;
+        float pos;
+        if (Orientation == Orientation.Horizontal)
+        {
+            pos = e.GetPosition(this).x - MinValueVisual.GetArrangedWidthIfSet() - theme.SliderPadding - theme.RoundedButtonCornerRadius;
+
+            var w = SliderVisual.GetDesiredWidthIfSet() - MinValueVisual.GetDesiredWidthIfSet() - MaxValueVisual.GetDesiredWidthIfSet();
+            totalLength = w - theme.SliderPadding * 2 - theme.RoundedButtonCornerRadius * 2;
+        }
+        else
+        {
+            pos = e.GetPosition(this).y - MinValueVisual.GetArrangedHeightIfSet() - theme.SliderPadding - theme.RoundedButtonCornerRadius;
+
+            var h = SliderVisual.GetDesiredHeightIfSet() - MinValueVisual.GetDesiredHeightIfSet() - MaxValueVisual.GetDesiredHeightIfSet();
+            totalLength = h - theme.SliderPadding * 2 - theme.RoundedButtonCornerRadius * 2;
+        }
+        if (totalLength <= 0)
+            return;
+
+        var ratio = pos * range / totalLength;
+        if (!TryConvertFromSingle(ratio, out var value))
+            return;
+
+        Value = T.MultiplyAddEstimate(value, T.MultiplicativeIdentity, MinValue);
+        e.Handled = true;
+    }
+
+    /// <inheritdoc/>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (!IsEnabled || !IsFocused)
