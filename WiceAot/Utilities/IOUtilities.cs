@@ -86,10 +86,11 @@ public static partial class IOUtilities
     /// Ensures that the directory containing the specified file path exists, creating it if necessary.
     /// </summary>
     /// <param name="filePath">The full path of a file whose parent directory must exist.</param>
+    /// <param name="throwOnError">If true, exceptions are propagated; otherwise, returns false on failure.</param>
     /// <returns>
-    /// True if the directory was created; false if it already existed or no directory part could be determined.
+    /// True if the directory was created or if it already existed; false if not directory part could be determined or an error occurred with <paramref name="throwOnError"/> set to false.
     /// </returns>
-    public static bool FileEnsureDirectory(string filePath)
+    public static bool FileEnsureDirectory(string filePath, bool throwOnError = true)
     {
         ExceptionExtensions.ThrowIfNull(filePath, nameof(filePath));
         if (!System.IO.Path.IsPathRooted(filePath))
@@ -98,11 +99,24 @@ public static partial class IOUtilities
         }
 
         var dir = System.IO.Path.GetDirectoryName(filePath);
-        if (dir == null || Directory.Exists(dir))
+        if (dir == null)
             return false;
 
-        Directory.CreateDirectory(dir);
-        return true;
+        if (DirectoryExists(dir))
+            return true;
+
+        try
+        {
+            Directory.CreateDirectory(dir);
+            return true;
+        }
+        catch
+        {
+            if (throwOnError)
+                throw;
+
+            return false;
+        }
     }
 
     /// <summary>
@@ -136,6 +150,107 @@ public static partial class IOUtilities
                 return false;
             }
         }
+        return true;
+    }
+
+    /// <summary>
+    /// Determines whether two file paths are equivalent, optionally normalizing them to their absolute forms before
+    /// comparison.
+    /// </summary>
+    /// <param name="path1">The first file path to compare. This parameter cannot be null.</param>
+    /// <param name="path2">The second file path to compare. This parameter cannot be null.</param>
+    /// <param name="normalize">Specifies whether to normalize the paths to their absolute forms before comparison. The default value is <see
+    /// langword="true"/>.</param>
+    /// <returns>true if the two paths are equivalent; otherwise, false.</returns>
+    public static bool PathIsEqual(string path1, string path2, bool normalize = true)
+    {
+        ExceptionExtensions.ThrowIfNull(path1, nameof(path1));
+        ExceptionExtensions.ThrowIfNull(path2, nameof(path2));
+        if (normalize)
+        {
+            path1 = System.IO.Path.GetFullPath(path1);
+            path2 = System.IO.Path.GetFullPath(path2);
+        }
+
+        return path1.EqualsIgnoreCase(path2);
+    }
+
+    /// <summary>
+    /// Copies a file from the specified source path to the destination path, optionally deleting the destination file
+    /// if it exists.
+    /// </summary>
+    /// <param name="source">The path of the source file to be copied. This parameter cannot be null.</param>
+    /// <param name="destination">The path where the file will be copied to. This parameter cannot be null.</param>
+    /// <param name="unprotect">Indicates whether to delete the destination file before copying if it exists. Defaults to <see
+    /// langword="true"/>.</param>
+    /// <param name="throwOnError">Specifies whether to throw an exception on error. If <see langword="false"/>, the method returns <see
+    /// langword="false"/> instead of throwing an exception. Defaults to <see langword="true"/>.</param>
+    /// <returns>true if the file was successfully copied; otherwise, false.</returns>
+    public static bool FileOverwrite(string source, string destination, bool unprotect = true, bool throwOnError = true)
+    {
+        ExceptionExtensions.ThrowIfNull(source, nameof(source));
+        ExceptionExtensions.ThrowIfNull(destination, nameof(destination));
+        if (PathIsEqual(source, destination))
+            return false;
+
+        if (!throwOnError && !FileExists(source))
+            return false;
+
+        if (!FileEnsureDirectory(destination, throwOnError))
+            return false;
+
+        if (unprotect)
+        {
+            // we delete the target only if we can write to its directory
+            if (DirectoryCheckCanWrite(System.IO.Path.GetDirectoryName(destination)!))
+            {
+                FileDelete(destination, unprotect, throwOnError);
+            }
+        }
+
+        if (throwOnError)
+        {
+            File.Copy(source, destination, true);
+        }
+        else
+        {
+            try
+            {
+                File.Copy(source, destination, true);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Determines whether the specified directory is writable by attempting to create and delete a temporary file
+    /// within it.
+    /// </summary>
+    /// <param name="directoryPath">The path of the directory to check for write access. This parameter cannot be null and must reference an
+    /// existing directory.</param>
+    /// <returns>true if the directory is writable; otherwise, false.</returns>
+    public static bool DirectoryCheckCanWrite(string directoryPath)
+    {
+        ExceptionExtensions.ThrowIfNull(directoryPath, nameof(directoryPath));
+        if (!DirectoryExists(directoryPath))
+            return false;
+
+        var guid = "temp" + Guid.NewGuid().ToString("N") + ".txt";
+        var path = System.IO.Path.Combine(directoryPath, guid);
+        try
+        {
+            File.WriteAllText(path, "This file was created for temporary actions but you can now safely delete it.");
+        }
+        catch
+        {
+            return false;
+        }
+
+        FileDelete(path, false, false);
         return true;
     }
 
