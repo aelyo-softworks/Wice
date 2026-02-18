@@ -503,7 +503,7 @@ public class Theme
     /// Updates the theme for a potential DPI change using the bound <see cref="Window"/>.
     /// </summary>
     /// <returns>True when DPI changed and an update was applied; otherwise false.</returns>
-    protected virtual internal bool Update()
+    public virtual bool Update()
     {
         if (_window == null)
             throw new InvalidOperationException();
