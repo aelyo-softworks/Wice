@@ -440,7 +440,15 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
 #if NETFRAMEWORK
     protected virtual PropertyVisuals? CreatePropertyVisuals(PropertyGridProperty property, int rowIndex) => new(property, rowIndex);
 #else
-    protected virtual PropertyVisuals<T>? CreatePropertyVisuals(PropertyGridProperty<T> property, int rowIndex) => new(property, rowIndex);
+    protected virtual PropertyVisuals<T>? CreatePropertyVisuals(PropertyGridProperty<T> property, int rowIndex)
+    {
+        if (SelectedObject is IPropertyGridObject<T> gridObject)
+        {
+            if (!gridObject.ShowProperty(property))
+                return null;
+        }
+        return new(property, rowIndex);
+    }
 #endif
 
     /// <summary>

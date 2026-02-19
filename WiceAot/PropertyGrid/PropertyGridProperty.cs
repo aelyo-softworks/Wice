@@ -578,8 +578,6 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
 
         if (property == ValueProperty && options is not ValueSetOptions)
         {
-            Source.OnPropertyValueChanged(Source, new(Name));
-            Source.Grid.OnPropertyValueChanged(Source, new(Name));
             OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(TextValue)));
             OnValueChanged(this, new ValueEventArgs(Value));
 
@@ -588,6 +586,9 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
                 CommitOrRollbackChanges();
                 Source.Grid.GetPropertyVisuals(Name)?.ValueVisual?.UpdateEditor();
             }
+
+            Source.OnPropertyValueChanged(Source, new(Name));
+            Source.Grid.OnPropertyValueChanged(Source, new(Name));
             return true;
         }
         return true;

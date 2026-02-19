@@ -101,6 +101,11 @@ public class SliderEditorCreator<
             _slider.Orientation = att.Orientation;
             _slider.TextOrientation = att.TextOrientation;
         }
+
+        if (Conversions.TryChangeType<Tn>(value.Property.Value, out var v))
+        {
+            _slider.Value = v!;
+        }
         return _slider;
     }
 

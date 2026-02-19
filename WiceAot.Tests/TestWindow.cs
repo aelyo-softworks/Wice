@@ -122,7 +122,9 @@ internal partial class TestWindow : Window
         [Description("Def Value")]
         Value0 = 0,
         Value1 = 1,
+#pragma warning disable CA1069 // Enums values should not be duplicated
         Value1_ = 1,
+#pragma warning restore CA1069 // Enums values should not be duplicated
 
         [Browsable(false)]
         InvisibleValue,
@@ -286,11 +288,13 @@ internal partial class TestWindow : Window
 
     public void AddListBox()
     {
-        var lb = new ListBox();
-        //lb.IntegralHeight = true;
-        //lb.MaxHeight = 200;
-        lb.AllowUnselect = false;
-        lb.SelectionMode = SelectionMode.Multiple;
+        var lb = new ListBox
+        {
+            //lb.IntegralHeight = true;
+            //lb.MaxHeight = 200;
+            AllowUnselect = false,
+            SelectionMode = SelectionMode.Multiple
+        };
         lb.MouseButtonDown += (s, e) =>
         {
             var item = lb.GetVisualForMouseEvent(e);
@@ -342,7 +346,7 @@ internal partial class TestWindow : Window
                 ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER
             };
             SetDockType(_tbLeft, DockType.Left);
-            _tbLeft.DoWhenAttachedToComposition(() => _tbLeft.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor()));
+            _tbLeft.DoWhenAttachedToComposition(() => _tbLeft.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor()));
             Children.Add(_tbLeft);
 
             var b1 = new Border
@@ -353,7 +357,7 @@ internal partial class TestWindow : Window
                 HorizontalAlignment = Alignment.Near
             };
             SetDockType(b1, DockType.Left);
-            b1.DoWhenAttachedToComposition(() => b1.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Violet.ToColor()));
+            b1.DoWhenAttachedToComposition(() => b1.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Violet.ToColor()));
             Children.Add(b1);
 
             _th = new Border
@@ -364,7 +368,7 @@ internal partial class TestWindow : Window
                 HorizontalAlignment = Alignment.Near
             };
             SetDockType(_th, DockType.Left);
-            _th.DoWhenAttachedToComposition(() => _th.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Green.ToColor()));
+            _th.DoWhenAttachedToComposition(() => _th.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Green.ToColor()));
             Children.Add(_th);
 
             _tbRight = new TextBox
@@ -377,7 +381,7 @@ internal partial class TestWindow : Window
                 ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER
             };
             SetDockType(_tbRight, DockType.Right);
-            _tbRight.DoWhenAttachedToComposition(() => _tbRight.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor()));
+            _tbRight.DoWhenAttachedToComposition(() => _tbRight.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Yellow.ToColor()));
             Children.Add(_tbRight);
 
             var b2 = new Border
@@ -388,7 +392,7 @@ internal partial class TestWindow : Window
                 HorizontalAlignment = Alignment.Far
             };
             SetDockType(b2, DockType.Right);
-            b2.DoWhenAttachedToComposition(() => b2.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor()));
+            b2.DoWhenAttachedToComposition(() => b2.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Blue.ToColor()));
             Children.Add(b2);
 
             _ticks = new Border
@@ -405,7 +409,7 @@ internal partial class TestWindow : Window
                 //_ticks.CompositionVisual.Size = new Vector2(
                 //    CompositionVisual.Size.X - tbLeft.CompositionVisual.Size.X - tbRight.CompositionVisual.Size.X, _ticks.CompositionVisual.Size.Y);
             };
-            _ticks.DoWhenAttachedToComposition(() => _ticks.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor()));
+            _ticks.DoWhenAttachedToComposition(() => _ticks.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor()));
             Children.Add(_ticks);
         }
 
