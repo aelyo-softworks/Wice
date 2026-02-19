@@ -17,6 +17,7 @@ public class ListBoxSample : Sample
         lb.DataBinder = new DataBinder
         {
             // called when an item visual (container) is being created
+            // note this custom visual (a TextBox here) will not show nor react to selection
             DataItemVisualCreator = (ctx) =>
             {
                 var tb = new TextBox { Height = parent.Window!.DipsToPixels(20) };

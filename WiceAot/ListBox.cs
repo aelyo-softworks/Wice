@@ -69,7 +69,15 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// When true, <see cref="OnSelectionChanged()"/> raises <see cref="SelectionChanged"/> automatically.
     /// </summary>
-    protected virtual bool RaiseOnSelectionChanged { get; set; }
+    [Browsable(false)]
+    public virtual bool RaiseOnSelectionChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the user is allowed to deselect a currently selected item.
+    /// Only applicable in single-select mode.
+    /// </summary>
+    [Browsable(false)]
+    public virtual bool AllowUnselect { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the selection mode (<see cref="SelectionMode.Single"/> or multi-select).
@@ -286,6 +294,8 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// Called when theme DPI changes. Override to adjust item visuals. No action by default.
     /// </summary>
+    /// <param name="sender">Event sender. Typically the window. Can be <see langword="null"/>.</param>
+    /// <param name="e">Event args containing old and new DPI values. Cannot be <see langword="null"/>.</param>
     protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         // do nothing by default
@@ -294,6 +304,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// Returns the content visual for a mouse event hit by resolving the last <see cref="IOneChildParent"/> child.
     /// </summary>
+    /// <param name="e">Mouse event args containing the visuals stack. Cannot be <see langword="null"/>.</param>    
     public virtual Visual? GetVisualForMouseEvent(MouseEventArgs e)
     {
         if (e == null)
@@ -305,6 +316,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// Resolves an <see cref="ItemVisual"/> from either an <see cref="ItemVisual"/> instance or a data item.
     /// </summary>
+    /// <param name="obj">Item visual or data item to resolve.</param>
     public virtual ItemVisual? GetItemVisual(object? obj)
     {
         if (obj is ItemVisual visual)
@@ -316,6 +328,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// Toggles selection for the specified item or data item.
     /// </summary>
+    /// <param name="obj">Item visual or data item to toggle selection for.</param>
     public virtual void Toggle(object? obj) => Toggle(GetItemVisual(obj));
     private void Toggle(ItemVisual? obj)
     {
@@ -335,13 +348,17 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// Unselects the specified item or data item.
     /// </summary>
+    /// <param name="obj">Item visual or data item to unselect.</param>
     public virtual void Unselect(object? obj) => UnselectChild(GetItemVisual(obj));
     private void UnselectChild(ItemVisual? obj)
     {
+        if (SelectionMode == SelectionMode.Single && !AllowUnselect)
+            return;
+
         if (obj == null)
             return;
 
-        if (UpdateItemSelection(obj, false))
+        if (UpdateItemSelection(obj, false) || !SelectedItems.Any())
         {
             OnSelectionChanged();
         }
@@ -350,41 +367,34 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// Selects the specified item or data item.
     /// </summary>
+    /// <param name="obj">Item visual or data item to select.</param>
     public virtual void Select(object? obj) => SelectChild(GetItemVisual(obj));
     private void SelectChild(ItemVisual? obj)
     {
         if (obj == null)
             return;
 
-        var changed = false;
         if (SelectionMode == SelectionMode.Single)
         {
             foreach (var item in Items.ToArray())
             {
-                if (UpdateItemSelection(item, item == obj))
-                {
-                    changed = true;
-                }
+                UpdateItemSelection(item, item == obj);
             }
         }
         else
         {
-            if (UpdateItemSelection(obj, true))
-            {
-                changed = true;
-            }
+            UpdateItemSelection(obj, true);
         }
 
-        if (changed)
-        {
-            OnSelectionChanged();
-        }
+        OnSelectionChanged();
     }
 
     /// <summary>
     /// Applies a selection state to an item visual and updates its brushes. When <paramref name="select"/> is null,
     /// only visual state (brush) is refreshed. Returns true when selection state changed.
     /// </summary>
+    /// <param name="visual">The item visual to update. Cannot be <see langword="null"/>.</param>
+    /// <param name="select">True to select, false to unselect, null to refresh visual state only.</param>
     public virtual bool UpdateItemSelection(ItemVisual visual, bool? select)
     {
         ExceptionExtensions.ThrowIfNull(visual, nameof(visual));
@@ -413,6 +423,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// Selects a set of visuals. Raises <see cref="SelectionChanged"/> once if any change occurred.
     /// </summary>
+    /// <param name="visuals">The visuals to select. Null or empty values are ignored.</param>
     public virtual void Select(IEnumerable<ItemVisual> visuals)
     {
         if (visuals == null)
@@ -437,6 +448,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// Unselects a set of visuals. Raises <see cref="SelectionChanged"/> once if any change occurred.
     /// </summary>
+    /// <param name="visuals"> The visuals to unselect. Null or empty values are ignored.</param>
     public virtual void Unselect(IEnumerable<ItemVisual> visuals)
     {
         if (visuals == null)
@@ -504,6 +516,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// Ensures the specified item (or its data) is scrolled into the viewable area of a parent <see cref="ScrollViewer"/>.
     /// </summary>
+    /// <param name="obj">Item visual or data item to scroll into view.</param>
     /// <returns>True if a parent <see cref="ScrollViewer"/> was found; otherwise, false.</returns>
     public virtual bool ScrollIntoView(object obj)
     {
@@ -585,7 +598,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
 
                 void bindItem(object? data, bool isLast)
                 {
-                    var ctx = new ListBoxDataBindContext(data, Children.Count, isLast);
+                    var ctx = new ListBoxDataBindContext(this, data, Children.Count, isLast);
                     binder.DataItemVisualCreator(ctx);
                     if (ctx.DataVisual != null && binder.ItemVisualAdder != null)
                     {
@@ -613,11 +626,12 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
                 }
             }
 
-            OnDataBound(this, EventArgs.Empty);
             if (!selected.SequenceEqual(SelectedItems.Select(i => i.Data)))
             {
                 OnSelectionChanged();
             }
+
+            OnDataBound(this, EventArgs.Empty);
         }
     }
 
@@ -625,7 +639,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// Binds the data item visual representation to the specified data binding context.
     /// </summary>
     /// <param name="context">The data binding context that provides the visual element and associated data. Cannot be <see langword="null"/>.</param>
-    protected virtual void BindDataItemVisual(DataBindContext context)
+    public virtual void BindDataItemVisual(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
         if (context.DataVisual is not TextBox tb)
@@ -637,7 +651,8 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// Default creator: creates a focusable <see cref="TextBox"/> for data display.
     /// </summary>
-    protected virtual void CreateDataItemVisual(DataBindContext context)
+    /// <param name="context">The data binding context for the item visual being created. Cannot be <see langword="null"/>.</param>
+    public virtual void CreateDataItemVisual(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
         var visual = new TextBox { IsEnabled = false, IsFocusable = true };
@@ -647,7 +662,8 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// <summary>
     /// Default separator creator: no-op. Override in <see cref="ListBoxDataBinder"/> scenarios to add separators.
     /// </summary>
-    protected virtual void CreateSeparatorVisual(DataBindContext context)
+    /// <param name="context">The data binding context for the separator visual being created. Cannot be <see langword="null"/>.</param>
+    public virtual void CreateSeparatorVisual(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
         return;
@@ -664,7 +680,7 @@ public partial class ListBox : Visual, IDataSourceVisual, ISelectorVisual
     /// </summary>
     /// <param name="context">The data binding context that provides the data and receives the created visual item. Cannot be <see
     /// langword="null"/>.</param>
-    protected virtual void AddItemVisual(DataBindContext context)
+    public virtual void AddItemVisual(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
         var item = CreateItemVisual();

@@ -60,6 +60,11 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
 #endif
 
     /// <summary>
+    /// Occurs when the value of a property changes, providing information about the change to event subscribers.
+    /// </summary>
+    public event EventHandler<PropertyChangedEventArgs>? PropertyValueChanged;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PropertyGrid"/> class.
     /// </summary>
     public PropertyGrid()
@@ -249,6 +254,13 @@ public partial class PropertyGrid<[DynamicallyAccessedMembers(DynamicallyAccesse
         base.OnAttachedToComposition(sender, e);
         Splitter.RenderBrush = Compositor!.CreateColorBrush(GetWindowTheme().SplitterColor.ToColor());
     }
+
+    /// <summary>
+    /// Raises the PropertyValueChanged event to notify subscribers that a property value has changed.
+    /// </summary>
+    /// <param name="sender">The source of the event, typically the object whose property value has changed.</param>
+    /// <param name="e">An object that contains the event data, including the name of the property that changed.</param>
+    protected virtual internal void OnPropertyValueChanged(object? sender, PropertyChangedEventArgs e) => PropertyValueChanged?.Invoke(sender, e);
 
     /// <summary>
     /// Handles property changes from <see cref="SelectedObject"/> when <see cref="LiveSync"/> is enabled,

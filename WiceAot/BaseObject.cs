@@ -93,8 +93,10 @@ public abstract class BaseObject : INotifyPropertyChanged, INotifyPropertyChangi
 
     /// <summary>Raised when the set of validation errors for a property changes.</summary>
     public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+
     /// <summary>Raised just after a property value has been updated.</summary>
     public event PropertyChangedEventHandler? PropertyChanged;
+
     /// <summary>Raised just before a property value is updated.</summary>
     public event PropertyChangingEventHandler? PropertyChanging;
 

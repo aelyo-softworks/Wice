@@ -32,7 +32,13 @@ internal partial class TestWindow : Window
         //AddUniformGridSysColors();
 
         //AddDocks();
-        AddSlider();
+        //AddSlider();
+        AddListBox();
+        //AddResizableListBox();
+        //AddScollableListBox();
+        //AddCheckBoxList();
+        //AddFlagsEnumListBox();
+        //AddEnumListBox();
         //AddTicks();
         //AddPropertyGrid();
         //AddLogVisual();
@@ -76,6 +82,239 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void AddScollableListBox()
+    {
+        var sv = new ScrollViewer
+        {
+            HorizontalAlignment = Alignment.Center,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Visible
+        };
+        Children.Add(sv);
+
+        var lb = new ListBox();
+        sv.Child = lb;
+        lb.SelectionMode = SelectionMode.Multiple;
+        //lb.Margin = D2D_RECT_F.Thickness(10);
+        //lb.VerticalAlignment = Alignment.Stretch;
+        //lb.HorizontalAlignment = Alignment.Stretch;
+
+        //lb.RenderBrush = Compositor.CreateColorBrush(D3DCOLORVALUE.Pink);
+        lb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor());
+        var i = 0;
+        var words = File.ReadAllText("lorem.txt").
+            ToLowerInvariant().
+            Replace(Environment.NewLine, string.Empty).
+            Replace(".", string.Empty).
+            Replace(",", string.Empty)
+            .Split([' '], StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(40).Select(s => i++ + " : " + s);
+        lb.DataSource = words;
+
+        lb.ScrollIntoView("27 : dolor");
+        lb.Children[27].Focus();
+        ((ItemVisual)lb.Children[27]).IsSelected = true;
+        ((ItemVisual)lb.Children[15]).IsSelected = true;
+    }
+
+    public enum MyEnum
+    {
+        [Description("Def Value")]
+        Value0 = 0,
+        Value1 = 1,
+        Value1_ = 1,
+
+        [Browsable(false)]
+        InvisibleValue,
+
+        Value2
+    }
+
+    public void AddEnumListBox()
+    {
+        var lb = new EnumListBox
+        {
+            Value = UriHostNameType.Basic,
+            //var lb = new ListBox();
+            //lb.DataSource = new object[] { "titi", 123, DateTime.Now, "hello world" };
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
+        };
+        Children.Add(lb);
+
+        KeyDown += (s, e) =>
+        {
+            if (e.Key == VIRTUAL_KEY.VK_L)
+            {
+                foreach (var item in lb.Items)
+                {
+                    Application.Trace(item + " selected " + item.IsSelected);
+                }
+            }
+        };
+    }
+
+    [Flags]
+    public enum MyFlagsEnum
+    {
+        Value0 = 0x0,
+        Value1 = 0x1,
+        Value2 = 0x2,
+        [Description("My Cool Value")]
+        Value4_x = 0x4,
+        Value8 = 0x8
+    }
+
+    [Flags]
+    public enum SampleDaysOfWeek
+    {
+        NoDay = 0,
+        Monday = 1,
+        Tuesday = 2,
+        Wednesday = 4,
+        Thursday = 8,
+        Friday = 16,
+        Saturday = 32,
+        Sunday = 64,
+        WeekDays = Monday | Tuesday | Wednesday | Thursday | Friday
+    }
+
+    public void AddFlagsEnumListBox()
+    {
+        var lb = new FlagsEnumListBox
+        {
+            //lb.Value = MyFlagsEnum.Value0 | MyFlagsEnum.Value2 | MyFlagsEnum.Value4_x;
+            //lb.Value = MyFlagsEnum.Value0;
+            Value = SampleDaysOfWeek.WeekDays,
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
+        };
+        Children.Add(lb);
+
+        KeyDown += (s, e) =>
+        {
+            if (e.Key == VIRTUAL_KEY.VK_L)
+            {
+                foreach (var item in lb.Items)
+                {
+                    Application.Trace(item + " selected " + item.IsSelected);
+                }
+            }
+        };
+    }
+
+    public void AddCheckBoxList()
+    {
+        var lb = new CheckBoxList
+        {
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.White.ToColor())
+        };
+        Children.Add(lb);
+        //lb.DataSource = new List<string> { "hello", "world" };
+        var i = 0;
+        var words = File.ReadAllText("lorem.txt").
+            ToLowerInvariant().
+            Replace(Environment.NewLine, string.Empty).
+            Replace(".", string.Empty).
+            Replace(",", string.Empty)
+            .Split([' '], StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(4).Select(s => i++ + " : " + s);
+        lb.DataSource = words;
+    }
+
+    public void AddResizableListBox()
+    {
+        var b = new Border
+        {
+            RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor()),
+            HorizontalAlignment = Alignment.Center,
+            VerticalAlignment = Alignment.Center
+        };
+        //b.Height = 200;
+        //b.Width = 100;
+        Children.Add(b);
+
+        var i = 0;
+        var words = File.ReadAllText("lorem.txt").
+            ToLowerInvariant().
+            Replace(Environment.NewLine, string.Empty).
+            Replace(".", string.Empty).
+            Replace(",", string.Empty)
+            .Split([' '], StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(10).Select(s => i++ + " : " + s).ToList();
+
+        var lb = new ListBox
+        {
+            DataBinder = new DataBinder
+            {
+                DataItemVisualCreator = (ctx) =>
+                {
+                    var tb = new TextBox
+                    {
+                        Height = 20,
+                        TrimmingGranularity = DWRITE_TRIMMING_GRANULARITY.DWRITE_TRIMMING_GRANULARITY_CHARACTER,
+                        Margin = D2D_RECT_F.Thickness(10, 5, 10, 5),
+                        IsFocusable = true
+                    };
+                    ctx.DataVisual = tb;
+                },
+                DataItemVisualBinder = (ctx) =>
+                {
+                    ((TextBox)ctx.DataVisual!).Text = (string)ctx.Data!;
+                }
+            }
+        };
+
+        //lb.VerticalAlignment = Alignment.Center;
+        lb.MouseButtonDown += (s, e) =>
+        {
+            var item = lb.GetVisualForMouseEvent(e);
+            if (item != null)
+            {
+                MessageBox.Show(this, item.ToString());
+            }
+        };
+
+        KeyDown += (s2, e2) =>
+        {
+            if (words.Count > 0)
+            {
+                words.RemoveAt(0);
+                ((IDataSourceVisual)lb).BindDataSource();
+            }
+        };
+
+        b.Children.Add(lb);
+        lb.DataSource = words;
+    }
+
+    public void AddListBox()
+    {
+        var lb = new ListBox();
+        //lb.IntegralHeight = true;
+        //lb.MaxHeight = 200;
+        lb.AllowUnselect = false;
+        lb.SelectionMode = SelectionMode.Multiple;
+        lb.MouseButtonDown += (s, e) =>
+        {
+            var item = lb.GetVisualForMouseEvent(e);
+            if (item != null)
+            {
+                //MessageBox.Show(item.ToString());
+            }
+        };
+
+        lb.RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Pink.ToColor());
+        lb.SelectionChanged += (s, e) =>
+        {
+            Application.Trace($"Selected: {string.Join(" - ", lb.SelectedItems.Select(i => i?.Data))}");
+        };
+
+        Children.Add(lb);
+        var i = 0;
+        var words = File.ReadAllText(@"Resources\lorem.txt").
+            ToLowerInvariant().
+            Replace(Environment.NewLine, string.Empty).
+            Replace(".", string.Empty).
+            Replace(",", string.Empty)
+            .Split([' '], StringSplitOptions.RemoveEmptyEntries).OrderBy(s => s).ToHashSet().Take(20).Select(s => i++ + " : " + s);
+        lb.DataSource = words;
     }
 
     private sealed class MyDock : Dock

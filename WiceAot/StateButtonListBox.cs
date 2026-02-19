@@ -22,7 +22,7 @@ public abstract partial class StateButtonListBox : ListBox
     protected abstract StateButton CreateStateButton(DataBindContext context);
 
     /// <inheritdoc/>
-    protected override void CreateDataItemVisual(DataBindContext context)
+    public override void CreateDataItemVisual(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
         var panel = new Dock
@@ -53,7 +53,7 @@ public abstract partial class StateButtonListBox : ListBox
     }
 
     /// <inheritdoc/>
-    protected override void BindDataItemVisual(DataBindContext context)
+    public override void BindDataItemVisual(DataBindContext context)
     {
         ExceptionExtensions.ThrowIfNull(context, nameof(context));
         if (context.DataVisual is not Dock dock)

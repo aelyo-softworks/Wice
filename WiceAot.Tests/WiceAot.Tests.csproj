@@ -81,6 +81,9 @@
 	  <Content Include="Resources\SpecialCharacters.txt">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
+	  <EmbeddedResource Include="..\WiceAot.Samples.Gallery\Resources\lorem-cn.txt" Link="Resources\lorem-cn.txt">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="runtimes\win-arm64\native\WebView2Loader.dll" />
 	  <EmbeddedResource Include="runtimes\win-x64\native\WebView2Loader.dll" />
 	  <EmbeddedResource Include="runtimes\win-x86\native\WebView2Loader.dll" />
@@ -136,6 +139,9 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Resources\hdr-image.jxr">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Resources\lorem.txt">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	  <None Update="Resources\wice.rtf">

@@ -9,9 +9,9 @@
 /// <see cref="DynamicallyAccessedMemberTypes.PublicProperties"/> to cooperate with trimming/AOT.
 /// </typeparam>
 #if NETFRAMEWORK
-public partial class PropertyGridProperty : BaseObject, IComparable, IComparable<PropertyGridProperty>
+public partial class PropertyGridProperty : BaseObject, IComparable, IComparable<PropertyGridProperty>, IValueable
 #else
-public partial class PropertyGridProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : BaseObject, IComparable, IComparable<PropertyGridProperty<T>>
+public partial class PropertyGridProperty<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T> : BaseObject, IComparable, IValueable, IComparable<PropertyGridProperty<T>>
 #endif
 {
     /// <summary>
@@ -105,6 +105,26 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
 #else
     public static VisualProperty CategoryProperty { get; } = VisualProperty.Add<string?>(typeof(PropertyGridProperty<T>), nameof(Category), VisualPropertyInvalidateModes.Render);
 #endif
+
+    /// <summary>
+    /// Occurs when <see cref="Value"/> changes.
+    /// </summary>
+    public event EventHandler<ValueEventArgs>? ValueChanged;
+
+    bool IValueable.CanChangeValue { get => IsReadWrite; set => throw new NotSupportedException(); }
+    object? IValueable.Value => Value;
+    bool IValueable.TrySetValue(object? value)
+    {
+        try
+        {
+            Value = value;
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
     /// <summary>
     /// Initializes a new <see cref="PropertyGridProperty{T}"/> bound to a reflected property of the selected object.
@@ -558,8 +578,10 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
 
         if (property == ValueProperty && options is not ValueSetOptions)
         {
-            Source.OnPropertyChanged(this);
+            Source.OnPropertyValueChanged(Source, new(Name));
+            Source.Grid.OnPropertyValueChanged(Source, new(Name));
             OnPropertyChanged(this, new PropertyChangedEventArgs(nameof(TextValue)));
+            OnValueChanged(this, new ValueEventArgs(Value));
 
             if (LiveSync)
             {
@@ -624,6 +646,13 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
         base.OnPropertyChanged(sender, new PropertyChangedEventArgs(nameof(IsInvalid)));
         base.OnPropertyChanged(sender, new PropertyChangedEventArgs(nameof(ErrorText)));
     }
+
+    /// <summary>
+    /// Raises the ValueChanged event to notify subscribers when the value has changed.
+    /// </summary>
+    /// <param name="sender">The source of the event, typically the object whose value has changed.</param>
+    /// <param name="e">An instance of ValueEventArgs that contains the new value and any associated event data.</param>
+    protected virtual void OnValueChanged(object? sender, ValueEventArgs e) => ValueChanged?.Invoke(sender, e);
 
     /// <inheritdoc/>
     protected override bool AreErrorsEqual(IEnumerable? errors1, IEnumerable? errors2) => false;

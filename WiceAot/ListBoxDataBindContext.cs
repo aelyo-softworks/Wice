@@ -5,9 +5,14 @@
 /// extending <see cref="DataBindContext"/> with the item index, a last-item flag,
 /// and an optional per-item separator <see cref="Visual"/>.
 /// </summary>
-public class ListBoxDataBindContext(object? data, int index, bool isLast)
+public class ListBoxDataBindContext(ListBox listBox, object? data, int index, bool isLast)
     : DataBindContext(data)
 {
+    /// <summary>
+    /// Gets the associated ListBox control for this context.
+    /// </summary>
+    public ListBox ListBox { get; } = listBox;
+
     /// <summary>
     /// Gets the zero-based index of the item in the source collection.
     /// </summary>
