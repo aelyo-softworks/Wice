@@ -103,7 +103,7 @@ public partial class Window : Canvas, ITitleBarParent
     /// <summary>
     /// Occurs when the window is activated.
     /// </summary>
-    public event EventHandler? Activated;
+    public event EventHandler<ActivationEventArgs>? Activated;
 
     /// <summary>
     /// Occurs when a window belonging to a different application than the active window is about to be deactivated
@@ -113,7 +113,7 @@ public partial class Window : Canvas, ITitleBarParent
     /// <summary>
     /// Occurs when the window is deactivated.
     /// </summary>
-    public event EventHandler? Deactivated;
+    public event EventHandler<ActivationEventArgs>? Deactivated;
 
     /// <summary>
     /// Occurs when the window is destroyed.
@@ -1164,15 +1164,15 @@ public partial class Window : Canvas, ITitleBarParent
     /// Raises the <see cref="Activated"/> event.
     /// </summary>
     /// <param name="sender">The source of the event.</param>
-    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
-    protected virtual void OnActivated(object? sender, EventArgs e) => Activated?.Invoke(sender, e);
+    /// <param name="e">An <see cref="ActivationEventArgs"/> instance containing the event data.</param>
+    protected virtual void OnActivated(object? sender, ActivationEventArgs e) => Activated?.Invoke(sender, e);
 
     /// <summary>
     /// Raises the <see cref="Deactivated"/> event.
     /// </summary>
     /// <param name="sender">The source of the event.</param>
-    /// <param name="e">An <see cref="EventArgs"/> instance containing the event data.</param>
-    protected virtual void OnDeactivated(object? sender, EventArgs e) => Deactivated?.Invoke(sender, e);
+    /// <param name="e">An <see cref="ActivationEventArgs"/> instance containing the event data.</param>
+    protected virtual void OnDeactivated(object? sender, ActivationEventArgs e) => Deactivated?.Invoke(sender, e);
 
     /// <summary>
     /// Raises the <see cref="AppActivated"/> event when the application is activated.
@@ -3065,19 +3065,20 @@ public partial class Window : Canvas, ITitleBarParent
     protected virtual PA OnPointerActivate(PointerActivateEventArgs e) => PA.PA_DONT_HANDLE;
 
     private void OnWmNcPaint() => MainTitleBar?.Update();
-    private void OnWmActivate(HWND hwnd, bool activated)
+    private void OnWmActivate(HWND hwnd, bool activated, bool activatedByMouseClick, HWND otherWindowHandle)
     {
         if (activated)
         {
             ExtendFrame(hwnd);
-            OnActivated(this, EventArgs.Empty);
+            OnActivated(this, new(hwnd, otherWindowHandle, activatedByMouseClick));
         }
         else
         {
             var dv = DraggingVisual;
             DraggingVisual = null;
-            dv?.CancelDragMove(new ValueEventArgs<HWND>(hwnd));
-            OnDeactivated(this, EventArgs.Empty);
+            var evt = new ActivationEventArgs(hwnd, otherWindowHandle, activatedByMouseClick);
+            dv?.CancelDragMove(evt);
+            OnDeactivated(this, evt);
         }
     }
 
@@ -3611,7 +3612,7 @@ public partial class Window : Canvas, ITitleBarParent
     /// <param name="placementTarget">The visual element to which the tooltip is anchored. Cannot be <see langword="null"/>.</param>
     /// <param name="contentCreator">A delegate that defines the content of the tooltip. Cannot be <see langword="null"/>.</param>
     /// <param name="e">The event arguments associated with the action that triggered the tooltip.</param>
-    protected virtual void AddToolTip(Visual placementTarget, Action<ToolTip> contentCreator, EventArgs e)
+    public virtual void AddToolTip(Visual placementTarget, Action<ToolTip> contentCreator, EventArgs e)
     {
         ExceptionExtensions.ThrowIfNull(placementTarget, nameof(placementTarget));
         ExceptionExtensions.ThrowIfNull(contentCreator, nameof(contentCreator));
@@ -3630,7 +3631,7 @@ public partial class Window : Canvas, ITitleBarParent
     /// Removes the currently displayed tooltip, if one exists.
     /// </summary>
     /// <param name="e">The event data associated with the action that triggered the removal.</param>
-    protected virtual internal void RemoveToolTip(EventArgs e)
+    public virtual void RemoveToolTip(EventArgs e)
     {
         var ctt = CurrentToolTip;
         if (ctt == null)
@@ -4272,7 +4273,8 @@ public partial class Window : Canvas, ITitleBarParent
 
             // note: you can be here just because the window as WS_VISIBLE and is created (even with WS_EX_NOACTIVATE)
             case MessageDecoder.WM_ACTIVATE:
-                win?.OnWmActivate(hwnd, wParam.Value != 0);
+                const int WA_CLICKACTIVE = 2;
+                win?.OnWmActivate(hwnd, wParam.Value != 0, wParam.Value == WA_CLICKACTIVE, new HWND(lParam.Value));
                 break;
 
             case MessageDecoder.WM_NCCALCSIZE:

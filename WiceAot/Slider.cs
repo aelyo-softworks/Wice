@@ -1852,6 +1852,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         public SliderValueWindow(Slider<T> slider)
         {
             ArgumentNullException.ThrowIfNull(slider);
+            ExtendedStyle |= WINDOW_EX_STYLE.WS_EX_NOACTIVATE;
             Slider = slider;
 
             MeasureToContent = DimensionOptions.WidthAndHeight;

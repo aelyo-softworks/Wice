@@ -22,6 +22,7 @@
 
 	<ItemGroup>
 	  <Compile Include="..\WiceAot\AccessKey.cs" Link="AccessKey.cs" />
+	  <Compile Include="..\WiceAot\ActivationEventArgs.cs" Link="ActivationEventArgs.cs" />
 	  <Compile Include="..\WiceAot\Alignment.cs" Link="Alignment.cs" />
 	  <Compile Include="..\WiceAot\Animation\Animation.cs" Link="Animation\Animation.cs" />
 	  <Compile Include="..\WiceAot\Animation\AnimationGroup.cs" Link="Animation\AnimationGroup.cs" />

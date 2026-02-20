@@ -13,6 +13,7 @@ public partial class ToolTip : PopupWindow, IContentParent
     /// </summary>
     public ToolTip()
     {
+        ExtendedStyle |= WINDOW_EX_STYLE.WS_EX_NOACTIVATE;
         PlacementMode = PlacementMode.Mouse;
         MeasureToContent = DimensionOptions.WidthAndHeight;
         FrameSize = 0;
