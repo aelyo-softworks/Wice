@@ -565,7 +565,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// <param name="e">An object that contains the event data.</param>
     protected virtual void OnThumbDragCompleted(object? sender, EventArgs e)
     {
-        if (SnapToTicks)
+        if (IsEnabled && SnapToTicks)
         {
             var steps = GetSteps();
             if (steps.Count <= 1)
@@ -589,6 +589,9 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// <param name="e">A DragEventArgs object that contains the event data for the drag operation.</param>
     protected virtual void OnThumbDragStarted(object? sender, DragEventArgs e)
     {
+        if (!IsEnabled)
+            return;
+
         _hideValueWindow?.Dispose();
         Focus();
         if (!TryConvertToSingle(Value - MinValue, out var value))
@@ -609,6 +612,9 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// <param name="e">The event data containing information about the drag operation, including the current mouse position.</param>
     protected virtual void OnThumbDragDelta(object? sender, DragEventArgs e)
     {
+        if (!IsEnabled)
+            return;
+
         if (e.State.Tag is not float startValue)
             return;
 
@@ -773,6 +779,9 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     protected override void OnMouseButtonDown(object? sender, MouseButtonEventArgs e)
     {
         base.OnMouseButtonDown(sender, e);
+
+        if (!IsEnabled)
+            return;
 
         if (!TryConvertToSingle(MaxValue - MinValue, out var range) || range == 0)
             return;
