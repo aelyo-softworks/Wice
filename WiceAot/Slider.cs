@@ -281,13 +281,37 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// Gets or sets the duration, in milliseconds, before the value window is automatically hidden.
     /// </summary>
     [Category(CategoryBehavior)]
-    public int ValueWindowHideTimeout { get; set; } = 2000;
+    public virtual int ValueWindowHideTimeout { get; set; } = 2000;
 
     /// <summary>
     /// Gets or sets the format string that determines how the value is converted to its string representation.
     /// </summary>
     [Category(CategoryBehavior)]
-    public string? ValueStringFormat { get; set; }
+    public virtual string? ValueStringFormat
+    {
+        get;
+        set
+        {
+            if (field == value)
+                return;
+
+            field = value;
+            if (MinValueVisual is TextBox tb)
+            {
+                tb.Text = GetValueString(SliderValueContext.MinValue, MinValue);
+            }
+
+            if (MaxValueVisual is TextBox tb2)
+            {
+                tb2.Text = GetValueString(SliderValueContext.MaxValue, MaxValue);
+            }
+
+            if (TicksVisual is Ticks ticks)
+            {
+                ticks.UpdateTexts();
+            }
+        }
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether a window displaying the current value is shown when the visual is
@@ -468,7 +492,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         var th = new Thumb
         {
             IsFocusable = false,
-            ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, Value?.ToString() ?? string.Empty)
+            ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, GetValueString(SliderValueContext.ToolTip, Value))
         };
         return th;
     }
@@ -1517,6 +1541,17 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
             }
         }
 
+        /// <summary>
+        /// Updates the text displayed in this visual.
+        /// </summary>
+        public virtual void UpdateTexts()
+        {
+            if (ValueVisual is TextBox tb)
+            {
+                tb.Text = Slider.GetValueString(SliderValueContext.Tick, Value);
+            }
+        }
+
         /// <inheritdoc/>
         protected override void Render()
         {
@@ -1569,6 +1604,17 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
             foreach (var tick in Children.OfType<Tick>())
             {
                 tick.UpdateStyle();
+            }
+        }
+
+        /// <summary>
+        /// Updates the texts displayed in the ticks.
+        /// </summary>
+        public virtual void UpdateTexts()
+        {
+            foreach (var tick in Children.OfType<Tick>())
+            {
+                tick.UpdateTexts();
             }
         }
 
