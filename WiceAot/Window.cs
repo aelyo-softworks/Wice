@@ -2936,8 +2936,8 @@ public partial class Window : Canvas, ITitleBarParent
     /// <summary>
     /// Creates a new instance of a <see cref="ToolTip"/> to be used by the window.
     /// </summary>
-    /// <returns>A new <see cref="ToolTip"/> instance.</returns>
-    protected virtual ToolTip CreateToolTip() => new();
+    /// <returns>A new <see cref="ToolTip"/> instance representing the tooltip for the window.</returns>
+    protected virtual ToolTip? CreateToolTip() => new();
 
     /// <summary>
     /// Creates a new instance of a focus visual element.
@@ -3612,19 +3612,21 @@ public partial class Window : Canvas, ITitleBarParent
     /// <param name="placementTarget">The visual element to which the tooltip is anchored. Cannot be <see langword="null"/>.</param>
     /// <param name="contentCreator">A delegate that defines the content of the tooltip. Cannot be <see langword="null"/>.</param>
     /// <param name="e">The event arguments associated with the action that triggered the tooltip.</param>
-    public virtual void AddToolTip(Visual placementTarget, Action<ToolTip> contentCreator, EventArgs e)
+    /// <returns>A <see cref="ToolTip"/> instance representing the displayed tooltip, or <see langword="null"/> if the tooltip could not be created.</returns>
+    public virtual ToolTip? AddToolTip(Visual placementTarget, Action<ToolTip> contentCreator, EventArgs e)
     {
         ExceptionExtensions.ThrowIfNull(placementTarget, nameof(placementTarget));
         ExceptionExtensions.ThrowIfNull(contentCreator, nameof(contentCreator));
 
         var tt = CreateToolTip();
         if (tt == null)
-            throw new InvalidOperationException();
+            return null;
 
         tt.PlacementTarget = placementTarget;
         contentCreator(tt);
         CurrentToolTip = tt;
         tt.Show();
+        return tt;
     }
 
     /// <summary>
