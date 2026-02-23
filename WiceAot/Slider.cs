@@ -794,6 +794,25 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
                 maxTb.ReadingDirection = orientation == Orientation.Horizontal ? DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_LEFT_TO_RIGHT : DWRITE_READING_DIRECTION.DWRITE_READING_DIRECTION_TOP_TO_BOTTOM;
                 maxTb.FlowDirection = orientation == Orientation.Horizontal ? DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_TOP_TO_BOTTOM : DWRITE_FLOW_DIRECTION.DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT;
             }
+            return true;
+        }
+
+        if (property == IsEnabledProperty)
+        {
+            if ((bool)value!)
+            {
+                MinTrackVisual?.Opacity = 1;
+                MaxTrackVisual?.Opacity = 1;
+                Thumb?.Opacity = 1;
+            }
+            else
+            {
+                var opacity = GetWindowTheme().DisabledOpacityRatio;
+                MinTrackVisual?.Opacity = opacity;
+                MaxTrackVisual?.Opacity = opacity;
+                Thumb?.Opacity = opacity;
+            }
+            return true;
         }
 
         return true;
