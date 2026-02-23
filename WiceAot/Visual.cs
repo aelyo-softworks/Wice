@@ -192,7 +192,7 @@ public partial class Visual : BaseObject
     /// <summary>
     /// Delegate used to build a tooltip's content when shown.
     /// </summary>
-    public static VisualProperty ToolTipContentCreatorProperty { get; } = VisualProperty.Add<Action<ToolTip>>(typeof(Visual), nameof(ToolTipContentCreator), VisualPropertyInvalidateModes.None);
+    public static VisualProperty ToolTipContentCreatorProperty { get; } = VisualProperty.Add<Action<IToolTip>>(typeof(Visual), nameof(ToolTipContentCreator), VisualPropertyInvalidateModes.None);
 
 #pragma warning disable IDE0060 // Remove unused parameter
     /// <summary>
@@ -1203,7 +1203,7 @@ public partial class Visual : BaseObject
     /// Gets or sets the delegate that builds tooltip content for this visual.
     /// </summary>
     [Browsable(false)]
-    public Action<ToolTip>? ToolTipContentCreator { get => (Action<ToolTip>?)GetPropertyValue(ToolTipContentCreatorProperty); set => SetPropertyValue(ToolTipContentCreatorProperty, value); }
+    public Action<IToolTip>? ToolTipContentCreator { get => (Action<IToolTip>?)GetPropertyValue(ToolTipContentCreatorProperty); set => SetPropertyValue(ToolTipContentCreatorProperty, value); }
 
     // composition/render specific properties
 
@@ -1272,6 +1272,13 @@ public partial class Visual : BaseObject
     /// </summary>
     [Category(CategoryLive)]
     public bool IsAnyChildrenFocused => AllChildren.Any(c => c.IsFocused);
+
+    /// <summary>
+    /// Gets or sets a value indicating whether tooltips are displayed for the associated control.
+    /// Tooltip can be shown for this visual if this property is set to true or visual has a <see cref="ToolTipContentCreator"/>.
+    /// </summary>
+    [Browsable(false)]
+    public virtual bool ShowsToolTip { get; set; }
 
     /// <summary>
     /// Gets a value indicating whether this visual is the focused visual for its window.

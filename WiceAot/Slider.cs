@@ -492,7 +492,8 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         var th = new Thumb
         {
             IsFocusable = false,
-            ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, GetValueString(SliderValueContext.ToolTip, Value))
+            ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, GetValueString(SliderValueContext.ToolTip, Value)),
+            Cursor = Cursor.Hand,
         };
         return th;
     }
@@ -857,6 +858,62 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         e.Handled = true;
     }
 
+    /// <summary>
+    /// Removes steps from the current value, optionally snapping to the nearest tick based on the specified parameters.
+    /// </summary>
+    /// <param name="snapToTicks">A value indicating whether to snap the current value to the nearest tick. If set to <see langword="true"/>, the
+    /// value is adjusted to the next greater step.</param>
+    /// <param name="noSnapSteps">The amount by which to adjust the current value when snapping is not applied. This value is added directly to
+    /// the current value.</param>
+    public virtual void RemoveSteps(bool snapToTicks, T noSnapSteps)
+    {
+        if (snapToTicks)
+        {
+            var steps = GetSteps();
+            var s = steps.Where(s => s < Value).OrderDescending().ToArray();
+            var nearest = steps.Where(s => s < Value).OrderDescending().FirstOrDefault();
+            if (nearest == null) // probably zero
+                return;
+
+            if (nearest > Value)
+                return;
+
+            Value = nearest;
+        }
+        else
+        {
+            Value -= noSnapSteps;
+        }
+    }
+
+    /// <summary>
+    /// Adjusts the current value by either snapping to the nearest lower tick mark or decrementing by a specified step
+    /// amount.
+    /// </summary>
+    /// <param name="snapToTicks">A value indicating whether the current value should be snapped to the nearest tick mark. If <see
+    /// langword="true"/>, the value is set to the nearest lower tick; otherwise, it is decremented by the specified
+    /// step amount.</param>
+    /// <param name="noSnapSteps">The amount by which to decrement the current value when snapping is not applied.</param>
+    public virtual void AddSteps(bool snapToTicks, T noSnapSteps)
+    {
+        if (snapToTicks)
+        {
+            var steps = GetSteps();
+            var nearest = steps.Where(s => s > Value).Order().FirstOrDefault();
+            if (nearest == null) // probably zero
+                return;
+
+            if (nearest < Value)
+                return;
+
+            Value = nearest;
+        }
+        else
+        {
+            Value += noSnapSteps;
+        }
+    }
+
     /// <inheritdoc/>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
@@ -875,46 +932,15 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
 
         switch (e.Key)
         {
-            case VIRTUAL_KEY.VK_LEFT:
+            case VIRTUAL_KEY.VK_RIGHT:
             case VIRTUAL_KEY.VK_UP:
-                if (SnapToTicks)
-                {
-                    var steps = GetSteps();
-                    var s = steps.Where(s => s < Value).OrderDescending().ToArray();
-                    var nearest = steps.Where(s => s < Value).OrderDescending().FirstOrDefault();
-                    if (nearest == null) // probably zero
-                        break;
-
-                    if (nearest > Value)
-                        break;
-
-                    Value = nearest;
-                }
-                else
-                {
-                    Value -= step;
-                }
+                AddSteps(SnapToTicks, step);
                 e.Handled = true;
                 break;
 
-            case VIRTUAL_KEY.VK_RIGHT:
+            case VIRTUAL_KEY.VK_LEFT:
             case VIRTUAL_KEY.VK_DOWN:
-                if (SnapToTicks)
-                {
-                    var steps = GetSteps();
-                    var nearest = steps.Where(s => s > Value).Order().FirstOrDefault();
-                    if (nearest == null) // probably zero
-                        break;
-
-                    if (nearest < Value)
-                        break;
-
-                    Value = nearest;
-                }
-                else
-                {
-                    Value += step;
-                }
+                RemoveSteps(SnapToTicks, step);
                 e.Handled = true;
                 break;
 

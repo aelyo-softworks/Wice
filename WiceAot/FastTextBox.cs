@@ -105,7 +105,7 @@ public partial class FastTextBox : TextBox
 
     /// <inheritdoc/>
     [Category(CategoryLayout)]
-    public override string Text { get => _container.Text; set => SetText(value); }
+    public override string Text { get => _container.Text; set => SetFastTextBoxText(value); }
 
     /// <inheritdoc/>
     [Category(CategoryBehavior)]
@@ -277,7 +277,7 @@ public partial class FastTextBox : TextBox
         return _layout;
     }
 
-    private void SetText(string text)
+    private void SetFastTextBoxText(string text)
     {
         if (_container.Text == text)
             return;

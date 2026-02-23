@@ -24,24 +24,28 @@ public class SliderEditorCreator<
     /// <returns>A Slider instance configured with the current orientation.</returns>
     protected virtual Slider<Tn> CreateSlider() => new() { Orientation = orientation };
 
-    /// <inheritdoc/>
-    public virtual object? CreateEditor(PropertyValueVisual<T> value)
+    /// <summary>
+    /// Configures the specified slider control using metadata from the provided property value, including range,
+    /// allowed values, and editor-specific settings.
+    /// </summary>
+    /// <param name="slider">The slider control to configure. Must not be null.</param>
+    /// <param name="value">A property value visual that provides metadata and the current value for slider configuration. Must not be null.</param>
+    public static void SetupSlider(Slider<Tn> slider, PropertyValueVisual<T> value)
     {
-        _slider ??= CreateSlider();
-        if (_slider == null)
-            throw new InvalidOperationException();
+        ArgumentNullException.ThrowIfNull(slider);
+        ArgumentNullException.ThrowIfNull(value);
 
         var range = value.Property.Info.GetCustomAttribute<RangeAttribute>();
         if (range != null)
         {
             if (Conversions.TryChangeType<Tn>(range.Minimum, out var min))
             {
-                _slider.MinValue = min!;
+                slider.MinValue = min!;
             }
 
             if (Conversions.TryChangeType<Tn>(range.Maximum, out var max))
             {
-                _slider.MaxValue = max!;
+                slider.MaxValue = max!;
             }
         }
 
@@ -57,7 +61,7 @@ public class SliderEditorCreator<
                 }
             }
 
-            _slider.TicksSteps = [.. list];
+            slider.TicksSteps = [.. list];
         }
 
         var att = value.Property.Info.GetCustomAttribute<SliderEditorAttribute<Tn>>();
@@ -65,12 +69,12 @@ public class SliderEditorCreator<
         {
             if (att.MinValue != null && Conversions.TryChangeType<Tn>(att.MinValue, out var min))
             {
-                _slider.MinValue = min!;
+                slider.MinValue = min!;
             }
 
             if (att.MaxValue != null && Conversions.TryChangeType<Tn>(att.MaxValue, out var max))
             {
-                _slider.MaxValue = max!;
+                slider.MaxValue = max!;
             }
 
             if (att.TicksSteps != null && att.TicksSteps.Length > 0)
@@ -83,29 +87,39 @@ public class SliderEditorCreator<
                         list.Add(ticksStepTn!);
                     }
                 }
-                _slider.TicksSteps = [.. list];
+                slider.TicksSteps = [.. list];
             }
 
             if (att.TicksStep != null && Conversions.TryChangeType<Tn>(att.TicksStep, out var ticksStep))
             {
-                _slider.TicksStep = ticksStep!;
+                slider.TicksStep = ticksStep!;
             }
 
             if (att.KeyboardStep != null && Conversions.TryChangeType<Tn>(att.KeyboardStep, out var keyboardStep))
             {
-                _slider.KeyboardStep = keyboardStep!;
+                slider.KeyboardStep = keyboardStep!;
             }
 
-            _slider.SnapToTicks = att.SnapToTicks;
-            _slider.TicksOptions = att.TicksOptions;
-            _slider.Orientation = att.Orientation;
-            _slider.TextOrientation = att.TextOrientation;
+            slider.SnapToTicks = att.SnapToTicks;
+            slider.TicksOptions = att.TicksOptions;
+            slider.Orientation = att.Orientation;
+            slider.TextOrientation = att.TextOrientation;
         }
 
         if (Conversions.TryChangeType<Tn>(value.Property.Value, out var v))
         {
-            _slider.Value = v!;
+            slider.Value = v!;
         }
+    }
+
+    /// <inheritdoc/>
+    public virtual object? CreateEditor(PropertyValueVisual<T> value)
+    {
+        _slider ??= CreateSlider();
+        if (_slider == null)
+            throw new InvalidOperationException();
+
+        SetupSlider(_slider, value);
         return _slider;
     }
 

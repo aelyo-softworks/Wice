@@ -47,6 +47,16 @@ public partial class EditorHost<T> : HeaderedContent
                     dlg.Name = "dialog" + Name.CapitalizeFirst();
 #endif
                     parent.MouseButtonDown += OnParentMouseButtonDown;
+                    dlg.Closing += (s, e) =>
+                    {
+                        // prevent closing via other means than header toggle
+                        // note this will force close when user presses ESC
+                        if (Header.IsSelected)
+                        {
+                            e.Cancel = true;
+                            Header.IsSelected = false;
+                        }
+                    };
 
                     if (EditorMode != EditorMode.Modal)
                     {

@@ -211,6 +211,7 @@
 	  <Compile Include="..\WiceAot\ITextFormat.cs" Link="ITextFormat.cs" />
 	  <Compile Include="..\WiceAot\IThumb.cs" Link="IThumb.cs" />
 	  <Compile Include="..\WiceAot\ITitleBarParent.cs" Link="ITitleBarParent.cs" />
+	  <Compile Include="..\WiceAot\IToolTip.cs" Link="IToolTip.cs" />
 	  <Compile Include="..\WiceAot\IValueable.cs" Link="IValueable.cs" />
 	  <Compile Include="..\WiceAot\IViewerParent.cs" Link="IViewerParent.cs" />
 	  <Compile Include="..\WiceAot\KeyEventArgs.cs" Link="KeyEventArgs.cs" />

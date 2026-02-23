@@ -17,8 +17,11 @@ public class AdvancedToolTipSample : Sample
         btn.ToolTipContentCreator = tt => createToolTipContent(tt, "hello world");
 
         // here is a custom tooltip creator function
-        static void createToolTipContent(Wice.ToolTip tt, string text)
+        static void createToolTipContent(IToolTip itt, string text)
         {
+            // by default, an ITooltip is a ToolTip (a Window)
+            var tt = (Wice.ToolTip)itt;
+
             // clear default tooltip shadow
             tt.Content.RenderShadow = null;
 
@@ -36,8 +39,8 @@ public class AdvancedToolTipSample : Sample
 
             void updateStyle()
             {
-                tb.Margin = tt.Window!.DipsToPixels(4);
-                tb.FontSize = tt.Window!.DipsToPixels(25);
+                tb.Margin = tt.DipsToPixels(4);
+                tb.FontSize = tt.DipsToPixels(25);
             }
 
             tt.ThemeDpiEvent += (s, e) => updateStyle();

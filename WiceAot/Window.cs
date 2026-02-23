@@ -447,10 +447,10 @@ public partial class Window : Canvas, ITitleBarParent
     public RECT ClientRect => NativeIfCreated?.ClientRect ?? new();
 
     /// <summary>
-    /// Gets the currently active <see cref="ToolTip"/> instance, or <see langword="null"/> if no tooltip is active.
+    /// Gets the currently active <see cref="IToolTip"/> instance, or <see langword="null"/> if no tooltip is active.
     /// </summary>
     [Browsable(false)]
-    public ToolTip? CurrentToolTip { get; private set; }
+    public IToolTip? CurrentToolTip { get; private set; }
 
     /// <summary>
     /// Gets the current caret associated with the window, if available.
@@ -1116,26 +1116,30 @@ public partial class Window : Canvas, ITitleBarParent
     /// <summary>
     /// Creates and applies default tooltip content to the specified <see cref="ToolTip"/> control.
     /// </summary>
-    /// <param name="parent">The <see cref="ToolTip"/> visual to which the content will be added. Cannot be <see langword="null"/>.</param>
+    /// <param name="tooltip">The <see cref="IToolTip"/> visual to which the content will be added. Cannot be <see langword="null"/>.</param>
     /// <param name="text">The text to display in the tooltip. If <see langword="null"/>, no text content will be added.</param>
-    public static void CreateDefaultToolTipContent(ToolTip parent, string text)
+    public static void CreateDefaultToolTipContent(IToolTip tooltip, string text)
     {
-        ExceptionExtensions.ThrowIfNull(parent, nameof(parent));
-        if (parent.Compositor == null)
+        ExceptionExtensions.ThrowIfNull(tooltip, nameof(tooltip));
+        if (tooltip is not Visual tooltipVisual)
+            throw new ArgumentException(null, nameof(tooltip));
+
+        if (tooltipVisual.Compositor == null)
             throw new InvalidOperationException();
 
-        if (parent.Content == null)
+        var content = (tooltip as IContentParent)?.Content ?? tooltip as Visual;
+        if (content == null)
             throw new InvalidOperationException();
 
         if (string.IsNullOrWhiteSpace(text))
             return;
 
-        var theme = parent.GetWindowTheme();
+        var theme = tooltipVisual.GetWindowTheme();
         var rr = new RoundedRectangle
         {
-            RenderBrush = parent.Compositor.CreateColorBrush(theme.ToolTipColor.ToColor())
+            RenderBrush = tooltipVisual.Compositor.CreateColorBrush(theme.ToolTipColor.ToColor())
         };
-        parent.Content.Children.Add(rr);
+        content.Children.Add(rr);
 
         var tb = new TextBox
         {
@@ -1147,13 +1151,15 @@ public partial class Window : Canvas, ITitleBarParent
         updateStyle();
 
         tb.SetTypography(Typography.WithLigatures.DWriteTypography?.Object);
-        parent.Content.Children.Add(tb);
+        content.Children.Add(tb);
 
-        parent.ThemeDpiEvent += (s, e) => updateStyle();
+        if (tooltipVisual is Window window)
+        {
+            window.ThemeDpiEvent += (s, e) => updateStyle();
+        }
 
         void updateStyle()
         {
-            var theme = parent.GetWindowTheme();
             rr.CornerRadius = new Vector2(theme.ToolTipCornerRadius);
             tb.Margin = theme.ToolTipMargin;
             tb.FontSize = theme.ToolTipBaseSize + theme.ToolTipMargin;
@@ -2934,10 +2940,10 @@ public partial class Window : Canvas, ITitleBarParent
     }
 
     /// <summary>
-    /// Creates a new instance of a <see cref="ToolTip"/> to be used by the window.
+    /// Creates a new instance of a <see cref="IToolTip"/> to be used by the window.
     /// </summary>
-    /// <returns>A new <see cref="ToolTip"/> instance representing the tooltip for the window.</returns>
-    protected virtual ToolTip? CreateToolTip() => new();
+    /// <returns>A new <see cref="IToolTip"/> instance representing the tooltip for the window.</returns>
+    protected virtual IToolTip? CreateToolTip() => new ToolTip();
 
     /// <summary>
     /// Creates a new instance of a focus visual element.
@@ -3493,16 +3499,15 @@ public partial class Window : Canvas, ITitleBarParent
             if (msg == MessageDecoder.WM_MOUSEHOVER)
             {
                 var ttVisual = getFirstTooltipCreatorVisual();
-                if (ttVisual != null)
+                if (ttVisual != null && (ttVisual.ShowsToolTip || ttVisual.ToolTipContentCreator != null))
                 {
-                    var ttc = ttVisual.ToolTipContentCreator;
                     var visibleTime = ttVisual.GetWindowTheme().ToolTipVisibleTime;
                     if (visibleTime > 0) // disable tooltips
                     {
-                        if (ttc != null && ttVisual != CurrentToolTip?.PlacementTarget)
+                        if (ttVisual != CurrentToolTip?.PlacementTarget)
                         {
                             RemoveToolTip(e);
-                            AddToolTip(ttVisual, ttc, e);
+                            AddToolTip(ttVisual, ttVisual.ToolTipContentCreator, e);
                         }
 
                         if (CurrentToolTip != null)
@@ -3528,7 +3533,7 @@ public partial class Window : Canvas, ITitleBarParent
             Visual? getFirstTooltipCreatorVisual()
             {
                 // get first tooltip in the stack
-                var visual = e._visualsStack.FirstOrDefault(v => v.ToolTipContentCreator != null);
+                var visual = e._visualsStack.FirstOrDefault(v => v.ToolTipContentCreator != null || v.ShowsToolTip);
                 if (visual == null)
                     return null;
 
@@ -3612,20 +3617,23 @@ public partial class Window : Canvas, ITitleBarParent
     /// <param name="placementTarget">The visual element to which the tooltip is anchored. Cannot be <see langword="null"/>.</param>
     /// <param name="contentCreator">A delegate that defines the content of the tooltip. Cannot be <see langword="null"/>.</param>
     /// <param name="e">The event arguments associated with the action that triggered the tooltip.</param>
-    /// <returns>A <see cref="ToolTip"/> instance representing the displayed tooltip, or <see langword="null"/> if the tooltip could not be created.</returns>
-    public virtual ToolTip? AddToolTip(Visual placementTarget, Action<ToolTip> contentCreator, EventArgs e)
+    /// <returns>A <see cref="IToolTip"/> instance representing the displayed tooltip, or <see langword="null"/> if the tooltip could not be created.</returns>
+    public virtual IToolTip? AddToolTip(Visual placementTarget, Action<IToolTip>? contentCreator, EventArgs e)
     {
         ExceptionExtensions.ThrowIfNull(placementTarget, nameof(placementTarget));
-        ExceptionExtensions.ThrowIfNull(contentCreator, nameof(contentCreator));
 
         var tt = CreateToolTip();
         if (tt == null)
             return null;
 
         tt.PlacementTarget = placementTarget;
-        contentCreator(tt);
+        contentCreator?.Invoke(tt);
         CurrentToolTip = tt;
-        tt.Show();
+
+        if (tt is Window window)
+        {
+            window.Show();
+        }
         return tt;
     }
 
@@ -3640,9 +3648,17 @@ public partial class Window : Canvas, ITitleBarParent
             return;
 
         CurrentToolTip = null;
-        ctt.Children.Clear();
-        ctt.PlacementTarget = null;
-        ctt.Destroy();
+
+        if (ctt is Visual visual)
+        {
+            visual.Children.Clear();
+            ctt.PlacementTarget = null;
+        }
+
+        if (ctt is Window window)
+        {
+            window.Destroy();
+        }
     }
 
     /// <inheritdoc/>
@@ -3955,7 +3971,7 @@ public partial class Window : Canvas, ITitleBarParent
             _visualsTree?.Move(visual, renderBounds);
 
             // vtree is recomputed, remove the tooltip
-            RemoveToolTip(EventArgs.Empty);
+            //RemoveToolTip(EventArgs.Empty);
         }
     }
 
@@ -4829,7 +4845,7 @@ public partial class Window : Canvas, ITitleBarParent
                     break;
 
                 var ttHandle = HWND.Null;
-                var tt = win.CurrentToolTip;
+                var tt = win.CurrentToolTip as Window;
                 if (tt != null && tt._native?.IsValueCreated == true)
                 {
                     ttHandle = tt.Native.Handle;

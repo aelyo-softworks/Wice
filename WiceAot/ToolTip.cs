@@ -5,7 +5,7 @@
 /// Uses a single content visual (default: <see cref="Canvas"/>) with an optional drop shadow.
 /// Adjusts its placement offsets to account for the content margin required by the shadow.
 /// </summary>
-public partial class ToolTip : PopupWindow, IContentParent
+public partial class ToolTip : PopupWindow, IToolTip, IContentParent
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ToolTip"/> class.

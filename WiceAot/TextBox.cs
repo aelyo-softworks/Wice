@@ -244,7 +244,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         public override string ToString() => Text;
     }
 
-    private void Reset()
+    /// <summary>
+    /// Resets the layout cache, releasing any resources associated with the current layout.
+    /// </summary>
+    protected virtual void ResetLayoutCache()
     {
         Interlocked.Exchange(ref _layout, null)?.Dispose();
         _rendered = false;
@@ -2018,6 +2021,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         var oldTextLength = text.Length;
 
         var lengthToRemove = length ?? (uint)(text.Length - position);
+        if (lengthToRemove == 0)
+            return;
+
+        lengthToRemove = Math.Min(lengthToRemove, (uint)text.Length - position);
         text = text.Remove((int)position, (int)lengthToRemove);
 
         var newLayout = RecreateLayout(text);
@@ -2342,8 +2349,13 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         return SetSelection(isTrailingHit ? TextBoxSetSelection.AbsoluteTrailing : TextBoxSetSelection.AbsoluteLeading, caretMetrics.textPosition, extendSelection);
     }
 
-    private void SetText(string text)
+    /// <summary>
+    /// Updates the text content and records the change to support undo operations.
+    /// </summary>
+    /// <param name="text">The new text value to assign. This parameter cannot be null.</param>
+    protected virtual void SetText(string text)
     {
+        ExceptionExtensions.ThrowIfNull(text, nameof(text));
         var state = UndoState.From(this);
         _undoStack.Do(state);
         Text = text;
@@ -3288,7 +3300,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     protected override void OnDetachingFromComposition(object? sender, EventArgs e)
     {
         base.OnDetachingFromComposition(sender, e);
-        Reset();
+        ResetLayoutCache();
     }
 
     bool IImmVisual.SetImmCompositionWindowPosition(Window window) => SetImmCompositionWindowPosition(window);

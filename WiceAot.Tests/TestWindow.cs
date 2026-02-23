@@ -31,9 +31,10 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
+        AddToolTip();
         //AddDocks();
         //AddSlider();
-        AddListBox();
+        //AddListBox();
         //AddResizableListBox();
         //AddScollableListBox();
         //AddCheckBoxList();
@@ -82,6 +83,41 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void AddToolTip()
+    {
+        var canvas = new Canvas();
+        canvas.MeasureToContent = DimensionOptions.Width;
+        Children.Add(canvas);
+
+        var theme = GetWindowTheme();
+        var rr = new RoundedRectangle
+        {
+            RenderBrush = Compositor.CreateColorBrush(theme.ToolTipColor.ToColor())
+        };
+        canvas.Children.Add(rr);
+
+        var tb = new TextBox
+        {
+            Text = "this is stuff",
+            FontStretch = DWRITE_FONT_STRETCH.DWRITE_FONT_STRETCH_ULTRA_CONDENSED,
+            DrawOptions = D2D1_DRAW_TEXT_OPTIONS.D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT,
+            WordWrapping = DWRITE_WORD_WRAPPING.DWRITE_WORD_WRAPPING_WRAP
+        };
+        updateStyle();
+
+        tb.SetTypography(Typography.WithLigatures.DWriteTypography?.Object);
+        canvas.Children.Add(tb);
+
+        canvas.Children.Add(new Border { Width = 20, Height = 20, RenderBrush = Compositor!.CreateColorBrush(D3DCOLORVALUE.Red.ToColor()) });
+
+        void updateStyle()
+        {
+            rr.CornerRadius = new Vector2(theme.ToolTipCornerRadius);
+            tb.Margin = theme.ToolTipMargin;
+            tb.FontSize = theme.ToolTipBaseSize + theme.ToolTipMargin;
+        }
     }
 
     public void AddScollableListBox()
