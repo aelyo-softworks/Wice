@@ -493,8 +493,12 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         {
             IsFocusable = false,
             ToolTipContentCreator = tt => Window.CreateDefaultToolTipContent(tt, GetValueString(SliderValueContext.ToolTip, Value)),
-            Cursor = Cursor.Hand,
         };
+
+        if (IsEnabled)
+        {
+            th.Cursor = Cursor.Hand;
+        }
         return th;
     }
 
@@ -804,14 +808,20 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
             {
                 MinTrackVisual?.Opacity = 1;
                 MaxTrackVisual?.Opacity = 1;
+                MinValueVisual?.Opacity = 1;
+                MaxValueVisual?.Opacity = 1;
                 Thumb?.Opacity = 1;
+                Thumb?.Cursor = Cursor.Hand;
             }
             else
             {
                 var opacity = GetWindowTheme().DisabledOpacityRatio;
                 MinTrackVisual?.Opacity = opacity;
                 MaxTrackVisual?.Opacity = opacity;
+                MinValueVisual?.Opacity = opacity;
+                MaxValueVisual?.Opacity = opacity;
                 Thumb?.Opacity = opacity;
+                Thumb?.Cursor = null;
             }
             return true;
         }
