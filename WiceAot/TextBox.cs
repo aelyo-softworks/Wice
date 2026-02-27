@@ -275,6 +275,12 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     public virtual bool RaiseTextChanged { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the selection is visually rendered in the control.
+    /// </summary>
+    [Browsable(false)]
+    public virtual bool RenderSelection { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets when <see cref="TextChanged"/> is emitted relative to focus/return key events.
     /// </summary>
     [Browsable(false)]
@@ -1335,66 +1341,69 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         try
         {
             // draw selection
-            var caretRange = GetSelectionRange();
-            if (caretRange.length > 0)
+            if (RenderSelection)
             {
-#if NETFRAMEWORK
-                layout.Object.HitTestTextRange(
-                      caretRange.startPosition,
-                      caretRange.length,
-                      origin.x,
-                      origin.y,
-                      null,
-                      0,
-                      out var actualHitTestCount
-                      ); // no error check
-#else
-                layout.Object.HitTestTextRange(
-                    caretRange.startPosition,
-                    caretRange.length,
-                    origin.x,
-                    origin.y,
-                    0,
-                    0,
-                    out var actualHitTestCount
-                    ); // no error check
-#endif
-
-                if (actualHitTestCount > 0)
+                var caretRange = GetSelectionRange();
+                if (caretRange.length > 0)
                 {
-                    var hitTestMetrics = new DWRITE_HIT_TEST_METRICS[actualHitTestCount];
 #if NETFRAMEWORK
                     layout.Object.HitTestTextRange(
-                        caretRange.startPosition,
-                        caretRange.length,
-                        origin.x,
-                        origin.y,
-                        hitTestMetrics,
-                        hitTestMetrics.Length,
-                        out _
-                        ).ThrowOnError();
+                          caretRange.startPosition,
+                          caretRange.length,
+                          origin.x,
+                          origin.y,
+                          null,
+                          0,
+                          out var actualHitTestCount
+                          ); // no error check
 #else
                     layout.Object.HitTestTextRange(
                         caretRange.startPosition,
                         caretRange.length,
                         origin.x,
                         origin.y,
-                        hitTestMetrics.AsPointer(),
-                        hitTestMetrics.Length(),
-                        out _
-                        ).ThrowOnError();
+                        0,
+                        0,
+                        out var actualHitTestCount
+                        ); // no error check
 #endif
 
-                    // Note that an ideal layout will return fractional values, so you may see slivers between the selection ranges,
-                    // due to the per-primitive antialiasing of the edges unless it is disabled (better for performance anyway).
-                    context.DeviceContext.Object.SetAntialiasMode(D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_ALIASED);
-                    foreach (var htm in hitTestMetrics)
+                    if (actualHitTestCount > 0)
                     {
-                        var highlightRect = new D2D_RECT_F(htm.left, htm.top, htm.left + htm.width, htm.top + htm.height);
-                        context.DeviceContext.Object.FillRectangle(highlightRect, GetSelectionBrush(context, brush).Object);
-                    }
+                        var hitTestMetrics = new DWRITE_HIT_TEST_METRICS[actualHitTestCount];
+#if NETFRAMEWORK
+                        layout.Object.HitTestTextRange(
+                            caretRange.startPosition,
+                            caretRange.length,
+                            origin.x,
+                            origin.y,
+                            hitTestMetrics,
+                            hitTestMetrics.Length,
+                            out _
+                            ).ThrowOnError();
+#else
+                        layout.Object.HitTestTextRange(
+                            caretRange.startPosition,
+                            caretRange.length,
+                            origin.x,
+                            origin.y,
+                            hitTestMetrics.AsPointer(),
+                            hitTestMetrics.Length(),
+                            out _
+                            ).ThrowOnError();
+#endif
 
-                    context.DeviceContext.Object.SetAntialiasMode(D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
+                        // Note that an ideal layout will return fractional values, so you may see slivers between the selection ranges,
+                        // due to the per-primitive antialiasing of the edges unless it is disabled (better for performance anyway).
+                        context.DeviceContext.Object.SetAntialiasMode(D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_ALIASED);
+                        foreach (var htm in hitTestMetrics)
+                        {
+                            var highlightRect = new D2D_RECT_F(htm.left, htm.top, htm.left + htm.width, htm.top + htm.height);
+                            context.DeviceContext.Object.FillRectangle(highlightRect, GetSelectionBrush(context, brush).Object);
+                        }
+
+                        context.DeviceContext.Object.SetAntialiasMode(D2D1_ANTIALIAS_MODE.D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
+                    }
                 }
             }
 
