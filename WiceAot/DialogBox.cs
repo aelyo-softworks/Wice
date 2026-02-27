@@ -152,7 +152,6 @@ public partial class DialogBox : Dialog
         }
 
         bar.MaxButton?.IsVisible = false;
-
         bar.MinButton?.IsVisible = false;
 
         if (bar.CloseButton is IClickable clickable)

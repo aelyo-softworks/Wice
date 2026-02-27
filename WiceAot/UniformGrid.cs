@@ -179,7 +179,7 @@ public partial class UniformGrid : RenderVisual
         }
         else
         {
-            if (Children.Count < Rows * Columns)
+            if (Children.Count <= Rows * Columns)
             {
                 context.DeviceContext.Clear(D3DCOLORVALUE.Transparent);
             }

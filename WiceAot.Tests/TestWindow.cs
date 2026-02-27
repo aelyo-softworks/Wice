@@ -31,7 +31,8 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
-        AddToolTip();
+        AddTexBoxInDialog();
+        //AddToolTip();
         //AddDocks();
         //AddSlider();
         //AddListBox();
@@ -83,6 +84,62 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    public void AddTexBoxInDialog()
+    {
+        var dlg = new MyBox();
+        dlg.Show(Window!);
+    }
+
+    private sealed class MyBox : DialogBox
+    {
+        public MyBox()
+        {
+            var grid = new UniformGrid
+            {
+                Rows = 2,
+                Columns = 2
+            };
+            DialogContent.Children.Add(grid);
+
+            var margin = 4;
+
+            var load = new Button
+            {
+                VerticalAlignment = Alignment.Center,
+                Margin = margin,
+            };
+            load.Text.Text = "Button 1";
+            grid.Children.Add(load);
+
+            var save = new Button
+            {
+                VerticalAlignment = Alignment.Center,
+                Margin = margin,
+            };
+            save.Text.Text = "Button 2";
+            grid.Children.Add(save);
+
+            var label = new TextBox
+            {
+                Text = "Label",
+                VerticalAlignment = Alignment.Center,
+                ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT.DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+                Margin = margin,
+            };
+            grid.Children.Add(label);
+
+            var lineShortcut = new TextBox
+            {
+                IsEditable = true,
+                Text = "CTRL+X",
+                Margin = margin,
+            };
+            grid.Children.Add(lineShortcut);
+        }
+
+        public void Show(Wice.Window parent) => parent.Children.Add(this);
     }
 
     public void AddToolTip()

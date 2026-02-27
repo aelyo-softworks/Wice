@@ -105,6 +105,11 @@ public partial class EditorHost<T> : HeaderedContent
 #endif
 
     /// <summary>
+    /// Gets a value indicating whether the dialog is currently open.
+    /// </summary>
+    public bool IsOpened => Dialog != null;
+
+    /// <summary>
     /// Gets or sets the editor mode that influences dialog modality/overlay at open time.
     /// </summary>
     public virtual EditorMode EditorMode { get; set; }
