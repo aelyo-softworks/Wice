@@ -9,7 +9,6 @@
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-		<WindowsSdkPackageVersion>10.0.26100.57</WindowsSdkPackageVersion>
 		<RootNamespace>Wice.Samples.Gallery</RootNamespace>
 		<ApplicationIcon>wice_color.ico</ApplicationIcon>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
