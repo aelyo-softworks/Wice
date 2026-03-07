@@ -690,7 +690,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     {
         base.OnFocusedChanged(sender, e);
 
-        if (IsFocused)
+        if (e.Value)
         {
             ShowCaret();
             SetCaretLocation();
@@ -757,10 +757,14 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         caret?.IsShown = false;
     }
 
-    /// <summary>Stops edit mode (currently hides the caret).</summary>
-    protected virtual void StopEdit() => HideCaret();
+    /// <summary>Stops edit mode.</summary>
+    protected virtual void StopEdit()
+    {
+        _selecting = false;
+        HideCaret();
+    }
 
-    /// <summary>Starts edit mode (shows caret and syncs caret formatting).</summary>
+    /// <summary>Starts edit mode.</summary>
     protected virtual void Edit()
     {
         ShowCaret();
@@ -1974,9 +1978,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         InsertTextAt(_charPosition + _charPositionOffset, text);
         SetSelection(TextBoxSetSelection.RightChar, (uint)text.Length, false);
     }
-
-    //private int MirrorXCoordinate(int x, float paddingRight)
-    //{ ... }
 
     private void InsertTextAt(uint position, string textToInsert, CaretFormat? caretFormat = null)
     {

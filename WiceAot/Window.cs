@@ -325,6 +325,11 @@ public partial class Window : Canvas, ITitleBarParent
     public virtual bool EnableKeyEventTraces { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether focus event traces are enabled.
+    /// </summary>
+    public virtual bool EnableFocusEventTraces { get; set; }
+
+    /// <summary>
     /// Gets the flags used to configure the creation of the Direct3D 11 device.
     /// </summary>
     protected virtual D3D11_CREATE_DEVICE_FLAG CreateDeviceFlags
@@ -522,6 +527,11 @@ public partial class Window : Canvas, ITitleBarParent
                 throw new ArgumentException(null, nameof(value));
 
             var old = _focusedVisual;
+            if (EnableFocusEventTraces)
+            {
+                Application.Trace($"FocusedVisual changed from {old} to {value}");
+            }
+
             _focusedVisual = value;
 
             old?.IsFocusedChanged(false);
@@ -3907,7 +3917,7 @@ public partial class Window : Canvas, ITitleBarParent
             }
         }
 
-        OnKeyEvent(e, this);
+        OnKeyEvent(e, this, 0);
         if (e.Handled)
             return;
 
@@ -4022,40 +4032,38 @@ public partial class Window : Canvas, ITitleBarParent
         return isChild;
     }
 
-    private bool OnKeyEvent(KeyEventArgs e, Visual visual)
+    private bool OnKeyEvent(KeyEventArgs e, Visual visual, int level)
     {
         var children = visual.Children.ToArray(); // race condition (early keyboard event)
-        if (children == null)
-            return false;
-
         if (EnableKeyEventTraces)
         {
-            Application.Trace("processing key event " + e + " on " + visual.FullName);
+            var sindent = new string(' ', level);
+            Application.Trace(sindent + "processing key event " + e + " on " + visual.FullName);
             foreach (var child in children)
             {
                 if (!CanReceiveInput(child))
                 {
-                    Application.Trace(" skip (CanReceiveInput=false): " + child.Level + "/" + child.ZIndexOrDefault + " " + child.FullName);
+                    Application.Trace(sindent + " skip (CanReceiveInput=false): " + child.Level + "/" + child.ZIndexOrDefault + " " + child.FullName);
                     continue;
                 }
 
                 child.OnKeyEvent(e);
                 if (e.Handled)
                 {
-                    Application.Trace(" handled by: " + child.Level + "/" + child.ZIndexOrDefault + " " + child.FullName);
+                    Application.Trace(sindent + " is handled by: " + child.Level + "/" + child.ZIndexOrDefault + " " + child.FullName);
                     return true;
                 }
             }
 
             foreach (var child in children)
             {
-                if (OnKeyEvent(e, child))
+                if (OnKeyEvent(e, child, level + 1))
                 {
-                    Application.Trace(" handled by: " + child.Level + "/" + child.ZIndexOrDefault + " " + child.FullName);
+                    Application.Trace(sindent + " was handled below: " + child.Level + "/" + child.ZIndexOrDefault + " " + child.FullName);
                     return true;
                 }
             }
-            Application.Trace(" not handled");
+            Application.Trace(sindent + " is not handled");
         }
         else
         {
@@ -4071,7 +4079,7 @@ public partial class Window : Canvas, ITitleBarParent
 
             foreach (var child in children)
             {
-                if (OnKeyEvent(e, child))
+                if (OnKeyEvent(e, child, level + 1))
                     return true;
             }
         }
@@ -4845,8 +4853,7 @@ public partial class Window : Canvas, ITitleBarParent
                     break;
 
                 var ttHandle = HWND.Null;
-                var tt = win.CurrentToolTip as Window;
-                if (tt != null && tt._native?.IsValueCreated == true)
+                if (win.CurrentToolTip is Window tt && tt._native?.IsValueCreated == true)
                 {
                     ttHandle = tt.Native.Handle;
                 }
@@ -4903,12 +4910,21 @@ public partial class Window : Canvas, ITitleBarParent
                 if (win == null)
                     break;
 
+                if (win.EnableFocusEventTraces)
+                {
+                    Application.Trace($"WM_SETFOCUS to {win} loser: {wParam} [{NativeWindow.FromHandle(hwnd)}]");
+                }
                 win.HasFocus = true;
                 break;
 
             case MessageDecoder.WM_KILLFOCUS:
                 if (win == null)
                     break;
+
+                if (win.EnableFocusEventTraces)
+                {
+                    Application.Trace($"WM_KILLFOCUS to {win} receiver: {wParam} [{NativeWindow.FromHandle(hwnd)}]");
+                }
 
                 win.HasFocus = false;
                 break;

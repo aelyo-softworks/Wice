@@ -269,7 +269,7 @@ public partial class GridSplitter : Visual
     /// <inheritdoc/>
     protected override void OnKeyDown(object? sender, KeyEventArgs e)
     {
-        if (e.Key == VIRTUAL_KEY.VK_ESCAPE)
+        if (e.Key == VIRTUAL_KEY.VK_ESCAPE && IsDragging)
         {
             CancelDrag(e);
             e.Handled = true;
