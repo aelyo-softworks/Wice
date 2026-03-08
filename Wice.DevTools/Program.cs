@@ -88,6 +88,12 @@ class Program
                 }
                 else
                 {
+                    if (line.TrimEnd() == (tabs + "} //"))
+                    {
+                        addLine("}"); //trick to support samples that put the closing } on the same line as the remark
+                        continue;
+                    }
+
                     if (line.Length > index)
                     {
                         addLine(line.Substring(index));

@@ -9,8 +9,7 @@ public class SimpleVerticalStackSample : Sample
     {
         var stack = new Wice.Stack
         {
-            Spacing = new D2D_SIZE_F(parent.Window!.DipsToPixels(10),
-            parent.Window!.DipsToPixels(10))
+            Spacing = new D2D_SIZE_F(parent.Window!.DipsToPixels(10), parent.Window!.DipsToPixels(10))
         };
         parent.Children.Add(stack);
         Wice.Dock.SetDockType(stack, DockType.Top); // remove from display

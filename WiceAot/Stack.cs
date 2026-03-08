@@ -107,8 +107,7 @@ public partial class Stack : Visual
             else
             {
                 height += spacing.height * (children.Length + 1);
-                // Note: width side-padding uses spacing.height in this implementation.
-                width += spacing.height * 2;
+                width += spacing.width * 2;
             }
         }
 
@@ -145,6 +144,7 @@ public partial class Stack : Visual
                 }
 
                 childRect = D2D_RECT_F.Sized(position, rc.top, rc.Width, rc.Height);
+
                 // Horizontal gaps: before first and between children; vertical padding once per side.
                 childRect.left += spacing.width * (i + 1);
                 childRect.right += spacing.width * (i + 1);
@@ -164,6 +164,7 @@ public partial class Stack : Visual
                 }
 
                 childRect = D2D_RECT_F.Sized(rc.left, position, rc.Width, rc.Height);
+
                 // Vertical gaps: before first and between children; horizontal padding once per side.
                 childRect.top += spacing.height * (i + 1);
                 childRect.bottom += spacing.height * (i + 1);

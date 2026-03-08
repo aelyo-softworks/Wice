@@ -25,6 +25,7 @@
 	<ItemGroup>
 		<None Remove="Resources\aelyo_flat.png" />
 		<None Remove="Resources\Big_Buck_Bunny_360_10s_1MB.mp4" />
+		<None Remove="Resources\FluentSystemIcons-Regular.woff2" />
 		<None Remove="Resources\lorem-cn.txt" />
 		<None Remove="Resources\rainier.jpg" />
 		<None Remove="Resources\sample.pdf" />
@@ -44,6 +45,9 @@
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\aelyo_flat.png" />
 		<EmbeddedResource Include="Resources\Big_Buck_Bunny_360_10s_1MB.mp4" />
+		<EmbeddedResource Include="Resources\FluentSystemIcons-Regular.woff2">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
 		<EmbeddedResource Include="Resources\lorem-cn.txt" />
 		<EmbeddedResource Include="Resources\rainier.jpg" />
 		<EmbeddedResource Include="Resources\sample.pdf">

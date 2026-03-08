@@ -31,7 +31,8 @@ internal partial class TestWindow : Window
         //AddUniformGridImmersiveColors();
         //AddUniformGridSysColors();
 
-        AddTexBoxInDialog();
+        AddCustomFontTextBox();
+        //AddTexBoxInDialog();
         //AddToolTip();
         //AddDocks();
         //AddSlider();
@@ -84,6 +85,46 @@ internal partial class TestWindow : Window
                 label.Text = DateTime.Now.ToString();
             });
         }, null, 0, 1000);
+    }
+
+    static IComObject<IDWriteFontCollection1>? _coll;
+
+    public void AddCustomFontTextBox()
+    {
+        var fac = Application.CurrentResourceManager.DWriteFactory.As<IDWriteFactory5>()!;
+        var loader = new DirectN.Extensions.Utilities.PackedFontFileLoader(fac, DWRITE_CONTAINER_TYPE.DWRITE_CONTAINER_TYPE_WOFF2);
+        using var file = loader.CreateCustomFontFileReference(@"Resources\FluentSystemIcons-Regular.woff2");
+        //file.Object.Analyze(out var a, out var b, 0, out var faces);
+
+        using var builder = fac.CreateFontSetBuilder();
+        builder.AddFontFile(file);
+        using var set = builder.CreateFontSet();
+        //var fonts = set.GetFonts().OrderBy(f => f.ToString());
+
+        _coll = fac.CreateFontCollectionFromFontSet(set);
+
+        var stack = new Stack();
+        Children.Add(stack);
+
+        var tb = new TextBox()
+        {
+            Text = "This is a text with a custom font loaded from file:",
+            FontSize = 24,
+            Margin = D2D_RECT_F.Thickness(10),
+            VerticalAlignment = Alignment.Near,
+        };
+        stack.Children.Add(tb);
+
+        var tb2 = new TextBox()
+        {
+            // should display the access time icon
+            Text = "Access time icon '\ue000'",
+            FontFamilyName = "FluentSystemIcons-Regular",
+            FontCollection = _coll,
+            FontSize = 34,
+            Margin = D2D_RECT_F.Thickness(10)
+        };
+        stack.Children.Add(tb2);
     }
 
     public void AddTexBoxInDialog()
@@ -151,7 +192,7 @@ internal partial class TestWindow : Window
         var theme = GetWindowTheme();
         var rr = new RoundedRectangle
         {
-            RenderBrush = Compositor.CreateColorBrush(theme.ToolTipColor.ToColor())
+            RenderBrush = Compositor!.CreateColorBrush(theme.ToolTipColor.ToColor())
         };
         canvas.Children.Add(rr);
 

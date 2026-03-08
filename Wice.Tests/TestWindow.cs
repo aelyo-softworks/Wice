@@ -25,7 +25,8 @@ public class TestWindow : Window
         //TestEffect();
         WindowsFunctions.EnableMouseInPointer();
 
-        AddTexBoxInDialog();
+        AddCustomFontTextBox();
+        //AddTexBoxInDialog();
         //AddBordersForVisualOrderCheck1();
         //AddBorders();
 
@@ -142,6 +143,30 @@ public class TestWindow : Window
         //        }, true);
         //    }
         //};
+    }
+
+    public void AddCustomFontTextBox()
+    {
+        var stack = new Stack();
+        stack.Name = "zzz";
+        stack.VerticalAlignment = Alignment.Center;
+        Children.Add(stack);
+
+        var tb = new TextBox()
+        {
+            Text = "This is a text with a custom font loaded from file:",
+            FontSize = 24,
+            Margin = D2D_RECT_F.Thickness(10)
+        };
+        stack.Children.Add(tb);
+
+        var tb2 = new TextBox()
+        {
+            Text = "This is a textz with a custom font loaded from file:",
+            //FontSize = 34,
+            Margin = D2D_RECT_F.Thickness(10)
+        };
+        stack.Children.Add(tb2);
     }
 
     public void AddTexBoxInDialog()

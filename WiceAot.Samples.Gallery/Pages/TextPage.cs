@@ -17,6 +17,9 @@ public partial class TextPage : SampleListPage
         {
             yield return new RichTextBoxSampleList();
             yield return new TextBoxSampleList();
+#if !NETFRAMEWORK
+            yield return new FontsSampleList();
+#endif
         }
     }
 }
