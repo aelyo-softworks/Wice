@@ -22,14 +22,12 @@ public partial class ItemVisual : Border, IOneChildParent, IFocusableParent, ISe
     /// </summary>
     public ItemVisual()
     {
-        RaiseIsSelectedChanged = true;
     }
 
     /// <summary>
     /// Virtual hook to enable/disable event emission for selection changes.
     /// </summary>
-    protected virtual bool RaiseIsSelectedChanged { get; set; }
-    bool ISelectable.RaiseIsSelectedChanged { get => RaiseIsSelectedChanged; set => RaiseIsSelectedChanged = value; }
+    public virtual bool RaiseIsSelectedChanged { get; set; } = true;
 
     /// <summary>
     /// Provides data-binding logic used to map the current data item onto the child visual.

@@ -218,6 +218,11 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     public virtual TypeConverter? TypeConverter { get; set; }
 
     /// <summary>
+    /// Gets or sets whether <see cref="IValueable.ValueChanged"/> is raised automatically when <see cref="Value"/> changes.
+    /// </summary>
+    public virtual bool RaiseValueChanged { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the string used to separate items in a list.
     /// </summary>
     public virtual string? ListSeparator { get; set; }
@@ -653,7 +658,13 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// </summary>
     /// <param name="sender">The source of the event, typically the object whose value has changed.</param>
     /// <param name="e">An instance of ValueEventArgs that contains the new value and any associated event data.</param>
-    protected virtual void OnValueChanged(object? sender, ValueEventArgs e) => ValueChanged?.Invoke(sender, e);
+    protected virtual void OnValueChanged(object? sender, ValueEventArgs e)
+    {
+        if (RaiseValueChanged)
+        {
+            ValueChanged?.Invoke(sender, e);
+        }
+    }
 
     /// <inheritdoc/>
     protected override bool AreErrorsEqual(IEnumerable? errors1, IEnumerable? errors2) => false;

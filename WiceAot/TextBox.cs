@@ -185,14 +185,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     /// </summary>
     public event EventHandler<ValueEventArgs<string>>? TextChanged;
 
-    /// <summary>
-    /// Initializes a new instance of <see cref="TextBox"/> with <see cref="RaiseTextChanged"/> set to <see langword="true"/>.
-    /// </summary>
-    public TextBox()
-    {
-        RaiseTextChanged = true;
-    }
-
     bool IValueable.CanChangeValue { get => IsEditable && IsEnabled; set => IsEditable = value; }
     object IValueable.Value => Text;
     bool IValueable.TrySetValue(object? value)
@@ -272,7 +264,13 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     /// Gets or sets whether <see cref="TextChanged"/> is raised automatically when <see cref="Text"/> changes.
     /// </summary>
     [Browsable(false)]
-    public virtual bool RaiseTextChanged { get; set; }
+    public virtual bool RaiseTextChanged { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether <see cref="IValueable.ValueChanged"/> is raised automatically when <see cref="Text"/> changes.
+    /// </summary>
+    [Browsable(false)]
+    public virtual bool RaiseValueChanged { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether the selection is visually rendered in the control.
@@ -558,7 +556,7 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     /// </summary>
     public virtual void CommitChanges()
     {
-        if (_textHasChanged && RaiseTextChanged)
+        if (_textHasChanged)
         {
             OnTextChanged(this, new ValueEventArgs<string>(Text));
         }
@@ -571,9 +569,6 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     protected virtual void DoOnTextChanged(object sender, ValueEventArgs<string> e)
     {
         _textHasChanged = true;
-        if (!RaiseTextChanged)
-            return;
-
         if (TextChangedTrigger != EventTrigger.LostFocus &&
             TextChangedTrigger != EventTrigger.LostFocusOrReturnPressed)
         {
@@ -586,8 +581,16 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
     /// </summary>
     protected virtual void OnTextChanged(object sender, ValueEventArgs<string> e)
     {
-        TextChanged?.Invoke(sender, e);
-        _valueChanged?.Invoke(sender, e);
+        if (RaiseTextChanged)
+        {
+            TextChanged?.Invoke(sender, e);
+        }
+
+        if (RaiseValueChanged)
+        {
+            _valueChanged?.Invoke(sender, e);
+        }
+
         _textHasChanged = false;
     }
 

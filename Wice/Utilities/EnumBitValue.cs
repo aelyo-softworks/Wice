@@ -9,11 +9,7 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
 
     public EnumBitValue(object value)
     {
-        if (value == null)
-            throw new ArgumentNullException(nameof(value));
-
-        Value = value;
-        RaiseIsSelectedChanged = true;
+        Value = value ?? throw new ArgumentNullException(nameof(value));
         _isMultiValued = new Lazy<bool>(GetIsMultiValued);
     }
 
@@ -38,9 +34,7 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
         }
     }
 
-    bool ISelectable.RaiseIsSelectedChanged { get => RaiseIsSelectedChanged; set => RaiseIsSelectedChanged = value; }
-    protected virtual bool RaiseIsSelectedChanged { get; set; }
-
+    public virtual bool RaiseIsSelectedChanged { get; set; } = true;
     public virtual ulong UInt64BitValue => Conversions.EnumToUInt64(BitValue);
     public bool IsZero => UInt64BitValue == 0;
     public bool IsMultiValued => _isMultiValued.Value;
@@ -65,6 +59,7 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
         return false;
     }
 
+    bool IValueable.RaiseValueChanged { get => false; set => throw new NotSupportedException(); }
     bool IValueable.CanChangeValue { get => false; set => throw new NotSupportedException(); }
     bool IValueable.TrySetValue(object value) => false;
     object IValueable.Value => Value;

@@ -472,6 +472,7 @@ public sealed class GuidEditorCreator<[DynamicallyAccessedMembers(DynamicallyAcc
         }
 
         public IValueable Inner { get; }
+        public bool RaiseValueChanged { get; set; } = true;
 
         public object? Value => Inner.Value;
         public bool CanChangeValue { get => Inner.CanChangeValue; set => Inner.CanChangeValue = value; }

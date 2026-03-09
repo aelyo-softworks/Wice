@@ -70,7 +70,6 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
         return false;
     }
 
-    bool ISelectable.RaiseIsSelectedChanged { get; set; }
     bool ISelectable.IsSelected { get => Value; set => Value = value; }
 
     /// <summary>
@@ -131,6 +130,18 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
     /// </summary>
     [Category(CategoryBehavior)]
     public virtual bool AutoSize { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether <see cref="IValueable.ValueChanged"/> is raised automatically when <see cref="Value"/> changes.
+    /// </summary>
+    [Browsable(false)]
+    public virtual bool RaiseValueChanged { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether <see cref="ISelectable.RaiseIsSelectedChanged"/> is raised automatically when <see cref="Value"/> changes.
+    /// </summary>
+    [Browsable(false)]
+    public virtual bool RaiseIsSelectedChanged { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the current on/off state of the control.
@@ -224,7 +235,7 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
     /// <param name="e">New selected value.</param>
     protected virtual void OnIsSelectedChanged(object? sender, ValueEventArgs<bool> e)
     {
-        if (((ISelectable)this).RaiseIsSelectedChanged)
+        if (RaiseIsSelectedChanged)
         {
             IsSelectedChanged?.Invoke(sender, e);
         }
@@ -238,8 +249,12 @@ public partial class ToggleSwitch : ButtonBase, IValueable, ISelectable
     /// <param name="e">New value.</param>
     protected virtual void OnValueChanged(object? sender, ValueEventArgs<bool> e)
     {
-        ValueChanged?.Invoke(sender, e);
-        _valueChanged?.Invoke(sender, e);
+        if (RaiseValueChanged)
+        {
+            ValueChanged?.Invoke(sender, e);
+            _valueChanged?.Invoke(sender, e);
+        }
+
         OnIsSelectedChanged(sender, e);
     }
 

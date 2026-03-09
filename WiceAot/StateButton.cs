@@ -42,7 +42,18 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
         OnThemeDpiEvent(null, ThemeDpiEventArgs.FromWindow(Window));
     }
 
-    bool ISelectable.RaiseIsSelectedChanged { get; set; }
+    /// <summary>
+    /// Gets or sets whether <see cref="IValueable.ValueChanged"/> is raised automatically when <see cref="Value"/> changes.
+    /// </summary>
+    [Browsable(false)]
+    public virtual bool RaiseValueChanged { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether <see cref="ISelectable.IsSelectedChanged"/> is raised automatically when <see cref="Value"/> changes.
+    /// </summary>
+    [Browsable(false)]
+    public virtual bool RaiseIsSelectedChanged { get; set; } = true;
+
     bool ISelectable.IsSelected
     {
         get => true.Equals(Value);
@@ -98,7 +109,7 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
     /// <param name="e">The event data.</param>
     protected virtual void OnIsSelectedChanged(object? sender, ValueEventArgs<bool> e)
     {
-        if (((ISelectable)this).RaiseIsSelectedChanged)
+        if (RaiseIsSelectedChanged)
         {
             IsSelectedChanged?.Invoke(sender, e);
         }
@@ -169,7 +180,13 @@ public partial class StateButton : ButtonBase, IValueable, ISelectable
     /// </summary>
     /// <param name="sender">The event source.</param>
     /// <param name="e">The event data.</param>
-    protected virtual void OnValueChanged(object sender, ValueEventArgs e) => ValueChanged?.Invoke(sender, e);
+    protected virtual void OnValueChanged(object sender, ValueEventArgs e)
+    {
+        if (RaiseValueChanged)
+        {
+            ValueChanged?.Invoke(sender, e);
+        }
+    }
 
     private StateButtonState? GetNextState()
     {

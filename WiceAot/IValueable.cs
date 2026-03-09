@@ -12,6 +12,12 @@ public interface IValueable
     event EventHandler<ValueEventArgs> ValueChanged;
 
     /// <summary>
+    /// Gets or sets a value indicating whether <see cref="ValueChanged"/> should be raised when
+    /// <see cref="ValueChanged"/> is modified.
+    /// </summary>
+    bool RaiseValueChanged { get; set; }
+
+    /// <summary>
     /// Gets the current value.
     /// </summary>
     object? Value { get; }

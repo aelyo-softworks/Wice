@@ -266,6 +266,12 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     public virtual Func<float, float>? InverseValueFunc { get; set; }
 
     /// <summary>
+    /// Gets or sets whether <see cref="IValueable.ValueChanged"/> is raised automatically when <see cref="Value"/> changes.
+    /// </summary>
+    [Browsable(false)]
+    public virtual bool RaiseValueChanged { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the slider orientation.
     /// </summary>
     [Category(CategoryLayout)]
@@ -1066,8 +1072,12 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     /// <param name="e">An instance of ValueEventArgs that contains the new value and any associated event data.</param>
     protected virtual void OnValueChanged(object? sender, ValueEventArgs<T> e)
     {
-        ValueChanged?.Invoke(sender, e);
-        _valueChanged?.Invoke(sender, e);
+        if (RaiseValueChanged)
+        {
+            ValueChanged?.Invoke(sender, e);
+            _valueChanged?.Invoke(sender, e);
+        }
+
         UpdateValueWindow();
     }
 

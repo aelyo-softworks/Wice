@@ -42,7 +42,6 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
     /// </summary>
     public Header()
     {
-        RaiseIsSelectedChanged = true;
         AutoSelect = true;
         Cursor = Cursor.Hand;
         IsFocusable = true;
@@ -240,14 +239,9 @@ public partial class Header : Canvas, IAccessKeyParent, ISelectable
     protected virtual Button? CreateCloseButton() => new();
 
     /// <summary>
-    /// Gets or sets whether <see cref="IsSelectedChanged"/> should be raised when <see cref="IsSelected"/> updates.
-    /// </summary>
-    bool ISelectable.RaiseIsSelectedChanged { get => RaiseIsSelectedChanged; set => RaiseIsSelectedChanged = value; }
-
-    /// <summary>
     /// Gets or sets whether <see cref="IsSelectedChanged"/> should be raised upon selection change.
     /// </summary>
-    protected virtual bool RaiseIsSelectedChanged { get; set; }
+    public virtual bool RaiseIsSelectedChanged { get; set; } = true;
 
     /// <summary>
     /// Raises <see cref="IsSelectedChanged"/>.

@@ -18,6 +18,12 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, EnumListBox.IB
     private bool _in;
 
     /// <summary>
+    /// Gets or sets whether <see cref="IValueable.ValueChanged"/> is raised automatically when <see cref="Value"/> changes.
+    /// </summary>
+    [Browsable(false)]
+    public virtual bool RaiseValueChanged { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the current enum value represented by this list.
     /// </summary>
     [Category(CategoryBehavior)]
@@ -110,7 +116,13 @@ public partial class FlagsEnumListBox : CheckBoxList, IValueable, EnumListBox.IB
     /// </summary>
     /// <param name="sender">The event sender (this control).</param>
     /// <param name="e">The event args containing the new value.</param>
-    protected virtual void OnValueChanged(object sender, ValueEventArgs e) => ValueChanged?.Invoke(sender, e);
+    protected virtual void OnValueChanged(object sender, ValueEventArgs e)
+    {
+        if (RaiseValueChanged)
+        {
+            ValueChanged?.Invoke(sender, e);
+        }
+    }
 
     /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)

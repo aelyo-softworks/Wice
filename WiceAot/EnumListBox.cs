@@ -15,6 +15,12 @@ public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
     /// </summary>
     public event EventHandler<ValueEventArgs>? ValueChanged;
 
+    /// <summary>
+    /// Gets or sets whether <see cref="IValueable.ValueChanged"/> is raised automatically when <see cref="Value"/> changes.
+    /// </summary>
+    [Browsable(false)]
+    public virtual bool RaiseValueChanged { get; set; } = true;
+
     internal interface IBindList
     {
         Type? Type { get; set; }
@@ -90,7 +96,13 @@ public partial class EnumListBox : ListBox, IValueable, EnumListBox.IBindList
     /// </summary>
     /// <param name="sender">Event source.</param>
     /// <param name="e">Event args carrying the new value.</param>
-    protected virtual void OnValueChanged(object sender, ValueEventArgs e) => ValueChanged?.Invoke(sender, e);
+    protected virtual void OnValueChanged(object sender, ValueEventArgs e)
+    {
+        if (RaiseValueChanged)
+        {
+            ValueChanged?.Invoke(sender, e);
+        }
+    }
 
     /// <inheritdoc/>
     protected override bool SetPropertyValue(BaseObjectProperty property, object? value, BaseObjectSetOptions? options = null)

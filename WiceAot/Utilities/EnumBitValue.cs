@@ -24,7 +24,6 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
         ArgumentNullException.ThrowIfNull(name);
         Value = value;
         Name = name;
-        RaiseIsSelectedChanged = true;
         _isMultiValued = new Lazy<bool>(GetIsMultiValued);
     }
 
@@ -67,13 +66,12 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
         }
     }
 
-    bool ISelectable.RaiseIsSelectedChanged { get => RaiseIsSelectedChanged; set => RaiseIsSelectedChanged = value; }
-
     /// <summary>
     /// Gets or sets a value indicating whether <see cref="IsSelectedChanged"/> should be raised
     /// when <see cref="IsSelected"/> is modified.
     /// </summary>
-    protected virtual bool RaiseIsSelectedChanged { get; set; }
+    [Browsable(false)]
+    public virtual bool RaiseIsSelectedChanged { get; set; } = true;
 
     /// <summary>
     /// Gets the bit value converted to an unsigned 64-bit integer.
@@ -110,6 +108,7 @@ public class EnumBitValue : ISelectable, IBindingDisplayName, IValueable, IEquat
         return false;
     }
 
+    bool IValueable.RaiseValueChanged { get => false; set => throw new NotImplementedException(); }
     bool IValueable.CanChangeValue { get => false; set => throw new NotSupportedException(); }
     bool IValueable.TrySetValue(object? value) => false;
     object IValueable.Value => Value;
