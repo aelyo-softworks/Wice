@@ -810,25 +810,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
 
         if (property == IsEnabledProperty)
         {
-            if ((bool)value!)
-            {
-                MinTrackVisual?.Opacity = 1;
-                MaxTrackVisual?.Opacity = 1;
-                MinValueVisual?.Opacity = 1;
-                MaxValueVisual?.Opacity = 1;
-                Thumb?.Opacity = 1;
-                Thumb?.Cursor = Cursor.Hand;
-            }
-            else
-            {
-                var opacity = GetWindowTheme().DisabledOpacityRatio;
-                MinTrackVisual?.Opacity = opacity;
-                MaxTrackVisual?.Opacity = opacity;
-                MinValueVisual?.Opacity = opacity;
-                MaxValueVisual?.Opacity = opacity;
-                Thumb?.Opacity = opacity;
-                Thumb?.Cursor = null;
-            }
+            UpdateIsEnabledStyle(null, (bool)value!);
             return true;
         }
 
@@ -986,31 +968,6 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
             }
         }
         base.OnKeyDown(sender, e);
-    }
-
-    /// <inheritdoc />
-    protected override void Render()
-    {
-        base.Render();
-
-        if (Compositor == null)
-            return;
-
-        var theme = GetWindowTheme();
-        if (MinTrackVisual is Shape min)
-        {
-            min.FillBrush = Compositor.CreateColorBrush(theme.SliderNearColor.ToColor());
-        }
-
-        if (MaxTrackVisual is Shape max)
-        {
-            max.FillBrush = Compositor.CreateColorBrush(theme.SliderFarColor.ToColor());
-        }
-
-        if (Thumb is Shape thumb)
-        {
-            thumb.FillBrush = Compositor.CreateColorBrush(theme.SliderThumbColor.ToColor());
-        }
     }
 
     /// <inheritdoc />
@@ -1287,6 +1244,7 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
     protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
     {
         var theme = GetWindowTheme();
+        UpdateIsEnabledStyle(theme, IsEnabled);
         var boxSize = theme.BoxSize;
         var ticksSize = 0f;
         if (IsTicksVisible())
@@ -1460,6 +1418,67 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
         if (TicksVisual is Ticks ticks)
         {
             ticks.OnThemeDpiEvent(sender, e);
+        }
+    }
+
+    /// <summary>
+    /// Updates the visual state of the slider control to reflect whether it is enabled or disabled.
+    /// </summary>
+    /// <param name="theme">The current theme to use for determining the appropriate colors and styles for the enabled or disabled state. If null, the method will retrieve the theme from the window.</param>
+    /// <param name="isEnabled">A value indicating whether the slider is enabled. If <see langword="true"/>, the slider appears visually active;
+    /// if <see langword="false"/>, the slider appears disabled with reduced opacity.</param>
+    protected virtual void UpdateIsEnabledStyle(Theme? theme, bool isEnabled)
+    {
+        theme ??= GetWindowTheme();
+        if (isEnabled)
+        {
+            if (MinTrackVisual is Shape min)
+            {
+                min.FillBrush = Compositor?.CreateColorBrush(theme.SliderNearColor.ToColor());
+            }
+
+            if (MaxTrackVisual is Shape max)
+            {
+                max.FillBrush = Compositor?.CreateColorBrush(theme.SliderFarColor.ToColor());
+            }
+
+            if (Thumb is Shape thumb)
+            {
+                thumb.FillBrush = Compositor?.CreateColorBrush(theme.SliderThumbColor.ToColor());
+            }
+
+            MinValueVisual?.Opacity = 1;
+            MaxValueVisual?.Opacity = 1;
+            Thumb?.Cursor = Cursor.Hand;
+        }
+        else
+        {
+            var opacity = GetWindowTheme().SliderDisabledOpacityRatio;
+            if (MinTrackVisual is Shape min)
+            {
+                var color = Hsv.From(theme.SliderNearColor);
+                color.Saturation *= opacity;
+                min.FillBrush = Compositor?.CreateColorBrush(color.ToD3DCOLORVALUE().ToColor());
+            }
+
+            if (MaxTrackVisual is Shape max)
+            {
+                var color = Hsv.From(theme.SliderFarColor);
+                color.Saturation *= opacity;
+                max.FillBrush = Compositor?.CreateColorBrush(color.ToD3DCOLORVALUE().ToColor());
+            }
+
+            if (Thumb is Shape thumb)
+            {
+                var color = Hsv.From(theme.SliderThumbColor);
+                color.Saturation *= opacity;
+                thumb.FillBrush = Compositor?.CreateColorBrush(color.ToD3DCOLORVALUE().ToColor());
+            }
+
+            opacity = GetWindowTheme().DisabledOpacityRatio;
+            MinValueVisual?.Opacity = opacity;
+            MaxValueVisual?.Opacity = opacity;
+            Thumb?.Cursor = null;
         }
     }
 
@@ -2040,7 +2059,6 @@ public partial class Slider<[DynamicallyAccessedMembers(DynamicallyAccessedMembe
 
         /// <summary>
         /// Creates the content visual for the tooltip.
-        /// The default is a <see cref="Canvas"/> measuring to its content.
         /// </summary>
         /// <returns>The visual to host inside the tooltip; never null.</returns>
         protected virtual Visual CreateContent() => new Canvas { MeasureToContent = DimensionOptions.WidthAndHeight };

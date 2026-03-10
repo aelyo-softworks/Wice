@@ -531,8 +531,7 @@
     parent.Children.Add(stack);
 
     // add slider for Int32
-    var slider = new Slider&lt;int&gt;();
-    slider.Width = parent.Window!.DipsToPixels(400);
+    var slider = new Slider&lt;int&gt; { Width = parent.Window!.DipsToPixels(400) };
     stack.Children.Add(slider);
 
     // add results textbox

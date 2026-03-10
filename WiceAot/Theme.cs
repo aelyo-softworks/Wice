@@ -153,6 +153,11 @@ public class Theme
     public virtual float BorderSize { get; set; } = 4;
 
     /// <summary>
+    /// Gets or sets the default radio button border thickness in DIPs.
+    /// </summary>
+    public virtual float RadioButtonBorderSize { get; set; } = 4;
+
+    /// <summary>
     /// Gets or sets the default size for toggle/check visuals or generic boxes in DIPs.
     /// </summary>
     public virtual float BoxSize { get; set; } = 20;
@@ -267,6 +272,11 @@ public class Theme
     /// Gets or sets the slider thumb color.
     /// </summary>
     public virtual D3DCOLORVALUE SliderThumbColor { get; set; } = new D3DCOLORVALUE(0xFF0078D7); // blue;
+
+    /// <summary>
+    /// Gets or sets the opacity ratio applied to disabled slider (0..1).
+    /// </summary>
+    public virtual float SliderDisabledOpacityRatio { get; set; } = 0.7f;
 
     /// <summary>
     /// Gets the default slider font size for tick values.
@@ -583,5 +593,14 @@ public class Theme
         TitleBarMargin = UIExtensions.DpiScaleThickness(TitleBarMargin, oldDpi, newDpi);
         MessageBoxPadding = UIExtensions.DpiScale(MessageBoxPadding, oldDpi, newDpi);
         StateButtonListPadding = UIExtensions.DpiScale(StateButtonListPadding, oldDpi, newDpi);
+        RadioButtonBorderSize = UIExtensions.DpiScale(RadioButtonBorderSize, oldDpi, newDpi);
+
+#if !NETFRAMEWORK
+        SliderPadding = UIExtensions.DpiScale(SliderPadding, oldDpi, newDpi);
+        SliderTickThickness = UIExtensions.DpiScale(SliderTickThickness, oldDpi, newDpi);
+        SliderTickSize = UIExtensions.DpiScale(SliderTickSize, oldDpi, newDpi);
+        SliderTickValueFontSize = UIExtensions.DpiScale(SliderTickValueFontSize, oldDpi, newDpi);
+#endif
+
     }
 }

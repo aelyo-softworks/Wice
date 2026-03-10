@@ -106,8 +106,8 @@ public partial class RadioButton : StateButton, IFocusableParent
         protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
         {
             var theme = GetWindowTheme();
-            OuterDisk.StrokeThickness = theme.BorderSize / 2;
-            InnerDisk.RadiusOffset = new Vector2(-theme.BorderSize * 1.2f, -theme.BorderSize * 1.2f);
+            OuterDisk.StrokeThickness = theme.RadioButtonBorderSize / 2;
+            InnerDisk.RadiusOffset = new Vector2(-theme.RadioButtonBorderSize * 1.2f, -theme.RadioButtonBorderSize * 1.2f);
         }
     }
 
@@ -150,7 +150,7 @@ public partial class RadioButton : StateButton, IFocusableParent
         protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e)
         {
             var theme = GetWindowTheme();
-            StrokeThickness = theme.BorderSize / 2;
+            StrokeThickness = theme.RadioButtonBorderSize / 2;
         }
     }
 }

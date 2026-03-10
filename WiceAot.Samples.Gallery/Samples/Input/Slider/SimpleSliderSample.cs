@@ -12,8 +12,7 @@ public class SimpleSliderSample : Sample
         Dock.SetDockType(stack, DockType.Top); // remove from display
 
         // add slider for Int32
-        var slider = new Slider<int>();
-        slider.Width = parent.Window!.DipsToPixels(400);
+        var slider = new Slider<int> { Width = parent.Window!.DipsToPixels(400) };
         stack.Children.Add(slider);
 
         // add results textbox

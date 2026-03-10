@@ -20,6 +20,11 @@ public partial class EditorHost<T> : HeaderedContent
     public event EventHandler<EventArgs>? DialogClosed;
 
     /// <summary>
+    /// Raised when the window's theme DPI changes, allowing subscribers to update their layout or visuals accordingly.
+    /// </summary>
+    public event EventHandler<ThemeDpiEventArgs>? ThemeDpiEvent;
+
+    /// <summary>
     /// Initializes a new instance of the EditorHost class.
     /// </summary>
     /// <param name="visual">The visual representation of the property value. This parameter cannot be <see langword="null"/>.</param>
@@ -180,4 +185,26 @@ public partial class EditorHost<T> : HeaderedContent
             CloseDialog();
         }
     }
+
+    /// <inheritdoc/>
+    protected override void OnAttachedToComposition(object? sender, EventArgs e)
+    {
+        base.OnAttachedToComposition(sender, e);
+        OnThemeDpiEvent(Window, ThemeDpiEventArgs.FromWindow(Window));
+        Window!.ThemeDpiEvent += OnThemeDpiEvent;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnDetachingFromComposition(object? sender, EventArgs e)
+    {
+        base.OnDetachingFromComposition(sender, e);
+        Window!.ThemeDpiEvent -= OnThemeDpiEvent;
+    }
+
+    /// <summary>
+    /// Raises the ThemeDpiEvent event to notify subscribers of changes in DPI settings related to themes.
+    /// </summary>
+    /// <param name="sender">The source of the event, typically the object that initiated the DPI change.</param>
+    /// <param name="e">An instance of ThemeDpiEventArgs that contains information about the DPI change event.</param>
+    protected virtual void OnThemeDpiEvent(object? sender, ThemeDpiEventArgs e) => ThemeDpiEvent?.Invoke(sender, e);
 }
