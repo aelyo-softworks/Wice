@@ -387,6 +387,11 @@ public partial class Application : IDisposable
     public static event EventHandler? AllApplicationsExit;
 
     /// <summary>
+    /// Occurs an error is being added to the error collection via <see cref="AddError"/>. The event is cancellable to allow preventing the error from being added.
+    /// </summary>
+    public static event EventHandler<ValueEventArgs<Exception>>? ErrorAdding;
+
+    /// <summary>
     /// Gets the <see cref="Application"/> for the current managed thread, if any.
     /// </summary>
     public static Application? Current
@@ -556,6 +561,11 @@ public partial class Application : IDisposable
     public static void AddError(Exception error, bool quit = true, [CallerMemberName] string? methodName = null)
     {
         if (error == null)
+            return;
+
+        var e = new ValueEventArgs<Exception>(error, isCancellable: true);
+        ErrorAdding?.Invoke(null, e);
+        if (e.Cancel)
             return;
 
         lock (_errorsLock)
