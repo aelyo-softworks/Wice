@@ -23,12 +23,12 @@ But... why Wice?
 * It's more modern than Winforms (GDI/GDI+) and WPF (which is still based on DirectX 9 and that causes lots of issues).
 * It has **no sandbox like UWP** and **doesn't require Win2D** (it's too complex to use and requires all sort of painful MSVC dependencies).
 * It **compiles much faster than UWP or WinUI3** projects because the tooling is the "standard" .NET tooling we all love and cherish.
-* It has no external dependencies, so it's **free from deployment pain** (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" my apps at all?`</rant>`). Using .NET 5/6/7/8/9+, you can even publish your app as a *really single* zero-dependency .exe, and if you use WiceAOT and .NET 10 it's even better. Check out the **Samples Gallery** sample in the [Releases](https://github.com/aelyo-softworks/Wice/releases) section, it's just one .exe!
+* It has no external dependencies, so it's **free from deployment pain** (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" or "package" my apps at all?`</rant>`). Using .NET 10+, you can even publish AOT your app as a *really single* zero-dependency small .exe. Check out the **Samples Gallery** sample in the [Releases](https://github.com/aelyo-softworks/Wice/releases) section, it's just one ~20M .exe!
 * It has Windows Acrylic (no hack!) brush w/o the need for UWP or WinAppSDK.
-* Unless you use WiceAOT, Wice ships with an integrated in-process (Snoop-like for people familiar with WPF) visual "Spy" utility (just press F9 in debug mode, actually, this sole part uses Winforms, but it's not necessary for Wice, it's more like an external embedded tool).
+* Wice for .NET Framework comes with an integrated in-process (Snoop-like for people familiar with WPF) visual "Spy" utility (just press F9 in debug mode, actually, this sole part uses Winforms, but it's not necessary for Wice, it's more like an external embedded tool). Unfortunately Wice AOT doesn't have this since Winforms generally don't work with AOT publishing.
 
 # Status
-Wice is always a work in progress. Please post an issue if you have a problem or a question, using sample reproducible code.
+Wice is fairly stable. Please post an issue if you have a problem or a question, using sample reproducible code.
 
 # .NET Framework 4.7.2+
 * **Wice**: the Wice engine.
@@ -113,5 +113,6 @@ And last but not least, the "snoop"-like feature (press F9 anytime when compiled
 ![Wice](Assets/wice_snoop.jpg)
 
 Note: that sole part uses Winforms (another framework to avoid chicken and egg effect!) but you can remove that piece of code if you don't need it. It's not currently available in Wice AOT.
+
 
 
