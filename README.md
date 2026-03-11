@@ -17,7 +17,7 @@ Here are the key points for Wice:
 # Why does it exist?
 But... why Wice?
 
-* It **still supports .NET Framework 4.7.2**.
+* It **still supports .NET Framework 4.7.2** (note some newer Visuals or features only exist with the AOT version though).
 * It's **native AOT deployment compatible**, aka "one file to rule them all", unlike most .NET UI frameworks.
 * It's **100% open source C# code**, with something like 50000 lines of code (which is a relatively small code base).
 * It's more modern than Winforms (GDI/GDI+) and WPF (which is still based on DirectX 9 and that causes lots of issues).
@@ -113,4 +113,5 @@ And last but not least, the "snoop"-like feature (press F9 anytime when compiled
 ![Wice](Assets/wice_snoop.jpg)
 
 Note: that sole part uses Winforms (another framework to avoid chicken and egg effect!) but you can remove that piece of code if you don't need it. It's not currently available in Wice AOT.
+
 
