@@ -8,17 +8,17 @@
     ".NETCoreApp,Version=v10.0": {
       "WebView2/1.0.0": {
         "dependencies": {
-          "DirectN": "1.5.2.0"
+          "DirectN": "1.5.3.0"
         },
         "runtime": {
           "WebView2.dll": {}
         }
       },
-      "DirectN/1.5.2.0": {
+      "DirectN/1.5.3.0": {
         "runtime": {
           "DirectN.dll": {
-            "assemblyVersion": "1.5.2.0",
-            "fileVersion": "1.5.2.0"
+            "assemblyVersion": "1.5.3.0",
+            "fileVersion": "1.5.3.0"
           }
         }
       }
@@ -30,7 +30,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "DirectN/1.5.2.0": {
+    "DirectN/1.5.3.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
