@@ -6,16 +6,16 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v10.0": {
-      "DirectN.Extensions/1.6.1": {
+      "DirectN.Extensions/1.6.2": {
         "dependencies": {
-          "DirectNAot": "1.6.1",
+          "DirectNAot": "1.6.2",
           "DirectN": "1.6.1.0"
         },
         "runtime": {
           "DirectN.Extensions.dll": {}
         }
       },
-      "DirectNAot/1.6.1": {
+      "DirectNAot/1.6.2": {
         "runtime": {
           "DirectN.dll": {
             "assemblyVersion": "1.6.1.0",
@@ -34,12 +34,12 @@
     }
   },
   "libraries": {
-    "DirectN.Extensions/1.6.1": {
+    "DirectN.Extensions/1.6.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "DirectNAot/1.6.1": {
+    "DirectNAot/1.6.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
