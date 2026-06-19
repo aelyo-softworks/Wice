@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v10.0": {
-      "WebView2/1.4.1": {
+      "WebView2/1.5.0": {
         "dependencies": {
           "DirectNAot": "1.6.1",
           "DirectNAot.Extensions": "1.6.1"
@@ -37,7 +37,7 @@
     }
   },
   "libraries": {
-    "WebView2/1.4.1": {
+    "WebView2/1.5.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
