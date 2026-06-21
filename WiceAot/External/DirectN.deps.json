@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v10.0": {
-      "DirectN/1.6.3": {
+      "DirectN/1.6.4": {
         "runtime": {
           "DirectN.dll": {}
         }
@@ -14,7 +14,7 @@
     }
   },
   "libraries": {
-    "DirectN/1.6.3": {
+    "DirectN/1.6.4": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
