@@ -150,7 +150,7 @@ public class RenderContext
         DeviceContext.Object.CreateBitmapBrush(bitmap, bprops.Pointer, props.Pointer, out ID2D1BitmapBrush brush).ThrowOnError();
         return new ComObject<T>((T)brush);
 #else
-        DeviceContext.Object.CreateBitmapBrush(bitmap, bitmapBrushProperties.CopyToPointer(), brushProperties.CopyToPointer(), out ID2D1BitmapBrush brush).ThrowOnError();
+        DeviceContext.Object.CreateBitmapBrush(bitmap, bitmapBrushProperties.GetValuePointer(), brushProperties.GetValuePointer(), out ID2D1BitmapBrush brush).ThrowOnError();
         return new ComObject<T>((T)brush);
 #endif
     }

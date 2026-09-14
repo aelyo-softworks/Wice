@@ -64,23 +64,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="External\" />
-	</ItemGroup>
-
-	<ItemGroup>
+		<PackageReference Include="DirectNAot.Extensions" Version="1.6.7" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.1" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Reference Include="DirectN">
-			<HintPath>External\DirectN.dll</HintPath>
-		</Reference>
-		<Reference Include="DirectN.Extensions">
-			<HintPath>External\DirectN.Extensions.dll</HintPath>
-		</Reference>
-		<Reference Include="WebView2">
-		  <HintPath>External\WebView2.dll</HintPath>
-		</Reference>
+		<PackageReference Include="WebView2Aot" Version="1.5.2" />
 	</ItemGroup>
 
 </Project>
