@@ -29,7 +29,8 @@ public struct PSTR
             return Null;
 
         encoding ??= Encoding.Default;
-        var bytes = encoding.GetBytes(str);
+        var bytes = new byte[encoding.GetByteCount(str) + 1];
+        encoding.GetBytes(str, 0, str.Length, bytes, 0);
         fixed (byte* p = bytes)
         {
             return new PSTR(p);

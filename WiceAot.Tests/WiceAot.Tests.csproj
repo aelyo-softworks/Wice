@@ -116,7 +116,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DirectNAot.Extensions" Version="1.6.7" />
+		<PackageReference Include="DirectNAot.Extensions" Version="1.6.8" />
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.1" />
 		<PackageReference Include="WebView2Aot" Version="1.5.2" />
 	</ItemGroup>
