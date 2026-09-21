@@ -143,7 +143,8 @@ public static partial class ShellUtilities
             }
 
             var arr = pidls.Skip(1).ToArray();
-            Functions.SHCreateDataObject(folderPidl, arr.Length(), arr.AsPointer(), null, typeof(IDataObject).GUID, out var unk).ThrowOnError();
+            using var pinnedArr = arr.Pin();
+            Functions.SHCreateDataObject(folderPidl, arr.Length(), pinnedArr.Pointer, null, typeof(IDataObject).GUID, out var unk).ThrowOnError();
             return new DataObject(DirectN.Extensions.Com.ComObject.FromPointer<IDataObject>(unk), owned);
         }
         finally

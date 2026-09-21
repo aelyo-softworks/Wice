@@ -199,7 +199,8 @@ public partial class ResourceManager
 #if NETFRAMEWORK
             D2DFactory.Object.CreateStrokeStyle(ref strokeProps, dashes, (dashes?.Length).GetValueOrDefault(), out var stroke).ThrowOnError();
 #else
-            D2DFactory.Object.CreateStrokeStyle(strokeProps, dashes.AsPointer(), dashes.Length(), out var stroke).ThrowOnError();
+            using var pinnedDashes = dashes.Pin();
+            D2DFactory.Object.CreateStrokeStyle(strokeProps, pinnedDashes.Pointer, dashes.Length(), out var stroke).ThrowOnError();
 #endif
             return new ComObject<ID2D1StrokeStyle>(stroke);
         });

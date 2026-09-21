@@ -1389,12 +1389,13 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                             out _
                             ).ThrowOnError();
 #else
+                        using var pinnedHitTestMetrics = hitTestMetrics.Pin();
                         layout.Object.HitTestTextRange(
                             caretRange.startPosition,
                             caretRange.length,
                             origin.x,
                             origin.y,
-                            hitTestMetrics.AsPointer(),
+                            pinnedHitTestMetrics.Pointer,
                             hitTestMetrics.Length(),
                             out _
                             ).ThrowOnError();
@@ -2567,7 +2568,10 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
 #if NETFRAMEWORK
                 layout3.Object.GetClusterMetrics(clusterMetrics, (int)clusterCount, out _).ThrowOnError();
 #else
-                layout3.Object.GetClusterMetrics(clusterMetrics.AsPointer(), clusterCount, out _).ThrowOnError();
+                {
+                    using var pinnedClusterMetrics = clusterMetrics.Pin();
+                    layout3.Object.GetClusterMetrics(pinnedClusterMetrics.Pointer, clusterCount, out _).ThrowOnError();
+                }
 #endif
 
                 _charPosition = absolutePosition;
@@ -2897,12 +2901,13 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
                      out _
                      ).ThrowOnError();
 #else
+                using var pinnedMetrics = metrics.Pin();
                 layout.Object.HitTestTextRange(
                     _charPosition,
                     0, // length
                     0, // x
                     0, // y
-                    metrics.AsPointer(),
+                    pinnedMetrics.Pointer,
                     metrics.Length(),
                     out _
                     ).ThrowOnError();
@@ -3002,7 +3007,8 @@ public partial class TextBox : RenderVisual, ITextFormat, ITextBoxProperties, IV
         layout.Object.GetLineMetrics(lineMetrics, lineMetrics.Length, out _).ThrowOnError();
 #else
         var lineMetrics = new DWRITE_LINE_METRICS[textMetrics.Base.lineCount];
-        layout.Object.GetLineMetrics(lineMetrics.AsPointer(), lineMetrics.Length(), out _).ThrowOnError();
+        using var pinnedLineMetrics = lineMetrics.Pin();
+        layout.Object.GetLineMetrics(pinnedLineMetrics.Pointer, lineMetrics.Length(), out _).ThrowOnError();
 #endif
         return lineMetrics;
     }
