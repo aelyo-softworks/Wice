@@ -1,14 +1,26 @@
 ﻿#pragma warning disable CS1591
 using System.Runtime.InteropServices.Marshalling;
 
-[assembly: SuppressMessage("Compiler", "CS1591", Justification = "Generated Code", Scope = "namespaceanddescendants", Target = "MyNamespaceContainingGeneratedCode")]
-
 namespace Wice.Interop;
 
+// the IInspectable slots are declared here rather than inherited,
+// because the COM generator re-declares inherited methods without XML documentation.
 [SupportedOSPlatform("windows8.0")]
 [GeneratedComInterface, Guid("629BDBC8-D932-4FF4-96B9-8D96C5C1E858")]
-public partial interface IPropertyValueStatics : IInspectable
+public partial interface IPropertyValueStatics
 {
+    [PreserveSig]
+    [return: MarshalAs(UnmanagedType.Error)]
+    HRESULT GetIids(out uint iidCount, out nint iids);
+
+    [PreserveSig]
+    [return: MarshalAs(UnmanagedType.Error)]
+    HRESULT GetRuntimeClassName(out HSTRING className);
+
+    [PreserveSig]
+    [return: MarshalAs(UnmanagedType.Error)]
+    HRESULT GetTrustLevel(out TrustLevel trustLevel);
+
     [PreserveSig]
     [return: MarshalAs(UnmanagedType.Error)]
     HRESULT CreateEmpty(out nint propertyValue);

@@ -220,7 +220,7 @@ public abstract partial class Effect(uint sourcesCount = 0) : BaseObject, IGraph
 #if NETFRAMEWORK
                     if (value is IInspectable inspectable)
 #else
-                    if (value is Interop.IInspectable inspectable)
+                    if (value is DirectN.IInspectable inspectable)
 #endif
                         return statics.Object.CreateInspectable(inspectable, out ptr);
                     break;

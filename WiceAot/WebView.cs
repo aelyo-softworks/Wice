@@ -61,12 +61,9 @@ public partial class WebView : Border, IDisposable
     private WebViewInfo? _webViewInfo;
     private Task<IComObject<ICoreWebView2>?>? _loadingWebView2;
     private ComObject<ICoreWebView2CompositionController>? _controller;
-    private ComObject<ICoreWebView2>? _webView2;
-    private WebView2.EventRegistrationToken _cursorChangedToken;
-    private WebView2.EventRegistrationToken _navigationCompleted;
-    private WebView2.EventRegistrationToken _documentTitleChanged;
-    private WebView2.EventRegistrationToken _newWindowRequested;
-    private WebView2.EventRegistrationToken _frameNavigationCompleted;
+    private IComObject<ICoreWebView2>? _webView2;
+    private CoreWebView2CompositionControllerEvents? _controllerEvents;
+    private CoreWebView2Events? _webView2Events;
 
     private bool _disposedValue;
     private string? _browserExecutableFolder;
@@ -285,7 +282,7 @@ public partial class WebView : Border, IDisposable
         }
 
         var pos = e.GetPosition(this);
-        controller.Object.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos).ThrowOnError();
+        controller.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos);
     }
 
     /// <inheritdoc/>
@@ -329,7 +326,7 @@ public partial class WebView : Border, IDisposable
         _captureButton = e.Button;
         CaptureMouse();
         var pos = e.GetPosition(this);
-        controller.Object.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos).ThrowOnError();
+        controller.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos);
     }
 
     /// <inheritdoc/>
@@ -373,7 +370,7 @@ public partial class WebView : Border, IDisposable
         }
 
         var pos = e.GetPosition(this);
-        controller.Object.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos).ThrowOnError();
+        controller.SendMouseInput(kind, GetKeys(e.Keys, e.Button), mouseData, pos);
     }
 
     /// <inheritdoc/>
@@ -403,7 +400,7 @@ public partial class WebView : Border, IDisposable
                     break;
             }
         }
-        controller.Object.SendMouseInput(COREWEBVIEW2_MOUSE_EVENT_KIND.COREWEBVIEW2_MOUSE_EVENT_KIND_MOVE, keys, mouseData, pos).ThrowOnError();
+        controller.SendMouseInput(COREWEBVIEW2_MOUSE_EVENT_KIND.COREWEBVIEW2_MOUSE_EVENT_KIND_MOVE, keys, mouseData, pos);
     }
 
     /// <inheritdoc/>
@@ -414,7 +411,7 @@ public partial class WebView : Border, IDisposable
         if (controller == null || controller.IsDisposed)
             return;
 
-        controller.Object.SendMouseInput(COREWEBVIEW2_MOUSE_EVENT_KIND.COREWEBVIEW2_MOUSE_EVENT_KIND_LEAVE, 0, 0, new POINT()).ThrowOnError();
+        controller.SendMouseInput(COREWEBVIEW2_MOUSE_EVENT_KIND.COREWEBVIEW2_MOUSE_EVENT_KIND_LEAVE, 0, 0, new POINT());
     }
 
     /// <inheritdoc/>
@@ -427,7 +424,7 @@ public partial class WebView : Border, IDisposable
 
         var pos = e.GetPosition(this);
         var keys = GetKeys(e.Keys, _captureButton);
-        controller.Object.SendMouseInput(COREWEBVIEW2_MOUSE_EVENT_KIND.COREWEBVIEW2_MOUSE_EVENT_KIND_WHEEL, keys, (uint)e.Delta, pos).ThrowOnError();
+        controller.SendMouseInput(COREWEBVIEW2_MOUSE_EVENT_KIND.COREWEBVIEW2_MOUSE_EVENT_KIND_WHEEL, keys, (uint)e.Delta, pos);
     }
 
     /// <summary>
@@ -444,36 +441,38 @@ public partial class WebView : Border, IDisposable
         if (environment == null || environment.IsDisposed || ar.IsInvalid)
             return null;
 
-        environment.Object.CreateCoreWebView2PointerInfo(out var obj).ThrowOnError();
-        var info = new ComObject<ICoreWebView2PointerInfo>(obj);
-        info.Object.put_ButtonChangeKind((int)e.PointerInfo.ButtonChangeType).ThrowOnError();
-        info.Object.put_DisplayRect(ar).ThrowOnError();
-        info.Object.put_FrameId(e.PointerInfo.frameId).ThrowOnError();
-        info.Object.put_HimetricLocation(e.PointerInfo.ptHimetricLocation).ThrowOnError();
-        info.Object.put_HimetricLocationRaw(e.PointerInfo.ptHimetricLocationRaw).ThrowOnError();
-        info.Object.put_HistoryCount(e.PointerInfo.historyCount).ThrowOnError();
-        info.Object.put_InputData(e.PointerInfo.InputData).ThrowOnError();
-        info.Object.put_KeyStates(e.PointerInfo.dwKeyStates).ThrowOnError();
-        info.Object.put_PenFlags(e.PointerPenInfo.penFlags).ThrowOnError();
-        info.Object.put_PenMask(e.PointerPenInfo.penMask).ThrowOnError();
-        info.Object.put_PenPressure(e.PointerPenInfo.pressure).ThrowOnError();
-        info.Object.put_PenRotation(e.PointerPenInfo.rotation).ThrowOnError();
-        info.Object.put_PenTiltX(e.PointerPenInfo.tiltX).ThrowOnError();
-        info.Object.put_PenTiltY(e.PointerPenInfo.tiltY).ThrowOnError();
-        info.Object.put_PerformanceCount(e.PointerInfo.PerformanceCount).ThrowOnError();
-        info.Object.put_PixelLocation(e.PointerInfo.ptPixelLocation).ThrowOnError();
-        info.Object.put_PixelLocationRaw(e.PointerInfo.ptPixelLocationRaw).ThrowOnError();
-        info.Object.put_PointerDeviceRect(ar).ThrowOnError();
-        info.Object.put_PointerFlags((uint)e.PointerInfo.pointerFlags).ThrowOnError();
-        info.Object.put_PointerId(e.PointerInfo.pointerId).ThrowOnError();
-        info.Object.put_PointerKind((uint)e.PointerInfo.pointerType).ThrowOnError();
-        info.Object.put_Time(e.PointerInfo.dwTime).ThrowOnError();
-        info.Object.put_TouchContact(e.PointerTouchInfo.rcContact).ThrowOnError();
-        info.Object.put_TouchContactRaw(e.PointerTouchInfo.rcContactRaw).ThrowOnError();
-        info.Object.put_TouchFlags(e.PointerTouchInfo.touchFlags).ThrowOnError();
-        info.Object.put_TouchMask(e.PointerTouchInfo.touchMask).ThrowOnError();
-        info.Object.put_TouchOrientation(e.PointerTouchInfo.orientation).ThrowOnError();
-        info.Object.put_TouchPressure(e.PointerTouchInfo.pressure).ThrowOnError();
+        var info = environment.CreateCoreWebView2PointerInfo();
+        if (info == null)
+            return null;
+
+        info.ButtonChangeKind = (int)e.PointerInfo.ButtonChangeType;
+        info.DisplayRect = ar;
+        info.FrameId = e.PointerInfo.frameId;
+        info.HimetricLocation = e.PointerInfo.ptHimetricLocation;
+        info.HimetricLocationRaw = e.PointerInfo.ptHimetricLocationRaw;
+        info.HistoryCount = e.PointerInfo.historyCount;
+        info.InputData = e.PointerInfo.InputData;
+        info.KeyStates = e.PointerInfo.dwKeyStates;
+        info.PenFlags = e.PointerPenInfo.penFlags;
+        info.PenMask = e.PointerPenInfo.penMask;
+        info.PenPressure = e.PointerPenInfo.pressure;
+        info.PenRotation = e.PointerPenInfo.rotation;
+        info.PenTiltX = e.PointerPenInfo.tiltX;
+        info.PenTiltY = e.PointerPenInfo.tiltY;
+        info.PerformanceCount = e.PointerInfo.PerformanceCount;
+        info.PixelLocation = e.PointerInfo.ptPixelLocation;
+        info.PixelLocationRaw = e.PointerInfo.ptPixelLocationRaw;
+        info.PointerDeviceRect = ar;
+        info.PointerFlags = (uint)e.PointerInfo.pointerFlags;
+        info.PointerId = e.PointerInfo.pointerId;
+        info.PointerKind = (uint)e.PointerInfo.pointerType;
+        info.Time = e.PointerInfo.dwTime;
+        info.TouchContact = e.PointerTouchInfo.rcContact;
+        info.TouchContactRaw = e.PointerTouchInfo.rcContactRaw;
+        info.TouchFlags = e.PointerTouchInfo.touchFlags;
+        info.TouchMask = e.PointerTouchInfo.touchMask;
+        info.TouchOrientation = e.PointerTouchInfo.orientation;
+        info.TouchPressure = e.PointerTouchInfo.pressure;
         return info;
     }
 
@@ -490,16 +489,32 @@ public partial class WebView : Border, IDisposable
         {
             // support the case where user has set DisposeOnDetachFromComposition to this component
             // in this case, we don't dispose anything, but we need to ensure the root visual target is reset with the possibly newer CompositionVisual
-            _controller.Object.get_RootVisualTarget(out var visualUnk);
-            if (visualUnk != null)
+            if (_controller.RootVisualTarget is IComObject visualTarget)
             {
-                // compare IUnknown pointer for equality is ok by COM rules
-                var unk = ComObject.GetOrCreateComInstance(CompositionVisual);
-                var vunk = ComObject.GetOrCreateComInstance(visualUnk);
-                if (unk != vunk)
+                using (visualTarget)
                 {
-                    var cb = CompositionVisual.As<IUnknown>();
-                    _controller.Object.put_RootVisualTarget(cb).ThrowOnError();
+                    // compare IUnknown pointer for equality is ok by COM rules
+                    var unk = ComObject.GetOrCreateComInstance(CompositionVisual);
+                    var vunk = ComObject.GetOrCreateComInstance(visualTarget);
+                    try
+                    {
+                        if (unk != vunk)
+                        {
+                            _controller.RootVisualTarget = CompositionVisual;
+                        }
+                    }
+                    finally
+                    {
+                        if (unk != 0)
+                        {
+                            Marshal.Release(unk);
+                        }
+
+                        if (vunk != 0)
+                        {
+                            Marshal.Release(vunk);
+                        }
+                    }
                 }
             }
         }
@@ -511,7 +526,7 @@ public partial class WebView : Border, IDisposable
             if (ar.IsInvalid)
                 return;
 
-            ctrl.Object.put_Bounds(ar).ThrowOnError();
+            ctrl.Bounds = ar;
         }
     }
 
@@ -530,18 +545,18 @@ public partial class WebView : Border, IDisposable
         var sourceString = SourceString.Nullify();
         if (sourceString != null)
         {
-            webView2.Object.NavigateToString(PWSTR.From(sourceString)).ThrowOnError();
+            webView2.NavigateToString(sourceString);
         }
         else
         {
             var sourceUri = SourceUri.Nullify();
             if (sourceUri != null)
             {
-                webView2.Object.Navigate(PWSTR.From(sourceUri)).ThrowOnError();
+                webView2.Navigate(sourceUri);
             }
             else
             {
-                webView2.Object.Navigate(PWSTR.From("about:blank")).ThrowOnError();
+                webView2.Navigate("about:blank");
             }
         }
     }
@@ -648,53 +663,31 @@ public partial class WebView : Border, IDisposable
             try
             {
                 _controller = new ComObject<ICoreWebView2CompositionController>(controller);
-
-                _controller.Object.add_CursorChanged(new CoreWebView2CursorChangedEventHandler((sender, args) =>
+                _controllerEvents = new CoreWebView2CompositionControllerEvents(_controller);
+                _controllerEvents.CursorChanged += (sender, args) =>
                 {
-                    var cursor = new HCURSOR();
-                    if (sender.get_Cursor(ref cursor).IsSuccess)
+                    if (sender is ICoreWebView2CompositionController c)
                     {
-                        Cursor = new Cursor(cursor.Value);
+                        Cursor = new Cursor(c.Cursor.Value);
                     }
+                };
 
-                }), ref _cursorChangedToken);
-
-                var cb = CompositionVisual.As<IUnknown>();
-                _controller.Object.put_RootVisualTarget(cb).ThrowOnError();
+                _controller.RootVisualTarget = CompositionVisual;
                 OnWebViewControllerSetup(this, _controller.Object);
 
                 var ctrl = (ICoreWebView2Controller)_controller.Object;
-                ctrl.get_CoreWebView2(out var webView2).ThrowOnError();
-
                 var ar = AbsoluteRenderRect;
                 if (ar.IsValid)
                 {
-                    ctrl.put_Bounds(ar).ThrowOnError();
+                    ctrl.Bounds = ar;
                 }
 
-                _webView2 = new ComObject<ICoreWebView2>(webView2);
-                _webView2.Object.add_FrameNavigationCompleted(new CoreWebView2NavigationCompletedEventHandler((sender, args) =>
-                {
-                    OnFrameNavigationCompleted(this, args);
-                }), ref _frameNavigationCompleted);
-
-                _webView2.Object.add_NavigationCompleted(new CoreWebView2NavigationCompletedEventHandler((sender, args) =>
-                {
-                    OnNavigationCompleted(this, args);
-                }), ref _navigationCompleted);
-
-                _webView2.Object.add_DocumentTitleChanged(new CoreWebView2DocumentTitleChangedEventHandler((sender, args) =>
-                {
-                    sender.get_DocumentTitle(out var title);
-                    OnDocumentTitleChanged(this, title.ToString());
-                    Marshal.FreeCoTaskMem(title.Value);
-                }), ref _documentTitleChanged);
-
-                _webView2.Object.add_NewWindowRequested(new CoreWebView2NewWindowRequestedEventHandler((sender, args) =>
-                {
-                    OnNewWindowRequested(this, args);
-                }), ref _newWindowRequested);
-
+                _webView2 = ctrl.CoreWebView2 ?? throw new WiceException("0036: WebView controller cannot be initialized.");
+                _webView2Events = new CoreWebView2Events(_webView2);
+                _webView2Events.FrameNavigationCompleted += (sender, args) => OnFrameNavigationCompleted(this, args);
+                _webView2Events.NavigationCompleted += (sender, args) => OnNavigationCompleted(this, args);
+                _webView2Events.DocumentTitleChanged += (sender, args) => OnDocumentTitleChanged(this, (sender as ICoreWebView2)?.DocumentTitle);
+                _webView2Events.NewWindowRequested += (sender, args) => OnNewWindowRequested(this, args);
 
                 OnWebViewSetup(this, _webView2.Object);
                 tcs.SetResult(_webView2);
@@ -764,38 +757,16 @@ public partial class WebView : Border, IDisposable
         {
             if (disposing)
             {
-                if (_cursorChangedToken.value != 0)
-                {
-                    _controller?.Object.remove_CursorChanged(_cursorChangedToken);
-                    _cursorChangedToken.value = 0;
-                }
-
-                if (_navigationCompleted.value != 0)
-                {
-                    _webView2?.Object.remove_FrameNavigationCompleted(_navigationCompleted);
-                    _navigationCompleted.value = 0;
-                }
-
-                if (_frameNavigationCompleted.value != 0)
-                {
-                    _webView2?.Object.remove_FrameNavigationCompleted(_frameNavigationCompleted);
-                    _frameNavigationCompleted.value = 0;
-                }
-
-                if (_documentTitleChanged.value != 0)
-                {
-                    _webView2?.Object.remove_DocumentTitleChanged(_documentTitleChanged);
-                    _documentTitleChanged.value = 0;
-                }
-
-                if (_newWindowRequested.value != 0)
-                {
-                    _webView2?.Object.remove_NewWindowRequested(_newWindowRequested);
-                    _newWindowRequested.value = 0;
-                }
+                Interlocked.Exchange(ref _controllerEvents, null)?.Dispose();
+                Interlocked.Exchange(ref _webView2Events, null)?.Dispose();
 
                 _webView2?.Dispose();
                 _webView2 = null;
+                if (_controller?.Object is ICoreWebView2Controller controller)
+                {
+                    controller.Close();
+                }
+
                 _controller?.Dispose();
                 _controller = null;
 
@@ -904,7 +875,9 @@ public partial class WebView : Border, IDisposable
             }
 
             WebViewVersion = WebView2Utilities.GetAvailableCoreWebView2BrowserVersionString(browserExecutableFolder);
-            hr = global::WebView2.Functions.CreateCoreWebView2EnvironmentWithOptions(PWSTR.From(browserExecutableFolder), PWSTR.From(userDataFolder), options!,
+            using var browserExecutableFolderStr = new Pwstr(browserExecutableFolder);
+            using var userDataFolderStr = new Pwstr(userDataFolder);
+            hr = global::WebView2.Functions.CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolderStr, userDataFolderStr, options!,
                 new CoreWebView2CreateCoreWebView2EnvironmentCompletedHandler((result, env) =>
                 {
                     if (result.IsError)

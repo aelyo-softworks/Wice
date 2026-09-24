@@ -26,7 +26,7 @@ public partial class PdfView : RenderVisual, IDisposable
     /// <summary>
     /// Gets the visual property that stores <see cref="CurrentPage"/>.
     /// </summary>
-    public static VisualProperty CurrentPageProperty { get; } = VisualProperty.Add<int>(typeof(PdfView), nameof(CurrentPage), VisualPropertyInvalidateModes.Render, changing: OnPageChanging, changed: OnPageChanged);
+    public static VisualProperty CurrentPageProperty { get; } = VisualProperty.Add<int>(typeof(PdfView), nameof(CurrentPage), VisualPropertyInvalidateModes.Measure, changing: OnPageChanging, changed: OnPageChanged);
 
     /// <summary>
     /// Gets the visual property that stores <see cref="IgnoreHighContrast"/>.
@@ -218,7 +218,7 @@ public partial class PdfView : RenderVisual, IDisposable
                 }
 
                 OnDocumentLoaded(this, EventArgs.Empty);
-                Invalidate(VisualPropertyInvalidateModes.Render);
+                Invalidate(VisualPropertyInvalidateModes.Measure);
                 return;
             }
 
@@ -235,13 +235,13 @@ public partial class PdfView : RenderVisual, IDisposable
                 }
 
                 OnDocumentLoaded(this, EventArgs.Empty);
-                Invalidate(VisualPropertyInvalidateModes.Render);
+                Invalidate(VisualPropertyInvalidateModes.Measure);
                 return;
             }
 
             // raised even if no document is loaded
             OnDocumentLoaded(this, EventArgs.Empty);
-            Invalidate(VisualPropertyInvalidateModes.Render);
+            Invalidate(VisualPropertyInvalidateModes.Measure);
         }
         catch (Exception ex)
         {
@@ -272,6 +272,10 @@ public partial class PdfView : RenderVisual, IDisposable
         var doc = _pdfDocument;
         if (doc == null)
             return null;
+
+        var existing = _pdfPage;
+        if (existing != null)
+            return existing;
 
         var page = CurrentPage;
         if (page < 0 || page >= doc.PageCount)
@@ -368,6 +372,8 @@ public partial class PdfView : RenderVisual, IDisposable
 
 #if NETFRAMEWORK
         Marshal.Release(pageUnk);
+#else
+        GC.KeepAlive(page);
 #endif
     }
 
