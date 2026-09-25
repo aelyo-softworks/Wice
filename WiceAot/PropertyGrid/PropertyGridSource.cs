@@ -206,8 +206,9 @@ public partial class PropertyGridSource<[DynamicallyAccessedMembers(DynamicallyA
         var list = new List<PropertyInfo>(Value.GetType().GetProperties(flags | BindingFlags.DeclaredOnly));
         foreach (var info in type.GetProperties(flags))
 #else
-        var list = new List<PropertyInfo>(typeof(T).GetProperties(flags | BindingFlags.DeclaredOnly));
-        foreach (var info in typeof(T).GetProperties(flags))
+        var properties = typeof(T).GetProperties(flags);
+        var list = new List<PropertyInfo>(properties.Where(p => p.DeclaringType == typeof(T)));
+        foreach (var info in properties)
 #endif
         {
             if (list.Any(p => p.Name == info.Name))

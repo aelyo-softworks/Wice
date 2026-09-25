@@ -89,14 +89,15 @@ public class DataSource
     /// <returns>
     /// If <paramref name="member"/> is null or not found, returns <paramref name="item"/>; otherwise returns the property's value.
     /// </returns>
+#if !NETFRAMEWORK
+    [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Binding by member name reads the application's own item types, which must keep the members they bind to. A member that was trimmed is not found and the item itself is used.")]
+#endif
     protected virtual object? GetValue(string? member, object? item)
     {
         if (member == null || item == null)
             return item;
 
-#pragma warning disable IL2075 // 'this' argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
         var pi = item.GetType().GetProperties().FirstOrDefault(p => p.CanRead && p.Name == member);
-#pragma warning restore IL2075 // 'this' argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
         if (pi == null)
             return item;
 
@@ -114,6 +115,9 @@ public class DataSource
     /// <returns>
     /// An <see cref="IEnumerable"/> that yields items (or projected values) from the source. If the source is null or not enumerable, yields nothing.
     /// </returns>
+#if !NETFRAMEWORK
+    [UnconditionalSuppressMessage("Trimming", "IL2072", Justification = "Binding by member name reads the application's own source type, which must keep the member it binds to. A member that was trimmed is not found and nothing is enumerated.")]
+#endif
     public virtual IEnumerable Enumerate(DataSourceEnumerateOptions? options = null)
     {
         var source = Source;
@@ -128,9 +132,7 @@ public class DataSource
         }
         else
         {
-#pragma warning disable IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
             enumerable = source.GetType().GetUnambiguousProperty(MemberName)?.GetValue(source) as IEnumerable;
-#pragma warning restore IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
         }
 
         if (enumerable != null)

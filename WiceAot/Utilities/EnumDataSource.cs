@@ -31,14 +31,13 @@ public partial class EnumDataSource : DataSource, IEnumerable<EnumBitValue>
     /// An <see cref="EnumDataSource"/> that enumerates the members of <paramref name="value"/>'s type and reflects its selection state,
     /// or <c>null</c> when <paramref name="value"/> is <c>null</c>.
     /// </returns>
+    [UnconditionalSuppressMessage("Trimming", "IL2072", Justification = "The value is an enum, the fields of an enum type are always kept and a value type can always be created.")]
     public static EnumDataSource? FromValue(object? value)
     {
         if (value == null)
             return null;
 
-#pragma warning disable IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
         return FromType(value.GetType(), value);
-#pragma warning restore IL2072 // Target parameter argument does not satisfy 'DynamicallyAccessedMembersAttribute' in call to target method. The return value of the source method does not have matching annotations.
     }
 
     /// <summary>

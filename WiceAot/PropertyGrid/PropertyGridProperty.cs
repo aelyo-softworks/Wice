@@ -134,6 +134,7 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
 #if NETFRAMEWORK
     public PropertyGridProperty(PropertyGridSource source, PropertyInfo info)
 #else
+    [UnconditionalSuppressMessage("Trimming", "IL2057", Justification = "The name comes from a TypeConverterAttribute, whose Type constructor keeps the converter type and its constructor. A converter that cannot be found is not used.")]
     public PropertyGridProperty(PropertyGridSource<T> source, PropertyInfo info)
 #endif
     {
@@ -175,9 +176,7 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
 
         if (!string.IsNullOrWhiteSpace(tc))
         {
-#pragma warning disable IL2057
             var type = Type.GetType(tc);
-#pragma warning restore IL2057
             if (type != null)
             {
                 TypeConverter = Activator.CreateInstance(type) as TypeConverter;
@@ -319,6 +318,9 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
     /// </summary>
     /// <param name="value">The converted value when the method returns <see langword="true"/>; otherwise <see langword="null"/>.</param>
     /// <returns><see langword="true"/> when conversion succeeds; otherwise <see langword="false"/>.</returns>
+#if !NETFRAMEWORK
+    [UnconditionalSuppressMessage("Trimming", "IL2072", Justification = "Splitting a string into a list property needs the list type's interfaces and constructor. When they were trimmed, the exception is caught and the value is not converted.")]
+#endif
     public virtual bool TryGetTargetValue(out object? value)
     {
         if (Type == null)
@@ -348,9 +350,11 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
 
                 try
                 {
-#pragma warning disable IL2072
+#if NETFRAMEWORK
                     value = Activator.CreateInstance(Type);
-#pragma warning restore IL2072
+#else
+                    value = RuntimeHelpers.GetUninitializedObject(Type);
+#endif
                     if (value is not null)
                         return true;
                 }
@@ -441,9 +445,7 @@ public partial class PropertyGridProperty<[DynamicallyAccessedMembers(Dynamicall
 
                         if (typeof(IList).IsAssignableFrom(Type))
                         {
-#pragma warning disable IL2072
                             if (Activator.CreateInstance(Type) is IList list)
-#pragma warning restore IL2072
                             {
                                 foreach (var part in parts)
                                 {

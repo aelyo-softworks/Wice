@@ -174,7 +174,7 @@ public static class Extensions
     /// <param name="collectionType">The type of the collection to inspect. Must implement <see cref="System.Collections.IEnumerable"/>.</param>
     /// <returns>The <see cref="Type"/> of the elements in the collection if the collection type implements  <see
     /// cref="System.Collections.IEnumerable"/>; otherwise, <see langword="null"/>.</returns>
-    public static Type? GetEnumeratedType(this Type collectionType)
+    public static Type? GetEnumeratedType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type collectionType)
     {
         ArgumentNullException.ThrowIfNull(collectionType);
 
@@ -185,9 +185,7 @@ public static class Extensions
         if (etype != null)
             return etype;
 
-#pragma warning disable IL2070
         foreach (var type in collectionType.GetInterfaces())
-#pragma warning restore IL2070
         {
             etype = GetEnumeratedItemType(type);
             if (etype != null)

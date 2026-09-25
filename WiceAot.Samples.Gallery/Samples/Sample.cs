@@ -2,7 +2,7 @@
 
 public abstract class Sample
 {
-    private static readonly Lazy<ConcurrentDictionary<Type, string>> _sampleTexts = new(GetSamplesTexts, true);
+    private static readonly Lazy<ConcurrentDictionary<string, string>> _sampleTexts = new(GetSamplesTexts, true);
 
     protected Sample()
     {
@@ -17,9 +17,9 @@ public abstract class Sample
 
     public override string ToString() => Description ?? string.Empty;
 
-    private static ConcurrentDictionary<Type, string> GetSamplesTexts()
+    private static ConcurrentDictionary<string, string> GetSamplesTexts()
     {
-        var dic = new ConcurrentDictionary<Type, string>();
+        var dic = new ConcurrentDictionary<string, string>();
         using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(typeof(Program).Namespace + ".Resources.samples.xml"))
         {
             if (stream != null)
@@ -33,16 +33,7 @@ public abstract class Sample
                     if (string.IsNullOrWhiteSpace(ns))
                         continue;
 
-#pragma warning disable IDE0079 // Remove unnecessary suppression
-#pragma warning disable IL2057 // Unrecognized value passed to the parameter of method. It's not possible to guarantee the availability of the target type.
-                    var type = Type.GetType(typeof(Program).Namespace + "." + ns, false);
-#pragma warning restore IL2057 // Unrecognized value passed to the parameter of method. It's not possible to guarantee the availability of the target type.
-#pragma warning restore IDE0079 // Remove unnecessary suppression
-                    if (type == null)
-                        continue;
-
-                    var code = text.InnerText;
-                    dic[type] = code;
+                    dic[typeof(Program).Namespace + "." + ns] = text.InnerText;
                 }
             }
         }
@@ -51,7 +42,7 @@ public abstract class Sample
 
     public string? GetSampleText()
     {
-        _sampleTexts.Value.TryGetValue(GetType(), out var text);
+        _sampleTexts.Value.TryGetValue(GetType().FullName!, out var text);
         return text;
     }
 }
