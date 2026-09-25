@@ -305,6 +305,8 @@ public partial class Grid : Visual
         var totalRowStars = Rows.Where(d => d.HasStarSize).Sum(d => d.Stars);
 
         _childrenByDimensions = [];
+        var spannedCols = new List<(GridDimension[] dimensions, float size)>();
+        var spannedRows = new List<(GridDimension[] dimensions, float size)>();
 
         // measure children & build dic dim => children
         var children = VisibleChildren.ToArray();
@@ -368,29 +370,53 @@ public partial class Grid : Visual
 
             child.Measure(childConstraint);
             var childSize = child.DesiredSize;
-            foreach (var col in gs.GetCols(this).Where(d => d.HasAutoSize))
+            if (gs.ColSpan > 1)
             {
-                if (!col.DesiredSize.HasValue)
+                spannedCols.Add(([.. gs.GetCols(this)], childSize.width));
+            }
+            else
+            {
+                foreach (var col in gs.GetCols(this).Where(d => d.HasAutoSize))
                 {
-                    col.DesiredSize = childSize.width;
-                }
-                else
-                {
-                    col.DesiredSize = Math.Max(col.DesiredSize.Value, childSize.width);
+                    if (!col.DesiredSize.HasValue)
+                    {
+                        col.DesiredSize = childSize.width;
+                    }
+                    else
+                    {
+                        col.DesiredSize = Math.Max(col.DesiredSize.Value, childSize.width);
+                    }
                 }
             }
 
-            foreach (var row in gs.GetRows(this).Where(d => d.HasAutoSize))
+            if (gs.RowSpan > 1)
             {
-                if (!row.DesiredSize.HasValue)
+                spannedRows.Add(([.. gs.GetRows(this)], childSize.height));
+            }
+            else
+            {
+                foreach (var row in gs.GetRows(this).Where(d => d.HasAutoSize))
                 {
-                    row.DesiredSize = childSize.height;
-                }
-                else
-                {
-                    row.DesiredSize = Math.Max(row.DesiredSize.Value, childSize.height);
+                    if (!row.DesiredSize.HasValue)
+                    {
+                        row.DesiredSize = childSize.height;
+                    }
+                    else
+                    {
+                        row.DesiredSize = Math.Max(row.DesiredSize.Value, childSize.height);
+                    }
                 }
             }
+        }
+
+        foreach (var (dimensions, size) in spannedCols)
+        {
+            DistributeSpannedSize(dimensions, size);
+        }
+
+        foreach (var (dimensions, size) in spannedRows)
+        {
+            DistributeSpannedSize(dimensions, size);
         }
 
         // handle defined size cols/rows and finish others
@@ -794,6 +820,23 @@ public partial class Grid : Visual
         index = Math.Min(index, Columns.Count - 1);
         index = Math.Max(0, index);
         return Columns[index];
+    }
+
+    private static void DistributeSpannedSize(GridDimension[] dimensions, float size)
+    {
+        if (dimensions.Any(d => d.HasStarSize))
+            return;
+
+        var autos = dimensions.Where(d => d.HasAutoSize).ToArray();
+        if (autos.Length == 0)
+            return;
+
+        var current = dimensions.Sum(d => d.HasDefinedSize ? d.Size : d.DesiredSize ?? 0);
+        var share = Math.Max(0, size - current) / autos.Length;
+        foreach (var dimension in autos)
+        {
+            dimension.DesiredSize = (dimension.DesiredSize ?? 0) + share;
+        }
     }
 
     private GridRow GetRow(int index)
