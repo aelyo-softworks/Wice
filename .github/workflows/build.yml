@@ -1,0 +1,207 @@
+# Builds the ahead of time compiled Samples Gallery for the three architectures, and the packed copies of the two
+# that UPX can handle. Nothing here runs on its own. Start it from the Actions tab, or from a machine with the GitHub CLI:
+#
+#     gh workflow run build.yml                      builds and leaves the binaries as artifacts.
+#     gh workflow run build.yml -f release=true      builds and publishes a release as well.
+#     gh run watch                                   follows the run that just started.
+#
+# The release is tagged from the AssemblyInformationalVersion in WiceAot/Properties/AssemblyVersionInfo.cs,
+# so bumping that is what decides the next release number.
+# A version that has already been released stops the run rather than replacing anything.
+# It carries one executable per architecture, packed where UPX can pack it. The unpacked builds stay behind as
+# artifacts on the run, which is where they are useful, next to a stack trace rather than in front of a user.
+#
+# The three architectures build on three runners at once, because the slow part is the native compile and link and
+# no cache helps with that. Concurrent jobs are free on a public repository, so the wall clock is one architecture
+# rather than the sum of three.
+name: build
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag or commit to build. Leave empty for the default branch.'
+        required: false
+        default: ''
+      release:
+        description: 'Publish a GitHub release, tagged from the version in AssemblyVersionInfo.cs'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  # gh release create writes to the repository. The default token only reads.
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.rid }}
+    runs-on: windows-latest
+
+    strategy:
+      # every architecture reports its own result rather than the first failure cancelling the rest.
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x86
+            upx: true
+          - rid: win-x64
+            upx: true
+          # UPX cannot pack a win64/arm64 image, it answers CantPackException, so this one ships unpacked.
+          - rid: win-arm64
+            upx: false
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      # the point of caching this is the ILCompiler runtime packs, hundreds of megabytes that are otherwise
+      # downloaded again on every cold run.
+      - name: cache NuGet
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: install upx
+        if: matrix.upx
+        run: choco install upx --no-progress -y
+
+      # PublishDir is given explicitly so the output is somewhere known, rather than under a path that depends on
+      # the framework and the runtime identifier.
+      - name: publish ${{ matrix.rid }}
+        shell: pwsh
+        run: |
+          dotnet publish WiceAot.Samples.Gallery/WiceAot.Samples.Gallery.csproj `
+            -c Release `
+            -r ${{ matrix.rid }} `
+            -p:PublishDir=$env:GITHUB_WORKSPACE\out\${{ matrix.rid }}\
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+          $exe = "$env:GITHUB_WORKSPACE\out\${{ matrix.rid }}\WiceAot.Samples.Gallery.exe"
+          if (-not (Test-Path $exe)) { throw "no executable was produced at $exe" }
+          "{0:N1} MB" -f ((Get-Item $exe).Length / 1MB)
+
+      # packed into its own folder, so the plain and the packed executable stay separate artifacts.
+      #
+      # the x86 image is refused outright, "unexpected value in PE header", because UPX does not recognise
+      # something an ahead of time compiled 32 bit binary puts there. --force packs it anyway, and the result runs,
+      # so the pack is attempted honestly first and only forced when that is the alternative to no packing at all.
+      - name: pack with upx
+        if: matrix.upx
+        shell: pwsh
+        run: |
+          $source = "$env:GITHUB_WORKSPACE\out\${{ matrix.rid }}\WiceAot.Samples.Gallery.exe"
+          $target = "$env:GITHUB_WORKSPACE\out\${{ matrix.rid }}-upx"
+          New-Item -ItemType Directory -Force $target | Out-Null
+
+          upx --best --lzma $source -o "$target\WiceAot.Samples.Gallery.exe"
+          if ($LASTEXITCODE -ne 0)
+          {
+              Write-Host "upx refused it, trying again with --force"
+              upx --best --lzma --force $source -o "$target\WiceAot.Samples.Gallery.exe"
+              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
+          if (-not (Test-Path "$target\WiceAot.Samples.Gallery.exe")) { throw "upx reported success but produced nothing" }
+          "packed to {0:N1} MB" -f ((Get-Item "$target\WiceAot.Samples.Gallery.exe").Length / 1MB)
+
+      - name: upload ${{ matrix.rid }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: gallery-${{ matrix.rid }}
+          path: out/${{ matrix.rid }}/WiceAot.Samples.Gallery.exe
+          if-no-files-found: error
+
+      - name: upload ${{ matrix.rid }} packed
+        if: matrix.upx
+        uses: actions/upload-artifact@v7
+        with:
+          name: gallery-${{ matrix.rid }}-upx
+          path: out/${{ matrix.rid }}-upx/WiceAot.Samples.Gallery.exe
+          if-no-files-found: error
+
+  release:
+    name: publish the release
+    needs: build
+    if: inputs.release
+    # just gh and a handful of file moves, and a Linux runner starts faster.
+    runs-on: ubuntu-latest
+
+    steps:
+      # only for AssemblyVersionInfo.cs, which is where the version comes from.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: read the version
+        id: version
+        run: |
+          version=$(grep -oPm1 '(?<=AssemblyInformationalVersion\(")[^"]+' WiceAot/Properties/AssemblyVersionInfo.cs)
+          if [ -z "$version" ]; then echo "no AssemblyInformationalVersion found in AssemblyVersionInfo.cs"; exit 1; fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+
+          # the commit that was actually checked out, which is not the one that started the run when a ref was given.
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "releasing $version from $(git rev-parse --short HEAD)"
+
+      - name: collect the binaries
+        uses: actions/download-artifact@v8
+        with:
+          path: dist
+
+      # one executable per architecture, the packed one wherever UPX could produce it, and no suffix to say so.
+      # whether it is packed is not something anyone downloading it has to care about, and shipping both would
+      # only ask them a question they cannot answer.
+      # the names are those of the earlier releases, WiceAot.Samples.Gallery.x64.exe and so on, so links keep working.
+      - name: name them
+        run: |
+          mkdir -p assets
+          for arch in x86 x64 arm64; do
+            source="dist/gallery-win-$arch-upx/WiceAot.Samples.Gallery.exe"
+            if [ ! -f "$source" ]; then source="dist/gallery-win-$arch/WiceAot.Samples.Gallery.exe"; fi
+            if [ ! -f "$source" ]; then echo "nothing was built for $arch"; exit 1; fi
+            cp "$source" "assets/WiceAot.Samples.Gallery.$arch.exe"
+          done
+          ls -la assets
+
+      - name: create the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.version.outputs.tag }}
+          SHA: ${{ steps.version.outputs.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          # refusing rather than replacing, so a forgotten version bump cannot overwrite what is already published.
+          if gh release view "$TAG" --repo "$REPO" > /dev/null 2>&1; then
+            echo "$TAG is already released. Bump the version in WiceAot/Properties/AssemblyVersionInfo.cs and run this again."
+            exit 1
+          fi
+
+          # deleting a release leaves its tag behind, and a tag that already exists is reused as it is, whatever
+          # --target says. releasing then would attach binaries built here to a commit somewhere else entirely.
+          existing=$(git ls-remote origin "refs/tags/$TAG^{}" | cut -f1)
+          if [ -z "$existing" ]; then existing=$(git ls-remote origin "refs/tags/$TAG" | cut -f1); fi
+          if [ -n "$existing" ] && [ "$existing" != "$SHA" ]; then
+            echo "$TAG already exists and points at $existing, not at the commit built here, $SHA."
+            echo "Delete the tag as well as the release, gh release delete $TAG --cleanup-tag, then run this again."
+            exit 1
+          fi
+
+          # --generate-notes writes what changed since the last tag, on the server, so nothing has to be cloned.
+          gh release create "$TAG" assets/*.exe \
+            --repo "$REPO" \
+            --target "$SHA" \
+            --title "Wice AOT Sample Gallery $TAG" \
+            --generate-notes
+
+      - name: what shipped
+        run: |
+          for f in assets/*.exe; do printf '%-44s %6.1f MB\n' "$(basename "$f")" "$(echo "scale=1; $(stat -c%s "$f")/1048576" | bc)"; done
