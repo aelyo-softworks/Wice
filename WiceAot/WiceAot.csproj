@@ -11,6 +11,8 @@
 		<IsAotCompatible>true</IsAotCompatible>
 		<!-- https://github.com/microsoft/CsWinRT/blob/master/docs/aot-trimming.md -->
 		<CsWinRTAotOptimizerEnabled>Auto</CsWinRTAotOptimizerEnabled>
+		<!-- the package is here for its AOT optimizer, there is no projection to generate, and generating one needs the Windows SDK of the target version installed. -->
+		<CsWinRTGenerateProjection>false</CsWinRTGenerateProjection>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 

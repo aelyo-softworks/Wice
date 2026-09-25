@@ -12,6 +12,8 @@
 		<RootNamespace>Wice.Samples.Gallery</RootNamespace>
 		<ApplicationIcon>wice_color.ico</ApplicationIcon>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<!-- the package is here for its AOT optimizer, there is no projection to generate, and generating one needs the Windows SDK of the target version installed. -->
+		<CsWinRTGenerateProjection>false</CsWinRTGenerateProjection>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
