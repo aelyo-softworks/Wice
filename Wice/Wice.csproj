@@ -69,6 +69,7 @@
 	  <Compile Include="..\WiceAot\ClosingEventArgs.cs" Link="ClosingEventArgs.cs" />
 	  <Compile Include="..\WiceAot\CollectionChangedInvalidateReason.cs" Link="CollectionChangedInvalidateReason.cs" />
 	  <Compile Include="..\WiceAot\CompositionUpdateParts.cs" Link="CompositionUpdateParts.cs" />
+	  <Compile Include="..\WiceAot\ContentResizeAnchor.cs" Link="ContentResizeAnchor.cs" />
 	  <Compile Include="..\WiceAot\DataBindContext.cs" Link="DataBindContext.cs" />
 	  <Compile Include="..\WiceAot\DataBinder.cs" Link="DataBinder.cs" />
 	  <Compile Include="..\WiceAot\DataSource.cs" Link="DataSource.cs" />

@@ -35,6 +35,7 @@ public partial class Window : Canvas, ITitleBarParent
     private int _animating;
     private readonly Lazy<NativeWindow> _native;
     private int _renderQueued;
+    private bool _isInSizeMove;
     private HWND _parentHandle;
     private WINDOW_EX_STYLE? _extendedStyle;
     private WINDOW_STYLE? _style;
@@ -504,6 +505,13 @@ public partial class Window : Canvas, ITitleBarParent
     /// </summary>
     [Category(CategoryBehavior)]
     public virtual bool CreateOnCursorMonitor { get; set; }
+
+    /// <summary>
+    /// Gets or sets which corner of the window stays in place when the window resizes itself to its content,
+    /// because <see cref="Canvas.MeasureToContent"/> is set. Resizes done by the user are not affected.
+    /// </summary>
+    [Category(CategoryBehavior)]
+    public virtual ContentResizeAnchor ContentResizeAnchor { get; set; }
 
     /// <summary>
     /// Gets the visual element that represents the item being dragged during a drag operation.
@@ -1475,6 +1483,43 @@ public partial class Window : Canvas, ITitleBarParent
         var wr = WindowRect;
         var cr = ClientRect;
         Native.Resize(width - (wr.Width - cr.Width), height - (wr.Height - cr.Height));
+    }
+
+    private void ResizeClientToContent(int width, int height)
+    {
+        var anchor = ContentResizeAnchor;
+        if (anchor == ContentResizeAnchor.TopLeft || _isInSizeMove || IsIconic || IsZoomed || Monitor?.WorkingArea is not RECT work)
+        {
+            ResizeClient(width, height);
+            return;
+        }
+
+        var wr = WindowRect;
+        var cr = ClientRect;
+        var windowWidth = width + (wr.Width - cr.Width);
+        var windowHeight = height + (wr.Height - cr.Height);
+        if (windowWidth == wr.Width && windowHeight == wr.Height)
+            return;
+
+        var right = anchor switch
+        {
+            ContentResizeAnchor.TopRight or ContentResizeAnchor.BottomRight => true,
+            ContentResizeAnchor.NearestCorner => wr.left + wr.Width / 2 > work.left + work.Width / 2,
+            _ => false,
+        };
+
+        var bottom = anchor switch
+        {
+            ContentResizeAnchor.BottomLeft or ContentResizeAnchor.BottomRight => true,
+            ContentResizeAnchor.NearestCorner => wr.top + wr.Height / 2 > work.top + work.Height / 2,
+            _ => false,
+        };
+
+        var x = right ? wr.right - windowWidth : wr.left;
+        var y = bottom ? wr.bottom - windowHeight : wr.top;
+        x = Math.Max(work.left, Math.Min(x, work.right - windowWidth));
+        y = Math.Max(work.top, Math.Min(y, work.bottom - windowHeight));
+        MoveAndResize(x, y, windowWidth, windowHeight);
     }
 
     /// <summary>
@@ -2551,7 +2596,7 @@ public partial class Window : Canvas, ITitleBarParent
                 h = (int)MaxHeight;
             }
 
-            ResizeClient(w, h);
+            ResizeClientToContent(w, h);
         }
 
         _visualsTree = new ConcurrentQuadTree<Visual>(ArrangedRect);
@@ -5039,10 +5084,18 @@ public partial class Window : Canvas, ITitleBarParent
 
                 return NativeWindow.DefWindowProc(hwnd, msg, wParam, lParam);
 
+            case MessageDecoder.WM_ENTERSIZEMOVE:
+                if (win == null)
+                    break;
+
+                win._isInSizeMove = true;
+                break;
+
             case MessageDecoder.WM_EXITSIZEMOVE:
                 if (win == null)
                     break;
 
+                win._isInSizeMove = false;
                 win.UpdateMonitor();
                 break;
 
