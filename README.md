@@ -11,7 +11,7 @@ Here are the key points for Wice:
 * It requires Windows 10 version 1809 ("Redstone 5"). Some parts may have higher or other requirements.
 * It's not cross-platform and was never intended to be.
 * It's not dependent on WPF nor WinForms, nor WinUI 2 nor 3, nor Windows XAML, nor UWP, **it's another UI Framework**. The way it works is somewhat inspired by WPF, but there is no technical dependency over it.
-* It's based on Windows UI Composition (aka Direct Composition) DirectX 11, Direct 2D and WIC, so it uses composition and doesn't redraw the screen all the time, only when needed. This part heavily uses interop code and is done using the **DirectN** open-source package available here https://github.com/smourier/DirectN or the **DirectNAot** package available here https://github.com/smourier/DirectNAot
+* It's based on Windows UI Composition (aka DirectComposition), DirectX 11, Direct2D and WIC, so it uses composition and doesn't redraw the screen all the time, only when needed. This part heavily uses interop code and is done using the **DirectN** open-source package available here https://github.com/smourier/DirectN or the **DirectNAot** package available here https://github.com/smourier/DirectNAot
 * It has no graphical editor, no descriptive markup language, it's a code-only UI Framework.
 
 # Why does it exist?
@@ -19,13 +19,13 @@ But... why Wice?
 
 * It **still supports .NET Framework 4.7.2** (note some newer Visuals or features only exist with the AOT version though).
 * It's **native AOT deployment compatible**, aka "one file to rule them all", unlike most .NET UI frameworks.
-* It's **100% open source C# code**, with something like 50000 lines of code (which is a relatively small code base).
-* It's more modern than Winforms (GDI/GDI+) and WPF (which is still based on DirectX 9 and that causes lots of issues).
+* It's **100% open source C# code**, with something like 56000 lines of code (which is a relatively small code base).
+* It's more modern than WinForms (GDI/GDI+) and WPF (which is still based on DirectX 9 and that causes lots of issues).
 * It has **no sandbox like UWP** and **doesn't require Win2D** (it's too complex to use and requires all sort of painful MSVC dependencies).
-* It **compiles much faster than UWP or WinUI3** projects because the tooling is the "standard" .NET tooling we all love and cherish.
-* It has no external dependencies, so it's **free from deployment pain** (read: UPW and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" or "package" my apps at all?`</rant>`). Using .NET 10+, you can even publish AOT your app as a *really single* zero-dependency small .exe. Check out the **Samples Gallery** sample in the [Releases](https://github.com/aelyo-softworks/Wice/releases) section, it's just one ~20M .exe!
-* It has Windows Acrylic (no hack!) brush w/o the need for UWP or WinAppSDK.
-* Wice for .NET Framework comes with an integrated in-process (Snoop-like for people familiar with WPF) visual "Spy" utility (just press F9 in debug mode, actually, this sole part uses Winforms, but it's not necessary for Wice, it's more like an external embedded tool). Unfortunately Wice AOT doesn't have this since Winforms generally don't work with AOT publishing.
+* It **compiles much faster than UWP or WinUI 3** projects because the tooling is the "standard" .NET tooling we all love and cherish.
+* It has no external dependencies, so it's **free from deployment pain** (read: UWP and current WinUI 3 packaging that takes hours to compile and "deploy" `<rant>` why should I need to "deploy" or "package" my apps at all?`</rant>`). Using .NET 10+, you can even publish AOT your app as a *really single* zero-dependency small .exe. Check out the **Samples Gallery** sample in the [Releases](https://github.com/aelyo-softworks/Wice/releases) section, it's just one ~9 MB .exe (about 22 MB for ARM64)!
+* It has Windows Acrylic (no hack!) brush without the need for UWP or WinAppSDK.
+* Wice for .NET Framework comes with an integrated in-process (Snoop-like for people familiar with WPF) visual "Spy" utility (just press F9 in debug mode, actually, this sole part uses WinForms, but it's not necessary for Wice, it's more like an external embedded tool). Unfortunately Wice AOT doesn't have this since WinForms doesn't work with AOT publishing.
 
 # Status
 Wice is fairly stable. Please post an issue if you have a problem or a question, using sample reproducible code.
@@ -84,11 +84,11 @@ An automatic [Flags] enum to **Checkable List Box** visual, very useful when com
 
 ![Wice](Assets/wice_flags_enum_listbox.jpg)
 
-A textbox displaying **advanced Direct Write** stylistic feature set with Gabriola font, over a beautiful acrylic background:
+A textbox displaying **advanced DirectWrite** stylistic feature set with Gabriola font, over a beautiful acrylic background:
 
 ![Wice](https://github.com/user-attachments/assets/3a024150-b3d0-4c05-a6cd-1ea38270bbc6)
 
-A **WebView2** visual (WiceAOT only):
+A **WebView2** visual (WiceAot only):
 
 ![image](https://github.com/user-attachments/assets/1a232fbe-aa9b-47dd-b141-f18db386297d)
 
@@ -96,9 +96,9 @@ A **Pdf** visual:
 
 ![image](https://github.com/user-attachments/assets/4e9c56da-4908-4ddc-a2c4-14f3e7ab14c0)
 
-A **MediaPlayer** visual (WiceAOT only):
+A **MediaPlayer** visual (WiceAot only):
 
-<img width="1390" height="889" alt="Media Playe Visual" src="https://github.com/user-attachments/assets/c63d8057-5d70-42a4-a2b4-957ecfac13bf" />
+<img width="1390" height="889" alt="MediaPlayer Visual" src="https://github.com/user-attachments/assets/c63d8057-5d70-42a4-a2b4-957ecfac13bf" />
 
 # Hi-DPI support
 Wice now supports hi-dpi scaling. It's not 100% automatic, your code may have to react to dpi changes, but everything is prepared.
@@ -108,11 +108,8 @@ Wice now supports hi-dpi scaling. It's not 100% automatic, your code may have to
 Note: *RichTextBox* hi-dpi scaling doesn't work with Wice .NET Framework, only with Wice AOT.
 
 # Debugging
-And last but not least, the "snoop"-like feature (press F9 anytime when compiled in DEBUG), that shows all the details of the visuals tree and also allow you to modify values in real-time:
+And last but not least, the "snoop"-like feature (press F9 anytime when compiled in DEBUG), that shows all the details of the visuals tree and also allows you to modify values in real time:
 
 ![Wice](Assets/wice_snoop.jpg)
 
-Note: that sole part uses Winforms (another framework to avoid chicken and egg effect!) but you can remove that piece of code if you don't need it. It's not currently available in Wice AOT.
-
-
-
+Note: that sole part uses WinForms (another framework to avoid chicken and egg effect!) but you can remove that piece of code if you don't need it. It's not currently available in Wice AOT.
