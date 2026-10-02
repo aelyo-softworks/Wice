@@ -16,9 +16,7 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     /// <summary>
     /// Gets a delegate to the default window procedure (DefWindowProcW).
     /// </summary>
-    public static WNDPROC DefWindowProc { get; } = GetDefWindowProc();
-
-    private static WNDPROC GetDefWindowProc() => Marshal.GetDelegateForFunctionPointer<WNDPROC>(WiceCommons.GetProcAddress(WiceCommons.GetModuleHandleW(PWSTR.From("user32.dll")), PSTR.From("DefWindowProcW")));
+    public static WNDPROC DefWindowProc { get; } = WiceCommons.DefWindowProcW;
 
     /// <summary>
     /// Enumerates all top-level windows and returns a sequence of <see cref="NativeWindow"/> objects.
@@ -172,13 +170,16 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     /// <summary>
     /// Gets or sets the window text (title).
     /// </summary>
-    public string Text
+    public unsafe string Text
     {
         get => GetWindowText(Handle);
         set
         {
             value ??= string.Empty;
-            WiceCommons.SetWindowTextW(Handle, PWSTR.From(value));
+            fixed (char* text = value)
+            {
+                WiceCommons.SetWindowTextW(Handle, new PWSTR(text));
+            }
         }
     }
 
@@ -668,10 +669,14 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     /// <summary>
     /// Shows the ShellAbout dialog for this window using optional text and details.
     /// </summary>
-    public int ShellAbout(string? text = null, string? otherStuff = null)
+    public unsafe int ShellAbout(string? text = null, string? otherStuff = null)
     {
         var txt = text.Nullify() ?? Assembly.GetEntryAssembly()?.GetTitle();
-        return WiceCommons.ShellAboutW(Handle, PWSTR.From(txt), PWSTR.From(otherStuff), IconHandle);
+        fixed (char* app = txt)
+        fixed (char* other = otherStuff)
+        {
+            return WiceCommons.ShellAboutW(Handle, new PWSTR(app), new PWSTR(other), IconHandle);
+        }
     }
 
     /// <summary>
@@ -1055,29 +1060,32 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     /// <param name="windowProc">The WNDPROC pointer.</param>
     /// <param name="background">Background brush.</param>
     /// <returns>True if registered now; false if already registered.</returns>
-    internal static bool RegisterWindowClass(string className, WNDCLASS_STYLES styles, nint windowProc, HBRUSH background)
+    internal static unsafe bool RegisterWindowClass(string className, WNDCLASS_STYLES styles, nint windowProc, HBRUSH background)
     {
         ExceptionExtensions.ThrowIfNull(className, nameof(className));
         if (windowProc == 0)
             throw new ArgumentException(null, nameof(windowProc));
 
-        if (!WiceCommons.GetClassInfoW(new HINSTANCE { Value = Application.ModuleHandle.Value }, PWSTR.From(className), out _))
+        fixed (char* name = className)
         {
-            var cls = new WNDCLASSW
+            if (!WiceCommons.GetClassInfoW(new HINSTANCE { Value = Application.ModuleHandle.Value }, new PWSTR(name), out _))
             {
-                style = styles,
-                lpfnWndProc = windowProc,
-                hInstance = new HINSTANCE { Value = Application.ModuleHandle.Value },
-                lpszClassName = PWSTR.From(className),
-                //cls.hCursor = DirectN.Cursor.Arrow.Handle; // we set the cursor ourselves, otherwise the cursor will blink
-                hbrBackground = background
-            };
-            if (WiceCommons.RegisterClassW(cls) == 0)
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                var cls = new WNDCLASSW
+                {
+                    style = styles,
+                    lpfnWndProc = windowProc,
+                    hInstance = new HINSTANCE { Value = Application.ModuleHandle.Value },
+                    lpszClassName = new PWSTR(name),
+                    //cls.hCursor = DirectN.Cursor.Arrow.Handle; // we set the cursor ourselves, otherwise the cursor will blink
+                    hbrBackground = background
+                };
+                if (WiceCommons.RegisterClassW(cls) == 0)
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
 
-            //Trace("Class '" + className + "' registered.");
-            _classesNames.Add(className);
-            return true;
+                //Trace("Class '" + className + "' registered.");
+                _classesNames.Add(className);
+                return true;
+            }
         }
 
         //Trace("Class '" + className + "' was already registered.");
@@ -1087,11 +1095,15 @@ public sealed partial class NativeWindow : IEquatable<NativeWindow>, IDropTarget
     /// <summary>
     /// Unregisters all window classes previously tracked and registered by this type.
     /// </summary>
-    internal static void UnregisterWindowClasses()
+    internal static unsafe void UnregisterWindowClasses()
     {
         foreach (var name in _classesNames)
         {
-            WiceCommons.UnregisterClassW(PWSTR.From(name), new HINSTANCE { Value = Application.ModuleHandle.Value });
+            fixed (char* className = name)
+            {
+                WiceCommons.UnregisterClassW(new PWSTR(className), new HINSTANCE { Value = Application.ModuleHandle.Value });
+            }
+
             _classesNames.TryRemove(name);
         }
     }

@@ -241,6 +241,9 @@ public static partial class WiceCommons
     public static extern HMODULE GetModuleHandleW(PWSTR lpModuleName);
 
     [DllImport("user32")]
+    public static extern LRESULT DefWindowProcW(HWND hWnd, uint Msg, WPARAM wParam, LPARAM lParam);
+
+    [DllImport("user32")]
     public static extern BOOL EnumChildWindows(HWND hWndParent, WNDENUMPROC lpEnumFunc, LPARAM lParam);
 
     [DllImport("user32")]
@@ -446,6 +449,7 @@ public static partial class WiceCommons
     public static BOOL PeekMessageW(out MSG lpMsg, HWND hWnd, uint wMsgFilterMin, uint wMsgFilterMax, PEEK_MESSAGE_REMOVE_TYPE wRemoveMsg) => Functions.PeekMessageW(out lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
     public static LRESULT SendMessageW(HWND hWnd, uint Msg, WPARAM wParam, LPARAM lParam) => Functions.SendMessageW(hWnd, Msg, wParam, lParam);
     public static HMODULE GetModuleHandleW(PWSTR lpModuleName) => Functions.GetModuleHandleW(lpModuleName);
+    public static LRESULT DefWindowProcW(HWND hWnd, uint Msg, WPARAM wParam, LPARAM lParam) => Functions.DefWindowProcW(hWnd, Msg, wParam, lParam);
     public static BOOL TranslateMessage(in MSG lpMsg) => Functions.TranslateMessage(in lpMsg);
     public static LRESULT DispatchMessageW(in MSG lpMsg) => Functions.DispatchMessageW(in lpMsg);
     public static uint GetDpiForWindow(HWND hwnd) => Functions.GetDpiForWindow(hwnd);
